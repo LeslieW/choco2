@@ -23,17 +23,17 @@
 
 package choco.kernel.solver.variables;
 
-import java.util.logging.Logger;
-
+import choco.IExtensionnable;
 import choco.IPretty;
 import choco.kernel.common.IIndex;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.memory.structure.PartiallyStoredVector;
-import choco.kernel.solver.branch.Extension;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.event.VarEvent;
+
+import java.util.logging.Logger;
 
 
 /** History:
@@ -43,7 +43,7 @@ import choco.kernel.solver.propagation.event.VarEvent;
 /**
  * Interface for all implementations of domain variables.
  */
-public interface Var extends IPretty, IIndex {
+public interface Var extends IPretty, IIndex, IExtensionnable {
 
 	/**
 	 * Reference to an object for logging trace statements related to IntDomainVar (using the java.util.logging package)
@@ -129,7 +129,4 @@ public interface Var extends IPretty, IIndex {
 	 * @return an iterator over all constraints involving this variable
 	 */
 	public DisposableIterator<SConstraint> getConstraintsIterator();
-
-
-	Extension getExtension(int extensionNumber);
 }

@@ -22,9 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.variables.real;
 
-import java.util.List;
-import java.util.Set;
-
 import choco.kernel.common.HashCoding;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
@@ -35,6 +32,9 @@ import choco.kernel.solver.branch.Extension;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.real.RealExp;
 import choco.kernel.solver.propagation.event.VarEvent;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * A constant real interval.
@@ -260,4 +260,7 @@ public class RealIntervalConstant implements RealConstant {
 	public Extension getExtension(int extensionNumber) {
 		return null;
 	}
+
+    @Override
+    public void addExtension(final int extensionNumber) {}
 }

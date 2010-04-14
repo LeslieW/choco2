@@ -22,11 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.scheduling;
 
-import java.util.Comparator;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import choco.Choco;
 import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
@@ -38,6 +33,11 @@ import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.variables.scheduling.ITask;
+
+import java.util.Comparator;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Arnaud Malapert
@@ -104,7 +104,7 @@ public class OpenShopExample {
 
 	public void setTimes(CPSolver solver, Comparator<ITask> cmp, boolean randomized) {
 		solver.attachGoal(new SetTimes(solver, solver.getTaskDecisionVars(), cmp, randomized));
-		solver.addGoal(solver.generateIntGoal());
+		solver.addGoal(solver.generateDefaultIntGoal());
 	}
 
 	public CPSolver[] generateSolvers() {

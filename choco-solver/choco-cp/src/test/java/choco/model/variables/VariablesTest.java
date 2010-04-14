@@ -27,15 +27,18 @@ import static choco.Choco.*;
 import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.constraints.integer.TimesXYZ;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Variable;
+import choco.kernel.model.variables.integer.IntegerConstantVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.branch.AbstractIntBranchingStrategy;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import static junit.framework.Assert.*;
 import org.junit.Assert;
@@ -254,7 +257,84 @@ public class VariablesTest {
        assertTrue("iter has next", it.hasNext());
        assertEquals("iter next ", c2, it.next());
        assertFalse("iter next ", it.hasNext());
+    }
 
 
+    /**
+     * default goal should detect "no_decision" option and not add default goal over it.
+     */
+    @Test
+    public void testB2987013_1(){
+        int[] sizes = new int[]{11,
+                10, 10, 10, 10, 10, 10, 10, 10, 10,
+                9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9,
+                8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+                7, 7, 7, 7};
+        int C = 32;
+        int n = sizes.length;
+        int nbin = 12;//number of bins
+        CPModel m = new CPModel();
+        IntegerVariable[] items = Choco.makeIntVarArray("items", n, 0, nbin-1, "cp:enum");
+        SetVariable[] setbin = Choco.makeSetVarArray("bins",nbin, 0,n-1, CPOptions.V_NO_DECISION);
+        IntegerVariable[] load = Choco.makeIntVarArray("load", nbin, 0,C, "cp:bound");
+        IntegerConstantVariable[] size = new IntegerConstantVariable[n];
+        for (int i = 0; i < n; i++) {
+            size[i] = Choco.constant(sizes[i]);
+        }
+        m.addConstraint(Choco.pack(setbin,load, items, size, "cp:pack:ar", "cp:pack:dlb","cp:pack:fill"));
+
+        CPSolver s = new CPSolver();
+        s.read(m);
+        s.setNodeLimit(40);
+        s.solve();
+        Assert.assertTrue(s.getNodeCount() > 34);
+    }
+
+    @Test
+    public void testB2987013_2(){
+        CPModel model = new CPModel();
+        IntegerVariable x = Choco.makeIntVar("x", 1,10, CPOptions.V_NO_DECISION);
+        IntegerVariable y = Choco.makeIntVar("y", 1,10, CPOptions.V_NO_DECISION);
+        IntegerVariable z = Choco.makeIntVar("z", 1,10, CPOptions.V_NO_DECISION);
+
+        model.addConstraint(Choco.times(x,y,z));
+
+
+        CPSolver solver = new CPSolver();
+        solver.read(model);
+        solver.generateSearchStrategy();
+        AbstractIntBranchingStrategy branching = solver.getSearchStrategy().mainGoal;
+        Assert.assertNull(branching);
+    }
+
+    @Test
+    public void testB2987013_3(){
+        CPSolver solver = new CPSolver();
+        IntDomainVar x = solver.createEnumIntVar("x", 1,10);
+        IntDomainVar y = solver.createEnumIntVar("y", 1,10);
+        IntDomainVar z = solver.createEnumIntVar("z", 1,10);
+
+        solver.post(new TimesXYZ(x,y,z));
+
+        solver.generateSearchStrategy();
+        AbstractIntBranchingStrategy branching = solver.getSearchStrategy().mainGoal;
+        Assert.assertNotNull(branching);
+    }
+
+    @Test
+    public void testB2987013_4(){
+        CPModel model = new CPModel();
+        IntegerVariable x = Choco.makeIntVar("x", 1,10);
+        IntegerVariable y = Choco.makeIntVar("y", 1,10);
+        IntegerVariable z = Choco.makeIntVar("z", 1,10, CPOptions.V_NO_DECISION);
+
+        model.addConstraint(Choco.times(x,y,z));
+
+
+        CPSolver solver = new CPSolver();
+        solver.read(model);
+        solver.generateSearchStrategy();
+        AbstractIntBranchingStrategy branching = solver.getSearchStrategy().mainGoal;
+        Assert.assertNotNull(branching);
     }
 }

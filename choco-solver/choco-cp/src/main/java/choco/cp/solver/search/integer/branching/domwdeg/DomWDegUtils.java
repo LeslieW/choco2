@@ -22,19 +22,18 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.branching.domwdeg;
 
-import static choco.kernel.solver.constraints.SConstraintType.INTEGER;
-
-import java.util.Iterator;
-
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.Extension;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
+import static choco.kernel.solver.constraints.SConstraintType.INTEGER;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import java.util.Iterator;
 /**
  * computation of the weighted degrees of variables and number of failures of constraints
  * @author Arnaud Malapert</br> 
@@ -59,11 +58,11 @@ public final class DomWDegUtils {
 
 	public static void addConstraintExtension(SConstraint c) {
 		//FIXME Extension only for IntegerConstraint ?
-		( (AbstractSConstraint) c).addExtension(ABSTRACTCONTRAINT_EXTENSION);
+		c.addExtension(ABSTRACTCONTRAINT_EXTENSION);
 	}
 
 	public static void addVariableExtension(Var v) {
-		( (AbstractVar) v).addExtension(ABSTRACTVAR_EXTENSION);
+		v.addExtension(ABSTRACTVAR_EXTENSION);
 	}
 
 	public static Extension getConstraintExtension(SConstraint c) {

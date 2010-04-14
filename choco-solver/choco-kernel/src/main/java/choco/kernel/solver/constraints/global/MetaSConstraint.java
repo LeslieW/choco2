@@ -190,5 +190,12 @@ public class MetaSConstraint implements SConstraint, IResource<TaskVar> {
 	public Extension getExtension(int extensionNumber) {
 		return null;
 	}
-    
+
+    /**
+     * Adds a new extension.
+     *
+     * @param extensionNumber should use the number returned by getAbstractSConstraintExtensionNumber
+     */
+    @Override
+    public void addExtension(final int extensionNumber) {}
 }

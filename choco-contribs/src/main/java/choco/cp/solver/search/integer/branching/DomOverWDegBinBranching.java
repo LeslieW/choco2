@@ -37,7 +37,6 @@ import choco.kernel.solver.search.integer.ValSelector;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.solver.variables.integer.IntVar;
 
 import java.util.Iterator;
 import java.util.Random;
@@ -80,13 +79,13 @@ public class DomOverWDegBinBranching extends AbstractAssignOrForbidBranching {
 		}
         iter.dispose();
 		for (int i = 0; i < s.getNbIntVars(); i++) {
-			IntVar v = s.getIntVar(i);
-			((AbstractVar) v).addExtension(VAR_EXTENSION);
+			IntDomainVar v = s.getIntVar(i);
+			v.addExtension(VAR_EXTENSION);
 		}
 
 		for (int val : s.getIntConstantSet()) {
 			Var v = s.getIntConstant(val);
-			((AbstractVar) v).addExtension(VAR_EXTENSION);
+			v.addExtension(VAR_EXTENSION);
 		}
 
 		// On sauvegarde l'heuristique
@@ -103,7 +102,7 @@ public class DomOverWDegBinBranching extends AbstractAssignOrForbidBranching {
 
 	@Override
 	public void initConstraintForBranching(SConstraint s) {
-		((AbstractSConstraint) s).addExtension(CONSTRAINT_EXTENSION);
+		s.addExtension(CONSTRAINT_EXTENSION);
 	}
 
 	private static IntDomainVarImpl[] buildVars(Solver s) {

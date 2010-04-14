@@ -22,14 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.constraints;
 
-import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.branch.Extension;
-import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.propagation.Propagator;
 import choco.kernel.solver.variables.Var;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.Arrays;
 import java.util.HashMap;

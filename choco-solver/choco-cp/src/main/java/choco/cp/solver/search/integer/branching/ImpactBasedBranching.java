@@ -53,7 +53,7 @@ public final class ImpactBasedBranching extends AbstractLargeIntBranchingStrateg
 	static IntDomainVar[] varsFromSolver(Solver s) {
 		IntDomainVar[] vars = new IntDomainVar[s.getNbIntVars()];
 		for (int i = 0; i < vars.length; i++) {
-			vars[i] = (IntDomainVar) s.getIntVar(i);
+			vars[i] = s.getIntVar(i);
 		}
 		return vars;
 	}
@@ -63,7 +63,7 @@ public final class ImpactBasedBranching extends AbstractLargeIntBranchingStrateg
 		_solver = solver;
 		_vars = vars;
 		for (IntDomainVar var : _vars) {
-			((AbstractVar) var).addExtension(ABSTRACTVAR_EXTENSION);
+			var.addExtension(ABSTRACTVAR_EXTENSION);
 		}
 		_ibs = ibs;
 	}
@@ -122,7 +122,7 @@ public final class ImpactBasedBranching extends AbstractLargeIntBranchingStrateg
 					}
 				}
 			}
-			if (lvs.size() == 0) {
+			if (lvs.isEmpty()) {
 				return null;
 			}
 			return lvs.get(randomBreakTies.nextInt(lvs.size()));
@@ -370,11 +370,11 @@ public final class ImpactBasedBranching extends AbstractLargeIntBranchingStrateg
 				offsets = new int[subset.size()];
 				sizes = new int[subset.size()];
 				blocks = new int[subset.size()];
-				if (subset.size() > 0) 
+				if (!subset.isEmpty())
 					blocks[0] = 0;
 				for (int i = 0; i < subset.size(); i++) {
 					IntDomainVar tv = (IntDomainVar) subset.get(i);
-					((AbstractVar) tv).getExtension(ABSTRACTVAR_EXTENSION).set(i);
+					tv.getExtension(ABSTRACTVAR_EXTENSION).set(i);
 					if (tv.hasEnumeratedDomain()) {
 						offsets[i] = tv.getInf();
 						sizes[i] = tv.getSup() - tv.getInf() + 1; //((IntDomainVar) subset.get(i)).getDomainSize(); // tv.getSup() - tv.getInf() + 1;
@@ -390,13 +390,13 @@ public final class ImpactBasedBranching extends AbstractLargeIntBranchingStrateg
 			public double computeCurrentTreeSize() {
 				double prod = 1;
 				for (int i = 0; i < pb.getNbIntVars(); i++) {
-					prod *= ((IntDomainVar) pb.getIntVar(i)).getDomainSize();
+					prod *= pb.getIntVar(i).getDomainSize();
 				}
 				return prod;
 			}
 
 			public int getChoiceAddress(IntDomainVar var, int val) {
-				int idx = ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION).get();
+				int idx = var.getExtension(ABSTRACTVAR_EXTENSION).get();
 				//int idx = ((IBSIntVarImpl) var).getIndex();
 				return (blocks[idx] + val - offsets[idx]);
 			}
@@ -404,7 +404,7 @@ public final class ImpactBasedBranching extends AbstractLargeIntBranchingStrateg
 
 	}
 
-	private final class ImpactRef extends AbstractImpactStrategy {
+	private static final class ImpactRef extends AbstractImpactStrategy {
 
 		/**
 		 * I(x_i = a) = 1 - Pafter(x_i = a) / Pbefore(x_i = a)
@@ -429,7 +429,7 @@ public final class ImpactBasedBranching extends AbstractLargeIntBranchingStrateg
 			super(branching, vars);
 			_branching = branching;
 			int totalSize = 0;
-			if (vars.size() != 0)
+			if (!vars.isEmpty())
 				totalSize = dataS.blocks[vars.size() - 1] + dataS.sizes[vars.size() - 1];
 			impact = new double[totalSize];
 			nbDecOnVarVal = new int[totalSize];
@@ -478,7 +478,7 @@ public final class ImpactBasedBranching extends AbstractLargeIntBranchingStrateg
 		 * @param var variable
 		 */
 		public double getEnumImpactVar(IntDomainVar var) {
-			int idx = ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION).get();
+			int idx = var.getExtension(ABSTRACTVAR_EXTENSION).get();
 			if (idx != -1) {
 				double imp = 0.0;
 				DisposableIntIterator it = var.getDomain().getIterator();
@@ -494,7 +494,7 @@ public final class ImpactBasedBranching extends AbstractLargeIntBranchingStrateg
 		}
 
 		public double getBoundImpactVar(IntDomainVar var) {
-			int idx = ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION).get();
+			int idx = var.getExtension(ABSTRACTVAR_EXTENSION).get();
 			if (idx != -1) {
 				return 1 - getImpactVal(var, 0);
 			} else

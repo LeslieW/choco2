@@ -3,21 +3,15 @@
  */
 package choco.kernel.solver.variables.scheduling;
 
-import choco.Choco;
 import choco.kernel.common.IIndex;
 import choco.kernel.common.util.iterators.DisposableIterator;
-import choco.kernel.memory.structure.APartiallyStoredCstrList;
-import choco.kernel.memory.structure.Couple;
-import choco.kernel.memory.structure.PartiallyStoredIntVector;
-import choco.kernel.memory.structure.PartiallyStoredTaskCstrList;
-import choco.kernel.memory.structure.PartiallyStoredVector;
+import choco.kernel.memory.structure.*;
 import choco.kernel.model.variables.scheduling.ITaskVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.Extension;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.constraints.SConstraintType;
 import choco.kernel.solver.constraints.global.scheduling.AbstractTaskSConstraint;
 import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.propagation.event.TaskVarEvent;
@@ -279,7 +273,10 @@ public final class TaskVar<C extends AbstractSConstraint & TaskPropagator> exten
 		return null;
 	}
 
-	public final boolean detectOrPostConsistencyConstraint(Solver solver) {
+    @Override
+    public void addExtension(final int extensionNumber) {}
+
+    public final boolean detectOrPostConsistencyConstraint(Solver solver) {
 		final DisposableIterator<SConstraint> iter = getConstraintsIterator();
 		while(iter.hasNext()) {
 			final SConstraint<?> c = iter.next();

@@ -32,24 +32,30 @@ import choco.kernel.solver.variables.real.RealVar;
  * a real interval variable.
  */
 public class CyclicRealVarSelector extends AbstractRealVarSelector implements RealVarSelector {
-  protected int current;
-  //protected double precision = 1.e-6;
+    protected int current;
 
-  public CyclicRealVarSelector(Solver solver) {
-    super(solver);
-    current = -1;
-  }
+    //protected double precision = 1.e-6;
 
-  public RealVar selectRealVar() {
-    int nbvars = solver.getNbRealVars();
-    if (nbvars == 0) return null;
-    int start = current == -1 ? nbvars - 1 : current;
-    int n = (current + 1) % nbvars;
-    while (n != start && solver.getRealVar(n).isInstantiated()) {
-      n = (n + 1) % nbvars;
+    public CyclicRealVarSelector(Solver solver, final RealVar[] vars) {
+        super(solver, vars);
+        current = -1;
     }
-    if (solver.getRealVar(n).isInstantiated()) return null;
-    current = n;
-    return solver.getRealVar(n);
-  }
+
+    public CyclicRealVarSelector(Solver solver) {
+        super(solver);
+        current = -1;
+    }
+
+    public RealVar selectRealVar() {
+        int nbvars = vars.length;
+        if (nbvars == 0) return null;
+        int start = current == -1 ? nbvars - 1 : current;
+        int n = (current + 1) % nbvars;
+        while (n != start && vars[n].isInstantiated()) {
+            n = (n + 1) % nbvars;
+        }
+        if (vars[n].isInstantiated()) return null;
+        current = n;
+        return vars[n];
+    }
 }

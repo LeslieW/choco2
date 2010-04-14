@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * 
  *          _       _                            *
- *         |  �(..)  |                           *
+ *         |   (..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
  *                                               *
  *    Choco is a java library for constraint     *
@@ -25,7 +25,7 @@ package choco.kernel.solver.branch;
 /**
  * User : cprudhom
  * Mail : cprudhom(a)emn.fr
- * Date : 16 f�vr. 2010
+ * Date : 16 fevr. 2010
  * Since : Choco 2.1.1
  *
  * Extension for Constraint and Variable.

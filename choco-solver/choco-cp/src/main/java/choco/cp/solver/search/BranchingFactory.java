@@ -1,16 +1,6 @@
 package choco.cp.solver.search;
 
-import static choco.cp.solver.search.VarSelectorFactory.domDDegSel;
-import static choco.cp.solver.search.VarSelectorFactory.domDegSel;
-import static choco.cp.solver.search.VarSelectorFactory.domWDegSel;
-import static choco.cp.solver.search.integer.varselector.ratioselector.ratios.RatioFactory.createMaxPreservedRatio;
-import static choco.cp.solver.search.integer.varselector.ratioselector.ratios.RatioFactory.createMinPreservedRatio;
-import static choco.cp.solver.search.integer.varselector.ratioselector.ratios.RatioFactory.createPreservedWDegRatio;
-import static choco.cp.solver.search.integer.varselector.ratioselector.ratios.RatioFactory.createSlackWDegRatio;
-
-import java.util.Arrays;
-import java.util.Comparator;
-
+import static choco.cp.solver.search.VarSelectorFactory.*;
 import choco.cp.solver.search.integer.branching.AssignOrForbidIntVarVal;
 import choco.cp.solver.search.integer.branching.AssignOrForbidIntVarValPair;
 import choco.cp.solver.search.integer.branching.AssignVar;
@@ -23,20 +13,12 @@ import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
-import choco.cp.solver.search.integer.varselector.ratioselector.DomOverWDegSelector;
-import choco.cp.solver.search.integer.varselector.ratioselector.MaxRatioSelector;
-import choco.cp.solver.search.integer.varselector.ratioselector.MinRatioSelector;
-import choco.cp.solver.search.integer.varselector.ratioselector.RandDomOverWDegSelector;
-import choco.cp.solver.search.integer.varselector.ratioselector.RandMaxRatioSelector;
-import choco.cp.solver.search.integer.varselector.ratioselector.RandMinRatioSelector;
+import choco.cp.solver.search.integer.varselector.ratioselector.*;
+import static choco.cp.solver.search.integer.varselector.ratioselector.ratios.RatioFactory.*;
 import choco.cp.solver.search.integer.varselector.ratioselector.ratios.task.CompositePrecValSelector;
 import choco.cp.solver.search.integer.varselector.ratioselector.ratios.task.preserved.MaxPreservedRatio;
 import choco.cp.solver.search.integer.varselector.ratioselector.ratios.task.preserved.MinPreservedRatio;
-import choco.cp.solver.search.set.AssignSetVar;
-import choco.cp.solver.search.set.MinEnv;
-import choco.cp.solver.search.set.RandomSetValSelector;
-import choco.cp.solver.search.set.RandomSetVarSelector;
-import choco.cp.solver.search.set.StaticSetVarOrder;
+import choco.cp.solver.search.set.*;
 import choco.cp.solver.search.task.OrderingValSelector;
 import choco.cp.solver.search.task.SetTimes;
 import choco.cp.solver.search.task.ordering.CentroidOrdering;
@@ -51,6 +33,9 @@ import choco.kernel.solver.variables.scheduling.ITask;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 import choco.kernel.solver.variables.set.SetVar;
 
+import java.util.Arrays;
+import java.util.Comparator;
+
 public final class BranchingFactory {
 
 	private BranchingFactory() {
@@ -63,7 +48,7 @@ public final class BranchingFactory {
 		final int n = solver.getNbIntVars();
 		IntDomainVar[] vars = new IntDomainVar[n];
 		for (int i = 0; i < n; i++) {
-			vars[i] = (IntDomainVar) solver.getIntVar(i);
+			vars[i] = solver.getIntVar(i);
 		}
 		return vars;
 	}
@@ -94,6 +79,16 @@ public final class BranchingFactory {
 	}
 
 	public static AssignVar minDomMinVal(Solver s) {
+		return minDomMinVal(s, getIntVars(s));
+	}
+
+    //*************************************************************************//
+
+    public static AssignVar minDomIncDom(Solver s, IntDomainVar[] vars) {
+		return new AssignVar( new MinDomain(s, vars), new IncreasingDomain());
+	}
+
+	public static AssignVar minDomIncDom(Solver s) {
 		return minDomMinVal(s, getIntVars(s));
 	}
 
@@ -309,7 +304,7 @@ public final class BranchingFactory {
 	}
 
 	public static DomOverWDegBinBranchingNew incDomWDegBin(Solver solver, IntDomainVar[] vars, ValSelector valSel, long seed) {
-		return new DomOverWDegBinBranchingNew(solver, vars, valSel, Long.valueOf(seed));
+		return new DomOverWDegBinBranchingNew(solver, vars, valSel, seed);
 	}
 
 	//*************************************************************************//
@@ -327,7 +322,7 @@ public final class BranchingFactory {
 	}
 
 	public static DomOverWDegBranchingNew incDomWDeg(Solver solver, IntDomainVar[] vars, ValIterator valSel, long seed) {
-		return new DomOverWDegBranchingNew(solver, vars, valSel, Long.valueOf(seed));
+		return new DomOverWDegBranchingNew(solver, vars, valSel, seed);
 	}
 	//*************************************************************************//
 
@@ -340,7 +335,7 @@ public final class BranchingFactory {
 	}
 
 	public static TaskOverWDegBinBranching slackWDeg(Solver solver, IPrecedence[] precedences, OrderingValSelector valSel, long seed) {
-		return new TaskOverWDegBinBranching(solver, createSlackWDegRatio(precedences, true), valSel, Long.valueOf(seed));
+		return new TaskOverWDegBinBranching(solver, createSlackWDegRatio(precedences, true), valSel, seed);
 	}
 
 	//*************************************************************************//
@@ -354,7 +349,7 @@ public final class BranchingFactory {
 	}
 
 	public static TaskOverWDegBinBranching preservedWDeg(Solver solver, IPrecedence[] precedences, OrderingValSelector valSel, long seed) {
-		return new TaskOverWDegBinBranching(solver, createPreservedWDegRatio(precedences, true), valSel, Long.valueOf(seed));
+		return new TaskOverWDegBinBranching(solver, createPreservedWDegRatio(precedences, true), valSel, seed);
 	}
 
 	//*****************************************************************//

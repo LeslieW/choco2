@@ -78,7 +78,7 @@ public class DomOverWDeg extends DoubleHeuristicIntVarSelector implements Propag
     }
 
     public void initConstraintForBranching(SConstraint c) {
-        ((AbstractSConstraint) c).addExtension(ABSTRACTCONTRAINT_EXTENSION);
+        c.addExtension(ABSTRACTCONTRAINT_EXTENSION);
     }
 
     public double getHeuristic(IntDomainVar v) {

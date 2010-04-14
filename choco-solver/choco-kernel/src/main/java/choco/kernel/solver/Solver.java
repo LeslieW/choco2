@@ -329,9 +329,9 @@ public interface Solver extends IMeasures, IPretty {
      * @return number of integer variables
 	 */
 
-	public IntVar getIntVar(int i);
+	public IntDomainVar getIntVar(int i);
 	
-	IntVar quickGetIntVar(int i);
+	IntDomainVar quickGetIntVar(int i);
 
 	public int getIntVarIndex(IntVar c);
 

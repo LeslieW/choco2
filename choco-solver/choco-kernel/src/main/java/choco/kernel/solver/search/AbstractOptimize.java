@@ -118,9 +118,9 @@ public abstract class AbstractOptimize extends AbstractGlobalSearchStrategy {
 	@Override
 	public String partialRuntimeStatistics(boolean logOnSolution) {
 		if( logOnSolution) {
-			return "Objective: "+bounds.getObjectiveIntValue()+", "+super.partialRuntimeStatistics(logOnSolution);
-		}else {
-			return "Upper-bound: "+bounds.getBestObjectiveValue()+", "+super.partialRuntimeStatistics(logOnSolution);
+            return "Objective: "+bounds.getBestObjectiveValue()+", "+super.partialRuntimeStatistics(logOnSolution);
+        }else {
+            return "Upper-bound: "+bounds.getObjectiveIntValue()+", "+super.partialRuntimeStatistics(logOnSolution);
 		}
 		
 	}

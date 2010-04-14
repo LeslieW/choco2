@@ -23,16 +23,21 @@
 
 package choco.model.constraints.integer;
 
+import choco.Choco;
 import static choco.Choco.makeIntVar;
 import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.EqualXYC;
+import choco.cp.solver.constraints.integer.EqualXY_C;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.SConstraint;
 import org.junit.After;
+import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
@@ -115,4 +120,40 @@ public class EqualXYCTest{
     assertEquals(2, s.getVar(z).getVal());
   }
 
+    @Test
+    public void test2(){
+        IntegerVariable x = Choco.makeIntVar("x", 1,10);
+        IntegerVariable y = Choco.makeIntVar("y", 1,10);
+        int c = 5;
+
+        IntegerExpressionVariable e1 = Choco.plus(x, y);
+        Constraint cs = Choco.eq(e1,c);
+
+        CPModel model = new CPModel();
+        model.addConstraint(cs);
+
+        CPSolver solver = new CPSolver();
+        solver.read(model);
+
+        Assert.assertTrue("wrong", EqualXY_C.class.isInstance(solver.getCstr(cs)));
+    }
+
+    @Test
+    public void test3(){
+        IntegerVariable x = Choco.makeIntVar("x", 1,10);
+        IntegerVariable y = Choco.makeIntVar("y", 1,10);
+        int c = 5;
+
+        IntegerExpressionVariable e1 = Choco.plus(x,c);
+        Constraint cs = Choco.eq(e1,y);
+
+        CPModel model = new CPModel();
+        model.addConstraint(cs);
+
+        CPSolver solver = new CPSolver();
+        solver.read(model);
+
+        Assert.assertTrue("wrong", EqualXYC.class.isInstance(solver.getCstr(cs)));
+    }
 }
+
