@@ -56,6 +56,7 @@ public class IntDomainVarImpl <C extends AbstractSConstraint & IntPropagator> ex
      */
 	protected <C extends AbstractIntSConstraint & IntPropagator> IntDomainVarImpl(Solver solver, String name) {
 		super(solver, name, new PartiallyStoredIntCstrList<C>(solver.getEnvironment(), IntVarEvent.EVENTS));
+        this.event = new IntVarEvent(this);
 	}
 
 	/**
@@ -84,7 +85,6 @@ public class IntDomainVarImpl <C extends AbstractSConstraint & IntPropagator> ex
 		} else {
 			domain = new IntervalIntDomain(this, a, b, solver.getEnvironment(), propagationEngine);
 		}
-		this.event = new IntVarEvent(this);
 	}
 
 	public IntDomainVarImpl(Solver solver, String name, int domainType, int[] distinctSortedValues) {
@@ -99,7 +99,6 @@ public class IntDomainVarImpl <C extends AbstractSConstraint & IntPropagator> ex
 			} else {
 				domain = new BitSetIntDomain(this, distinctSortedValues, solver.getEnvironment(), propagationEngine);
 			}
-		this.event = new IntVarEvent<C>(this);
 	}
 
     public final DisposableIterator<Couple<C>> getActiveConstraints(int evtType, C cstrCause){
@@ -158,14 +157,14 @@ public class IntDomainVarImpl <C extends AbstractSConstraint & IntPropagator> ex
 	 * Sets the minimum value.
 	 */
 
-	public final void setInf(int x) throws ContradictionException {
+	public void setInf(int x) throws ContradictionException {
 		updateInf(x, null, true);
 	}
 
 	/**
 	 * @deprecated replaced by setInf
 	 */
-	public final void setMin(int x) throws ContradictionException {
+	public void setMin(int x) throws ContradictionException {
 		updateInf(x, null, true);
 	}
 
@@ -173,14 +172,14 @@ public class IntDomainVarImpl <C extends AbstractSConstraint & IntPropagator> ex
 	 * Sets the maximal value.
 	 */
 
-	public final void setSup(int x) throws ContradictionException {
+	public void setSup(int x) throws ContradictionException {
 		updateSup(x, null, true);
 	}
 
 	/**
 	 * @deprecated replaced by setSup
 	 */
-	public final void setMax(int x) throws ContradictionException {
+	public void setMax(int x) throws ContradictionException {
 		updateSup(x, null, true);
 	}
 
@@ -190,7 +189,7 @@ public class IntDomainVarImpl <C extends AbstractSConstraint & IntPropagator> ex
 	 * @throws choco.kernel.solver.ContradictionException
 	 */
 
-	public final void setVal(int x) throws ContradictionException {
+	public void setVal(int x) throws ContradictionException {
 		instantiate(x, null, true);
 	}
 
@@ -201,11 +200,11 @@ public class IntDomainVarImpl <C extends AbstractSConstraint & IntPropagator> ex
 	 * @throws choco.kernel.solver.ContradictionException
 	 */
 
-	public final void remVal(int x) throws ContradictionException {
+	public void remVal(int x) throws ContradictionException {
 		removeVal(x, null, true);
 	}
 
-	public final void wipeOut() throws ContradictionException {
+	public void wipeOut() throws ContradictionException {
 		propagationEngine.raiseContradiction(this);
 	}
 

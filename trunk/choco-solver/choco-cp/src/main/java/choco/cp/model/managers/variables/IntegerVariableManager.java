@@ -28,6 +28,7 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.reified.leaves.ConstantLeaf;
 import choco.cp.solver.constraints.reified.leaves.VariableLeaf;
 import choco.cp.solver.variables.integer.BooleanVarImpl;
+import choco.cp.solver.variables.integer.IntDomainCst;
 import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.kernel.model.Model;
 import choco.kernel.model.ModelException;
@@ -57,12 +58,7 @@ public final class IntegerVariableManager implements VariableManager<IntegerVari
 		int value = iv.getLowB();
         IntDomainVar v = (IntDomainVar)solver.getIntConstant(value);
         if(v == null){
-            if(iv.isBoolean()){
-                v = new BooleanVarImpl(solver, iv.getName());
-                v.getDomain().restrict(value);
-            }else{
-                v = new IntDomainVarImpl(solver, iv.getName(), IntDomainVar.BOUNDS, value, value);
-            }
+            v = new IntDomainCst(solver, iv.getName(), value);
             solver.addIntConstant(value, v);
         }
          return v;

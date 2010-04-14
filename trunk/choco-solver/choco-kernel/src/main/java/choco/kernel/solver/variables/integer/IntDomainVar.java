@@ -96,6 +96,8 @@ public interface IntDomainVar extends IntVar {
 	 */
 	public static int BOOLEAN = 5;
 
+    public static int ONE_VALUE = 6;
+
 	/**
 	 * <b>Public user API:</b>
 	 * 2007-12-07 FR_1873619 CPRU: DomOverDeg+DomOverWDeg
