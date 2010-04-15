@@ -38,6 +38,9 @@ Download CHOCO
 
    These archives should be used if you want to integrate your own class-path.
 
+* Stable versions
+
+    No recent stable releases are available. See {{{previous_files}previous files}}.
 
 * Snapshot versions
 
@@ -46,32 +49,13 @@ Download CHOCO
 
 ** jars
 
-*---+---*
-| <<Id>> |  <<Archive>> |
-*---*---*
-| <<<20100402>>> | |
-| | {{{http://sourceforge.net/projects/choco/files/choco/2.1.1/SNAPSHOT/20100402/}jars}}|
-*---*---*
-| | {{{http://sourceforge.net/projects/choco/files/choco/2.1.1/SNAPSHOT/20100402/md5}md5}}|
-*---*---*
-| | {{{http://sourceforge.net/projects/choco/files/choco/2.1.1/SNAPSHOT/20100402/sources}sources}}|
-*---*---*
-| <<<20100331>>> | |
-| | {{{http://sourceforge.net/projects/choco/files/choco/2.1.1/SNAPSHOT/20100331/}jars}}|
-*---*---*
-| | {{{http://sourceforge.net/projects/choco/files/choco/2.1.1/SNAPSHOT/20100331/md5}md5}}|
-*---*---*
-| | {{{http://sourceforge.net/projects/choco/files/choco/2.1.1/SNAPSHOT/20100331/sources}sources}}|
-*---*---*
+   All the previous snapshots are available on the {{{http://sourceforge.net/projects/choco/files/choco/2.1.1/} snapshot repository on Sourceforge}}.
 
+* {Previous files}
 
-   All the previous snapshots are available on the {{{mvn/repository/choco} snapshot repository}}.
+    You can download previsous files on {{{https://sourceforge.net/projects/choco/files/}Sourceforge}}.
 
-** Old files
-
-    You can download older files
-
-* Building from the sources on {{{https://sourceforge.net/projects/choco/files/}Sourceforge}}.
+* Building from the sources
 
    You can build <<<choco>>> from sources using the repository. See {{{choco-build.html} Build CHOCO}} page for more details.
 
