@@ -47,6 +47,7 @@ import java.util.Set;
 public class StoredDirectedMultiGraph {
 
     public AbstractIntSConstraint constraint;
+    
 
     int[] starts;
     public int[] offsets;
@@ -387,6 +388,8 @@ public class StoredDirectedMultiGraph {
         {
                 result -= pf.spft[sourceIndex][r];
         }
+        if (result < 0)
+             ;//   System.err.println("STR");
 
         return result;
 }
