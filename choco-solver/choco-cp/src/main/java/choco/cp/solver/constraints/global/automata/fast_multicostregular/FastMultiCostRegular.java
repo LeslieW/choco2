@@ -111,6 +111,7 @@ public double lastLpValue;
 
 
 
+
 /**
  * Decision variables
  */
@@ -180,6 +181,9 @@ protected final IStateIntVector toRemove;
 protected final TIntHashSet removed = new TIntHashSet();
 
 private final IEnvironment environment;
+
+public int lastVisitedWorld = -1;
+public long lastWorldStamp = -1;
 
 /**
  * Constructs a multi-cost-regular constraint propagator
@@ -737,8 +741,6 @@ public boolean isSatisfied(int[] word)
 {
         int first[] = new int[vs.length];
         System.arraycopy(word,0,first,0,first.length);
-        if (z[1].getName().contains("47"))
-                System.err.println("47");
         return check(first);
 }
 
@@ -948,6 +950,8 @@ public void awake() throws ContradictionException
 
 public void propagate() throws ContradictionException
 {
+        this.lastVisitedWorld = environment.getWorldIndex();
+        this.lastWorldStamp = environment.getWorldTimeStamp();
         this.delayedGraphUpdate();
         this.modifiedBound[0] = true;
         this.modifiedBound[1] = true;
@@ -959,6 +963,22 @@ public void propagate() throws ContradictionException
         assert(check());
         assert(isGraphConsistent());
 }
+
+public void rebuildCostRegInfo() throws ContradictionException
+{
+        this.lastVisitedWorld = environment.getWorldIndex();
+        this.lastWorldStamp = environment.getWorldTimeStamp();
+        this.graph.getPathFinder().computeShortestAndLongestPath(toRemove,z);
+
+}
+
+public final boolean needPropagation()
+{
+        int current = environment.getWorldIndex();
+        long currentstamp = environment.getWorldTimeStamp();
+        return (current < lastVisitedWorld || (current == lastVisitedWorld && currentstamp != lastWorldStamp));
+}
+
 
 public boolean isGraphConsistent()
 {
@@ -997,6 +1017,7 @@ public final StoredDirectedMultiGraph getGraph()
 
 public final int getRegret(int layer, int value, int... resources)
 {
+        //System.out.println("WORLD : " + this.environment.getWorldIndex());
         return this.graph.getRegret(layer,value,resources);
 }
 
