@@ -22,13 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.pack;
 
-import static choco.cp.solver.SettingType.DYNAMIC_LB;
-import gnu.trove.TIntArrayList;
-import gnu.trove.TIntProcedure;
-
-import java.util.Arrays;
-
 import choco.cp.solver.SettingType;
+import static choco.cp.solver.SettingType.DYNAMIC_LB;
 import choco.cp.solver.constraints.BitFlags;
 import choco.kernel.common.opres.nosum.NoSumList;
 import choco.kernel.common.opres.pack.LowerBoundFactory;
@@ -41,8 +36,10 @@ import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.set.AbstractLargeSetIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetVar;
+import gnu.trove.TIntArrayList;
+import gnu.trove.TIntProcedure;
 
-import com.sun.xml.internal.bind.v2.runtime.reflect.Lister.Pack;
+import java.util.Arrays;
 
 /**
  * <b>{@link Pack} which maintains a primal-dual packing model.</b><br>
