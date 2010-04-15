@@ -976,7 +976,7 @@ public final boolean needPropagation()
 {
         int current = environment.getWorldIndex();
         long currentstamp = environment.getWorldTimeStamp();
-        return (current < lastVisitedWorld || (current == lastVisitedWorld && currentstamp != lastWorldStamp));
+        return (current < lastVisitedWorld || (current >= lastVisitedWorld && currentstamp != lastWorldStamp+1));
 }
 
 
