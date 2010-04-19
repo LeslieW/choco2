@@ -75,4 +75,54 @@ public class TraceTest {
 
         OADymPPACTracer.close();
 	}
+
+    @Test
+	public void testQueen8(){
+		OADymPPACTracer.init();
+
+        int n = 8;
+        Model m = new CPModel();
+        IntegerVariable[] queens = Choco.makeIntVarArray("Q", n, 1, n);
+
+        // diagonal constraints
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                int k = j - i;
+                m.addConstraint(neq(queens[i], queens[j]));
+                m.addConstraint(neq(queens[i], plus(queens[j], k)));
+                m.addConstraint(neq(queens[i], minus(queens[j], k)));
+            }
+        }
+
+        Solver s = new CPSolver();
+        s.read(m);
+        s.solveAll();
+
+        OADymPPACTracer.close();
+	}
+
+    @Test
+	public void testQueen9(){
+		OADymPPACTracer.init();
+
+        int n = 9;
+        Model m = new CPModel();
+        IntegerVariable[] queens = Choco.makeIntVarArray("Q", n, 1, n);
+
+        // diagonal constraints
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                int k = j - i;
+                m.addConstraint(neq(queens[i], queens[j]));
+                m.addConstraint(neq(queens[i], plus(queens[j], k)));
+                m.addConstraint(neq(queens[i], minus(queens[j], k)));
+            }
+        }
+
+        Solver s = new CPSolver();
+        s.read(m);
+        s.solveAll();
+
+        OADymPPACTracer.close();
+	}
 }

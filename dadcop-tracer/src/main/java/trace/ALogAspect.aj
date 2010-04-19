@@ -236,7 +236,7 @@ public abstract aspect ALogAspect {
 		if(!ConstantSConstraint.class.isInstance(c)){		
 			c.constNumber = constNb++;
 			singleElementLn("<new-constraint " + eventAttributes(thisJoinPointStaticPart) +
-					" cident=\"c" + c.constNumber + "\" cexternal=\"" + c + "\" orig=\"user\"/>");
+					" cident=\"c" + c.constNumber + "\" cexternal=\"" + toXML(c.toString()) + "\" orig=\"user\"/>");
 		}
 	}
 	
@@ -491,5 +491,14 @@ public abstract aspect ALogAspect {
 	
 	protected abstract String solverName();
 	protected abstract int getCurrentDepth();
+
+    public String toXML(String toCheck){
+        String tmp = toCheck.replace("&", "&amp;");
+        tmp = toCheck.replace("<", "&lt;");
+        tmp  = tmp.replace(">", "&gt;");
+        tmp  = tmp.replace("\"", "&quot;");
+        tmp  = tmp.replace("'", "&apos;");
+        return tmp;
+    }
 
 }

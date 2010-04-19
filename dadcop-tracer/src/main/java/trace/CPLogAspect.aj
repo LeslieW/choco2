@@ -122,7 +122,7 @@ public aspect CPLogAspect extends ALogAspect{
 					previousDomain[1] + "\"/>");
 		}
 		elementClosing("</delta>");
-		singleElementLn("<update vident=\"v" + var.varNumber + "\" typees=\"empty\"/>");
+		singleElementLn("<update vident=\"v" + var.varNumber + "\" types=\"empty\"/>");
 		elementClosing("</reduce>");
 		singleElementLn("<failure " + eventAttributes(thisJoinPointStaticPart) + "/>");
 	}
@@ -231,7 +231,7 @@ public aspect CPLogAspect extends ALogAspect{
 		}
 		elementClosing("</delta>");
 		singleElementLn("<update vident=\"v" + var.varNumber + 
-				"\" typees=\"" + (bound == 0?"min":"max") + "\"/>");
+				"\" types=\"" + (bound == 0?"min":"max") + "\"/>");
 		elementClosing("</reduce>");
 	}
 	
