@@ -25,7 +25,7 @@ package choco.model.constraints.integer;
 
 import static choco.Choco.eq;
 import static choco.Choco.makeIntVar;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
@@ -60,7 +60,7 @@ public class EqualXCTest {
         s = new CPSolver();
     x = makeIntVar("X", 1, 5);
     y = makeIntVar("Y", 1, 5);
-    m.addVariables(CPOptions.V_BOUND, x, y);
+    m.addVariables(Options.V_BOUND, x, y);
     c1 = eq(x, 1);
     c2 = eq(y, 2);
     c3 = eq(y, 3);

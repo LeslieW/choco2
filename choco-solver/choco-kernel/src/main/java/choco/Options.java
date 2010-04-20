@@ -1,7 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * 
- *          _       _                            *
- *         |  �(..)  |                           *
- *         |_  J||L _|        CHOCO solver       *
+ *          _      _                             *
+ *         |  (..)  |                            *
+ *         |_ J||L _|         CHOCO solver       *
  *                                               *
  *    Choco is a java library for constraint     *
  *    satisfaction problems (CSP), constraint    *
@@ -20,7 +20,7 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2010      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp;
+package choco;
 
 /**
  * User : cprudhom<br/>
@@ -32,7 +32,7 @@ package choco.cp;
  * Available for module choco-cp only.
  *
  */
-public class CPOptions {
+public class Options {
 
     public static final String NO_OPTION = "";
 
@@ -297,5 +297,67 @@ public class CPOptions {
      * <br/><b>Scope</b> : {@link choco.kernel.solver.Solver}.
      */
     public static final String S_MULTIPLE_READINGS = "cp:multiple_readings";
-    
+
+    /**
+     * <br/><b>Goal</b>: Search for all solutions of a problem.
+     * <br/><b>Scope</b> : {@link choco.kernel.solver.Solver}.
+     */
+    public static final String S_SOLVE_ALL = "cp:solve:all";
+
+    /**
+     * <br/><b>Goal</b>: Search for the first solution of a problem.
+     * <br/><b>Scope</b> : {@link choco.kernel.solver.Solver}.
+     */
+    public static final String S_SOLVE_FIRST = "cp:solve:first";
+
+    /**
+     * <br/><b>Goal</b>: Search for a maximization of an declared objective variable.
+     * <br/><b>Scope</b> : {@link choco.kernel.solver.Solver}.
+     */
+    public static final String S_OPT_MAXIMIZE = "cp:optimize:max";
+
+    /**
+     * <br/><b>Goal</b>: Search for a minimization of an declared objective variable.
+     * <br/><b>Scope</b> : {@link choco.kernel.solver.Solver}.
+     */
+    public static final String S_OPT_MINIMIZE = "cp:optimize:min";
+
+    /**
+     * <br/><b>Goal</b>: For optimization, do restart from root node after each solution.
+     * <br/><b>Scope</b> : {@link choco.kernel.solver.Solver}.
+     */
+    public static final String S_RESTART_AFTER_SOLUTION = "cp:restart:solution";
+
+    /**
+     * <br/><b>Goal</b>: To enable luby restart.
+     * <br/><b>Scope</b> : {@link choco.kernel.solver.Solver}.
+     */
+    public static final String S_RESTART_LUBY = "cp:restart:luby";
+
+    /**
+     * <br/><b>Goal</b>: To enable geometrical restart.
+     * <br/><b>Scope</b> : {@link choco.kernel.solver.Solver}.
+     */
+    public static final String S_RESTART_GEOMETRICAL = "cp:restart:geo";
+
+    /**
+     * <br/><b>Goal</b>: Enable nogood recording from restart.
+     * <br/><b>Scope</b> : {@link choco.kernel.solver.Solver}.
+     */
+    public static final String S_NOGOOD_RECORDING_FROM_RESTART = "cp:nogood:restart";
+
+    /**
+     * <br/><b>Goal</b>: Allow recomputation : worlds are not saved at each node, but every <i>gap</i> nodes.
+     * Between two unsaved worlds, branching statements are applied and propagated.
+     * <br/> By default, <i>gap</i>=10.
+     * <br/><b>Scope</b> : {@link choco.kernel.solver.Solver}.
+     */
+    public static final String S_RECOMPUTION = "cp:recomputation";
+
+    /**
+     * <br/><b>Goal</b>: Enable card reasonning: decide if redundant constraints are automatically added
+     * to the model to reason on cardinalities on sets as well as kernel and enveloppe.
+     * <br/><b>Scope</b> : {@link choco.kernel.solver.Solver}.
+     */
+    public static final String S_CARD_REASONNING = "cp:card:reasonning";
 }

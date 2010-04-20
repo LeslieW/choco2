@@ -23,7 +23,7 @@
 package samples.multicostregular.carsequencing;
 
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
@@ -78,8 +78,8 @@ public class CarSeqModel extends CPModel {
             z[i] = makeIntVar("nb",nb,nb);
         }
 
-        this.addVariables(CPOptions.V_ENUM,vs);
-        this.addVariables(CPOptions.V_BOUND,z);
+        this.addVariables(Options.V_ENUM,vs);
+        this.addVariables(Options.V_BOUND,z);
 
 
 

@@ -22,15 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.pack;
 
-import static choco.Choco.geq;
-import static choco.Choco.leq;
-import static choco.Choco.pack;
-import gnu.trove.TIntArrayList;
-
-import java.util.Arrays;
-import java.util.logging.Logger;
-
-import choco.cp.CPOptions;
+import static choco.Choco.*;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.SettingType;
@@ -49,6 +42,10 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.search.integer.ValSelector;
+import gnu.trove.TIntArrayList;
+
+import java.util.Arrays;
+import java.util.logging.Logger;
 
 /**
  * @author Arnaud Malapert</br>
@@ -154,7 +151,7 @@ public class CPpack {
 
 	protected void setObjective() {
 		IntegerVariable o = modeler.nbNonEmpty;
-		o.addOption(CPOptions.V_OBJECTIVE);
+		o.addOption(Options.V_OBJECTIVE);
 		model.addConstraints(
 				geq(o,ilb),
 				leq(o,iub-1)

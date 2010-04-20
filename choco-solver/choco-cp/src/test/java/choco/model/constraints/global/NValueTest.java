@@ -23,7 +23,7 @@
 package choco.model.constraints.global;
 
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
@@ -76,8 +76,8 @@ public class NValueTest {
             int n = 5;
             IntegerVariable[] vars = makeIntVarArray("v", n, 1, 3);
             IntegerVariable v = makeIntVar("nvalue", 2, 2);
-            pb.addVariables(CPOptions.V_BOUND, vars);
-            pb.addVariable(CPOptions.V_BOUND, v);
+            pb.addVariables(Options.V_BOUND, vars);
+            pb.addVariable(Options.V_BOUND, v);
             pb.addConstraint(atMostNValue(vars, v));
             CPSolver s = new CPSolver();
             s.read(pb);
@@ -106,7 +106,7 @@ public class NValueTest {
         //sont ainsi designees par les valeurs, et les cases par les variables)
         for (int i = 0; i < vars.length; i++) {
             vars[i] = makeIntVar("v", 1, n * n);
-            pb.addVariable(CPOptions.V_LINK, vars[i]);
+            pb.addVariable(Options.V_LINK, vars[i]);
         }
         IntegerVariable v = makeIntVar("nvalue", val, val);
         pb.addVariables(vars);

@@ -1,1 +1,1 @@
-        IntegerVariable vNoDec = Choco.makeIntVar("vNoDec", 1, 3, CPOptions.V_NO_DECISION);
+        IntegerVariable vNoDec = Choco.makeIntVar("vNoDec", 1, 3, Options.V_NO_DECISION);

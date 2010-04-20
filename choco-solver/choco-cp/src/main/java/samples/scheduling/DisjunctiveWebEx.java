@@ -23,7 +23,7 @@
 package samples.scheduling;
 
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.util.tools.StringUtils;
@@ -50,7 +50,7 @@ public class DisjunctiveWebEx extends PatternExample {
 	
 	protected TaskVariable[] tasks;
 	
-	protected final static IntegerVariable OBJ = makeIntVar("obj", 0, N, CPOptions.V_BOUND, CPOptions.V_OBJECTIVE);
+	protected final static IntegerVariable OBJ = makeIntVar("obj", 0, N, Options.V_BOUND, Options.V_OBJECTIVE);
 
 	protected boolean useAlternativeResource;
 	

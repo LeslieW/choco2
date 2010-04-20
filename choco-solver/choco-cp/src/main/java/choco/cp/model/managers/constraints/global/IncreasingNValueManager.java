@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.global;
 
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.constraints.global.IncreasingNValue;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -43,10 +43,10 @@ public final class IncreasingNValueManager extends IntConstraintManager {
     public SConstraint makeConstraint(Solver solver, IntegerVariable[] integerVariables, Object parameters, Set<String> options) {
         IntDomainVar[] vars = new IntDomainVar[integerVariables.length-1];
         System.arraycopy(solver.getVar(integerVariables),1,vars,0,integerVariables.length-1);
-        if(options.contains(CPOptions.C_INCREASING_NVALUE_ATLEAST)){
+        if(options.contains(Options.C_INCREASING_NVALUE_ATLEAST)){
             return new IncreasingNValue(solver.getVar(integerVariables[0]),vars, IncreasingNValue.Mode.ATLEAST);
         }
-        if(options.contains(CPOptions.C_INCREASING_NVALUE_ATMOST)){
+        if(options.contains(Options.C_INCREASING_NVALUE_ATMOST)){
             return new IncreasingNValue(solver.getVar(integerVariables[0]),vars, IncreasingNValue.Mode.ATMOST);
         }   
         return new IncreasingNValue(solver.getVar(integerVariables[0]),vars, IncreasingNValue.Mode.BOTH);

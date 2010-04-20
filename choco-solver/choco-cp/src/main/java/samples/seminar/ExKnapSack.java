@@ -23,7 +23,7 @@
 package samples.seminar;
 
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valiterator.DecreasingDomain;
@@ -58,7 +58,7 @@ public class ExKnapSack {
         obj2 = makeIntVar("obj2", 0, 7);
         obj3 = makeIntVar("obj3", 0, 10);
         c = makeIntVar("cost", 1, 1000000);
-        m.addVariable(CPOptions.V_BOUND, c);
+        m.addVariable(Options.V_BOUND, c);
 
         int capacity = 34;
 

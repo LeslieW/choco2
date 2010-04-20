@@ -24,7 +24,7 @@ package choco.model.constraints.integer;
 
 import choco.Choco;
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
@@ -101,7 +101,7 @@ public class MinTest{
             IntegerVariable x = makeIntVar("x", 1, 5);
             IntegerVariable y = makeIntVar("y", 1, 5);
             IntegerVariable z = makeIntVar("z", 1, 5);
-            m.addVariables(CPOptions.V_BOUND, x, y, z);
+            m.addVariables(Options.V_BOUND, x, y, z);
             IntegerVariable w = makeIntVar("w", 1, 5);
             m.addConstraint(min(new IntegerVariable[]{x, y, z},w));
             s.read(m);

@@ -24,7 +24,7 @@ package samples.documentation;
 
 import choco.Choco;
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.SettingType;
@@ -67,8 +67,8 @@ public class Code4Doc2 {
     public void cabs() {
         //totex cabs
         Model m = new CPModel();
-        IntegerVariable x = makeIntVar("x", 1, 5, CPOptions.V_ENUM);
-        IntegerVariable y = makeIntVar("y", -5, 5, CPOptions.V_ENUM);
+        IntegerVariable x = makeIntVar("x", 1, 5, Options.V_ENUM);
+        IntegerVariable y = makeIntVar("y", -5, 5, Options.V_ENUM);
         m.addConstraint(abs(x, y));
         Solver s = new CPSolver();
         s.read(m);
@@ -93,8 +93,8 @@ public class Code4Doc2 {
             m.addConstraint(eq(diag1[i], plus(queens[i], i)));
             m.addConstraint(eq(diag2[i], minus(queens[i], i)));
         }
-        m.addConstraint(CPOptions.C_ALLDIFFERENT_CLIQUE, allDifferent(diag1));
-        m.addConstraint(CPOptions.C_ALLDIFFERENT_CLIQUE, allDifferent(diag2));
+        m.addConstraint(Options.C_ALLDIFFERENT_CLIQUE, allDifferent(diag1));
+        m.addConstraint(Options.C_ALLDIFFERENT_CLIQUE, allDifferent(diag2));
         // diagonal constraints
         CPSolver s = new CPSolver();
         s.read(m);
@@ -109,7 +109,7 @@ public class Code4Doc2 {
         //totex camong1
         Model m = new CPModel();
         Solver s = new CPSolver();
-        IntegerVariable var = makeIntVar("v1", 0, 100, CPOptions.V_BOUND);
+        IntegerVariable var = makeIntVar("v1", 0, 100, Options.V_BOUND);
         int[] values = new int[]{0, 25, 50, 75, 100};
         m.addConstraint(among(var, values));
         s.read(m);
@@ -216,8 +216,8 @@ public class Code4Doc2 {
     public void ccostregular(){
         ////totex ccostregular
         int n = 10;
-        IntegerVariable[] vars = makeIntVarArray("x",n,0,2,CPOptions.V_ENUM);
-        IntegerVariable z = makeIntVar("z",3,4, CPOptions.V_BOUND);
+        IntegerVariable[] vars = makeIntVarArray("x",n,0,2, Options.V_ENUM);
+        IntegerVariable z = makeIntVar("z",3,4, Options.V_BOUND);
 
         FiniteAutomaton auto = new FiniteAutomaton();
         int start = auto.addState();
@@ -257,8 +257,8 @@ public class Code4Doc2 {
         int[] durations_data = new int[]{1, 1, 1, 2, 1, 3, 1, 1, 3, 4, 2, 3, 1, 1};
         // variables
         IntegerVariable capa = constant(7);
-        IntegerVariable[] starts = makeIntVarArray("start", n, 0, 5, CPOptions.V_BOUND);
-        IntegerVariable[] ends = makeIntVarArray("end", n, 0, 6, CPOptions.V_BOUND);
+        IntegerVariable[] starts = makeIntVarArray("start", n, 0, 5, Options.V_BOUND);
+        IntegerVariable[] ends = makeIntVarArray("end", n, 0, 6, Options.V_BOUND);
         IntegerVariable[] duration = new IntegerVariable[n];
         IntegerVariable[] height = new IntegerVariable[n];
         for (int i = 0; i < height.length; i++) {
@@ -268,7 +268,7 @@ public class Code4Doc2 {
         TaskVariable[] tasks = Choco.makeTaskVarArray("Task", starts, ends, duration);
 
         IntegerVariable[] bool = makeIntVarArray("taskIn?", n, 0, 1);
-        IntegerVariable obj = makeIntVar("obj", 0, n, CPOptions.V_BOUND, CPOptions.V_OBJECTIVE);
+        IntegerVariable obj = makeIntVar("obj", 0, n, Options.V_BOUND, Options.V_OBJECTIVE);
         //post the cumulative
         m.addConstraint(cumulative("cumulative", tasks, height, constant(0), capa,
                 SettingType.TASK_INTERVAL.getOptionName()));
@@ -361,7 +361,7 @@ public class Code4Doc2 {
         //totex cdisjoint1
         Model m = new CPModel();
         Solver s = new CPSolver();
-        IntegerVariable var = makeIntVar("v1", 0, 100, CPOptions.V_BOUND);
+        IntegerVariable var = makeIntVar("v1", 0, 100, Options.V_BOUND);
         int[] values = new int[]{10,20,30,40,50,60,70,80,90};
         m.addConstraint(disjoint(var, values));
         s.read(m);
@@ -437,7 +437,7 @@ public class Code4Doc2 {
         CPModel m = new CPModel();
         CPSolver s = new CPSolver();
         int n = 10;
-        IntegerVariable[] bvars = makeIntVarArray("b", n, 0, 10, CPOptions.V_ENUM);
+        IntegerVariable[] bvars = makeIntVarArray("b", n, 0, 10, Options.V_ENUM);
         int[] coefs = new int[n];
 
         int charge = 10;
@@ -464,7 +464,7 @@ public class Code4Doc2 {
         couples2.add(new int[]{4, 1});
         IntegerVariable v1 = makeIntVar("v1", 1, 4);
         IntegerVariable v2 = makeIntVar("v2", 1, 4);
-        m.addConstraint(feasPairAC(CPOptions.C_EXT_AC32, v1, v2, couples2));
+        m.addConstraint(feasPairAC(Options.C_EXT_AC32, v1, v2, couples2));
         s.read(m);
         s.solveAll();
         //totex
@@ -479,7 +479,7 @@ public class Code4Doc2 {
         ArrayList<int[]> feasTuple = new ArrayList<int[]>();
         feasTuple.add(new int[]{1, 1}); // x*y = 1
         feasTuple.add(new int[]{2, 4}); // x*y = 1
-        m.addConstraint(feasTupleAC(CPOptions.C_EXT_AC2001, feasTuple, v1, v2));
+        m.addConstraint(feasTupleAC(Options.C_EXT_AC2001, feasTuple, v1, v2));
         s.read(m);
         s.solve();
         //totex

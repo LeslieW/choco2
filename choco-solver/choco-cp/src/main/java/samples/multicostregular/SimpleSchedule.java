@@ -23,7 +23,7 @@
 package samples.multicostregular;
 
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
@@ -84,12 +84,12 @@ public class SimpleSchedule extends CPModel
      */
     private void makeVariables()
     {
-        this.sequence = makeIntVarArray("x",14,0,2,CPOptions.V_ENUM);
+        this.sequence = makeIntVarArray("x",14,0,2, Options.V_ENUM);
         this.bounds =  new IntegerVariable[4];
-        this.bounds[0] = makeIntVar("z_0",30,80, CPOptions.V_BOUND);
-        this.bounds[1] = makeIntVar("day",0,7,CPOptions.V_BOUND);
-        this.bounds[2] = makeIntVar("night",3,7,CPOptions.V_BOUND);
-        this.bounds[3] = makeIntVar("rest",7,9,CPOptions.V_BOUND);
+        this.bounds[0] = makeIntVar("z_0",30,80, Options.V_BOUND);
+        this.bounds[1] = makeIntVar("day",0,7, Options.V_BOUND);
+        this.bounds[2] = makeIntVar("night",3,7, Options.V_BOUND);
+        this.bounds[3] = makeIntVar("rest",7,9, Options.V_BOUND);
 
     }
 

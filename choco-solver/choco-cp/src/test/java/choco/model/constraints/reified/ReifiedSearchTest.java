@@ -24,7 +24,7 @@ package choco.model.constraints.reified;
 
 import choco.Choco;
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
@@ -85,7 +85,7 @@ public class ReifiedSearchTest {
 			IntegerVariable x = makeIntVar("x", 1, 10);
 			IntegerVariable y = makeIntVar("y", 1, 10);
 			IntegerVariable z = makeIntVar("z", 1, 10);
-			m.addVariables(CPOptions.V_BOUND, x, y, z);
+			m.addVariables(Options.V_BOUND, x, y, z);
 
 			m.addConstraint(or(eq(mult((x), (y)), (z)),
 					eq(mult((z), (y)), (x))));
@@ -115,7 +115,7 @@ public class ReifiedSearchTest {
 			IntegerVariable x = makeIntVar("x", -10, 10);
 			IntegerVariable y = makeIntVar("y", -10, 10);
 			IntegerVariable z = makeIntVar("z", -10, 10);
-			m.addVariables(CPOptions.V_BOUND,x ,y, z);
+			m.addVariables(Options.V_BOUND,x ,y, z);
 
 			m.addConstraint(or(eq(mult(abs(minus((x),(3))), (y)), (z)),
 					eq(mult((z), (y)), abs((x)))));
@@ -143,7 +143,7 @@ public class ReifiedSearchTest {
 		IntegerVariable x = makeIntVar("x", 1, 3);
 		IntegerVariable y = makeIntVar("y", 1, 3);
 		IntegerVariable z = makeIntVar("z", 1, 3);
-		m.addVariables(CPOptions.V_BOUND,x ,y, z);
+		m.addVariables(Options.V_BOUND,x ,y, z);
 
 		m.addConstraint(or(lt(x, y), lt(y, x)));
 		m.addConstraint(or(lt(y, z), lt(z, y)));
@@ -161,7 +161,7 @@ public class ReifiedSearchTest {
 		IntegerVariable x = makeIntVar("x", 1, 3);
 		IntegerVariable y = makeIntVar("y", 1, 3);
 		IntegerVariable z = makeIntVar("z", 1, 3);
-		m.addVariables(CPOptions.V_BOUND,x ,y, z);
+		m.addVariables(Options.V_BOUND,x ,y, z);
 		Constraint e1 = or(lt((x), (y)), lt((y), (x)));
 		//e1.setDecomposeExp(true);
 		Constraint e2 = or(lt((y), (z)), lt((z), (y)));
@@ -335,7 +335,7 @@ public class ReifiedSearchTest {
 			IntegerVariable x = makeIntVar("x", 1, 3);
 			IntegerVariable y = makeIntVar("y", 1, 3);
 			IntegerVariable z = makeIntVar("z", 1, 3);
-			m.addVariables(CPOptions.V_BOUND,x ,y, z);
+			m.addVariables(Options.V_BOUND,x ,y, z);
 
 			m.addConstraint(ifOnlyIf(lt((x), (y)), lt((y), (z))));
 			s.read(m);
@@ -357,7 +357,7 @@ public class ReifiedSearchTest {
 			IntegerVariable x = makeIntVar("x", 1, 3);
 			IntegerVariable y = makeIntVar("y", 1, 3);
 			IntegerVariable z = makeIntVar("z", 1, 3);
-			m.addVariables(CPOptions.V_BOUND,x ,y, z);
+			m.addVariables(Options.V_BOUND,x ,y, z);
 
 			Constraint e1 = ifOnlyIf(lt((x), (y)), lt((y), (z)));
 			//1.setDecomposeExp(true);
@@ -380,7 +380,7 @@ public class ReifiedSearchTest {
 		IntegerVariable x = makeIntVar("x", 1, 2);
 		IntegerVariable y = makeIntVar("y", 1, 2);
 		IntegerVariable z = makeIntVar("z", 1, 2);
-		m.addVariables(CPOptions.V_BOUND,x ,y, z);
+		m.addVariables(Options.V_BOUND,x ,y, z);
 
 		m.addConstraint(implies(leq((x), (y)), leq((x), (z))));
 		s.read(m);
@@ -396,7 +396,7 @@ public class ReifiedSearchTest {
 		IntegerVariable x = makeIntVar("x", 1, 2);
 		IntegerVariable y = makeIntVar("y", 1, 2);
 		IntegerVariable z = makeIntVar("z", 1, 2);
-		m.addVariables(CPOptions.V_BOUND,x ,y, z);
+		m.addVariables(Options.V_BOUND,x ,y, z);
 
 		Constraint e1 = implies(leq((x), (y)), leq((x), (z)));
 		//e1.setDecomposeExp(true);
@@ -416,7 +416,7 @@ public class ReifiedSearchTest {
 		IntegerVariable x = makeIntVar("x", 1, 3);
 		IntegerVariable y = makeIntVar("y", 1, 3);
 		IntegerVariable z = makeIntVar("z", 1, 3);
-		m.addVariables(CPOptions.V_BOUND,x ,y, z);
+		m.addVariables(Options.V_BOUND,x ,y, z);
 
 		m.addConstraint(implies(lt((x), (2)), and(lt((x), (y)), lt((y), (z)))));
 		s.read(m);
@@ -430,7 +430,7 @@ public class ReifiedSearchTest {
 		IntegerVariable x = makeIntVar("x", 1, 3);
 		IntegerVariable y = makeIntVar("y", 1, 3);
 		IntegerVariable z = makeIntVar("z", 1, 3);
-		m.addVariables(CPOptions.V_BOUND,x ,y, z);
+		m.addVariables(Options.V_BOUND,x ,y, z);
 
 		Constraint e1 = implies(lt((x), (2)), and(lt((x), (y)), lt((y), (z))));
 		//e1.setDecomposeExp(true);
@@ -448,7 +448,7 @@ public class ReifiedSearchTest {
 		IntegerVariable x = makeIntVar("x", 1, 2);
 		IntegerVariable y = makeIntVar("y", 1, 2);
 		IntegerVariable z = makeIntVar("z", 1, 2);
-		m.addVariables(CPOptions.V_BOUND,x ,y, z);
+		m.addVariables(Options.V_BOUND,x ,y, z);
 
 		m.addConstraint(or(lt((x), (y)), lt((x), (z)), lt((y), (z))));
 		s.read(m);
@@ -470,7 +470,7 @@ public class ReifiedSearchTest {
 		IntegerVariable x = makeIntVar("x", 1, 2);
 		IntegerVariable y = makeIntVar("y", 1, 2);
 		IntegerVariable z = makeIntVar("z", 1, 2);
-		m.addVariables(CPOptions.V_BOUND,x ,y, z);
+		m.addVariables(Options.V_BOUND,x ,y, z);
 
 		Constraint e1 = or(lt((x), (y)), lt((x), (z)), lt((y), (z)));
 		//e1.setDecomposeExp(true);
@@ -600,7 +600,7 @@ public class ReifiedSearchTest {
 			IntegerVariable x = makeIntVar("x", 1, 2);
 			IntegerVariable y = makeIntVar("y", 5, 5);
 			IntegerVariable z = makeIntVar("z", 1, 2);
-			m.addVariables(CPOptions.V_BOUND,x ,y, z);
+			m.addVariables(Options.V_BOUND,x ,y, z);
 
 			m.addConstraint(and(
 					and(leq((x), (y)), leq((x), (z))),
@@ -627,7 +627,7 @@ public class ReifiedSearchTest {
 			IntegerVariable x = makeIntVar("x", 1, 2);
 			IntegerVariable y = makeIntVar("y", 5, 5);
 			IntegerVariable z = makeIntVar("z", 1, 2);
-			m.addVariables(CPOptions.V_BOUND,x ,y, z);
+			m.addVariables(Options.V_BOUND,x ,y, z);
 
 			Constraint e1 = and(
 					and(leq((x), (y)), leq((x), (z))),
@@ -659,7 +659,7 @@ public class ReifiedSearchTest {
 			IntegerVariable x = makeIntVar("x", 1, 1);
 			IntegerVariable y = makeIntVar("y", 1, 1);
 			IntegerVariable z = makeIntVar("z", 1, 2);
-			m.addVariables(CPOptions.V_BOUND,x ,y, z);
+			m.addVariables(Options.V_BOUND,x ,y, z);
 
 			m.addConstraint(and(
 					leq((y), (z)),
@@ -684,7 +684,7 @@ public class ReifiedSearchTest {
 			IntegerVariable x = makeIntVar("x", 1, 1);
 			IntegerVariable y = makeIntVar("y", 1, 1);
 			IntegerVariable z = makeIntVar("z", 1, 2);
-			m.addVariables(CPOptions.V_BOUND,x ,y, z);
+			m.addVariables(Options.V_BOUND,x ,y, z);
 
 			Constraint e1 = and(
 					leq((y), (z)),
@@ -714,7 +714,7 @@ public class ReifiedSearchTest {
 			IntegerVariable x = makeIntVar("x", 1, 3);
 			IntegerVariable y = makeIntVar("y", 1, 3);
 			IntegerVariable z = makeIntVar("z", 1, 3);
-			m.addVariables(CPOptions.V_BOUND,x ,y, z);
+			m.addVariables(Options.V_BOUND,x ,y, z);
 
 			IntegerVariable[] vars = new IntegerVariable[]{x, y, z};
 
@@ -754,7 +754,7 @@ public class ReifiedSearchTest {
 			IntegerVariable x = makeIntVar("x", 1, 3);
 			IntegerVariable y = makeIntVar("y", 1, 3);
 			IntegerVariable z = makeIntVar("z", 1, 3);
-			m.addVariables(CPOptions.V_BOUND,x ,y, z);
+			m.addVariables(Options.V_BOUND,x ,y, z);
 
 			m.addConstraint(and(
 					and(
@@ -784,7 +784,7 @@ public class ReifiedSearchTest {
 			IntegerVariable x = makeIntVar("x", 1, 3);
 			IntegerVariable y = makeIntVar("y", 1, 3);
 			IntegerVariable z = makeIntVar("z", 1, 3);
-			m.addVariables(CPOptions.V_BOUND,x ,y, z);
+			m.addVariables(Options.V_BOUND,x ,y, z);
 
 			Constraint e1 = and(
 					and(
@@ -817,7 +817,7 @@ public class ReifiedSearchTest {
 			IntegerVariable x = makeIntVar("x", 1, 3);
 			IntegerVariable y = makeIntVar("y", 1, 3);
 			IntegerVariable z = makeIntVar("z", 1, 3);
-			m.addVariables(CPOptions.V_BOUND,x ,y, z);
+			m.addVariables(Options.V_BOUND,x ,y, z);
 
 			IntegerVariable[] vars = new IntegerVariable[]{x, y, z};
 
@@ -859,7 +859,7 @@ public class ReifiedSearchTest {
 			IntegerVariable y = makeIntVar("y", 1, 3);
 			IntegerVariable z = makeIntVar("z", 0, 1);
 			IntegerVariable w = makeIntVar("w", 0, 1);
-			m.addVariables(CPOptions.V_BOUND,x ,y, z);
+			m.addVariables(Options.V_BOUND,x ,y, z);
 
 			Constraint c = implies(and(eq((z), (1)), eq((w), (1))), leq((x), (y)));
 			m.addConstraint(c);
@@ -902,7 +902,7 @@ public class ReifiedSearchTest {
 			IntegerVariable y = makeIntVar("y", 1, 3);
 			IntegerVariable z = makeIntVar("z", 0, 1);
 			IntegerVariable w = makeIntVar("w", 0, 1);
-			m.addVariables(CPOptions.V_BOUND, w, x ,y, z);
+			m.addVariables(Options.V_BOUND, w, x ,y, z);
 
 			Constraint e1 = implies(and(eq((z), (1)), eq((w), (1))), leq((x), (y)));
 			//e1.setDecomposeExp(true);
@@ -1029,8 +1029,8 @@ public class ReifiedSearchTest {
 		for (int seed = 0; seed < 100; seed++) {
 			CPModel m = new CPModel();
 			m.setDefaultExpressionDecomposition(true);
-			IntegerVariable x = makeIntVar("x", 0, 2, CPOptions.V_BOUND);
-			IntegerVariable y = makeIntVar("y", 0, 2, CPOptions.V_BOUND);
+			IntegerVariable x = makeIntVar("x", 0, 2, Options.V_BOUND);
+			IntegerVariable y = makeIntVar("y", 0, 2, Options.V_BOUND);
 			m.addConstraint(ifThenElse(gt(x, 0), eq(y, 0), Choco.TRUE));
 			CPSolver s = new CPSolver();
 			s.read(m);

@@ -1,2 +1,2 @@
-        model.addVariable(CPOptions.V_OBJECTIVE, var4);
-        model.addVariables(CPOptions.V_NO_DECISION, var5, var6);
+        model.addVariable(Options.V_OBJECTIVE, var4);
+        model.addVariables(Options.V_NO_DECISION, var5, var6);

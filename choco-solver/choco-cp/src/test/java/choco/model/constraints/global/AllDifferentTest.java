@@ -24,7 +24,7 @@ package choco.model.constraints.global;
 
 import choco.Choco;
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
@@ -88,8 +88,8 @@ public class AllDifferentTest{
             m.addConstraint(eq(diag1[i], plus(queens[i], i)));
             m.addConstraint(eq(diag2[i], minus(queens[i], i)));
         }
-        m.addConstraint(CPOptions.C_ALLDIFFERENT_CLIQUE, allDifferent(diag1));
-        m.addConstraint(CPOptions.C_ALLDIFFERENT_CLIQUE, allDifferent(diag2));
+        m.addConstraint(Options.C_ALLDIFFERENT_CLIQUE, allDifferent(diag1));
+        m.addConstraint(Options.C_ALLDIFFERENT_CLIQUE, allDifferent(diag2));
 
         // diagonal constraints
         CPSolver s = new CPSolver();
@@ -142,9 +142,9 @@ public class AllDifferentTest{
             diag1[i] = makeIntVar("D1" + i, 1, 2 * n);
             diag2[i] = makeIntVar("D2" + i, -n + 1, n);
         }
-        m.addVariables(CPOptions.V_BOUND, queens);
-        m.addVariables(CPOptions.V_BOUND, diag1);
-        m.addVariables(CPOptions.V_BOUND, diag2);
+        m.addVariables(Options.V_BOUND, queens);
+        m.addVariables(Options.V_BOUND, diag1);
+        m.addVariables(Options.V_BOUND, diag2);
 
         m.addConstraint(allDifferent(queens));
         for (int i = 0; i < n; i++) {
@@ -214,7 +214,7 @@ public class AllDifferentTest{
         IntegerVariable[] vars = new IntegerVariable[n * n];
         for (int i = 0; i < n; i++) {
 			for (int j = 0; j < n; j++) {
-                vars[i * n + j] = makeIntVar("C" + i + "_" + j, 1, n, CPOptions.V_BOUND);
+                vars[i * n + j] = makeIntVar("C" + i + "_" + j, 1, n, Options.V_BOUND);
             }
 		}
 

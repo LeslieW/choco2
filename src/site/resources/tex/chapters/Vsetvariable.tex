@@ -21,11 +21,11 @@
 %	\item \textbf{return type} : \texttt{SetVariable} \emph{or} \texttt{SetVariable[]}
 \subsubsection{options:}
 	\begin{itemize}
-		\item \emph{no option} : equivalent to option \hyperlink{venum:venumoptions}{\tt CPOptions.V\_ENUM}
-		\item \hyperlink{venum:venumoptions}{\tt CPOptions.V\_ENUM} : to force Solver to create \texttt{SetVariable} with enumerated domain for the caridinality variable.
-		\item \hyperlink{vbound:vboundoptions}{\tt CPOptions.V\_BOUND} : to force Solver to create \texttt{SetVariable} with bounded cardinality.
-		\item \hyperlink{vnodecision:vnodecisionoptions}{\tt CPOptions.V\_NO\_DECISION} : to force variable to be removed from the pool of decisional variables.
-		\item \hyperlink{vobjective:vobjectiveoptions}{\tt CPOptions.V\_OBJECTIVE} : to define the variable to be the one to optimize.
+		\item \emph{no option} : equivalent to option \hyperlink{venum:venumoptions}{\tt Options.V\_ENUM}
+		\item \hyperlink{venum:venumoptions}{\tt Options.V\_ENUM} : to force Solver to create \texttt{SetVariable} with enumerated domain for the caridinality variable.
+		\item \hyperlink{vbound:vboundoptions}{\tt Options.V\_BOUND} : to force Solver to create \texttt{SetVariable} with bounded cardinality.
+		\item \hyperlink{vnodecision:vnodecisionoptions}{\tt Options.V\_NO\_DECISION} : to force variable to be removed from the pool of decisional variables.
+		\item \hyperlink{vobjective:vobjectiveoptions}{\tt Options.V\_OBJECTIVE} : to define the variable to be the one to optimize.
 	\end{itemize}
 
 The variable representing the cardinality can be accessed and constrained using method \texttt{getCard()} that returns an \hyperlink{integervariable}{\tt IntegerVariable} object.

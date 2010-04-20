@@ -24,7 +24,7 @@ package samples.documentation;
 
 import choco.Choco;
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
@@ -99,7 +99,7 @@ public class Code4Doc3 {
         }
         int[] LB2 = {0, 1, 1, 0, 3};
         int[] UB2 = {0, 1, 1, 0, 3};
-        m.addConstraint(CPOptions.C_GCC_BC, globalCardinality(vars, LB2, UB2, 1));
+        m.addConstraint(Options.C_GCC_BC, globalCardinality(vars, LB2, UB2, 1));
         s.read(m);
         s.solve();
         //totex
@@ -114,7 +114,7 @@ public class Code4Doc3 {
         IntegerVariable[] cards = makeIntVarArray("cards", n, 0, 1);
 
 
-        m.addConstraint(CPOptions.C_GCC_BC, globalCardinality(vars, cards, 1));
+        m.addConstraint(Options.C_GCC_BC, globalCardinality(vars, cards, 1));
         s.read(m);
         s.solve();
         //totex
@@ -139,7 +139,7 @@ public class Code4Doc3 {
         IntegerVariable x = makeIntVar("x", 1, 3);
         IntegerVariable y = makeIntVar("y", 1, 3);
         IntegerVariable z = makeIntVar("z", 1, 3);
-        m.addVariables(CPOptions.V_BOUND,x ,y, z);
+        m.addVariables(Options.V_BOUND,x ,y, z);
         m.addConstraint(ifOnlyIf(lt(x, y), lt(y, z)));
         s.read(m);
         s.solveAll();
@@ -169,7 +169,7 @@ public class Code4Doc3 {
         IntegerVariable x = makeIntVar("x", 1, 2);
         IntegerVariable y = makeIntVar("y", 1, 2);
         IntegerVariable z = makeIntVar("z", 1, 2);
-        m.addVariables(CPOptions.V_BOUND,x ,y, z);
+        m.addVariables(Options.V_BOUND,x ,y, z);
         Constraint e1 = implies(leq(x, y), leq(x, z));
         m.addConstraint(e1);
         s.read(m);
@@ -188,7 +188,7 @@ public class Code4Doc3 {
         Solver s = new CPSolver();
         IntegerVariable nval = makeIntVar("nval", 1, 3);
         IntegerVariable[] variables = makeIntVarArray("vars", 6, 1, 4);
-        m.addConstraint(increasing_nvalue(CPOptions.C_INCREASING_NVALUE_BOTH, nval, variables));
+        m.addConstraint(increasing_nvalue(Options.C_INCREASING_NVALUE_BOTH, nval, variables));
         s.read(m);
         s.solveAll();
         //totex
@@ -205,7 +205,7 @@ public class Code4Doc3 {
                       {false, true, false, false}};
         IntegerVariable v1 = makeIntVar("v1", 1, 4);
         IntegerVariable v2 = makeIntVar("v2", 1, 4);
-        m.addConstraint(feasPairAC(CPOptions.C_EXT_AC32,v1, v2, matrice2));
+        m.addConstraint(feasPairAC(Options.C_EXT_AC32,v1, v2, matrice2));
         s.read(m);
         s.solveAll();
         //totex
@@ -341,8 +341,8 @@ public class Code4Doc3 {
         items[1] = makeIntVar("item_2", 0, 7);
         items[2] = makeIntVar("item_3", 0, 10);
 
-        IntegerVariable sumWeight = makeIntVar("sumWeight", 0, 40, CPOptions.V_BOUND);
-        IntegerVariable sumValue = makeIntVar("sumValue", 0, 34, CPOptions.V_OBJECTIVE);
+        IntegerVariable sumWeight = makeIntVar("sumWeight", 0, 40, Options.V_BOUND);
+        IntegerVariable sumValue = makeIntVar("sumValue", 0, 34, Options.V_OBJECTIVE);
 
         int[] weights = new int[]{7, 5, 3};
         int[] values = new int[]{6, 4, 2};

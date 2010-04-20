@@ -24,7 +24,7 @@ package samples.jobshop;
 
 import choco.Choco;
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.util.tools.ArrayUtils;
@@ -129,7 +129,7 @@ public class TaskPlanif {
 
         IntegerVariable[] FinMinTachePeriodeCourante =
                 makeIntVarArray("FinMinTachePeriodeCourante", NBTACHES, 0, NBPERIODES);
-        m.addVariables(CPOptions.V_NO_DECISION, FinMinTachePeriodeCourante);
+        m.addVariables(Options.V_NO_DECISION, FinMinTachePeriodeCourante);
 
 //        IntegerVariable[] DureeEffectiveTachePeriodeCourante =
 //                Choco.makeIntVarArray("DureeEffectiveTachePeriodeCourante", NBTACHES, 0, NBPERIODES);
@@ -166,7 +166,7 @@ public class TaskPlanif {
             }
         }
 
-        IntegerVariable objectiveMission = makeIntVar("objectiveMission", 0, NBPERIODES, CPOptions.V_BOUND/*,
+        IntegerVariable objectiveMission = makeIntVar("objectiveMission", 0, NBPERIODES, Options.V_BOUND/*,
                 CPOptions.V_NO_DECISION*/); // OK;
 
         IntegerExpressionVariable objectiveMissionExpression;
@@ -199,7 +199,7 @@ public class TaskPlanif {
         // to force decomposition on that constraint
         m.addConstraint(/*"CPOptions.E_DECOMP", */eq(objectiveMissionExpression, objectiveMission));
 
-        m.addVariables(CPOptions.V_OBJECTIVE, objectiveMission);
+        m.addVariables(Options.V_OBJECTIVE, objectiveMission);
 
        // 5- read the model and solve it
         s.read(m);

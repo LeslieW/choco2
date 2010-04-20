@@ -20,12 +20,13 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2010      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.solver.shaving;
+package choco.model.constraints.integer;
 
 import choco.Choco;
-import choco.Options;
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.search.integer.valiterator.DecreasingDomain;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.Model;
@@ -39,26 +40,28 @@ import org.junit.Test;
  * Date : 20 avr. 2010br/>
  * Since : Choco 2.1.1<br/>
  */
-public class ShavingTest {
+public class SumTest {
 
     @Test
-    public void test2989765() {
+    public void testJSR331(){
         Model m = new CPModel();
-        IntegerVariable[] pos = new IntegerVariable[4];
-        for (int i = 0; i < pos.length; i++) {
-            pos[i] = Choco.makeIntVar("VM" + i + "on ?", 0, 4);
-            IntegerVariable [] bools = Choco.makeBooleanVarArray("VM" + i + "on ", 6);
-            m.addConstraint(Choco.domainConstraint(pos[i], bools));
-            m.addConstraint(Choco.neq(pos[i], 3));
-            m.addConstraint(Choco.neq(pos[i], 4));
-        }
-        IntegerVariable nbNodes = Choco.makeIntVar("nbNodes", 3, 3, Options.V_OBJECTIVE);
-        m.addConstraint(Choco.atMostNValue(pos,nbNodes));
-        Solver s = new CPSolver();
-        System.out.println(m.pretty());
-        s.read(m);
-        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
-        s.minimize(s.getVar(nbNodes), false);
-    }
+        IntegerVariable[] vars = makeIntVarArray("v", 10, 0, 10);
 
+		for (int i = 0; i < vars.length; i++) {
+			if (i%2 == 0) {
+                m.addConstraint(gt(vars[i],i));
+            }
+			else {
+                m.addConstraint(lt(vars[i], i));
+            }
+		}
+        IntegerVariable sum = Choco.makeIntVar("sum", 0, 100);
+
+        m.addConstraint(eq(sum(vars), sum));
+        Solver s = new CPSolver();
+        s.read(m);
+        s.setValIntIterator(new DecreasingDomain());
+        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+        s.solve();
+    }
 }

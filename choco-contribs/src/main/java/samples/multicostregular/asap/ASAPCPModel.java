@@ -23,7 +23,7 @@
 package samples.multicostregular.asap;
 
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
@@ -95,7 +95,7 @@ public class ASAPCPModel extends CPModel {
     {
         int[] dom =  alpha.toArray();
 
-        shifts = makeIntVarArray("x",nbEmployees,nbDays,dom,CPOptions.V_ENUM);
+        shifts = makeIntVarArray("x",nbEmployees,nbDays,dom, Options.V_ENUM);
 
 
     }
@@ -133,7 +133,7 @@ public class ASAPCPModel extends CPModel {
             if (maxSPW < 7 || minSPW > 0)
             {
                 for (int i = 0 ; i < nbWeek ; i++)
-                    vs.add(makeIntVar("z"+vs.size(),minSPW,maxSPW, CPOptions.V_BOUND));
+                    vs.add(makeIntVar("z"+vs.size(),minSPW,maxSPW, Options.V_BOUND));
             }
             for (Integer anAlpha1 : alpha) {
                 int tmp = c.getMaxShiftType(handler.getShift(handler.inverseMap.get(anAlpha1)));
@@ -141,26 +141,26 @@ public class ASAPCPModel extends CPModel {
 
                 if (tmp != Integer.MAX_VALUE || tmp2 > 0) {
                     if (tmp == Integer.MAX_VALUE) tmp /= 1000;
-                    vs.add(makeIntVar("z" + vs.size(), tmp2, tmp, CPOptions.V_BOUND));
+                    vs.add(makeIntVar("z" + vs.size(), tmp2, tmp, Options.V_BOUND));
                 }
 
             }
             if (c.getMaxNumAssignment() != -1)
-                vs.add(makeIntVar("z"+(nbWeek+alpha.length),c.getMinShiftsPerWeek()*nbWeek,c.getMaxNumAssignment(),CPOptions.V_BOUND));
+                vs.add(makeIntVar("z"+(nbWeek+alpha.length),c.getMinShiftsPerWeek()*nbWeek,c.getMaxNumAssignment(), Options.V_BOUND));
 
             if (c.getMaxWorkingWeekEnds() >= 0 || c.getMinWorkingWeekEnds() >0)
             {
-                vs.add(makeIntVar("z"+vs.size(),c.getMinWorkingWeekEnds(),c.getMaxWorkingWeekEnds(),CPOptions.V_BOUND));
+                vs.add(makeIntVar("z"+vs.size(),c.getMinWorkingWeekEnds(),c.getMaxWorkingWeekEnds(), Options.V_BOUND));
             }
 
             if (c.getMaxDaysOff() > -1 || c.getMinDaysOff() > 0)
             {
                 if (c.getMaxDaysOff() == -1) c.setMaxDaysOff(nbDays);
-                vs.add(makeIntVar("z"+vs.size(),c.getMinDaysOff(),c.getMaxDaysOff(),CPOptions.V_BOUND));
+                vs.add(makeIntVar("z"+vs.size(),c.getMinDaysOff(),c.getMaxDaysOff(), Options.V_BOUND));
             }
             if (c.getMaxWeekEndDays() > -1  || c.getMinWeekEndDays() > 0)
             {
-                vs.add(makeIntVar("z"+vs.size(),c.getMinWeekEndDays(),c.getMaxWeekEndDays(),CPOptions.V_BOUND));
+                vs.add(makeIntVar("z"+vs.size(),c.getMinWeekEndDays(),c.getMaxWeekEndDays(), Options.V_BOUND));
             }
 
 
@@ -312,7 +312,7 @@ public class ASAPCPModel extends CPModel {
                         for (int idx :idxs)
                         {
                             IntegerVariable[] subset = makeSubSet(emp,v[idx]);
-                            this.addConstraint(occurrenceMin(handler.map.get(sh.getID()),makeIntVar("occ",min,Integer.MAX_VALUE/100,CPOptions.V_BOUND),subset));
+                            this.addConstraint(occurrenceMin(handler.map.get(sh.getID()),makeIntVar("occ",min,Integer.MAX_VALUE/100, Options.V_BOUND),subset));
                         }
                     }
                     if (max != null)
@@ -320,7 +320,7 @@ public class ASAPCPModel extends CPModel {
                         for (int idx :idxs)
                         {
                             IntegerVariable[] subset = makeSubSet(emp,v[idx]);
-                            this.addConstraint(occurrenceMax(handler.map.get(sh.getID()),makeIntVar("occ",0,max,CPOptions.V_BOUND),subset));
+                            this.addConstraint(occurrenceMax(handler.map.get(sh.getID()),makeIntVar("occ",0,max, Options.V_BOUND),subset));
                         }
                     }
                     if (pre != null)
@@ -339,7 +339,7 @@ public class ASAPCPModel extends CPModel {
                 IntegerVariable[] col = v[idx];
                 this.lowb[idx] = lowb;
                 this.uppb[idx] = uppb;
-                this.addConstraint(globalCardinality(CPOptions.C_GCC_AC,col,0,9,lowb,uppb));
+                this.addConstraint(globalCardinality(Options.C_GCC_AC,col,0,9,lowb,uppb));
             }
 
         }

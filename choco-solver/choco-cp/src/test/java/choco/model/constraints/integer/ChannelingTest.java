@@ -24,7 +24,7 @@ package choco.model.constraints.integer;
 
 import choco.Choco;
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.BranchingFactory;
@@ -142,9 +142,9 @@ public class ChannelingTest {
 	public void test5() {
 		int n = 5;
 		IntegerVariable[] bv = Choco.makeBooleanVarArray("b", n);
-		m.addConstraint( Choco.domainConstraint(Choco.makeIntVar("v", 0, n, CPOptions.V_ENUM), bv));
+		m.addConstraint( Choco.domainConstraint(Choco.makeIntVar("v", 0, n, Options.V_ENUM), bv));
 		CPModel m1 = new CPModel();
-		IntegerVariable iv = Choco.makeIntVar("v", 0, n-1, CPOptions.V_ENUM);
+		IntegerVariable iv = Choco.makeIntVar("v", 0, n-1, Options.V_ENUM);
 		for (int i = 0; i < n; i++) {
 			m1.addConstraint( Choco.boolChanneling(bv[i], iv, i));
 		}
@@ -172,8 +172,8 @@ public class ChannelingTest {
             m = new CPModel();
             s= new CPSolver();
             final int n = 5;
-            final IntegerVariable[] bv = Choco.makeBooleanVarArray("n", n+1, CPOptions.V_NO_DECISION);
-            final IntegerVariable vm = Choco.makeIntVar("vm", 0, n, CPOptions.V_ENUM);
+            final IntegerVariable[] bv = Choco.makeBooleanVarArray("n", n+1, Options.V_NO_DECISION);
+            final IntegerVariable vm = Choco.makeIntVar("vm", 0, n, Options.V_ENUM);
             m.addConstraint( Choco.domainConstraint(vm, bv));
             m.addConstraint( Choco.eq(vm, n-1));
             s.read(m);
@@ -195,7 +195,7 @@ public class ChannelingTest {
 
         int i = 0;
         for (i = 0; i < assigns.length; i++) {
-            assigns[i] = Choco.makeIntVar("VM" + i, 0, nbNodes + 1, CPOptions.V_ENUM);
+            assigns[i] = Choco.makeIntVar("VM" + i, 0, nbNodes + 1, Options.V_ENUM);
         }
         for (i = 0; i < nbVMs; i++) {
             for (int j = 0; j < nbNodes + 2; j++) {

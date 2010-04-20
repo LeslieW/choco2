@@ -24,7 +24,7 @@ package choco.model.constraints.global;
 
 import choco.Choco;
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
@@ -61,7 +61,7 @@ public class BoundGccTest {
     Constraint c2 = globalCardinality(new IntegerVariable[]{v1, v2, v3, v4}, new int[]{1, 1}, new int[]{1, 3}, 1);
     LOGGER.info(c1.pretty());
     LOGGER.info(c2.pretty());
-    m.addConstraints(CPOptions.C_GCC_BC, c1, c2);
+    m.addConstraints(Options.C_GCC_BC, c1, c2);
     CPSolver s = new CPSolver();
     s.read(m);
     SConstraint c = s.getCstr(c1);

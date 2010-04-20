@@ -23,7 +23,7 @@
 package samples.documentation;
 
 import choco.Choco;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.Model;
@@ -61,8 +61,8 @@ class Dmodel {
         model.addVariables(var2, var3);
         //totex
         //totex mvariabledeclaration2
-        model.addVariable(CPOptions.V_OBJECTIVE, var4);
-        model.addVariables(CPOptions.V_NO_DECISION, var5, var6);
+        model.addVariable(Options.V_OBJECTIVE, var4);
+        model.addVariables(Options.V_NO_DECISION, var5, var6);
         //totex
 
         //totex mexpressionvariable
@@ -79,16 +79,16 @@ class Dmodel {
         //totex
 
         //totex mnodecision1
-        IntegerVariable vNoDec = Choco.makeIntVar("vNoDec", 1, 3, CPOptions.V_NO_DECISION);
+        IntegerVariable vNoDec = Choco.makeIntVar("vNoDec", 1, 3, Options.V_NO_DECISION);
         //totex
         //totex mnodecision2
         IntegerVariable vNoDec1 = Choco.makeIntVar("vNoDec1", 1, 3);
         IntegerVariable vNoDec2 = Choco.makeIntVar("vNoDec2", 1, 3);
-        model.addOptions(CPOptions.V_NO_DECISION, vNoDec1, vNoDec2);
+        model.addOptions(Options.V_NO_DECISION, vNoDec1, vNoDec2);
         //totex
         CPSolver solver = new CPSolver();
         //totex mobjective
-        IntegerVariable x = Choco.makeIntVar("x", 1, 1000, CPOptions.V_OBJECTIVE);
+        IntegerVariable x = Choco.makeIntVar("x", 1, 1000, Options.V_OBJECTIVE);
         IntegerVariable y = Choco.makeIntVar("y", 20, 50);
         model.addConstraint(Choco.eq(x, Choco.mult(y, 20)));
         solver.read(model);

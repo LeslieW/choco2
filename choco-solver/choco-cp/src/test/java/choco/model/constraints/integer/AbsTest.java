@@ -23,7 +23,7 @@
 package choco.model.constraints.integer;
 
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
@@ -201,7 +201,7 @@ public class AbsTest {
             CPModel m = new CPModel();
             IntegerVariable x = makeIntVar("x", 1, 5);
             IntegerVariable y = makeIntVar("y", -5, 5);
-            m.addVariables(CPOptions.V_BOUND, x, y);
+            m.addVariables(Options.V_BOUND, x, y);
             m.addConstraint(abs(x,y));
             CPSolver s = new CPSolver();
             s.read(m);
@@ -223,7 +223,7 @@ public class AbsTest {
             CPModel m = new CPModel();
             IntegerVariable x = makeIntVar("x", 1, 10);
             IntegerVariable y = makeIntVar("y", -2, 10);
-            m.addVariables(CPOptions.V_BOUND, x, y);
+            m.addVariables(Options.V_BOUND, x, y);
             m.addConstraint(abs(x,y));
             CPSolver s = new CPSolver();
             s.read(m);

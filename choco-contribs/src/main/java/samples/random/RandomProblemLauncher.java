@@ -1,6 +1,6 @@
 package samples.random;
 
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.strong.DomOverDDegRPC;
@@ -185,7 +185,7 @@ public class RandomProblemLauncher {
                 case MaxRPCLight:
                     for (Constraint c : constraints) {
                         c.getOptions().clear();
-                        c.addOption(CPOptions.C_EXT_AC3);
+                        c.addOption(Options.C_EXT_AC3);
                     }
                     final Constraint cc = new ComponentConstraintWithSubConstraints(
                             StrongConsistencyManager.class, problem
@@ -200,7 +200,7 @@ public class RandomProblemLauncher {
                 default:
                     for (Constraint c : constraints) {
                         c.getOptions().clear();
-                        c.addOption(CPOptions.C_EXT_AC32);
+                        c.addOption(Options.C_EXT_AC32);
                         m.addConstraint(c);
                     }
                 }

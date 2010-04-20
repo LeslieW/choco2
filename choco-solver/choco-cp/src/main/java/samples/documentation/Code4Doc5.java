@@ -24,7 +24,7 @@ package samples.documentation;
 
 import choco.Choco;
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.SettingType;
@@ -97,7 +97,7 @@ public class Code4Doc5 {
         Model m = new CPModel();
 		IntegerVariable x = makeIntVar("x", 1, 10);
 		IntegerVariable y = makeIntVar("y", 1, 10);
-		m.addVariables(CPOptions.V_BOUND, x, y);
+		m.addVariables(Options.V_BOUND, x, y);
 		IntegerVariable z = makeIntVar("z", 0, 1);
 		m.addConstraint(precedenceReified(x,k1,y,z));
         Solver s = new CPSolver();
@@ -227,8 +227,8 @@ public class Code4Doc5 {
         IntegerVariable v1 = makeIntVar("v1", 1, 4);
         IntegerVariable v2 = makeIntVar("v2", 1, 4);
         IntegerVariable v3 = makeIntVar("v3", 3, 6);
-        m.addConstraint(relationPairAC(CPOptions.C_EXT_AC32, v1, v2, new MyEquality()));
-        m.addConstraint(relationPairAC(CPOptions.C_EXT_AC32, v2, v3, new MyEquality()));
+        m.addConstraint(relationPairAC(Options.C_EXT_AC32, v1, v2, new MyEquality()));
+        m.addConstraint(relationPairAC(Options.C_EXT_AC32, v2, v3, new MyEquality()));
         s.read(m);
         s.solveAll();
         //totex

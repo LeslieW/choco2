@@ -2,7 +2,7 @@ package samples.Examples;
 
 import choco.Choco;
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -74,7 +74,7 @@ public class MinimumEdgeDeletion extends PatternExample {
 		boolVars = makeBooleanVarArray("b", nbBools);
 		_m.addVariables(boolVars);
 		pairVars = new IntegerVariable[nbPairs];
-		deletion = makeIntVar("deletion", 0, nbPairs, CPOptions.V_OBJECTIVE);
+		deletion = makeIntVar("deletion", 0, nbPairs, Options.V_OBJECTIVE);
 		int cpt = 0;
 		for (int i = 0; i < nbBools; i++) {
 			for (int j = 0; j < nbBools; j++) {

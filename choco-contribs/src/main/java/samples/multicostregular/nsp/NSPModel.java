@@ -1,7 +1,7 @@
 package samples.multicostregular.nsp;
 
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
@@ -69,13 +69,13 @@ public class NSPModel extends CPModel {
     private void makeModel()
     {
         //workload : max : 5D/week or 4E/week or 2N/week min 2R/week
-        this.shifts = makeIntVarArray("shift",instance.nbNurses,instance.nbDays,0,instance.nbShifts-1,CPOptions.V_ENUM);
+        this.shifts = makeIntVarArray("shift",instance.nbNurses,instance.nbDays,0,instance.nbShifts-1, Options.V_ENUM);
         this.auto = makeNSPAutomaton();
         //int[] lowerBounds = {0,0,0,2};  // au minimum zero D, zero E et zero N, mais au moins 2R par semaine
         //int[] upperBounds = {5,4,2,7};  // au max 5 D, 4E, 2N par semaine, pas de limite sur le repos (7)
 
-        globalCost = makeIntVar("cost",0,Integer.MAX_VALUE/10, CPOptions.V_BOUND);
-        IntegerVariable[] zs = makeIntVarArray("zs",instance.nbNurses,0,Integer.MAX_VALUE/1000,CPOptions.V_BOUND);
+        globalCost = makeIntVar("cost",0,Integer.MAX_VALUE/10, Options.V_BOUND);
+        IntegerVariable[] zs = makeIntVarArray("zs",instance.nbNurses,0,Integer.MAX_VALUE/1000, Options.V_BOUND);
         //Automaton constraint :
         Constraint[] cauto = new Constraint[instance.nbNurses];
         //Redondant gcc over nurse activities
@@ -88,10 +88,10 @@ public class NSPModel extends CPModel {
             int[] upperBounds = {5,4,2,7};
             IntegerVariable[] cvars = new IntegerVariable[5];
             cvars[0] = zs[i];
-            cvars[1] = makeIntVar("r_"+i+"_1",0,5,CPOptions.V_BOUND);
-            cvars[2] = makeIntVar("r_"+i+"_2",0,4,CPOptions.V_BOUND);
-            cvars[3] = makeIntVar("r_"+i+"_3",0,2,CPOptions.V_BOUND);
-            cvars[4] = makeIntVar("r_"+i+"_4",2,7,CPOptions.V_BOUND);
+            cvars[1] = makeIntVar("r_"+i+"_1",0,5, Options.V_BOUND);
+            cvars[2] = makeIntVar("r_"+i+"_2",0,4, Options.V_BOUND);
+            cvars[3] = makeIntVar("r_"+i+"_3",0,2, Options.V_BOUND);
+            cvars[4] = makeIntVar("r_"+i+"_4",2,7, Options.V_BOUND);
             this.addVariables(cvars);
 
             int[][][] csts = new int[instance.nbDays][4][5];
@@ -107,7 +107,7 @@ public class NSPModel extends CPModel {
                             csts[d][j][k] = 1;
                     }
             cauto[i] = multiCostRegular(shifts[i],cvars,auto,csts);
-            credo[i] = globalCardinality(CPOptions.C_GCC_BC,shifts[i],0,3,lowerBounds,upperBounds);
+            credo[i] = globalCardinality(Options.C_GCC_BC,shifts[i],0,3,lowerBounds,upperBounds);
             cregu[i] =  regular(makeHadrienNSPAutomaton(),shifts[i]);
         }
 
@@ -133,7 +133,7 @@ public class NSPModel extends CPModel {
                 System.out.print(l+"\t");
             System.out.println("");
             Arrays.fill(gmax,instance.nbNurses);
-            cgcc[d] = globalCardinality(CPOptions.C_GCC_BC,tmp[d],0,3,instance.coverages[d],gmax);
+            cgcc[d] = globalCardinality(Options.C_GCC_BC,tmp[d],0,3,instance.coverages[d],gmax);
         }
 
 

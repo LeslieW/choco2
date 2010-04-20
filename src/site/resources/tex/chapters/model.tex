@@ -97,7 +97,7 @@ These are syntaxic sugar. To make their declaration easier, \hyperlink{tree:tree
 By default, each variable added to a model is a decision variable, \textit{i.e.} is included in the default search strategy. A variable can be stated as a non decision one if its value can be computed by side-effect. To specify non decision variables, one can 
 \begin{itemize}
 \item exclude them from its search strategies (see \hyperlink{solver:searchstrategy}{search strategy} for more details);
-\item specify non-decision variables (adding \hyperlink{vnodecision:vnodecisionoptions}{\tt CPOptions.V\_NO\_DECISION} to their options) and keep the default search strategy.
+\item specify non-decision variables (adding \hyperlink{vnodecision:vnodecisionoptions}{\tt Options.V\_NO\_DECISION} to their options) and keep the default search strategy.
 \end{itemize}
 \lstinputlisting{java/mnodecision1.j2t}
 Each of these options can also be set within a single instruction for a group of variables, as follows: 
@@ -105,13 +105,13 @@ Each of these options can also be set within a single instruction for a group of
 
 \begin{note}
   \begin{itemize}
-  \item The declaration of a \hyperlink{solver:searchstrategy}{search strategy} will erase setting \hyperlink{vnodecision:vnodecisionoptions}{\tt CPOptions.V\_NO\_DECISION}.
+  \item The declaration of a \hyperlink{solver:searchstrategy}{search strategy} will erase setting \hyperlink{vnodecision:vnodecisionoptions}{\tt Options.V\_NO\_DECISION}.
   \end{itemize}
 \end{note}
   \todo{more precise: user-defined/pre-defined, variable and/or value heuristics ?}
 
 \subsection{Objective variable}\label{model:objectivevariable}\hypertarget{model:objectivevariable}{}
-You can define an objective variable directly within the model, by using option \hyperlink{vobjective:vobjectiveoptions}{\tt CPOptions.V\_OBJECTIVE}:
+You can define an objective variable directly within the model, by using option \hyperlink{vobjective:vobjectiveoptions}{\tt Options.V\_OBJECTIVE}:
 \lstinputlisting{java/mobjective.j2t}
 
 Only one variable can be defined as an objective. If more than one objective variable is declared, then only the last one will be taken into account.
@@ -310,7 +310,7 @@ Inside the solver, expressions can be represented in two different ways that can
 \begin{lstlisting}
   setDefaultExpressionDecomposition(boolean decomp);
 \end{lstlisting}
-or the option \hyperlink{edecomp:edecompoptions}{\tt CPOptions.E\_DECOMP}.
+or the option \hyperlink{edecomp:edecompoptions}{\tt Options.E\_DECOMP}.
 \begin{itemize}
 \item The first way (\texttt{decomp=false}) is to handle them as \hyperlink{model:arbitraryconstraintsinextension}{constraints in extension}. The expression is then used to check a tuple in a dynamic way just like a n-ary relation that is defined without listing all the possible tuples. The expression is then propagated using the GAC3rm algorithm. This is very powerful as arc-consistency is obtained on the corresponding constraints.
 \item The second way (\texttt{decomp=true}) is to decompose the expression automatically by introducing intermediate variables and eventually the generic \hyperlink{reifiedintconstraint:reifiedintconstraintconstraint}{\tt reifiedIntConstraint}. By doing so, the level of pruning decreases but expressions of larger arity involving large domains can be represented.
@@ -323,12 +323,12 @@ Once the default representation is chosen, one can also make exception for a par
 For example, the following code tells the solver to decompose e1 and not e2 :
 \begin{lstlisting}
 	model.setDefaultExpressionDecomposition(false);
-	IntegerVariable x = makeIntVar("x", 1, 3, CPOptions.V_BOUND);
-	IntegerVariable y = makeIntVar("y", 1, 3, CPOptions.V_BOUND);
-	IntegerVariable z = makeIntVar("z", 1, 3, CPOptions.V_BOUND);
+	IntegerVariable x = makeIntVar("x", 1, 3, Options.V_BOUND);
+	IntegerVariable y = makeIntVar("y", 1, 3, Options.V_BOUND);
+	IntegerVariable z = makeIntVar("z", 1, 3, Options.V_BOUND);
 
 	Constraint e1 = or(lt(x, y), lt(y, x));
-	model.addConstraint(CPOptions.E_DECOMP, e1);
+	model.addConstraint(Options.E_DECOMP, e1);
 	
 	Constraint e2 = or(lt(y, z), lt(z, y));
 	model.addConstraint(e2);

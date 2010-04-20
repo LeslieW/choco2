@@ -24,7 +24,7 @@ package choco.model.preprocessor;
 
 import choco.Choco;
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.model.preprocessor.ModelDetectorFactory;
 import choco.cp.solver.CPSolver;
@@ -62,7 +62,7 @@ public class DetectorsTest {
         CPSolver s;
         for(int size = 1000; size <= 2000; size +=100){
             m = new CPModel();
-            IntegerVariable[] vars = makeIntVarArray("v", size, 0, 10, CPOptions.V_BOUND);
+            IntegerVariable[] vars = makeIntVarArray("v", size, 0, 10, Options.V_BOUND);
             for(int i = 0; i < size-1; i++){
                 m.addConstraint(eq(vars[i], vars[i+1]));
             }
@@ -83,7 +83,7 @@ public class DetectorsTest {
         CPSolver s;
         for(int size = 1000; size <= 2000; size +=100){
             m = new CPModel();
-            IntegerVariable[] vars = makeIntVarArray("v", size, 0, 10, CPOptions.V_BOUND);
+            IntegerVariable[] vars = makeIntVarArray("v", size, 0, 10, Options.V_BOUND);
             for(int i = 0; i < size-1; i++){
                 m.addConstraint(eq(vars[i], vars[i+1]));
                 m.addConstraint(leq(vars[i], vars[i+1]));
@@ -267,9 +267,9 @@ public class DetectorsTest {
         CPSolver s;
 
         m = new CPModel();
-        IntegerVariable A = Choco.makeIntVar("A", 0, 10, CPOptions.V_BOUND);
-        IntegerVariable B = Choco.makeIntVar("B", 0, 10, CPOptions.V_BOUND);
-        IntegerVariable C = Choco.makeIntVar("C", 0, 10, CPOptions.V_BOUND);
+        IntegerVariable A = Choco.makeIntVar("A", 0, 10, Options.V_BOUND);
+        IntegerVariable B = Choco.makeIntVar("B", 0, 10, Options.V_BOUND);
+        IntegerVariable C = Choco.makeIntVar("C", 0, 10, Options.V_BOUND);
 
         TaskVariable t1 = Choco.makeTaskVar("t2", A, C);
         TaskVariable t2 = Choco.makeTaskVar("t1", A, B, C);
@@ -298,9 +298,9 @@ public class DetectorsTest {
         CPSolver s;
 
         m = new CPModel();
-        IntegerVariable A = Choco.makeIntVar("A", 0, 10, CPOptions.V_BOUND);
-        IntegerVariable B = Choco.makeIntVar("B", 0, 10, CPOptions.V_BOUND);
-        IntegerVariable C = Choco.makeIntVar("C", 0, 10, CPOptions.V_BOUND);
+        IntegerVariable A = Choco.makeIntVar("A", 0, 10, Options.V_BOUND);
+        IntegerVariable B = Choco.makeIntVar("B", 0, 10, Options.V_BOUND);
+        IntegerVariable C = Choco.makeIntVar("C", 0, 10, Options.V_BOUND);
 
         for(int i = 0; i < 100; i++){
             TaskVariable t = Choco.makeTaskVar("t", A, B, C);

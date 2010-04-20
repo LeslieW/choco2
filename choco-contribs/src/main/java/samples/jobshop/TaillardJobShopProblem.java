@@ -24,7 +24,7 @@
 package samples.jobshop;
 
 import choco.Choco;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.strong.DomOverDDegRPC;
@@ -67,7 +67,7 @@ public class TaillardJobShopProblem {
         // + nbVal + " values, " + nbConstraints + " constraints, "
         // + tightness + " Tightness");
 
-        makespan = Choco.makeIntVar("makespan", 0, bound, CPOptions.V_OBJECTIVE);
+        makespan = Choco.makeIntVar("makespan", 0, bound, Options.V_OBJECTIVE);
 
         // Build enumerated domain variables
         variables = new IntegerVariable[jobs][machines];

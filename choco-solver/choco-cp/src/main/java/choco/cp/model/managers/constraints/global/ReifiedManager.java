@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.global;
 
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.managers.MixedConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.channeling.ReifiedIntSConstraint;
@@ -63,7 +63,7 @@ public final class ReifiedManager extends MixedConstraintManager {
             if(constraints.length == 1){
                 Constraint c = constraints[0];
                 boolean decomp = false;
-                if (c.getOptions().contains(CPOptions.E_DECOMP)) {
+                if (c.getOptions().contains(Options.E_DECOMP)) {
                     decomp = true;
                 }
                 SConstraint[] ct = ((CPSolver)solver).makeSConstraintAndOpposite(c, decomp);
@@ -79,7 +79,7 @@ public final class ReifiedManager extends MixedConstraintManager {
                 Constraint c = constraints[0];
                 Constraint oppc = constraints[1];
                 boolean decomp = false;
-                if (c.getOptions().contains(CPOptions.E_DECOMP)) {
+                if (c.getOptions().contains(Options.E_DECOMP)) {
                     decomp = true;
                 }
                 SConstraint ct = ((CPSolver)solver).makeSConstraint(c, decomp);

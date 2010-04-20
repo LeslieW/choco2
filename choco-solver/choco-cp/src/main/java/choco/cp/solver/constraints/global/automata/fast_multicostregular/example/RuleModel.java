@@ -23,7 +23,7 @@ package choco.cp.solver.constraints.global.automata.fast_multicostregular.exampl
  * * * * * * * * * * * * * * * * * * * * * * * * */
 
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.branching.AssignVar;
@@ -268,11 +268,11 @@ public class RuleModel extends CPModel {
         for (int i  = 0 ; i < 4 ;i++)
         {
             IntegerVariable[] tmp = cvs[i];
-            tmp[4] = makeIntVar("z_{"+i+",0}",0,18, CPOptions.V_BOUND);
-            tmp[5] = makeIntVar("z_{"+i+",1}",0,4,CPOptions.V_BOUND);
-            tmp[6] = makeIntVar("z_{"+i+",2}",10,28,CPOptions.V_BOUND);
+            tmp[4] = makeIntVar("z_{"+i+",0}",0,18, Options.V_BOUND);
+            tmp[5] = makeIntVar("z_{"+i+",1}",0,4, Options.V_BOUND);
+            tmp[6] = makeIntVar("z_{"+i+",2}",10,28, Options.V_BOUND);
             for (int j = 0 ; j < 4 ; j++)
-                tmp[j] = makeIntVar("z_{"+i+","+j+"}",4,5,CPOptions.V_BOUND);
+                tmp[j] = makeIntVar("z_{"+i+","+j+"}",4,5, Options.V_BOUND);
             this.addVariables(tmp);
         //    this.addConstraint(eq(minus(tmp[4],28),minus(0,tmp[6])));
 
@@ -283,12 +283,12 @@ public class RuleModel extends CPModel {
         for (int i  = 4 ; i < 8 ;i++)
         {
             IntegerVariable[] tmp = cvs[i];
-            tmp[4] = makeIntVar("z_{"+i+",0}",0,10,CPOptions.V_BOUND);
-            tmp[5] = makeIntVar("z_{"+i+",1}",0,4,CPOptions.V_BOUND);
-            tmp[6] = makeIntVar("z_{"+i+",1}",18,28,CPOptions.V_BOUND);
+            tmp[4] = makeIntVar("z_{"+i+",0}",0,10, Options.V_BOUND);
+            tmp[5] = makeIntVar("z_{"+i+",1}",0,4, Options.V_BOUND);
+            tmp[6] = makeIntVar("z_{"+i+",1}",18,28, Options.V_BOUND);
 
             for (int j = 0 ; j < 4 ; j++)
-                tmp[j] = makeIntVar("z_{"+i+","+j+"}",2,3,CPOptions.V_BOUND);
+                tmp[j] = makeIntVar("z_{"+i+","+j+"}",2,3, Options.V_BOUND);
             this.addVariables(tmp);
           //  this.addConstraint(eq(plus(tmp[4],tmp[6]),28));
             this.addVariables(vs[i]);
@@ -314,7 +314,7 @@ public class RuleModel extends CPModel {
         IntegerVariable[][] trans = ArrayUtils.transpose(vs);
         for (int i  = 0 ; i < 28 ; i++)
         {
-            this.addConstraint(CPOptions.C_GCC_BC,globalCardinality(trans[i],low,up, 0));
+            this.addConstraint(Options.C_GCC_BC,globalCardinality(trans[i],low,up, 0));
         }
 
 

@@ -23,7 +23,7 @@
 package samples.scheduling;
 
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.util.tools.StringUtils;
@@ -49,9 +49,9 @@ public class CumulativeWebEx extends PatternExample {
 	protected IntegerVariable[] usages, heights;
 	
 	//the fake tasks to establish the profile capacity of the ressource are the NF firsts.
-	protected final static TaskVariable[] TASKS = makeTaskVarArray("t", 0, 6, DURATIONS_DATA, CPOptions.V_BOUND);
+	protected final static TaskVariable[] TASKS = makeTaskVarArray("t", 0, 6, DURATIONS_DATA, Options.V_BOUND);
 
-	protected final static IntegerVariable OBJ = makeIntVar("obj", 0, NT, CPOptions.V_BOUND, CPOptions.V_OBJECTIVE);
+	protected final static IntegerVariable OBJ = makeIntVar("obj", 0, NT, Options.V_BOUND, Options.V_OBJECTIVE);
 
 	protected boolean useAlternativeResource;
 	

@@ -1,18 +1,15 @@
 package samples.scheduling;
 
 import choco.Choco;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import gnu.trove.TIntArrayList;
 import samples.Examples.PatternExample;
-
-import java.util.logging.Logger;
 
 public class RehearsalProblem extends PatternExample {
 
@@ -88,8 +85,8 @@ public class RehearsalProblem extends PatternExample {
 	@Override
 	public void buildModel() {
 		_m = new CPModel();
-		totalWaitingTime = Choco.makeIntVar("totalWaitingTime", 0, totalDuration * nbPlayers -cumulatedDuration, CPOptions.V_BOUND,CPOptions.V_OBJECTIVE);
-		musicPieces = Choco.makeTaskVarArray("piece", 0, totalDuration, durations, CPOptions.V_BOUND);
+		totalWaitingTime = Choco.makeIntVar("totalWaitingTime", 0, totalDuration * nbPlayers -cumulatedDuration, Options.V_BOUND, Options.V_OBJECTIVE);
+		musicPieces = Choco.makeTaskVarArray("piece", 0, totalDuration, durations, Options.V_BOUND);
 		arrivals = Choco.makeIntVarArray("arrival", nbPlayers, 0, totalDuration);
 		departures = Choco.makeIntVarArray("departure", nbPlayers, 0, totalDuration);
 		IntegerExpressionVariable expr = Choco.constant(-cumulatedDuration);
@@ -119,7 +116,7 @@ public class RehearsalProblem extends PatternExample {
 			_m.addConstraint(Choco.disjunctive(musicPieces));
 		}else {
 			//define all possible precedence between tasks
-			_m.addConstraints( Choco.precedenceDisjoint(musicPieces, isPrecOnlyDecision ? CPOptions.NO_OPTION :CPOptions.V_NO_DECISION));
+			_m.addConstraints( Choco.precedenceDisjoint(musicPieces, isPrecOnlyDecision ? Options.NO_OPTION : Options.V_NO_DECISION));
 		}
 	}
 

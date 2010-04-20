@@ -25,7 +25,7 @@ package choco.model.variables.integer;
 import choco.Choco;
 import static choco.Choco.makeIntVar;
 import static choco.Choco.neq;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.Model;
@@ -51,7 +51,7 @@ public class LinkedListTest {
         IntegerVariable[] arr = new IntegerVariable[1];
         int[] values = {-20000000, 20000000};
         for (int i = 0; i < arr.length; i++) {
-            arr[i] = makeIntVar("", values, CPOptions.V_LINK);
+            arr[i] = makeIntVar("", values, Options.V_LINK);
             m.addConstraint(neq(arr[i], 1));
         }
 
@@ -63,7 +63,7 @@ public class LinkedListTest {
 
     @Test
      public void test_patakm2() {
-        String option = CPOptions.V_LINK;
+        String option = Options.V_LINK;
         for(int i = 0; i < 1000; i++){
             Random r = new Random(i);
             Model m = new CPModel();

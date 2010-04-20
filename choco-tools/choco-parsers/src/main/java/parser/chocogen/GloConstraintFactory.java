@@ -23,7 +23,7 @@
 package parser.chocogen;
 
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.kernel.model.Model;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
@@ -58,12 +58,12 @@ public class GloConstraintFactory extends ObjectFactory {
 		}
 
 		if (vars.length <= 3) {
-			return allDifferent(CPOptions.C_ALLDIFFERENT_CLIQUE, vars);
+			return allDifferent(Options.C_ALLDIFFERENT_CLIQUE, vars);
 		} else if (holes || (maxdszise <= 30 &&
 				(vars.length <= 10 || (nbnoninstvar < vars.length && nbnoninstvar < 20)))) {
-			return allDifferent(CPOptions.C_ALLDIFFERENT_AC, vars);
+			return allDifferent(Options.C_ALLDIFFERENT_AC, vars);
 		} else
-			return allDifferent(CPOptions.C_ALLDIFFERENT_BC, vars);
+			return allDifferent(Options.C_ALLDIFFERENT_BC, vars);
 	}
 
 	public static Constraint buildGcc(IntegerVariable[] vars, Integer[] values, IntegerVariable[] noccurrences) {
@@ -92,9 +92,9 @@ public class GloConstraintFactory extends ObjectFactory {
 			}
 			if (holes || (maxdszise <= 30 &&
 					(vars.length <= 10 || (nbnoninstvar < vars.length && nbnoninstvar < 20)))) {
-				return globalCardinality(CPOptions.C_GCC_AC, vars, low, up, values[0]);
+				return globalCardinality(Options.C_GCC_AC, vars, low, up, values[0]);
 			}else{
-				return globalCardinality(CPOptions.C_GCC_BC, vars, low, up, values[0]);
+				return globalCardinality(Options.C_GCC_BC, vars, low, up, values[0]);
 			}
 		}
 		else
@@ -158,7 +158,7 @@ public class GloConstraintFactory extends ObjectFactory {
 			v = ((PVariable)pe.getValue()).getChocovar();
 		}else if(pe.getValue() instanceof Integer){
 			v = makeIntVar("value", (Integer)pe.getValue(), (Integer)pe.getValue());
-			m.addVariable(CPOptions.V_BOUND, v);
+			m.addVariable(Options.V_BOUND, v);
 		}
 		if(pe.getTable().length>0 && pe.getTable()[0] instanceof PVariable){
 			IntegerVariable[] vars = new IntegerVariable[pe.getTable().length];

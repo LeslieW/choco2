@@ -23,7 +23,7 @@
 package parser.chocogen;
 
 import static choco.Choco.makeIntVar;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import parser.absconparseur.components.PConstraint;
@@ -73,17 +73,17 @@ public class VariableFactory extends ObjectFactory {
 			var = makeIntVar(pvar.getName(), pvar.getDomain().getValues());
             //the second condition is for very sparse variables !
             if (isVarOnlyInvolvedInExtConstraint(pvar) || 20 * span > 100 * nbvalues) {
-                m.addVariable(CPOptions.V_BLIST, var);
+                m.addVariable(Options.V_BLIST, var);
             } else {
-                m.addVariable(CPOptions.V_ENUM, var);
+                m.addVariable(Options.V_ENUM, var);
             }
         } else {
 			if (isVarOnlyInvolvedInExtConstraint(pvar)) {
 				var = makeIntVar(pvar.getName(), pvar.getDomain().getMinValue(), pvar.getDomain().getMaxValue());					
-                m.addVariable(CPOptions.V_BLIST, var);
+                m.addVariable(Options.V_BLIST, var);
             } else {
 				var = makeIntVar(pvar.getName(), pvar.getDomain().getMinValue(), pvar.getDomain().getMaxValue());
-                m.addVariable(CPOptions.V_BOUND, var);
+                m.addVariable(Options.V_BOUND, var);
             }
 		}
 		return var;
