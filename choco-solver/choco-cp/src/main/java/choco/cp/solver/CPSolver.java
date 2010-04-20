@@ -336,7 +336,7 @@ public class CPSolver implements Solver {
 	/**
 	 * The object controlling the global search exploration
 	 */
-	private AbstractGlobalSearchStrategy strategy;
+	protected AbstractGlobalSearchStrategy strategy;
 
 	/**
 	 * Variable selector for integer
