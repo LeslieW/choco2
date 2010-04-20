@@ -1,7 +1,7 @@
 package samples.jobshop;
 
 import choco.Choco;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.branching.AssignOrForbidIntVarVal;
@@ -45,9 +45,9 @@ public class TaskPlanif2 extends PatternExample {
 	public void buildModel() {
 		_m = new CPModel();
 		//variables
-		durations =  Choco.makeIntVarArray("d", nbTasks,5, 55, CPOptions.V_ENUM);
+		durations =  Choco.makeIntVarArray("d", nbTasks,5, 55, Options.V_ENUM);
 		tasks = Choco.makeTaskVarArray("t", 0, horizon, durations);
-		for (TaskVariable t : tasks) t.start().addOption(CPOptions.V_ENUM);
+		for (TaskVariable t : tasks) t.start().addOption(Options.V_ENUM);
 		sumDurations = Choco.makeIntVar("sumDur", nbTasks * MIN_DURATION, nbTasks * MAX_DURATION);
 		_m.addVariables(tasks);
 		//constraints

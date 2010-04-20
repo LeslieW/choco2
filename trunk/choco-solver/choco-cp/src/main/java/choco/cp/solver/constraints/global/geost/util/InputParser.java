@@ -23,7 +23,7 @@
 package choco.cp.solver.constraints.global.geost.util;
 
 import choco.Choco;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Shape;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.geost.GeostObject;
@@ -196,7 +196,7 @@ public final class InputParser {
 				        			tokenNb++;
 			        			}
 			        		}
-			        		coord[i] = Choco.makeIntVar("x"+"_"+indice+"_" + i, lowerBound, upperBound, CPOptions.V_BOUND);
+			        		coord[i] = Choco.makeIntVar("x"+"_"+indice+"_" + i, lowerBound, upperBound, Options.V_BOUND);
 			        	}
 			        }
 			        else if(tokenNb > (3 + ( 2 * this.dim)))
@@ -334,7 +334,7 @@ public final class InputParser {
             IntegerVariable shape = Choco.makeIntVar("sid_"+i, gp.objects[i][j++], gp.objects[i][j++]);
             IntegerVariable[] coord = new IntegerVariable[this.dim];
             for(int k = 0; k < this.dim; k++){
-                coord[k] = Choco.makeIntVar("x_"+i+"_" + k, gp.objects[i][j++], gp.objects[i][j++], CPOptions.V_BOUND);
+                coord[k] = Choco.makeIntVar("x_"+i+"_" + k, gp.objects[i][j++], gp.objects[i][j++], Options.V_BOUND);
             }
 
             IntegerVariable start = Choco.makeIntVar("start_"+i, gp.objects[i][j++], gp.objects[i][j++]);

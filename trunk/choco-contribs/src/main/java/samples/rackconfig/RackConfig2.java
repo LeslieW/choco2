@@ -23,7 +23,7 @@
 package samples.rackconfig;
 
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.util.tools.ArrayUtils;
@@ -114,7 +114,7 @@ public class RackConfig2 extends CPModel {
 
 
 
-        cost  = makeIntVar("cost",0,Integer.MAX_VALUE/1000, CPOptions.V_BOUND);
+        cost  = makeIntVar("cost",0,Integer.MAX_VALUE/1000, Options.V_BOUND);
 
         ArrayList<IntegerExpressionVariable> ie = new ArrayList<IntegerExpressionVariable>();
         for (int i = 0 ; i < inst.getNbRackModels() ; i++)

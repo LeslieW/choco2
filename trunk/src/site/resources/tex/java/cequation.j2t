@@ -1,7 +1,7 @@
         CPModel m = new CPModel();
         CPSolver s = new CPSolver();
         int n = 10;
-        IntegerVariable[] bvars = makeIntVarArray("b", n, 0, 10, CPOptions.V_ENUM);
+        IntegerVariable[] bvars = makeIntVarArray("b", n, 0, 10, Options.V_ENUM);
         int[] coefs = new int[n];
 
         int charge = 10;

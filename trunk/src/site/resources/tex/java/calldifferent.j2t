@@ -13,8 +13,8 @@
             m.addConstraint(eq(diag1[i], plus(queens[i], i)));
             m.addConstraint(eq(diag2[i], minus(queens[i], i)));
         }
-        m.addConstraint(CPOptions.C_ALLDIFFERENT_CLIQUE, allDifferent(diag1));
-        m.addConstraint(CPOptions.C_ALLDIFFERENT_CLIQUE, allDifferent(diag2));
+        m.addConstraint(Options.C_ALLDIFFERENT_CLIQUE, allDifferent(diag1));
+        m.addConstraint(Options.C_ALLDIFFERENT_CLIQUE, allDifferent(diag2));
         // diagonal constraints
         CPSolver s = new CPSolver();
         s.read(m);

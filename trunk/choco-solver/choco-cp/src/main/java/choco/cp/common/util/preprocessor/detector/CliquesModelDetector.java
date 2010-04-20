@@ -24,7 +24,7 @@ package choco.cp.common.util.preprocessor.detector;
 
 import choco.Choco;
 import static choco.Choco.allDifferent;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.preprocessor.SymetryBreakingModelDetector;
 import choco.kernel.model.constraints.Constraint;
@@ -67,7 +67,7 @@ public class CliquesModelDetector extends AbstractGraphBasedDetector {
             while (it.hasNext()) {
                 final IntegerVariable[] cl = it.next();
                 if (cl.length > 2) {
-                    add(allDifferent(CPOptions.C_ALLDIFFERENT_BC, cl));
+                    add(allDifferent(Options.C_ALLDIFFERENT_BC, cl));
                     symbreakD.setMaxClique(cl);
                     it.remove();
                 } else {

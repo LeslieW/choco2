@@ -23,7 +23,7 @@
 package choco.scheduling;
 
 import choco.Choco;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
@@ -31,6 +31,7 @@ import choco.kernel.common.util.comparator.TaskComparators;
 import choco.kernel.common.util.tools.TaskUtils;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import junit.framework.Assert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
@@ -40,8 +41,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
-
-import junit.framework.Assert;
 
 
 public class TestTask {
@@ -89,9 +88,9 @@ public class TestTask {
 	@Test
 	public void testTaskVariable() {
 		CPModel m = new CPModel();
-		choco.kernel.model.variables.scheduling.TaskVariable t1 = Choco.makeTaskVar("T1", 20, 5, CPOptions.V_BOUND);
-		choco.kernel.model.variables.scheduling.TaskVariable t2 = Choco.makeTaskVar("T2", 20, 8, CPOptions.V_BOUND, CPOptions.V_NO_DECISION);
-		choco.kernel.model.variables.scheduling.TaskVariable t3 = Choco.makeTaskVar("T3", 25, 8, CPOptions.V_ENUM);
+		choco.kernel.model.variables.scheduling.TaskVariable t1 = Choco.makeTaskVar("T1", 20, 5, Options.V_BOUND);
+		choco.kernel.model.variables.scheduling.TaskVariable t2 = Choco.makeTaskVar("T2", 20, 8, Options.V_BOUND, Options.V_NO_DECISION);
+		choco.kernel.model.variables.scheduling.TaskVariable t3 = Choco.makeTaskVar("T3", 25, 8, Options.V_ENUM);
 		m.addVariables(t1,t2, t3);
 		CPSolver solver =new CPSolver();
 		solver.read(m);

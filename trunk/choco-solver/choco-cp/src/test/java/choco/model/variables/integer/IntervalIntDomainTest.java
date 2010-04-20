@@ -23,7 +23,7 @@
 package choco.model.variables.integer;
 
 import static choco.Choco.makeIntVar;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.variables.integer.IntVarEvent;
@@ -64,7 +64,7 @@ public class IntervalIntDomainTest{
     m = new CPModel();
     x = makeIntVar("X", 1, 100);
     y = makeIntVar("Y", 1, 15);
-        m.addVariables(CPOptions.V_BOUND, x, y);
+        m.addVariables(Options.V_BOUND, x, y);
     s = new CPSolver();
     s.read(m);
     yDom = (IntervalIntDomain) s.getVar(y).getDomain();

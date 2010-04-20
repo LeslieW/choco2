@@ -491,28 +491,28 @@ public class CPModel implements Model {
 	 *                <p/>
 	 *                For IntegerVariable, available options are :
 	 *                <ul>
-	 *                <li> {@link choco.cp.CPOptions.V_ENUM} to force Solver to create enumerated domain variables (default options if options is empty)</li>
-	 *                <li> {@link choco.cp.CPOptions.V_BOUND} to force Solver to create bounded domain variables</li>
-	 *                <li> {@link choco.cp.CPOptions.V_BTREE} to force Solver to create binary tree domain variables</li>
-	 *                <li> {@link choco.cp.CPOptions.V_BLIST} to force Solver to create bipartite list domain variables</li>
-     *                <li> {@link choco.cp.CPOptions.V_LINK} to force Solver to create linked list domain variables</li>
+	 *                <li> {@link choco.Options.V_ENUM} to force Solver to create enumerated domain variables (default options if options is empty)</li>
+	 *                <li> {@link choco.Options.V_BOUND} to force Solver to create bounded domain variables</li>
+	 *                <li> {@link choco.Options.V_BTREE} to force Solver to create binary tree domain variables</li>
+	 *                <li> {@link choco.Options.V_BLIST} to force Solver to create bipartite list domain variables</li>
+     *                <li> {@link choco.Options.V_LINK} to force Solver to create linked list domain variables</li>
      *                </ul>
      *                <p/>
 	 *                For SetVariable, available options are :
 	 *                <ul>
-	 *                <li> {@link choco.cp.CPOptions.V_ENUM} to force Solver to create set variables with enumerated caridinality (default options if options is empty)</li>
-	 *                <li> {@link choco.cp.CPOptions.V_BOUND} to force Solver to create set variables with bounded cardinality</li>
+	 *                <li> {@link choco.Options.V_ENUM} to force Solver to create set variables with enumerated caridinality (default options if options is empty)</li>
+	 *                <li> {@link choco.Options.V_BOUND} to force Solver to create set variables with bounded cardinality</li>
 	 *                </ul>
 	 *                No options are available concerning Real variables.
 	 *                <p/>
 	 *                Options for decisionnal/undecisionnal variables
 	 *                <ul>
-	 *                <li>{@link choco.cp.CPOptions.V_DECISION} to force variable to be a decisional one</li>
-	 *                <li>{@link choco.cp.CPOptions.V_NO_DECISION} to force variable to be removed from the pool of decisionnal variables</li>
+	 *                <li>{@link choco.Options.V_DECISION} to force variable to be a decisional one</li>
+	 *                <li>{@link choco.Options.V_NO_DECISION} to force variable to be removed from the pool of decisionnal variables</li>
 	 *                </ul>
 	 *                Options for optimization
 	 *                <ul>
-	 *                <li>{@link choco.cp.CPOptions.V_OBJECTIVE} to define the variable to optimize</li>
+	 *                <li>{@link choco.Options.V_OBJECTIVE} to define the variable to optimize</li>
 	 *                </ul>
 	 */
 	public void addVariables(final String options, final Variable... tabv) {

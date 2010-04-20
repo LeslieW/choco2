@@ -1,6 +1,6 @@
 package choco.cp.common.util.preprocessor.merger;
 
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import gnu.trove.THashSet;
@@ -99,30 +99,30 @@ public final class IntegerVariableMerger {
 
     private THashSet<String> mergeOptions(final IntegerVariable v) {
         final THashSet<String> toptionsSet = new THashSet<String>();
-        if (v.getOptions().contains(CPOptions.V_NO_DECISION)
-                || optionsSet.contains(CPOptions.V_NO_DECISION)) {
-            toptionsSet.add(CPOptions.V_NO_DECISION);
+        if (v.getOptions().contains(Options.V_NO_DECISION)
+                || optionsSet.contains(Options.V_NO_DECISION)) {
+            toptionsSet.add(Options.V_NO_DECISION);
         }
-        if (v.getOptions().contains(CPOptions.V_OBJECTIVE)
-                || optionsSet.contains(CPOptions.V_OBJECTIVE)) {
-            toptionsSet.add(CPOptions.V_OBJECTIVE);
+        if (v.getOptions().contains(Options.V_OBJECTIVE)
+                || optionsSet.contains(Options.V_OBJECTIVE)) {
+            toptionsSet.add(Options.V_OBJECTIVE);
         }
         // Type copy
-        if (v.getOptions().contains(CPOptions.V_BTREE)
-                || optionsSet.contains(CPOptions.V_BTREE)) {
-            toptionsSet.add(CPOptions.V_BTREE);
-        } else if (v.getOptions().contains(CPOptions.V_ENUM)
-                || optionsSet.contains(CPOptions.V_ENUM)) {
-            toptionsSet.add(CPOptions.V_ENUM);
-        } else if (v.getOptions().contains(CPOptions.V_BLIST)
-                || optionsSet.contains(CPOptions.V_BLIST)) {
-            toptionsSet.add(CPOptions.V_BLIST);
-        } else if (v.getOptions().contains(CPOptions.V_LINK)
-                || optionsSet.contains(CPOptions.V_LINK)) {
-            toptionsSet.add(CPOptions.V_LINK);
-        } else if (v.getOptions().contains(CPOptions.V_BOUND)
-                || optionsSet.contains(CPOptions.V_BOUND)) {
-            toptionsSet.add(CPOptions.V_BOUND);
+        if (v.getOptions().contains(Options.V_BTREE)
+                || optionsSet.contains(Options.V_BTREE)) {
+            toptionsSet.add(Options.V_BTREE);
+        } else if (v.getOptions().contains(Options.V_ENUM)
+                || optionsSet.contains(Options.V_ENUM)) {
+            toptionsSet.add(Options.V_ENUM);
+        } else if (v.getOptions().contains(Options.V_BLIST)
+                || optionsSet.contains(Options.V_BLIST)) {
+            toptionsSet.add(Options.V_BLIST);
+        } else if (v.getOptions().contains(Options.V_LINK)
+                || optionsSet.contains(Options.V_LINK)) {
+            toptionsSet.add(Options.V_LINK);
+        } else if (v.getOptions().contains(Options.V_BOUND)
+                || optionsSet.contains(Options.V_BOUND)) {
+            toptionsSet.add(Options.V_BOUND);
         }
         return toptionsSet;
     }

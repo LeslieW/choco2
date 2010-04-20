@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.global;
 
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.BoundAllDiff;
@@ -55,11 +55,11 @@ public final class AllDifferentManager extends IntConstraintManager {
     public SConstraint makeConstraint(Solver solver, IntegerVariable[] vars, Object parameters, Set<String> options) {
         if (solver instanceof CPSolver) {
             IntDomainVar[] variables = solver.getVar((IntegerVariable[]) vars);
-            if (options.contains(CPOptions.C_ALLDIFFERENT_AC))
+            if (options.contains(Options.C_ALLDIFFERENT_AC))
                 return new AllDifferent(variables, solver.getEnvironment());
-            if (options.contains(CPOptions.C_ALLDIFFERENT_BC))
+            if (options.contains(Options.C_ALLDIFFERENT_BC))
                 return new BoundAllDiff(variables, true);
-            if (options.contains(CPOptions.C_ALLDIFFERENT_CLIQUE))
+            if (options.contains(Options.C_ALLDIFFERENT_CLIQUE))
                 return new BoundAllDiff(variables, false);
 
             return defaultDetection(variables, solver.getEnvironment());
@@ -68,7 +68,7 @@ public final class AllDifferentManager extends IntConstraintManager {
     }
 
     public int[] getFavoriteDomains(Set<String> options) {
-        if (options.contains(CPOptions.C_ALLDIFFERENT_BC)) {
+        if (options.contains(Options.C_ALLDIFFERENT_BC)) {
             return getBCFavoriteIntDomains();
         } else {
             return getACFavoriteIntDomains();

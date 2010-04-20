@@ -23,7 +23,7 @@
 package samples.wiki;
 
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.varselector.MinDomain;
@@ -49,12 +49,12 @@ public class MagicSquare {
         IntegerVariable[] vars = new IntegerVariable[n * n];
         for (int i = 0; i < n; i++)
             for (int j = 0; j < n; j++) {
-                vars[i * n + j] = makeIntVar("C" + i + "_" + j, 1, n * n, CPOptions.V_BOUND);
+                vars[i * n + j] = makeIntVar("C" + i + "_" + j, 1, n * n, Options.V_BOUND);
             }
         IntegerVariable sum = makeIntVar("S", 1, n * n * (n * n + 1) / 2);
 
         m.addConstraint(eq(sum, n * (n * n + 1) / 2));
-        m.addConstraint(CPOptions.C_ALLDIFFERENT_BC,allDifferent(vars));
+        m.addConstraint(Options.C_ALLDIFFERENT_BC,allDifferent(vars));
 
 
         for (int i = 0; i < n; i++) {

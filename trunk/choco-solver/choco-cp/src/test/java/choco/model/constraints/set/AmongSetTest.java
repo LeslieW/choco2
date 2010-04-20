@@ -24,8 +24,8 @@ package choco.model.constraints.set;
 
 import choco.Choco;
 import static choco.Choco.among;
+import choco.Options;
 import choco.Reformulation;
-import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
@@ -138,9 +138,9 @@ public class AmongSetTest {
     @Test
     public void test0() {
         IntegerVariable[] xs = new IntegerVariable[3];
-        xs[0] = Choco.makeIntVar("xs1", 2, 3, CPOptions.V_ENUM);
-        xs[1] = Choco.makeIntVar("xs2", 2, 3, CPOptions.V_ENUM);
-        xs[2] = Choco.makeIntVar("xs3", 1, 4, CPOptions.V_ENUM);
+        xs[0] = Choco.makeIntVar("xs1", 2, 3, Options.V_ENUM);
+        xs[1] = Choco.makeIntVar("xs2", 2, 3, Options.V_ENUM);
+        xs[2] = Choco.makeIntVar("xs3", 1, 4, Options.V_ENUM);
         SetVariable s = Choco.makeSetVar("S", 2, 3);
         IntegerVariable n = Choco.makeIntVar("N", 2, 2);
 
@@ -167,9 +167,9 @@ public class AmongSetTest {
     @Test
     public void test01() {
         IntegerVariable[] xs = new IntegerVariable[3];
-        xs[0] = Choco.makeIntVar("xs1", 2, 3, CPOptions.V_ENUM);
-        xs[1] = Choco.makeIntVar("xs2", 2, 3, CPOptions.V_ENUM);
-        xs[2] = Choco.makeIntVar("xs3", 2, 4, CPOptions.V_ENUM);
+        xs[0] = Choco.makeIntVar("xs1", 2, 3, Options.V_ENUM);
+        xs[1] = Choco.makeIntVar("xs2", 2, 3, Options.V_ENUM);
+        xs[2] = Choco.makeIntVar("xs3", 2, 4, Options.V_ENUM);
         SetVariable s = Choco.makeSetVar("S", 2, 3);
         IntegerVariable n = Choco.makeIntVar("N", 2, 3);
 
@@ -188,8 +188,8 @@ public class AmongSetTest {
     @Test
     public void test02() {
         IntegerVariable[] xs = new IntegerVariable[2];
-        xs[0] = Choco.makeIntVar("xs1", 2, 2, CPOptions.V_ENUM);
-        xs[1] = Choco.makeIntVar("xs2", 2, 3, CPOptions.V_ENUM);
+        xs[0] = Choco.makeIntVar("xs1", 2, 2, Options.V_ENUM);
+        xs[1] = Choco.makeIntVar("xs2", 2, 3, Options.V_ENUM);
         SetVariable s = Choco.makeSetVar("S", 3, 3);
         IntegerVariable n = Choco.makeIntVar("N", 1, 2);
 
@@ -207,9 +207,9 @@ public class AmongSetTest {
     @Test
     public void test03() {
         IntegerVariable[] xs = new IntegerVariable[3];
-        xs[0] = Choco.makeIntVar("xs1", new int[]{0, 1, 3}, CPOptions.V_ENUM);
-        xs[1] = Choco.makeIntVar("xs2", 2, 2, CPOptions.V_ENUM);
-        xs[2] = Choco.makeIntVar("xs2", 5, 5, CPOptions.V_ENUM);
+        xs[0] = Choco.makeIntVar("xs1", new int[]{0, 1, 3}, Options.V_ENUM);
+        xs[1] = Choco.makeIntVar("xs2", 2, 2, Options.V_ENUM);
+        xs[2] = Choco.makeIntVar("xs2", 5, 5, Options.V_ENUM);
         SetVariable s = Choco.makeSetVar("S", new int[]{1, 3, 5});
         IntegerVariable n = Choco.makeIntVar("N", 2, 2);
 
@@ -228,14 +228,14 @@ public class AmongSetTest {
     @Test
     public void test1() {
         IntegerVariable[] xs = new IntegerVariable[8];
-        xs[0] = Choco.makeIntVar("xs1", 1, 2, CPOptions.V_ENUM);
-        xs[1] = Choco.makeIntVar("xs2", 1, 2, CPOptions.V_ENUM);
-        xs[2] = Choco.makeIntVar("xs3", 3, 3, CPOptions.V_ENUM);
-        xs[3] = Choco.makeIntVar("xs3", 3, 3, CPOptions.V_ENUM);
-        xs[4] = Choco.makeIntVar("xs3", 4, 4, CPOptions.V_ENUM);
-        xs[5] = Choco.makeIntVar("xs3", 4, 4, CPOptions.V_ENUM);
-        xs[6] = Choco.makeIntVar("xs3", 5, 5, CPOptions.V_ENUM);
-        xs[7] = Choco.makeIntVar("xs3", 5, 5, CPOptions.V_ENUM);
+        xs[0] = Choco.makeIntVar("xs1", 1, 2, Options.V_ENUM);
+        xs[1] = Choco.makeIntVar("xs2", 1, 2, Options.V_ENUM);
+        xs[2] = Choco.makeIntVar("xs3", 3, 3, Options.V_ENUM);
+        xs[3] = Choco.makeIntVar("xs3", 3, 3, Options.V_ENUM);
+        xs[4] = Choco.makeIntVar("xs3", 4, 4, Options.V_ENUM);
+        xs[5] = Choco.makeIntVar("xs3", 4, 4, Options.V_ENUM);
+        xs[6] = Choco.makeIntVar("xs3", 5, 5, Options.V_ENUM);
+        xs[7] = Choco.makeIntVar("xs3", 5, 5, Options.V_ENUM);
 
         SetVariable s = Choco.makeSetVar("S", 1, 5);
         IntegerVariable n = Choco.makeIntVar("N", 5, 8);
@@ -263,12 +263,12 @@ public class AmongSetTest {
     @Test
     public void test2() {
         IntegerVariable[] xs = new IntegerVariable[6];
-        xs[0] = Choco.makeIntVar("xs1", 1, 2, CPOptions.V_ENUM);
-        xs[1] = Choco.makeIntVar("xs2", 1, 2, CPOptions.V_ENUM);
-        xs[2] = Choco.makeIntVar("xs3", 3, 3, CPOptions.V_ENUM);
-        xs[3] = Choco.makeIntVar("xs3", 3, 3, CPOptions.V_ENUM);
-        xs[4] = Choco.makeIntVar("xs3", 4, 4, CPOptions.V_ENUM);
-        xs[5] = Choco.makeIntVar("xs3", 4, 4, CPOptions.V_ENUM);
+        xs[0] = Choco.makeIntVar("xs1", 1, 2, Options.V_ENUM);
+        xs[1] = Choco.makeIntVar("xs2", 1, 2, Options.V_ENUM);
+        xs[2] = Choco.makeIntVar("xs3", 3, 3, Options.V_ENUM);
+        xs[3] = Choco.makeIntVar("xs3", 3, 3, Options.V_ENUM);
+        xs[4] = Choco.makeIntVar("xs3", 4, 4, Options.V_ENUM);
+        xs[5] = Choco.makeIntVar("xs3", 4, 4, Options.V_ENUM);
         SetVariable s = Choco.makeSetVar("S", 1, 4);
         IntegerVariable n = Choco.makeIntVar("N", 2, 3);
 

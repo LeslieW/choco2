@@ -24,7 +24,7 @@ package choco.model.constraints.global;
 
 
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
@@ -70,7 +70,7 @@ public class OccurrenceTest {
         y = makeIntVar("y", 0, 2);
         n = makeIntVar("n", 0, 5);
         m = makeIntVar("m", 0, 5);
-        pb.addVariables(CPOptions.V_BOUND, x, xx, y, n, m);
+        pb.addVariables(Options.V_BOUND, x, xx, y, n, m);
         x1 = makeIntVar("X1", 0, 10);
         x2 = makeIntVar("X2", 0, 10);
         x3 = makeIntVar("X3", 0, 10);
@@ -223,9 +223,9 @@ public class OccurrenceTest {
             IntegerVariable[] vars;
             vars = makeIntVarArray("e", nbVar, 0, sizeDom);
             if (enumvar) {
-                mod.addVariables(CPOptions.V_ENUM, vars);
+                mod.addVariables(Options.V_ENUM, vars);
             } else {
-                mod.addVariables(CPOptions.V_BOUND, vars);
+                mod.addVariables(Options.V_BOUND, vars);
             }
 
             List<IntegerVariable> lvs = new LinkedList<IntegerVariable>();
@@ -280,7 +280,7 @@ public class OccurrenceTest {
         CPModel mod = new CPModel();
         IntegerVariable[] vars;
         vars = makeIntVarArray("e", vs.length + 1, 0, ub);
-        mod.addVariables(CPOptions.V_ENUM, vars);
+        mod.addVariables(Options.V_ENUM, vars);
         CPSolver s = new CPSolver();
         s.read(mod);
 
@@ -303,7 +303,7 @@ public class OccurrenceTest {
         IntegerVariable[] newvs = new IntegerVariable[vs.length + 1];
         System.arraycopy(vs,0,newvs,0,vs.length);
         newvs[vs.length] = occ;
-        return feasTupleAC(CPOptions.C_EXT_AC32, tuples, newvs);
+        return feasTupleAC(Options.C_EXT_AC32, tuples, newvs);
     }
 
     @Test
@@ -349,7 +349,7 @@ public class OccurrenceTest {
         for (int i = 0; i < cubeVars; i++) {
             cube[i] = makeIntVar("cube" + i, 0, 1);
         }
-        model.addConstraint(allDifferent(CPOptions.C_ALLDIFFERENT_BC, table));
+        model.addConstraint(allDifferent(Options.C_ALLDIFFERENT_BC, table));
         for (int t = 0; t < tableVars; t++) {
             for (int c = 0; c < cubeVars; c++) {
                 model.addConstraint(implies(eq(table[t], c) , eq(cube[c], 1)));
@@ -386,7 +386,7 @@ public class OccurrenceTest {
         for (int i = 0; i < cubeVars; i++) {
             cube[i] = makeIntVar("cube" + i, 0, 1);
         }
-        model.addConstraint(allDifferent(CPOptions.C_ALLDIFFERENT_BC, table));
+        model.addConstraint(allDifferent(Options.C_ALLDIFFERENT_BC, table));
         for (int t = 0; t < tableVars; t++) {
             for (int c = 0; c < cubeVars; c++) {
                 model.addConstraint(implies(eq(table[t], c) , eq(cube[c], 1)));
@@ -427,7 +427,7 @@ public class OccurrenceTest {
                         + j, 0, 1);
             }
         }
-        model.addConstraint(allDifferent(CPOptions.C_ALLDIFFERENT_BC, table));
+        model.addConstraint(allDifferent(Options.C_ALLDIFFERENT_BC, table));
         for (int i = 0; i < tableVars; i++) {
             for (int j = 0; j < cubeVars; j++) {
                 model.addConstraint(boolChanneling(booleanIntermediate[j][i],

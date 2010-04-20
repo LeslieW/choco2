@@ -23,7 +23,7 @@
 package samples.documentation;
 
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -42,7 +42,7 @@ public class Dvariable {
     public static void vintegervariable() {
         //totex vintegervariable
         IntegerVariable ivar1 = makeIntVar("ivar1", -10, 10);
-        IntegerVariable ivar2 = makeIntVar("ivar2", 0, 10000, CPOptions.V_BOUND, CPOptions.V_NO_DECISION);
+        IntegerVariable ivar2 = makeIntVar("ivar2", 0, 10000, Options.V_BOUND, Options.V_NO_DECISION);
         IntegerVariable bool = makeBooleanVar("bool");
         //totex
     }
@@ -50,7 +50,7 @@ public class Dvariable {
     public static void vsetvariable() {
         //totex vsetvariable
         SetVariable svar1 = makeSetVar("svar1", -10, 10);
-        SetVariable svar2 = makeSetVar("svar2", 0, 10000, CPOptions.V_BOUND, CPOptions.V_NO_DECISION);
+        SetVariable svar2 = makeSetVar("svar2", 0, 10000, Options.V_BOUND, Options.V_NO_DECISION);
         //totex
     }
 
@@ -62,13 +62,13 @@ public class Dvariable {
 
         //totex vrealvariable
         RealVariable rvar1 = makeRealVar("rvar1", -10.0, 10.0);
-        RealVariable rvar2 = makeRealVar("rvar2", 0.0, 100.0, CPOptions.V_NO_DECISION, CPOptions.V_OBJECTIVE);
+        RealVariable rvar2 = makeRealVar("rvar2", 0.0, 100.0, Options.V_NO_DECISION, Options.V_OBJECTIVE);
         //totex
     }
 
     public static void vtaskvariable() {
         //totex vtaskvariable
-        TaskVariable tvar1 = makeTaskVar("tvar1", 0, 123, 18, CPOptions.V_ENUM);
+        TaskVariable tvar1 = makeTaskVar("tvar1", 0, 123, 18, Options.V_ENUM);
         IntegerVariable start = makeIntVar("start", 0, 30);
         IntegerVariable end = makeIntVar("end", 10, 60);
         IntegerVariable duration = makeIntVar("duration", 7, 13);

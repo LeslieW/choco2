@@ -87,7 +87,7 @@ public class RestartSettings extends BasicSettings {
 	
 	public final void applyRestartPolicy(CPSolver s) {
 		switch (restartPolicy) {
-		case OFF: s.getRestartConfig().cancelRestarts();break;
+		case OFF: s.getRestartConfiguration().cancelRestarts();break;
 		case FIXED: s.setGeometricRestart(scaleFactor,1);break;
 		case GEOM: s.setGeometricRestart(scaleFactor, walshGeometricalFactor);break;
 		case LUBY: s.setLubyRestart(scaleFactor, lubyGeometricalFactor);break;

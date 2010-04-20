@@ -23,7 +23,7 @@
 package samples.rackconfig;
 
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.branching.AssignVar;
@@ -84,10 +84,10 @@ public class RackConfig extends CPModel
 
         for (int i  = 0 ; i < occur.length ; i++)
         {
-            occur[i] = makeIntVar("occur_"+i,0,Integer.MAX_VALUE/1000, CPOptions.V_BOUND);
+            occur[i] = makeIntVar("occur_"+i,0,Integer.MAX_VALUE/1000, Options.V_BOUND);
         }
         this.occur = occur;
-        IntegerVariable[] boundOccur = makeIntVarArray("boundOccur",occur.length,0,Integer.MAX_VALUE/1000,CPOptions.V_BOUND);
+        IntegerVariable[] boundOccur = makeIntVarArray("boundOccur",occur.length,0,Integer.MAX_VALUE/1000, Options.V_BOUND);
         this.boundOccur = boundOccur;
 
         this.addConstraint(globalCardinality(flatcard,occur, 0));
@@ -103,7 +103,7 @@ public class RackConfig extends CPModel
             this.addConstraint(leq(occur[i],boundOccur[i]));
 
 
-        IntegerVariable[] maxPower = makeIntVarArray("power",inst.getNbRacks(),0,Integer.MAX_VALUE/1000,CPOptions.V_BOUND);
+        IntegerVariable[] maxPower = makeIntVarArray("power",inst.getNbRacks(),0,Integer.MAX_VALUE/1000, Options.V_BOUND);
         this.maxPower = maxPower;
         int[] powers = new int[inst.getNbRackModels()+1];
         for (int i  = 0 ;i < inst.getNbRackModels() ; i++)
@@ -153,7 +153,7 @@ public class RackConfig extends CPModel
 
 
 
-        IntegerVariable[] cVar = makeIntVarArray("cost",inst.getNbRacks(),0, Integer.MAX_VALUE/1000,CPOptions.V_BOUND);
+        IntegerVariable[] cVar = makeIntVarArray("cost",inst.getNbRacks(),0, Integer.MAX_VALUE/1000, Options.V_BOUND);
         int[] csts = new int[inst.getNbRackModels()+1];
         this.cost = csts;
         for (int i  = 0 ;i < inst.getNbRackModels() ; i++)
@@ -163,7 +163,7 @@ public class RackConfig extends CPModel
         for (int i  = 0 ; i < rack.length ; i++)
             this.addConstraint(nth(rack[i],csts,cVar[i]));
 
-        obj = makeIntVar("obj",0,Integer.MAX_VALUE/1000,CPOptions.V_BOUND);
+        obj = makeIntVar("obj",0,Integer.MAX_VALUE/1000, Options.V_BOUND);
 
         this.addConstraint(eq(obj,sum(cVar)));
 

@@ -24,7 +24,7 @@ package choco.solver.blackboxsolver;
 
 import choco.Choco;
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.BoundAllDiff;
@@ -723,8 +723,8 @@ public class ConstraintsDetectionTest {
         m.setDefaultExpressionDecomposition(false);
         IntegerVariable[] v = makeIntVarArray("v", 2, -3, 3);
         IntegerVariable d = makeIntVar("min", -3, 3);
-        m.addVariables(CPOptions.V_ENUM,v);
-        m.addVariable(CPOptions.V_ENUM,d);
+        m.addVariables(Options.V_ENUM,v);
+        m.addVariable(Options.V_ENUM,d);
         Constraint c = geq(abs(minus(v[0],v[1])),d);
         //Constraint c =  distanceGT(v[0],v[1],d,-1);
 
@@ -1018,7 +1018,7 @@ public class ConstraintsDetectionTest {
 
     @Test
     public void detectEqualities(){
-        String[] options  = new String[]{CPOptions.V_BTREE, CPOptions.V_ENUM, CPOptions.V_BLIST, CPOptions.V_LINK, CPOptions.V_BOUND};
+        String[] options  = new String[]{Options.V_BTREE, Options.V_ENUM, Options.V_BLIST, Options.V_LINK, Options.V_BOUND};
         Class[] classes = new Class[]{IntervalBTreeDomain.class, BitSetIntDomain.class,
                 BipartiteIntDomain.class, LinkedIntDomain.class, IntervalIntDomain.class};
 
@@ -1047,7 +1047,7 @@ public class ConstraintsDetectionTest {
 
     @Test
     public void detectEqualities2(){
-        String[] options  = new String[]{CPOptions.V_BTREE, CPOptions.V_ENUM, CPOptions.V_BLIST, CPOptions.V_LINK, CPOptions.V_BOUND};
+        String[] options  = new String[]{Options.V_BTREE, Options.V_ENUM, Options.V_BLIST, Options.V_LINK, Options.V_BOUND};
 
         Model m;
         PreProcessCPSolver s;
@@ -1078,7 +1078,7 @@ public class ConstraintsDetectionTest {
         PreProcessCPSolver s;
         for(int size = 1000; size <= 2000; size +=100){
             m = new CPModel();
-            IntegerVariable[] vars = Choco.makeIntVarArray("v", size, 0, 10, CPOptions.V_BOUND);
+            IntegerVariable[] vars = Choco.makeIntVarArray("v", size, 0, 10, Options.V_BOUND);
             for(int i = 0; i < size-1; i++){
                 m.addConstraint(eq(vars[i], vars[i+1]));
             }
@@ -1095,9 +1095,9 @@ public class ConstraintsDetectionTest {
         PreProcessCPSolver s;
 
         m = new CPModel();
-        IntegerVariable A = Choco.makeIntVar("A", 0, 10, CPOptions.V_BOUND);
-        IntegerVariable B = Choco.makeIntVar("B", 0, 10, CPOptions.V_BOUND);
-        IntegerVariable C = Choco.makeIntVar("C", 0, 10, CPOptions.V_BOUND);
+        IntegerVariable A = Choco.makeIntVar("A", 0, 10, Options.V_BOUND);
+        IntegerVariable B = Choco.makeIntVar("B", 0, 10, Options.V_BOUND);
+        IntegerVariable C = Choco.makeIntVar("C", 0, 10, Options.V_BOUND);
 
         TaskVariable t1 = Choco.makeTaskVar("t1", A, B, C);
         TaskVariable t2 = Choco.makeTaskVar("t2", A, B, C);
@@ -1117,9 +1117,9 @@ public class ConstraintsDetectionTest {
         PreProcessCPSolver s;
 
         m = new CPModel();
-        IntegerVariable A = Choco.makeIntVar("A", 0, 10, CPOptions.V_BOUND);
-        IntegerVariable B = Choco.makeIntVar("B", 0, 10, CPOptions.V_BOUND);
-        IntegerVariable C = Choco.makeIntVar("C", 0, 10, CPOptions.V_BOUND);
+        IntegerVariable A = Choco.makeIntVar("A", 0, 10, Options.V_BOUND);
+        IntegerVariable B = Choco.makeIntVar("B", 0, 10, Options.V_BOUND);
+        IntegerVariable C = Choco.makeIntVar("C", 0, 10, Options.V_BOUND);
 
         TaskVariable t1 = Choco.makeTaskVar("t2", A, C);
         TaskVariable t2 = Choco.makeTaskVar("t1", A, B, C);
@@ -1148,9 +1148,9 @@ public class ConstraintsDetectionTest {
         PreProcessCPSolver s;
 
         m = new CPModel();
-        IntegerVariable A = Choco.makeIntVar("A", 0, 10, CPOptions.V_BOUND);
-        IntegerVariable B = Choco.makeIntVar("B", 0, 10, CPOptions.V_BOUND);
-        IntegerVariable C = Choco.makeIntVar("C", 0, 10, CPOptions.V_BOUND);
+        IntegerVariable A = Choco.makeIntVar("A", 0, 10, Options.V_BOUND);
+        IntegerVariable B = Choco.makeIntVar("B", 0, 10, Options.V_BOUND);
+        IntegerVariable C = Choco.makeIntVar("C", 0, 10, Options.V_BOUND);
 
         for(int i = 0; i < 100; i++){
             TaskVariable t = Choco.makeTaskVar("t", A, B, C);
@@ -1170,8 +1170,8 @@ public class ConstraintsDetectionTest {
         Model m;
         CPSolver s;
         Random r;
-        IntegerVariable A = Choco.makeIntVar("A", 0, 10, CPOptions.V_BOUND);
-        IntegerVariable B = Choco.makeIntVar("B", 0, 10, CPOptions.V_BOUND);
+        IntegerVariable A = Choco.makeIntVar("A", 0, 10, Options.V_BOUND);
+        IntegerVariable B = Choco.makeIntVar("B", 0, 10, Options.V_BOUND);
         for(int seed = 0; seed < 100; seed++){
             r = new Random(seed);
             CPModelFactory mf = new CPModelFactory();
@@ -1202,8 +1202,8 @@ public class ConstraintsDetectionTest {
         Model m;
         CPSolver s;
         Random r;
-        IntegerVariable A = Choco.makeIntVar("A", 0, 10, CPOptions.V_BOUND);
-        IntegerVariable B = Choco.makeIntVar("B", 0, 10, CPOptions.V_BOUND);
+        IntegerVariable A = Choco.makeIntVar("A", 0, 10, Options.V_BOUND);
+        IntegerVariable B = Choco.makeIntVar("B", 0, 10, Options.V_BOUND);
         for(int seed = 0; seed < 20; seed++){
             r = new Random(seed);
             CPModelFactory mf = new CPModelFactory();

@@ -22,35 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.solver.search.set;
 
-import static choco.Choco.eq;
-import static choco.Choco.eqCard;
-import static choco.Choco.geq;
-import static choco.Choco.geqCard;
-import static choco.Choco.isIncluded;
-import static choco.Choco.leqCard;
-import static choco.Choco.makeIntVar;
-import static choco.Choco.makeSetVar;
-import static choco.Choco.member;
-import static choco.Choco.mult;
-import static choco.Choco.neq;
-import static choco.Choco.notMember;
-import static choco.Choco.plus;
-import static choco.Choco.setDisjoint;
-import static choco.Choco.setInter;
-import static choco.Choco.setUnion;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import samples.Examples.MinimumEdgeDeletion;
-import choco.cp.CPOptions;
+import static choco.Choco.*;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.MinVal;
@@ -59,7 +32,6 @@ import choco.cp.solver.search.set.MinEnv;
 import choco.cp.solver.search.set.RandomSetValSelector;
 import choco.cp.solver.search.set.RandomSetVarSelector;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
@@ -68,6 +40,14 @@ import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.propagation.Propagator;
+import org.junit.After;
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
+import samples.Examples.MinimumEdgeDeletion;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SearchTest {
 
@@ -246,11 +226,11 @@ public class SearchTest {
 		SetVariable object = makeSetVar("object", 1, 6);
 		SetVariable a = makeSetVar("a", 1, 6);
 		SetVariable b = makeSetVar("b", 1, 6);
-		m.addVariables(CPOptions.V_BOUND, object, a, b);
+		m.addVariables(Options.V_BOUND, object, a, b);
 
 		// Fix tthe IntVar to value 1.
 		IntegerVariable object1 = makeIntVar("object1", 1, 1);
-		m.addVariable(CPOptions.V_BOUND, object1);
+		m.addVariable(Options.V_BOUND, object1);
 
 		// Make constraints on the sets
 		// setInter(s1, s2, s1) <=> s1 \subseteq s2
@@ -306,11 +286,11 @@ public class SearchTest {
 		SetVariable a = makeSetVar("a", 1, 7);
 		SetVariable b = makeSetVar("b", 1, 7);
 		SetVariable c = makeSetVar("c", 1, 7);
-		m.addVariables(CPOptions.V_BOUND, object, a, b, c);
+		m.addVariables(Options.V_BOUND, object, a, b, c);
 
 		// Fix tthe IntVar to value 1.
 		IntegerVariable object1 = makeIntVar("object1", 1, 1);
-		m.addVariable(CPOptions.V_BOUND, object1);
+		m.addVariable(Options.V_BOUND, object1);
 
 		// a \subseteq object
 		m.addConstraint(isIncluded(a, object));
@@ -379,7 +359,7 @@ public class SearchTest {
 		int k = 10;
 		final IntegerVariable x = makeIntVar("x", 0,k);
 		IntegerVariable y = makeIntVar("y", 0,k);
-		IntegerVariable z = makeIntVar("z", 0, 2*k, CPOptions.V_OBJECTIVE);
+		IntegerVariable z = makeIntVar("z", 0, 2*k, Options.V_OBJECTIVE);
 		m.addConstraints(
 				eq ( plus(x,y), z),
 				geq ( plus(x,mult(2, y)), v)

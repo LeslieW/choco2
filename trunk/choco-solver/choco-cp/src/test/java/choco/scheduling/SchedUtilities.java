@@ -23,7 +23,7 @@
 package choco.scheduling;
 
 import choco.Choco;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.BitFlags;
@@ -145,7 +145,7 @@ public final class SchedUtilities {
 	public static IntegerVariable[] makeIntvarArray(final String name, final int[] min, final int[] max) {
 		final IntegerVariable[] vars=new IntegerVariable[min.length];
 		for (int i = 0; i < vars.length; i++) {
-			vars[i]=Choco.makeIntVar(String.format("%s-%d", name, i), min[i],max[i], CPOptions.V_BOUND);
+			vars[i]=Choco.makeIntVar(String.format("%s-%d", name, i), min[i],max[i], Options.V_BOUND);
 		}
 		return vars;
 	}
@@ -228,7 +228,7 @@ abstract class AbstractTestProblem {
 			tasks=new TaskVariable[durations.length];
 			for (int i = 0; i < tasks.length; i++) {
 				tasks[i]= Choco.makeTaskVar(String.format("T_%d", i), starts[i],
-                        Choco.makeIntVar(String.format("end-%d", i), 0, horizon, CPOptions.V_BOUND), durations[i]);
+                        Choco.makeIntVar(String.format("end-%d", i), 0, horizon, Options.V_BOUND), durations[i]);
 			}
 		}
 	}

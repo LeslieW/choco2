@@ -24,7 +24,7 @@ package choco.model.constraints.integer;
 
 import static choco.Choco.gt;
 import static choco.Choco.makeIntVar;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
@@ -66,7 +66,7 @@ public class GreaterThanCXTest {
         s = new CPSolver();
     x = makeIntVar("X", 1, 5);
     y = makeIntVar("Y", 1, 5);
-        m.addVariables(CPOptions.V_BOUND, x, y);
+        m.addVariables(Options.V_BOUND, x, y);
     c1 = gt(2, x);
     c2 = gt(3, y);
   }

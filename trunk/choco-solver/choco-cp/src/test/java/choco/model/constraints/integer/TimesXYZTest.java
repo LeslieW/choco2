@@ -23,7 +23,7 @@
 package choco.model.constraints.integer;
 
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.preprocessor.PreProcessCPSolver;
@@ -116,7 +116,7 @@ public class TimesXYZTest {
 			x = makeIntVar("x", 1, 2);
 			y = makeIntVar("y", 3, 5);
 			z = makeIntVar("z", 3, 10);
-			m.addVariables(CPOptions.V_BOUND, z, y, x);
+			m.addVariables(Options.V_BOUND, z, y, x);
 			s.read(m);
 			//      m.addConstraint(times(x, y, z));
 			//      s.setVarIntSelector(new RandomIntVarSelector(s, i));
@@ -210,7 +210,7 @@ public class TimesXYZTest {
 				IntegerVariable x = makeIntVar("x", -10, 10);
 				IntegerVariable y = makeIntVar("y", -10, 10);
 				IntegerVariable z = makeIntVar("z", -20, 20);
-				m.addVariables(CPOptions.V_BOUND, x, y, z);
+				m.addVariables(Options.V_BOUND, x, y, z);
 
 				m.addConstraint(times(x, y, z));
 				s.read(m);
@@ -238,7 +238,7 @@ public class TimesXYZTest {
 
         final IntegerVariable x = makeIntVar("x", -10, 10);
         final IntegerVariable z = makeIntVar("z", -20, 20);
-        m.addVariables(CPOptions.V_BOUND, x, z);
+        m.addVariables(Options.V_BOUND, x, z);
 
         m.addConstraint(eq(z, mult(x, x)));
         try{

@@ -23,7 +23,7 @@
 package choco.solver.search;
 
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
@@ -49,7 +49,7 @@ public class OptimizeTest {
         m = new CPModel();
         s = new CPSolver();
         obj = makeIntVar("objectif", -10, 1000);
-        m.addVariable(CPOptions.V_BOUND, obj);
+        m.addVariable(Options.V_BOUND, obj);
         v1 = makeIntVar("v1", 1, 10);
         v2 = makeIntVar("v2", -3, 10);
         v3 = makeIntVar("v3", 1, 10);

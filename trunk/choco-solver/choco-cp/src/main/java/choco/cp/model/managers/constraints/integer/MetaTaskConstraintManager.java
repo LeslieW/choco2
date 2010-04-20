@@ -3,7 +3,7 @@
  */
 package choco.cp.model.managers.constraints.integer;
 
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.managers.MixedConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.ModelException;
@@ -31,7 +31,7 @@ public final class MetaTaskConstraintManager extends MixedConstraintManager {
 			  if (parameters instanceof Constraint) {
 				final Constraint ic = (Constraint) parameters;
                 boolean decomp = false;
-                if (ic.getOptions().contains(CPOptions.E_DECOMP)) {
+                if (ic.getOptions().contains(Options.E_DECOMP)) {
                     decomp = true;
                 }
                 return ( (CPSolver) solver).makeSConstraint(ic, decomp);

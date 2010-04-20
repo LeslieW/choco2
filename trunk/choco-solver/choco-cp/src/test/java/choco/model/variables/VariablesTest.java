@@ -24,7 +24,7 @@ package choco.model.variables;
 
 import choco.Choco;
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.TimesXYZ;
@@ -89,7 +89,7 @@ public class VariablesTest {
 	@Test
 	public void testRemoveInt() {
 		IntegerVariable[] v=makeIntVarArray("v",2, 0, 2);
-        model.addVariables(CPOptions.V_BOUND, v);
+        model.addVariables(Options.V_BOUND, v);
         model.addConstraint(neq(v[0], v[1]));
 		test(v[0],0);
 	}
@@ -97,7 +97,7 @@ public class VariablesTest {
 	@Test
 	public void testRemoveSet() {
 		SetVariable[] v=makeSetVarArray("v",2, 0, 2);
-        model.addVariables(CPOptions.V_BOUND, v);
+        model.addVariables(Options.V_BOUND, v);
         model.addConstraint(neq(v[0], v[1]));
 		test(v[0],0);
 	}
@@ -129,7 +129,7 @@ public class VariablesTest {
 	@Test
 	public void testRemoveReal() {
 		SetVariable[] v=makeSetVarArray("v",2, 0, 2);
-        model.addVariables(CPOptions.V_BOUND, v);
+        model.addVariables(Options.V_BOUND, v);
         model.addConstraint(Choco.neq(v[0], v[1]));
 		test(v[0],0);
 	}
@@ -162,7 +162,7 @@ public class VariablesTest {
 		Model m = new CPModel();
 		SetVariable s1 = makeSetVar("set1", 0, 10);
 		SetVariable s2 = makeSetVar("set2", 5, 20);
-		s1.getCard().addOption(CPOptions.V_NO_DECISION);
+		s1.getCard().addOption(Options.V_NO_DECISION);
 		m.addVariables(s1, s2,constant(2), constant(1));
 		CPSolver solver = new CPSolver();
 		solver.read(m);
@@ -275,7 +275,7 @@ public class VariablesTest {
         int nbin = 12;//number of bins
         CPModel m = new CPModel();
         IntegerVariable[] items = Choco.makeIntVarArray("items", n, 0, nbin-1, "cp:enum");
-        SetVariable[] setbin = Choco.makeSetVarArray("bins",nbin, 0,n-1, CPOptions.V_NO_DECISION);
+        SetVariable[] setbin = Choco.makeSetVarArray("bins",nbin, 0,n-1, Options.V_NO_DECISION);
         IntegerVariable[] load = Choco.makeIntVarArray("load", nbin, 0,C, "cp:bound");
         IntegerConstantVariable[] size = new IntegerConstantVariable[n];
         for (int i = 0; i < n; i++) {
@@ -293,9 +293,9 @@ public class VariablesTest {
     @Test
     public void testB2987013_2(){
         CPModel model = new CPModel();
-        IntegerVariable x = Choco.makeIntVar("x", 1,10, CPOptions.V_NO_DECISION);
-        IntegerVariable y = Choco.makeIntVar("y", 1,10, CPOptions.V_NO_DECISION);
-        IntegerVariable z = Choco.makeIntVar("z", 1,10, CPOptions.V_NO_DECISION);
+        IntegerVariable x = Choco.makeIntVar("x", 1,10, Options.V_NO_DECISION);
+        IntegerVariable y = Choco.makeIntVar("y", 1,10, Options.V_NO_DECISION);
+        IntegerVariable z = Choco.makeIntVar("z", 1,10, Options.V_NO_DECISION);
 
         model.addConstraint(Choco.times(x,y,z));
 
@@ -326,7 +326,7 @@ public class VariablesTest {
         CPModel model = new CPModel();
         IntegerVariable x = Choco.makeIntVar("x", 1,10);
         IntegerVariable y = Choco.makeIntVar("y", 1,10);
-        IntegerVariable z = Choco.makeIntVar("z", 1,10, CPOptions.V_NO_DECISION);
+        IntegerVariable z = Choco.makeIntVar("z", 1,10, Options.V_NO_DECISION);
 
         model.addConstraint(Choco.times(x,y,z));
 

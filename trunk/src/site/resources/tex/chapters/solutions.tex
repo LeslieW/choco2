@@ -41,21 +41,21 @@ Source code: \href{media/zip/exdonaldgeraldrobert.zip}{ExDonaldGeraldRobert.zip}
   Model model = new CPModel();
   
   // Declare every letter as a variable
-  IntegerVariable d = makeIntVar("d", 0, 9, CPOptions.V_ENUM);
-  IntegerVariable o = makeIntVar("o", 0, 9, CPOptions.V_ENUM);
-  IntegerVariable n = makeIntVar("n", 0, 9, CPOptions.V_ENUM);
-  IntegerVariable a = makeIntVar("a", 0, 9, CPOptions.V_ENUM);
-  IntegerVariable l = makeIntVar("l", 0, 9, CPOptions.V_ENUM);
-  IntegerVariable g = makeIntVar("g", 0, 9, CPOptions.V_ENUM);
-  IntegerVariable e = makeIntVar("e", 0, 9, CPOptions.V_ENUM);
-  IntegerVariable r = makeIntVar("r", 0, 9, CPOptions.V_ENUM);
-  IntegerVariable b = makeIntVar("b", 0, 9, CPOptions.V_ENUM);
-  IntegerVariable t = makeIntVar("t", 0, 9, CPOptions.V_ENUM);
+  IntegerVariable d = makeIntVar("d", 0, 9, Options.V_ENUM);
+  IntegerVariable o = makeIntVar("o", 0, 9, Options.V_ENUM);
+  IntegerVariable n = makeIntVar("n", 0, 9, Options.V_ENUM);
+  IntegerVariable a = makeIntVar("a", 0, 9, Options.V_ENUM);
+  IntegerVariable l = makeIntVar("l", 0, 9, Options.V_ENUM);
+  IntegerVariable g = makeIntVar("g", 0, 9, Options.V_ENUM);
+  IntegerVariable e = makeIntVar("e", 0, 9, Options.V_ENUM);
+  IntegerVariable r = makeIntVar("r", 0, 9, Options.V_ENUM);
+  IntegerVariable b = makeIntVar("b", 0, 9, Options.V_ENUM);
+  IntegerVariable t = makeIntVar("t", 0, 9, Options.V_ENUM);
   
   // Declare every name as a variable  
-  IntegerVariable donald = makeIntVar("donald", 0, 1000000,CPOptions.V_BOUND);
-  IntegerVariable gerald = makeIntVar("gerald", 0, 1000000,CPOptions.V_BOUND);
-  IntegerVariable robert = makeIntVar("robert", 0, 1000000,CPOptions.V_BOUND);
+  IntegerVariable donald = makeIntVar("donald", 0, 1000000,Options.V_BOUND);
+  IntegerVariable gerald = makeIntVar("gerald", 0, 1000000,Options.V_BOUND);
+  IntegerVariable robert = makeIntVar("robert", 0, 1000000,Options.V_BOUND);
   
   // Array of coefficients
   int[] c = new int[]{100000, 10000, 1000, 100, 10, 1}; 
@@ -99,7 +99,7 @@ Source code: \href{media/zip/exsudoku.zip}{ExSudoku.zip}
   Model m = new CPModel();
   
   // Build an array of integer variables
-  IntegerVariable[][] rows = makeIntVarArray("rows", n, n, 1, n,CPOptions.V_ENUM);
+  IntegerVariable[][] rows = makeIntVarArray("rows", n, n, 1, n,Options.V_ENUM);
 	
   // Not equal constraint between each case of a row
   for (int i = 0; i < n; i++) {
@@ -146,7 +146,7 @@ The \emph{allDifferent} constraint can be used to remplace every disequality con
   Model m = new CPModel();
   // Declare variables
   IntegerVariable[][] cols = new IntegerVariable[n][n];
-  IntegerVariable[][] rows = makeIntVarArray("rows", n, n, 1, n,CPOptions.V_ENUM);
+  IntegerVariable[][] rows = makeIntVarArray("rows", n, n, 1, n,Options.V_ENUM);
   
   // Channeling between rows and columns
   for (int i = 0; i < n; i++) {
@@ -202,10 +202,10 @@ Source code: \href{media/zip/exknapsack.zip}{ExKnapSack.zip}
 \begin{lstlisting}
 	Model m = new CPModel();
 	
-	obj1 = makeIntVar("obj1", 0, 5,CPOptions.V_ENUM);
-	obj2 = makeIntVar("obj2", 0, 7,CPOptions.V_ENUM);
-	obj3 = makeIntVar("obj3", 0, 10,CPOptions.V_ENUM);
-	c = makeIntVar("cost", 1, 1000000,CPOptions.V_BOUND);
+	obj1 = makeIntVar("obj1", 0, 5,Options.V_ENUM);
+	obj2 = makeIntVar("obj2", 0, 7,Options.V_ENUM);
+	obj3 = makeIntVar("obj3", 0, 10,Options.V_ENUM);
+	c = makeIntVar("cost", 1, 1000000,Options.V_BOUND);
 	
 	int capacity = 34;
 	int[] volumes = new int[]{7, 5, 3};
@@ -247,7 +247,7 @@ Source code: \href{media/zip/exqueen.zip}{ExQueen.zip}
   
   IntegerVariable[] queens = new IntegerVariable[n];
   for (int i = 0; i < n; i++) {
-      queens[i] = makeIntVar("Q" + i, 1, n,CPOptions.V_ENUM);
+      queens[i] = makeIntVar("Q" + i, 1, n,Options.V_ENUM);
   }
 	
   for (int i = 0; i < n; i++) {
@@ -276,8 +276,8 @@ Source code: \href{media/zip/exqueen.zip}{ExQueen.zip}
   IntegerVariable[] queens = new IntegerVariable[n];
   IntegerVariable[] queensdual = new IntegerVariable[n];
   for (int i = 0; i < n; i++) {
-      queens[i] = makeIntVar("Q" + i, 1, n,CPOptions.V_ENUM);
-      queensdual[i] = makeIntVar("QD" + i, 1, n,CPOptions.V_ENUM);
+      queens[i] = makeIntVar("Q" + i, 1, n,Options.V_ENUM);
+      queensdual[i] = makeIntVar("QD" + i, 1, n,Options.V_ENUM);
   }
 	
   for (int i = 0; i < n; i++) {
@@ -372,12 +372,12 @@ The value selector strategy has to be created as follow:
   IntegerVariable[] diag1dual = new IntegerVariable[n];
   IntegerVariable[] diag2dual = new IntegerVariable[n];
   for (int i = 0; i < n; i++) {
-      queens[i] = makeIntVar("Q" + i, 1, n,CPOptions.V_ENUM);
-      queensdual[i] = makeIntVar("QD" + i, 1, n,CPOptions.V_ENUM);
-      diag1[i] = makeIntVar("D1" + i, 1, 2 * n,CPOptions.V_ENUM);
-      diag2[i] = makeIntVar("D2" + i, -n, n,CPOptions.V_ENUM);
-      diag1dual[i] = makeIntVar("D1" + i, 1, 2 * n,CPOptions.V_ENUM);
-      diag2dual[i] = makeIntVar("D2" + i, -n, n,CPOptions.V_ENUM);
+      queens[i] = makeIntVar("Q" + i, 1, n,Options.V_ENUM);
+      queensdual[i] = makeIntVar("QD" + i, 1, n,Options.V_ENUM);
+      diag1[i] = makeIntVar("D1" + i, 1, 2 * n,Options.V_ENUM);
+      diag2[i] = makeIntVar("D2" + i, -n, n,Options.V_ENUM);
+      diag1dual[i] = makeIntVar("D1" + i, 1, 2 * n,Options.V_ENUM);
+      diag2dual[i] = makeIntVar("D2" + i, -n, n,Options.V_ENUM);
   }
 	
   m.addConstraint(allDifferent(queens));

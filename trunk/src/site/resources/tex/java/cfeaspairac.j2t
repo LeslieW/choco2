@@ -8,6 +8,6 @@
         couples2.add(new int[]{4, 1});
         IntegerVariable v1 = makeIntVar("v1", 1, 4);
         IntegerVariable v2 = makeIntVar("v2", 1, 4);
-        m.addConstraint(feasPairAC(CPOptions.C_EXT_AC32, v1, v2, couples2));
+        m.addConstraint(feasPairAC(Options.C_EXT_AC32, v1, v2, couples2));
         s.read(m);
         s.solveAll();

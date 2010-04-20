@@ -1,7 +1,7 @@
 package samples;
 
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.constraints.Constraint;
@@ -32,7 +32,7 @@ public class MagicSeries extends PatternExample {
 	@Override
 	public void buildModel() {
 		_m = new CPModel();
-		magicSerie = makeIntVarArray("s", n, 1, n*n, CPOptions.V_ENUM);
+		magicSerie = makeIntVarArray("s", n, 1, n*n, Options.V_ENUM);
 		magicSumConstraint = eq ( sum(magicSerie), magicSum);
 		_m.addConstraint( magicSumConstraint);
 		for (int i = 1; i < magicSerie.length; i++) {

@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package parser.chocogen;
 
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -117,7 +117,7 @@ public class ChocoFactory {
         Map pcstr = parser.getMapOfConstraints();
 		Iterator it = pcstr.keySet().iterator();
         cstrs = new ArrayList();
-        String options = (forceExp? CPOptions.E_DECOMP:"");
+        String options = (forceExp? Options.E_DECOMP:"");
         while (it.hasNext()) {
 			PConstraint pc = (PConstraint) pcstr.get(it.next());
 			makeModelConstraint(pc, options);

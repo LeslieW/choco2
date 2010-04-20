@@ -23,7 +23,7 @@
 package maif.cp;
 
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import maif.entities.Person;
@@ -76,7 +76,7 @@ public class MaifModel extends CPModel {
             for (IntegerVariable v : aDay)
                 varMap.put(v,new Preference(this.days.get(i),(k++)));
             perday.add(aDay);
-            this.addConstraint(allDifferent(CPOptions.C_ALLDIFFERENT_BC,aDay));
+            this.addConstraint(allDifferent(Options.C_ALLDIFFERENT_BC,aDay));
 
             //On Supprime les gens en vacances :)
             for (Person p : this.people)
@@ -95,11 +95,11 @@ public class MaifModel extends CPModel {
         card = makeIntVarArray("card",this.people.size(),0,this.dayVars.length);
 
         this.addConstraint(globalCardinality(dayVars,card, 0));
-        max = makeIntVar("max",0,this.dayVars.length, CPOptions.V_BOUND);
+        max = makeIntVar("max",0,this.dayVars.length, Options.V_BOUND);
         this.addConstraint(max(card,max));
-        min = makeIntVar("max",0,this.dayVars.length,CPOptions.V_BOUND);
+        min = makeIntVar("max",0,this.dayVars.length, Options.V_BOUND);
         this.addConstraint(min(card,min));
-        deviation = makeIntVar("max",0,this.dayVars.length,CPOptions.V_BOUND);
+        deviation = makeIntVar("max",0,this.dayVars.length, Options.V_BOUND);
         this.addConstraint(eq(deviation,minus(max,min)));
 
         HashSet<Person> prior = new HashSet<Person>();

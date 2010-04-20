@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.preprocessor;
 
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.model.preprocessor.ModelDetectorFactory;
 import choco.cp.solver.CPSolver;
@@ -160,7 +160,7 @@ public class PreProcessCPSolver extends CPSolver {
         mod2sol.readVariables(model);
 
         getMod2Sol().readBBDecisionVariables();
-        getMod2Sol().readConstraints(model, !optionsSet.contains(CPOptions.S_MULTIPLE_READINGS));
+        getMod2Sol().readConstraints(model, !optionsSet.contains(Options.S_MULTIPLE_READINGS));
     }
 
     /**

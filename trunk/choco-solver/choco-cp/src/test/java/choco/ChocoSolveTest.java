@@ -23,7 +23,6 @@
 package choco;
 
 import static choco.Choco.*;
-import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
@@ -69,7 +68,7 @@ public class ChocoSolveTest {
         x = makeIntVar("X", 1, 5);
         y = makeIntVar("Y", 1, 5);
         z = makeIntVar("Z", 1, 5);
-        m.addVariables(CPOptions.V_BOUND, x, y, z);
+        m.addVariables(Options.V_BOUND, x, y, z);
         A = geq(x, plus(y, 1));
         B = geq(y, plus(z, 1));
     }

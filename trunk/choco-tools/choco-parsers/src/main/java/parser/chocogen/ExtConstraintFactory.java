@@ -24,7 +24,7 @@ package parser.chocogen;
 
 import choco.Choco;
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.automaton.DFA;
@@ -117,7 +117,7 @@ public class ExtConstraintFactory extends ObjectFactory {
                     DFA dfa = prel.getDfa();
                     if (lrel != null) {
                         if (prel.getLrel() instanceof TuplesTable)
-                            extct[0] = relationTupleAC(CPOptions.C_EXT_AC32, intvars, prel.getLrel());
+                            extct[0] = relationTupleAC(Options.C_EXT_AC32, intvars, prel.getLrel());
                         else
                             extct[0] = relationTupleAC("cp:ac"+algorithmAC, intvars, prel.getLrel());
                     } else {

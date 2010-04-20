@@ -23,7 +23,7 @@
 package samples.seminar;
 
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
@@ -82,7 +82,7 @@ public class ExDonaldGeraldRobert {
         _donald = makeIntVar("donald", 0, 1000000);
         _gerald = makeIntVar("gerald", 0, 1000000);
         _robert = makeIntVar("robert", 0, 1000000);
-        model.addVariables(CPOptions.V_BOUND, _donald, _gerald, _robert);
+        model.addVariables(Options.V_BOUND, _donald, _gerald, _robert);
 
         // Array of coefficients
         int[] coeff = new int[]{100000, 10000, 1000, 100, 10, 1};

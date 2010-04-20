@@ -31,7 +31,7 @@ package samples.Examples;
 
 import choco.Choco;
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.branching.AssignVar;
@@ -65,7 +65,7 @@ public class Queen extends PatternExample {
 		for (int i = 0; i < n; i++) {
 			queens[i] = makeIntVar("Q" + i, 1, n);
 		}
-		_m.addConstraint(CPOptions.C_ALLDIFFERENT_BC, Choco.allDifferent(queens));
+		_m.addConstraint(Options.C_ALLDIFFERENT_BC, Choco.allDifferent(queens));
 
 		// all different constraints
 		for (int i = 0; i < n; i++) {

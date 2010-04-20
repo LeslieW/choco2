@@ -24,7 +24,7 @@ package choco.model.constraints.integer;
 
 import choco.Choco;
 import static choco.Choco.makeIntVar;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.GreaterOrEqualXYC;
@@ -66,7 +66,7 @@ public class GreaterOrEqualXYCTest {
         x = makeIntVar("X", 1, 5);
         y = makeIntVar("Y", 1, 5);
         z = makeIntVar("Z", 1, 5);
-        m.addVariables(CPOptions.V_BOUND,x, y, z);
+        m.addVariables(Options.V_BOUND,x, y, z);
         s.read(m);
         c1 = new GreaterOrEqualXYC(s.getVar(x), s.getVar(y), 1);
         c2 = new GreaterOrEqualXYC(s.getVar(y), s.getVar(z), 2);

@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver;
 
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
 import choco.cp.solver.preprocessor.detectors.ExpressionDetector;
@@ -215,16 +215,16 @@ public class CPModelToCPSolver {
      * @param var the solver variable
 	 */
 	private void checkOptions(final Variable v, final Var var) {
-		if (v.getOptions().contains(CPOptions.V_DECISION)) {
+		if (v.getOptions().contains(Options.V_DECISION)) {
 			LOGGER.warning("CPOptions.V_DECISION or \"cp:decision\" option are deprecated and have no longer effect on decision variables pool!");
 		}else
-        if (v.getOptions().contains(CPOptions.V_NO_DECISION)) {
+        if (v.getOptions().contains(Options.V_NO_DECISION)) {
 			removeFromDecisionPool(var);
 		}
-		if(v.getOptions().contains(CPOptions.V_OBJECTIVE)){
+		if(v.getOptions().contains(Options.V_OBJECTIVE)){
 			cpsolver.setObjective(var);
 		}
-		if(v.getOptions().contains(CPOptions.V_MAKESPAN)){
+		if(v.getOptions().contains(Options.V_MAKESPAN)){
 			cpsolver.setMakespan(var);
 		}
 	}
@@ -284,11 +284,11 @@ public class CPModelToCPSolver {
 		while (it.hasNext()) {
 			ic = it.next();
 			if (!cpsolver.mapconstraints.containsKey(ic.getIndex())) {
-				if (ic.getOptions().contains(CPOptions.E_DECOMP)) {
+				if (ic.getOptions().contains(Options.E_DECOMP)) {
 					decomp = true;
 				}
 				c = readModelConstraint(ic, decomp);
-				if (ic.getOptions().contains(CPOptions.C_POST_PONED)) {
+				if (ic.getOptions().contains(Options.C_POST_PONED)) {
                     postponedConstraint.add(c);
                 }else{
                     cpsolver.post(c);
@@ -413,7 +413,7 @@ public class CPModelToCPSolver {
 		c.setScope(cpsolver);
         if (ic.getOptions().contains("cp:ac")) {
             c.setLevelAc(0);
-        } else if (ic.getOptions().contains(CPOptions.C_EXT_FC)) {
+        } else if (ic.getOptions().contains(Options.C_EXT_FC)) {
             c.setLevelAc(1);
         }
         //important step to deal properly with linear equation

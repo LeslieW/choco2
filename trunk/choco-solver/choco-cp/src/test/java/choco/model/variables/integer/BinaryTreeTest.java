@@ -23,7 +23,7 @@
 package choco.model.variables.integer;
 
 import choco.Choco;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.variables.integer.IntervalBTreeDomain;
@@ -61,7 +61,7 @@ public class BinaryTreeTest {
     m = new CPModel();
     x = Choco.makeIntVar("X", 1, 100);
     y = Choco.makeIntVar("Y", 1, 15);
-        m.addVariables(CPOptions.V_BTREE, x, y);
+        m.addVariables(Options.V_BTREE, x, y);
     m.addVariables(x, y);
     s = new CPSolver();
     s.read(m);
@@ -181,7 +181,7 @@ public class BinaryTreeTest {
     @Test
     public void test4(){
         y = Choco.makeIntVar("Y", 1, 8);
-        m.addVariable(CPOptions.V_BTREE, y);
+        m.addVariable(Options.V_BTREE, y);
         m.addVariables(x, y);
         s = new CPSolver();
         s.read(m);
@@ -227,7 +227,7 @@ public class BinaryTreeTest {
     @Test
     public void test5(){
         y = Choco.makeIntVar("Y", 0, 12);
-        m.addVariable(CPOptions.V_BTREE, y);
+        m.addVariable(Options.V_BTREE, y);
         m.addVariable(y);
         s = new CPSolver();
         s.read(m);
@@ -258,7 +258,7 @@ public class BinaryTreeTest {
 
     @Test
      public void test_patakm() {
-        String option = CPOptions.V_BTREE;
+        String option = Options.V_BTREE;
         for(int i = 0; i < 1000; i++){
             Random r = new Random(i);
             Model m = new CPModel();

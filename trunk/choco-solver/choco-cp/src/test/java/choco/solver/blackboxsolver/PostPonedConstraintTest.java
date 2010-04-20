@@ -23,7 +23,7 @@
 package choco.solver.blackboxsolver;
 
 import choco.Choco;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.util.iterators.DisposableIterator;
@@ -52,7 +52,7 @@ public class PostPonedConstraintTest {
 
         final Model m = new CPModel();
 
-        m.addConstraint(CPOptions.C_POST_PONED, c1);
+        m.addConstraint(Options.C_POST_PONED, c1);
         m.addConstraint(c2);
 
         final Solver s= new CPSolver();

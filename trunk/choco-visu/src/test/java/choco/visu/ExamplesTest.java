@@ -22,43 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.visu;
 
-import static choco.Choco.allDifferent;
-import static choco.Choco.eq;
-import static choco.Choco.leq;
-import static choco.Choco.makeIntVar;
-import static choco.Choco.makeIntVarArray;
-import static choco.Choco.minus;
-import static choco.Choco.neq;
-import static choco.Choco.plus;
-import static choco.Choco.scalar;
-import static choco.Choco.sum;
-import static choco.visu.components.papplets.ChocoPApplet.FULLDOMAIN;
-import static choco.visu.components.papplets.ChocoPApplet.GRID;
-import static choco.visu.components.papplets.ChocoPApplet.SUDOKU;
-import static choco.visu.components.papplets.ChocoPApplet.TREESEARCH;
-import static samples.seminar.ExDonaldGeraldRobert._a;
-import static samples.seminar.ExDonaldGeraldRobert._b;
-import static samples.seminar.ExDonaldGeraldRobert._d;
-import static samples.seminar.ExDonaldGeraldRobert._e;
-import static samples.seminar.ExDonaldGeraldRobert._g;
-import static samples.seminar.ExDonaldGeraldRobert._l;
-import static samples.seminar.ExDonaldGeraldRobert._n;
-import static samples.seminar.ExDonaldGeraldRobert._o;
-import static samples.seminar.ExDonaldGeraldRobert._r;
-import static samples.seminar.ExDonaldGeraldRobert._t;
-import static samples.seminar.ExDonaldGeraldRobert.modelIt2;
-import gnu.trove.TIntObjectHashMap;
-import gnu.trove.TObjectIntHashMap;
-
-import java.awt.GraphicsEnvironment;
-import java.util.logging.Logger;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import samples.Picross;
 import choco.Choco;
-import choco.cp.CPOptions;
+import static choco.Choco.*;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.preprocessor.PreProcessCPSolver;
@@ -71,11 +37,17 @@ import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.visu.components.panels.VarChocoPanel;
-import choco.visu.papplet.ColoringPApplet;
-import choco.visu.papplet.DonaldAndFriendsPApplet;
-import choco.visu.papplet.KnapsackPApplet;
-import choco.visu.papplet.PicrossPApplet;
-import choco.visu.papplet.QueenBoardPApplet;
+import static choco.visu.components.papplets.ChocoPApplet.*;
+import choco.visu.papplet.*;
+import gnu.trove.TIntObjectHashMap;
+import gnu.trove.TObjectIntHashMap;
+import org.junit.Before;
+import org.junit.Test;
+import samples.Picross;
+import static samples.seminar.ExDonaldGeraldRobert.*;
+
+import java.awt.*;
+import java.util.logging.Logger;
 
 /*
  * Created by IntelliJ IDEA.
@@ -559,7 +531,7 @@ public class ExamplesTest {
         int n = 8;
         IntegerVariable[] queens = new IntegerVariable[n];
         for (int i = 0; i < n; i++) {
-            queens[i] = makeIntVar("Q" + (i+1), 1, n,CPOptions.V_ENUM);
+            queens[i] = makeIntVar("Q" + (i+1), 1, n, Options.V_ENUM);
         }
 
         for (int i = 0; i < n; i++) {
@@ -626,7 +598,7 @@ public class ExamplesTest {
         IntegerVariable obj3 = makeIntVar("obj3", 0, 10);
         IntegerVariable c = makeIntVar("power", 0, 40);
         IntegerVariable capa = makeIntVar("capa", 0, 34);
-        m.addVariable(CPOptions.V_BOUND, c);
+        m.addVariable(Options.V_BOUND, c);
 
         int[] volumes = new int[]{7, 5, 3};
         int[] energy = new int[]{6, 4, 2};

@@ -23,7 +23,7 @@
 package samples.scheduling;
 
 import choco.Choco;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.task.SetTimes;
@@ -88,7 +88,7 @@ public class OpenShopExample {
 	public void generateModel() {
 		model=new CPModel();
 		//TASKS
-		tasks = Choco.makeTaskVarArray("T", 0, MAX_DURATION*n, durations, CPOptions.V_BOUND);
+		tasks = Choco.makeTaskVarArray("T", 0, MAX_DURATION*n, durations, Options.V_BOUND);
 		//RESOURCES
 		for (int i = 0; i < n; i++) {
 			machines[i] = Choco.disjunctive(tasks[i]);

@@ -23,7 +23,7 @@
 package samples.documentation;
 
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.Model;
@@ -63,8 +63,8 @@ public class Code4Doc1 {
     public void oabs() {
         //totex oabs
         Model m = new CPModel();
-        IntegerVariable x = makeIntVar("x", 1, 5, CPOptions.V_ENUM);
-        IntegerVariable y = makeIntVar("y", -5, 5, CPOptions.V_ENUM);
+        IntegerVariable x = makeIntVar("x", 1, 5, Options.V_ENUM);
+        IntegerVariable y = makeIntVar("y", -5, 5, Options.V_ENUM);
         m.addConstraint(eq(abs(x), y));
         Solver s = new CPSolver();
         s.read(m);

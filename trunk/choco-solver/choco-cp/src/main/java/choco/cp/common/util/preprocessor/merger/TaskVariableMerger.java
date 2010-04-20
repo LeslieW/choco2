@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.common.util.preprocessor.merger;
 
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import gnu.trove.THashSet;
@@ -83,17 +83,17 @@ public class TaskVariableMerger {
             return false;
         }
         final THashSet<String> toptionsSet = new THashSet<String>();
-        if (d.getOptions().contains(CPOptions.V_DECISION)
-                || optionsSet.contains(CPOptions.V_DECISION)) {
-            toptionsSet.add(CPOptions.V_DECISION);
+        if (d.getOptions().contains(Options.V_DECISION)
+                || optionsSet.contains(Options.V_DECISION)) {
+            toptionsSet.add(Options.V_DECISION);
         }
-        if (d.getOptions().contains(CPOptions.V_NO_DECISION)
-                || optionsSet.contains(CPOptions.V_NO_DECISION)) {
-            toptionsSet.add(CPOptions.V_NO_DECISION);
+        if (d.getOptions().contains(Options.V_NO_DECISION)
+                || optionsSet.contains(Options.V_NO_DECISION)) {
+            toptionsSet.add(Options.V_NO_DECISION);
         }
-        if (d.getOptions().contains(CPOptions.V_OBJECTIVE)
-                || optionsSet.contains(CPOptions.V_OBJECTIVE)) {
-            toptionsSet.add(CPOptions.V_OBJECTIVE);
+        if (d.getOptions().contains(Options.V_OBJECTIVE)
+                || optionsSet.contains(Options.V_OBJECTIVE)) {
+            toptionsSet.add(Options.V_OBJECTIVE);
         }
         this.optionsSet = toptionsSet;
         return true;

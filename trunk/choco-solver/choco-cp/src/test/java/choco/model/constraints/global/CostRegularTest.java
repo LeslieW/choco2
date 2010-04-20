@@ -1,7 +1,7 @@
 package choco.model.constraints.global;
 
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
@@ -43,8 +43,8 @@ public class CostRegularTest {
 
     @Test
     public void testSimpleAuto() {
-        IntegerVariable[] vars = makeIntVarArray("x",10,0,2,CPOptions.V_ENUM);
-        IntegerVariable z = makeIntVar("z",3,4, CPOptions.V_BOUND);
+        IntegerVariable[] vars = makeIntVarArray("x",10,0,2, Options.V_ENUM);
+        IntegerVariable z = makeIntVar("z",3,4, Options.V_BOUND);
         int n = vars.length;
 
         FiniteAutomaton auto = new FiniteAutomaton();
@@ -81,8 +81,8 @@ public class CostRegularTest {
     @Test
     public void isCorrect()  {
 
-        IntegerVariable[] vars = makeIntVarArray("x",12,0,2,CPOptions.V_ENUM);
-        IntegerVariable z = makeIntVar("z",10,10,CPOptions.V_BOUND);
+        IntegerVariable[] vars = makeIntVarArray("x",12,0,2, Options.V_ENUM);
+        IntegerVariable z = makeIntVar("z",10,10, Options.V_BOUND);
         int n = vars.length;
 
         FiniteAutomaton auto = new FiniteAutomaton();
@@ -165,8 +165,8 @@ public class CostRegularTest {
     public void isCorrect2()
     {
 
-        IntegerVariable[] vars = makeIntVarArray("x",13,0,2,CPOptions.V_ENUM);
-        IntegerVariable z = makeIntVar("z",4,6,CPOptions.V_BOUND);
+        IntegerVariable[] vars = makeIntVarArray("x",13,0,2, Options.V_ENUM);
+        IntegerVariable z = makeIntVar("z",4,6, Options.V_BOUND);
         int n = vars.length;
 
         FiniteAutomaton auto = new FiniteAutomaton();
@@ -224,8 +224,8 @@ public class CostRegularTest {
             }
         }
 
-        IntegerVariable[] v2 = makeIntVarArray("x",n,0,2,CPOptions.V_ENUM);
-        IntegerVariable z2 = makeIntVar("z",n/2,n/2+1,CPOptions.V_BOUND);
+        IntegerVariable[] v2 = makeIntVarArray("x",n,0,2, Options.V_ENUM);
+        IntegerVariable z2 = makeIntVar("z",n/2,n/2+1, Options.V_BOUND);
 
         m.addConstraint(costRegular(v2,z2,auto,c2));
 

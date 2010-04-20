@@ -24,7 +24,7 @@ package choco.solver.search;
 
 import static choco.Choco.allDifferent;
 import static choco.Choco.makeIntVarArray;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.branching.AssignVar;
@@ -56,7 +56,7 @@ public class LimitTest {
 		//ChocoLogging.setVerbosity(Verbosity.SEARCH);
 		model=new CPModel();
 		IntegerVariable[] vars=makeIntVarArray("v", SIZE, 0, SIZE);
-		model.addConstraint(CPOptions.C_ALLDIFFERENT_AC,allDifferent(vars));
+		model.addConstraint(Options.C_ALLDIFFERENT_AC,allDifferent(vars));
 		solver=new CPSolver();
 		solver.read(model);
         solver.attachGoal(new AssignVar(new MinDomain(solver), new IncreasingDomain()));

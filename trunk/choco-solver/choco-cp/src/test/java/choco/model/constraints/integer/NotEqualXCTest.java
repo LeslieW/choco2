@@ -24,7 +24,7 @@ package choco.model.constraints.integer;
 
 import static choco.Choco.makeIntVar;
 import static choco.Choco.neq;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
@@ -64,7 +64,7 @@ public class NotEqualXCTest  {
         s = new CPSolver();
     x = makeIntVar("X", 1, 5);
     y = makeIntVar("Y", 1, 5);
-        m.addVariable(CPOptions.V_BOUND, y);
+        m.addVariable(Options.V_BOUND, y);
     c1 = neq(x, 3);
     c2 = neq(y, 3);
   }

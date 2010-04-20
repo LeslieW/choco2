@@ -23,7 +23,7 @@
 package choco.solver.branch;
 
 import choco.Choco;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.branching.AssignVar;
@@ -40,28 +40,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- * ***********************************************
- * _       _                            *
- * |  °(..)  |                           *
- * |_  J||L _|        ChocoSolver.net    *
- * *
- * Choco is a java library for constraint     *
- * satisfaction problems (CSP), constraint    *
- * programming (CP) and explanation-based     *
- * constraint solving (e-CP). It is built     *
- * on a event-based propagation mechanism     *
- * with backtrackable structures.             *
- * *
- * Choco is an open-source software,          *
- * distributed under a BSD licence            *
- * and hosted by sourceforge.net              *
- * *
- * + website : http://choco.emn.fr            *
- * + support : choco@emn.fr                   *
- * *
- * Copyright (C) F. Laburthe,                 *
- * N. Jussien    1999-2008      *
- * *************************************************
  * User:    charles
  * Date:    9 sept. 2008
  */
@@ -86,7 +64,7 @@ public class StrategyTest {
     public void badSelectors(){
         Model m = new CPModel();
         Solver s = new CPSolver();
-        IntegerVariable v1 = Choco.makeIntVar("v1", 0, 2, CPOptions.V_ENUM);
+        IntegerVariable v1 = Choco.makeIntVar("v1", 0, 2, Options.V_ENUM);
         IntegerVariable v2 = Choco.makeIntVar("v2", 0, 3);
         m.addConstraint(Choco.leq(v1, v2));
         s.read(m);

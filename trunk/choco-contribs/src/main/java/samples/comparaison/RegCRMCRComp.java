@@ -23,7 +23,7 @@
 package samples.comparaison;
 
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
@@ -126,16 +126,16 @@ public class RegCRMCRComp
 
     private void launchRegular()
     {
-        objectif = makeIntVar("obj",0,1000*vars.length, CPOptions.V_BOUND);
+        objectif = makeIntVar("obj",0,1000*vars.length, Options.V_BOUND);
         CPModel m = new CPModel();
         m.addVariable(objectif);
 
         m.addConstraint(regular(automaton,vars));
 
-        IntegerVariable[] cvar  = makeIntVarArray("c",vars.length,0,1000,CPOptions.V_BOUND);
+        IntegerVariable[] cvar  = makeIntVarArray("c",vars.length,0,1000, Options.V_BOUND);
         IntegerVariable[] gccvar = makeIntVarArray("gcc",3,0,vars.length);
-        IntegerVariable nbTravail = makeIntVar("trav",6,8,CPOptions.V_BOUND);
-        IntegerVariable nbRepos = makeIntVar("rep",costs.length-8,costs.length-6,CPOptions.V_BOUND);
+        IntegerVariable nbTravail = makeIntVar("trav",6,8, Options.V_BOUND);
+        IntegerVariable nbRepos = makeIntVar("rep",costs.length-8,costs.length-6, Options.V_BOUND);
 
         for (int i  = 0 ; i < vars.length ; i++)
         {
@@ -169,14 +169,14 @@ public class RegCRMCRComp
 
     private void launchCRegular()
     {
-        objectif = makeIntVar("obj",0,1000*vars.length,CPOptions.V_BOUND);
+        objectif = makeIntVar("obj",0,1000*vars.length, Options.V_BOUND);
         CPModel m = new CPModel();
         m.addVariable(objectif);
         m.addConstraint(costRegular(vars,objectif,automaton,costs));
 
         IntegerVariable[] gccvar = makeIntVarArray("gcc",3,0,vars.length);
-        IntegerVariable nbTravail = makeIntVar("trav",6,8,CPOptions.V_BOUND);
-        IntegerVariable nbRepos = makeIntVar("rep",costs.length-8,costs.length-6,CPOptions.V_BOUND);
+        IntegerVariable nbTravail = makeIntVar("trav",6,8, Options.V_BOUND);
+        IntegerVariable nbRepos = makeIntVar("rep",costs.length-8,costs.length-6, Options.V_BOUND);
         m.addConstraint(globalCardinality(vars,gccvar, 0));
         m.addConstraint(eq(nbTravail,(plus(gccvar[1],gccvar[2]))));
         m.addConstraint(eq(nbRepos,(gccvar[0])));
@@ -196,12 +196,12 @@ public class RegCRMCRComp
 
     private void launchMCRegular()
     {
-        objectif = makeIntVar("obj",0,1000*vars.length,CPOptions.V_BOUND);
+        objectif = makeIntVar("obj",0,1000*vars.length, Options.V_BOUND);
         CPModel m = new CPModel();
         m.addVariable(objectif);
 
-        IntegerVariable nbTravail = makeIntVar("trav",6,8,CPOptions.V_BOUND);
-        IntegerVariable nbRepos = makeIntVar("rep",costs.length-8,costs.length-6,CPOptions.V_BOUND);
+        IntegerVariable nbTravail = makeIntVar("trav",6,8, Options.V_BOUND);
+        IntegerVariable nbRepos = makeIntVar("rep",costs.length-8,costs.length-6, Options.V_BOUND);
 
 
         int[][][] csts = new int[costs.length][costs[0].length][3];

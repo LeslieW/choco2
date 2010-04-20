@@ -23,7 +23,7 @@
 package choco.solver.search;
 
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valiterator.DecreasingDomain;
@@ -70,7 +70,7 @@ public class QueensTest {
     }
 
     private IntegerVariable createVar(String name, int min, int max) {
-        if (LINKED) return makeIntVar(name, min, max, CPOptions.V_LINK);
+        if (LINKED) return makeIntVar(name, min, max, Options.V_LINK);
         return makeIntVar(name, min, max);
     }
 

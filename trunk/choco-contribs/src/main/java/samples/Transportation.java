@@ -1,7 +1,7 @@
 package samples;
 
 import choco.Choco;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.MaxVal;
@@ -99,7 +99,7 @@ public class Transportation extends PatternExample {
 	@Override
 	public void buildModel() {
 		_m = new CPModel();
-		shipping = Choco.makeIntVarArray("s", n, m, 0, MathUtils.max(stocks), CPOptions.V_BOUND);
+		shipping = Choco.makeIntVarArray("s", n, m, 0, MathUtils.max(stocks), Options.V_BOUND);
 		for (int i = 0; i < n; i++) {
 			//The total amount shipped from origin i must be equals to the sum of amount going from it to all destinations
 			_m.addConstraint( Choco.eq( Choco.sum(shipping[i]), stocks[i]));
@@ -109,8 +109,8 @@ public class Transportation extends PatternExample {
 			_m.addConstraint( Choco.eq( Choco.sum( ArrayUtils.getColumn(shipping, i)), demands[i]));
 		}
 		//objective function
-		objective = Choco.makeIntVar("total_cost", 0, MathUtils.max(costs) * totalStockOrDemand, CPOptions.V_OBJECTIVE,
-                CPOptions.V_BOUND, CPOptions.V_NO_DECISION);
+		objective = Choco.makeIntVar("total_cost", 0, MathUtils.max(costs) * totalStockOrDemand, Options.V_OBJECTIVE,
+                Options.V_BOUND, Options.V_NO_DECISION);
 		IntegerExpressionVariable objExp = Choco.constant(0);
 		for (int i = 0; i < n; i++) {
 			objExp = Choco.plus(objExp, Choco.scalar(shipping[i], costs[i]));

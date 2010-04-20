@@ -23,7 +23,7 @@
 package choco.model.constraints.integer;
 
 import choco.Choco;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.Model;
@@ -63,9 +63,9 @@ public class EuclideanDivisionXYZTest {
 
                 Model _m = new CPModel();
 
-                IntegerVariable _x = Choco.makeIntVar("x", x1, y1, CPOptions.V_BOUND);
-                IntegerVariable _y = Choco.makeIntVar("y", x2, y2, CPOptions.V_BOUND);
-                IntegerVariable _z = Choco.makeIntVar("z", x3, y3, CPOptions.V_BOUND);
+                IntegerVariable _x = Choco.makeIntVar("x", x1, y1, Options.V_BOUND);
+                IntegerVariable _y = Choco.makeIntVar("y", x2, y2, Options.V_BOUND);
+                IntegerVariable _z = Choco.makeIntVar("z", x3, y3, Options.V_BOUND);
 
                 _m.addConstraint(Choco.eq(_z, Choco.div(_x, _y)));
                 Solver _s = new CPSolver();

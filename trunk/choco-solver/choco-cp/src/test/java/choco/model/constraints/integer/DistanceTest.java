@@ -23,7 +23,7 @@
 package choco.model.constraints.integer;
 
 import static choco.Choco.*;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
@@ -164,7 +164,7 @@ public class DistanceTest {
 			IntegerVariable v1 = makeIntVar("v1", 0, 10);
 			IntegerVariable v2 = makeIntVar("v2", 0, 10);
 			IntegerVariable v3 = makeIntVar("v3", 0, 10);
-            m.addVariables(CPOptions.V_BOUND, v0, v1, v2, v3);
+            m.addVariables(Options.V_BOUND, v0, v1, v2, v3);
             m.addConstraint(distanceEQ(v0, v1, k));
 			m.addConstraint(distanceEQ(v1, v2, k1));
 			m.addConstraint(distanceEQ(v2, v3, k2));
@@ -215,7 +215,7 @@ public class DistanceTest {
 			int k = 8;
 			IntegerVariable v0 = makeIntVar("v0", 0, 10);
 			IntegerVariable v1 = makeIntVar("v1", 0, 10);
-            m.addVariables(CPOptions.V_BOUND, v0, v1);
+            m.addVariables(Options.V_BOUND, v0, v1);
             m.addConstraint(distanceGT(v0, v1, k));
 			s.read(m);
 			s.setVarIntSelector(new RandomIntVarSelector(s, seed + 32));
@@ -293,7 +293,7 @@ public class DistanceTest {
 		IntegerVariable v0 = makeIntVar("v0", 1, 4);
 		IntegerVariable v1 = makeIntVar("v1", 5, 7);
 		IntegerVariable v2 = makeIntVar("v2", -100, 100);
-        m.addVariables(CPOptions.V_BOUND, v0, v1, v2);
+        m.addVariables(Options.V_BOUND, v0, v1, v2);
         m.addConstraint(distanceEQ(v0, v1, v2, 0));
 		s.read(m);
 		try {
@@ -311,7 +311,7 @@ public class DistanceTest {
 		IntegerVariable v0 = makeIntVar("v0", 1, 4);
 		IntegerVariable v1 = makeIntVar("v1", 5, 7);
 		IntegerVariable v2 = makeIntVar("v2", -100, 100);
-        m.addVariables(CPOptions.V_BOUND, v0, v1, v2);
+        m.addVariables(Options.V_BOUND, v0, v1, v2);
         m.addConstraint(distanceEQ(v0, v1, v2, 2));
 		s.read(m);
 		try {
@@ -331,7 +331,7 @@ public class DistanceTest {
 		IntegerVariable v0 = makeIntVar("v0", 1, 5);
 		IntegerVariable v1 = makeIntVar("v1", 5, 10);
 		IntegerVariable v2 = makeIntVar("v2", 1, 2);
-        m.addVariables(CPOptions.V_BOUND, v0, v1, v2);
+        m.addVariables(Options.V_BOUND, v0, v1, v2);
         m.addConstraint(distanceEQ(v0, v1, v2, 0));
 		s.read(m);
 		try {
@@ -349,7 +349,7 @@ public class DistanceTest {
 		IntegerVariable v0 = makeIntVar("v0", 1, 5);
 		IntegerVariable v1 = makeIntVar("v1", 5, 10);
 		IntegerVariable v2 = makeIntVar("v2", 1, 2);
-        m.addVariables(CPOptions.V_BOUND, v0, v1, v2);
+        m.addVariables(Options.V_BOUND, v0, v1, v2);
         m.addConstraint(distanceEQ(v0, v1, v2, -1));
 		s.read(m);
 		try {
@@ -370,7 +370,7 @@ public class DistanceTest {
 		IntegerVariable v0 = makeIntVar("v0", 1, 5);
 		IntegerVariable v1 = makeIntVar("v1", 5, 6);
 		IntegerVariable v2 = makeIntVar("v2", 3, 10);
-        m.addVariables(CPOptions.V_BOUND, v0, v1, v2);
+        m.addVariables(Options.V_BOUND, v0, v1, v2);
         m.addConstraint(distanceEQ(v0, v1, v2, 0));
 		s.read(m);
 		try {

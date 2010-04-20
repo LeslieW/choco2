@@ -29,7 +29,7 @@
 package choco.cp.solver;
 
 import choco.Choco;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.configure.LimitConfiguration;
 import choco.cp.solver.configure.RestartConfiguration;
@@ -567,7 +567,7 @@ public class CPSolver implements Solver {
         }
 		mod2sol.readVariables(model);
 		mod2sol.readDecisionVariables();
-		mod2sol.readConstraints(model, !optionsSet.contains(CPOptions.S_MULTIPLE_READINGS));
+		mod2sol.readConstraints(model, !optionsSet.contains(Options.S_MULTIPLE_READINGS));
 	}
 
 	/**
@@ -1455,13 +1455,7 @@ public class CPSolver implements Solver {
 	}
 
 
-
 	public final RestartConfiguration getRestartConfiguration() {
-		return restartConfig;
-	}
-
-
-	public final RestartConfiguration getRestartConfig() {
 		return restartConfig;
 	}
 
@@ -4203,11 +4197,78 @@ public class CPSolver implements Solver {
 		return new ReifiedIntSConstraint(binVar, (AbstractIntSConstraint) c, this);
 	}
 
-	public SConstraint reifiedIntConstraint(IntDomainVar binVar, SConstraint c,
+	public static SConstraint reifiedIntConstraint(IntDomainVar binVar, SConstraint c,
 			SConstraint opc) {
 		return new ReifiedIntSConstraint(binVar, (AbstractIntSConstraint) c,
 				(AbstractIntSConstraint) opc);
 	}
 
+    /**
+     * Add a single option to the pool of option.
+     *
+     * @param the option.
+     */
+    @Override
+    public void addOption(final String option) {
+        optionsSet.add(option);
+    }
+
+    /**
+     * Add several options to the pool of option.
+     *
+     * @param options
+     */
+    @Override
+    public void addOptions(final String options) {
+        DisposableIterator<String> iter = StringUtils.getOptionIterator(options);
+		while(iter.hasNext()){
+            addOption(iter.next());
+        }
+        iter.dispose();
+    }
+
+    /**
+     * Add an array of options to the pool of options
+     * of the object
+     *
+     * @param options array of options
+     */
+    @Override
+    public void addOptions(final String[] options) {
+        for(String opt : options){
+            optionsSet.add(opt);
+        }
+    }
+
+    /**
+     * Add a set of options to the pool of options
+     * of the object
+     *
+     * @param options set of options
+     */
+    @Override
+    public void addOptions(final Set<String> options) {
+        optionsSet.addAll(options);
+    }
+
+    /**
+     * Get the pool of unique options
+     *
+     * @return set of options
+     */
+    @Override
+    public Set<String> getOptions() {
+        return optionsSet;
+    }
+
+    /**
+     * check if the option is activated
+     *
+     * @return <code>true</code> if the set contains the option
+     */
+    @Override
+    public boolean containsOption(final String option) {
+        return optionsSet.contains(option);
+    }
 }
 

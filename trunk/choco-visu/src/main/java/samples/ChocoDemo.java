@@ -1,7 +1,7 @@
 package samples;
 
 import choco.Choco;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
@@ -77,7 +77,7 @@ public final class ChocoDemo {
 		CPModel model = new CPModel();
 		IntegerVariable[] duration = Choco.constantArray(new int[]{20,30,50,15,25,40,25,30});
 		int[] height = new int[]{5,6,3,7,2,3,3,4};
-		TaskVariable[] tasks = Choco.makeTaskVarArray("T", 0, 100, duration, CPOptions.V_BOUND);
+		TaskVariable[] tasks = Choco.makeTaskVarArray("T", 0, 100, duration, Options.V_BOUND);
 		Constraint rsc = Choco.cumulativeMax(tasks, height, 10);
 		model.addConstraint( rsc);
 		CPSolver s = new CPSolver();

@@ -8,13 +8,13 @@
         int nAct = 3; // 3 activities: DAY, NIGHT, REST
         int nRes = 4; // 4 resources: cost (0), #DAY (1), #NIGHT (2), #WORK (3)
         //2- Create the schedule variables: the activity processed at each time slot
-        IntegerVariable[] sequence = makeIntVarArray("x", nTime, 0, nAct - 1, CPOptions.V_ENUM);
+        IntegerVariable[] sequence = makeIntVarArray("x", nTime, 0, nAct - 1, Options.V_ENUM);
         // - create the cost variables (one for each resource)
         IntegerVariable[] bounds = new IntegerVariable[4];
-        bounds[0] = makeIntVar("z_0", 30, 80, CPOptions.V_BOUND); // 30 <= cost <= 80
-        bounds[1] = makeIntVar("day", 0, 7, CPOptions.V_BOUND); // 0 <= #DAY <= 7
-        bounds[2] = makeIntVar("night", 3, 7, CPOptions.V_BOUND); // 3 <= #NIGHT <= 7
-        bounds[3] = makeIntVar("work", 7, 9, CPOptions.V_BOUND); // 7 <= #WORK <= 9
+        bounds[0] = makeIntVar("z_0", 30, 80, Options.V_BOUND); // 30 <= cost <= 80
+        bounds[1] = makeIntVar("day", 0, 7, Options.V_BOUND); // 0 <= #DAY <= 7
+        bounds[2] = makeIntVar("night", 3, 7, Options.V_BOUND); // 3 <= #NIGHT <= 7
+        bounds[3] = makeIntVar("work", 7, 9, Options.V_BOUND); // 7 <= #WORK <= 9
         //3- Create the automaton
         FiniteAutomaton auto = new FiniteAutomaton();
         // state 0: starting and accepting state

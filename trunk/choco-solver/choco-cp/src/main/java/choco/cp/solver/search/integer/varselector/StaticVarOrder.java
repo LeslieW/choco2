@@ -32,23 +32,28 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  */
 public class StaticVarOrder extends AbstractIntVarSelector {
 
-  private final IStateInt last;
+    private final IStateInt last;
 
-  public StaticVarOrder(Solver solver, IntDomainVar[] vars) {
-	 super(solver, vars);
-	  this.last = solver.getEnvironment().makeInt(0);
-  }
-
-  public IntDomainVar selectIntVar() {
-    //<hca> it starts at last.get() and not last.get() +1 to be
-    //robust to restart search loop
-    for (int i = last.get(); i < vars.length; i++) {
-      if (!vars[i].isInstantiated()) {
-          last.set(i);
-          return vars[i];
-
-      }
+    public StaticVarOrder(Solver solver) {
+        super(solver);
+        this.last = solver.getEnvironment().makeInt(0);
     }
-    return null;
-  }
+
+    public StaticVarOrder(Solver solver, IntDomainVar[] vars) {
+        super(solver, vars);
+        this.last = solver.getEnvironment().makeInt(0);
+    }
+
+    public IntDomainVar selectIntVar() {
+        //<hca> it starts at last.get() and not last.get() +1 to be
+        //robust to restart search loop
+        for (int i = last.get(); i < vars.length; i++) {
+            if (!vars[i].isInstantiated()) {
+                last.set(i);
+                return vars[i];
+
+            }
+        }
+        return null;
+    }
 }

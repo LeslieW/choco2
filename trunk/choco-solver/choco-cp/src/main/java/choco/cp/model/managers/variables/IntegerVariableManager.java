@@ -23,7 +23,7 @@
 package choco.cp.model.managers.variables;
 
 import choco.Choco;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.reified.leaves.ConstantLeaf;
 import choco.cp.solver.constraints.reified.leaves.VariableLeaf;
@@ -84,15 +84,15 @@ public final class IntegerVariableManager implements VariableManager<IntegerVari
             if (var.getValues() == null) {
                 if (var.getLowB() != var.getUppB()) {
                     int type; // default type
-                    if (var.getOptions().contains(CPOptions.V_ENUM)) {
+                    if (var.getOptions().contains(Options.V_ENUM)) {
                         type = IntDomainVar.BITSET;
-                    } else if (var.getOptions().contains(CPOptions.V_BOUND)) {
+                    } else if (var.getOptions().contains(Options.V_BOUND)) {
                         type = IntDomainVar.BOUNDS;
-                    } else if (var.getOptions().contains(CPOptions.V_LINK)) {
+                    } else if (var.getOptions().contains(Options.V_LINK)) {
                         type = IntDomainVar.LINKEDLIST;
-                    } else if (var.getOptions().contains(CPOptions.V_BTREE)) {
+                    } else if (var.getOptions().contains(Options.V_BTREE)) {
                         type = IntDomainVar.BINARYTREE;
-                    } else if (var.getOptions().contains(CPOptions.V_BLIST)) {
+                    } else if (var.getOptions().contains(Options.V_BLIST)) {
                         type = IntDomainVar.BIPARTITELIST;
                     } else{
                         type = getIntelligentDomain(solver.getModel(),var);
@@ -103,11 +103,11 @@ public final class IntegerVariableManager implements VariableManager<IntegerVari
                 int[] values = var.getValues();
                 if(values.length>1) {
                     int type = IntDomainVar.BITSET; // default type
-                    if (var.getOptions().contains(CPOptions.V_LINK)) {
+                    if (var.getOptions().contains(Options.V_LINK)) {
                         type = IntDomainVar.LINKEDLIST;
-                    } else if (var.getOptions().contains(CPOptions.V_BTREE)) {
+                    } else if (var.getOptions().contains(Options.V_BTREE)) {
                         type = IntDomainVar.BINARYTREE;
-                    } else if (var.getOptions().contains(CPOptions.V_BLIST)) {
+                    } else if (var.getOptions().contains(Options.V_BLIST)) {
                         type = IntDomainVar.BIPARTITELIST;
                     }
                     v = new IntDomainVarImpl(solver, var.getName(), type, values);

@@ -1,7 +1,7 @@
 package choco.cp.solver.constraints.global.lightcostregular.structure;
 
 import choco.Choco;
-import choco.cp.CPOptions;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.memory.IEnvironment;
@@ -612,7 +612,7 @@ public class LayeredGraph {
         IntegerVariable[] vs = Choco.makeIntVarArray("x",3,0,2);
         Random r = new Random(0);
 
-        IntegerVariable z0 = Choco.makeIntVar("z",8,10, CPOptions.V_BOUND);
+        IntegerVariable z0 = Choco.makeIntVar("z",8,10, Options.V_BOUND);
 
         Model m = new CPModel();
         m.addVariables(vs);
