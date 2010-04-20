@@ -22,10 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.preprocessor;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.BoundAllDiff;
@@ -48,6 +44,10 @@ import choco.kernel.model.constraints.ConstraintType;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -152,7 +152,6 @@ public class PPSearch {
                     }
                 } else {                        //general case
                 	AssignVar dwd = BranchingFactory.domWDeg(s,new RandomIntValSelector(randvalseed));
-                    //AssignVar dwd = new AssignVar(new TabuVarSelector(s), new RandomIntValSelector(randvalseed));
                     s.attachGoal(dwd);
                 }
             } else {
