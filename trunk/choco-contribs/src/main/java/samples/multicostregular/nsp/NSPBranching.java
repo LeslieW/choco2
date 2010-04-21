@@ -40,14 +40,14 @@ public class NSPBranching extends AbstractLargeIntBranchingStrategy {
 		if(decision.getBranchingIntVar().getDomainSize() == 0) {
 			return true;
 		}else {
-			reuseVar = varselec.selectIntVar();
+			reuseVar = varselec.selectVar();
 			return reuseVar == null;
 		}
 
 	}
 
 	public Object selectBranchingObject() throws ContradictionException {
-		return varselec.selectIntVar();
+		return varselec.selectVar();
 	}
 
 	public void goDownBranch(final IntBranchingDecision decision) throws ContradictionException {

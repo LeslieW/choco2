@@ -26,7 +26,7 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.search.IntBranchingDecision;
-import choco.kernel.solver.search.integer.ValSelector;
+import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.search.integer.VarValPairSelector;
 
 /**

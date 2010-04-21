@@ -45,16 +45,12 @@ import choco.kernel.solver.constraints.integer.extension.LargeRelation;
 import choco.kernel.solver.goals.Goal;
 import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import choco.kernel.solver.search.ValIterator;
+import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.search.checker.SolutionCheckerEngine;
-import choco.kernel.solver.search.integer.ValIterator;
-import choco.kernel.solver.search.integer.ValSelector;
 import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.measure.FailMeasure;
 import choco.kernel.solver.search.measure.IMeasures;
-import choco.kernel.solver.search.real.RealValIterator;
-import choco.kernel.solver.search.real.RealVarSelector;
-import choco.kernel.solver.search.set.SetValSelector;
-import choco.kernel.solver.search.set.SetVarSelector;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.integer.IntVar;
@@ -188,47 +184,47 @@ public interface Solver extends IMeasures, IPretty, IOptions {
 	/**
 	 * Sets the integer variable selector the search olver should use.
 	 */
-	public void setVarIntSelector(VarSelector varSelector);
+	public void setVarIntSelector(VarSelector<IntDomainVar> varSelector);
 
 	/**
 	 * Sets the real variable selector the search strategy should use.
 	 */
-	public void setVarRealSelector(RealVarSelector realVarSelector);
+	public void setVarRealSelector(VarSelector<RealVar> realVarSelector);
 
 	/**
 	 * Sets the set variable selector the search strategy should use.
 	 */
-	public void setVarSetSelector(SetVarSelector setVarIntSelector);
+	public void setVarSetSelector(VarSelector<SetVar> setVarIntSelector);
 
 	/**
 	 * Sets the integer value iterator the search should use
 	 */
-	public void setValIntIterator(ValIterator valIterator);
+	public void setValIntIterator(ValIterator<IntDomainVar> valIterator);
 
 	/**
 	 * Sets the real value iterator the search should use
 	 */
-	public void setValRealIterator(RealValIterator realValIterator);
+	public void setValRealIterator(ValIterator<RealVar> realValIterator);
 
 	/**
 	 * Sets the integer value iterator the search should use
 	 */
-	public void setValSetIterator(ValIterator valIterator);
+	public void setValSetIterator(ValIterator<SetVar> valIterator);
 
 	/**
 	 * Sets the integer value selector the search should use
 	 */
-	public void setValIntSelector(ValSelector valSelector);
+	public void setValIntSelector(ValSelector<IntDomainVar> valSelector);
 
 	/**
 	 * Sets the integer value selector the search should use
 	 */
-	public void setValRealSelector(ValSelector valSelector);
+	public void setValRealSelector(ValSelector<RealVar> valSelector);
 
 	/**
 	 * Sets the integer value selector the search should use
 	 */
-	public void setValSetSelector(SetValSelector setValIntSelector);
+	public void setValSetSelector(ValSelector<SetVar> setValIntSelector);
 
     /**
      * @deprecated

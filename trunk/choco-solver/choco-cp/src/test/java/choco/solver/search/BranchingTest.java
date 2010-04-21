@@ -22,36 +22,23 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.solver.search;
 
-import static choco.Choco.minus;
-import static choco.Choco.neq;
-import static choco.Choco.plus;
-import static choco.cp.solver.search.BranchingFactory.domDDeg;
-import static choco.cp.solver.search.BranchingFactory.domDDegBin;
-import static choco.cp.solver.search.BranchingFactory.domDeg;
-import static choco.cp.solver.search.BranchingFactory.domDegBin;
-import static choco.cp.solver.search.BranchingFactory.domWDeg;
-import static choco.cp.solver.search.BranchingFactory.domWDegBin;
-import static choco.cp.solver.search.BranchingFactory.incDomWDeg;
-import static choco.cp.solver.search.BranchingFactory.incDomWDegBin;
-import static choco.cp.solver.search.BranchingFactory.minDomMinVal;
-import static choco.cp.solver.search.BranchingFactory.randomIntBinSearch;
-import static choco.cp.solver.search.BranchingFactory.randomIntSearch;
-import static org.junit.Assert.assertEquals;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.junit.Test;
-
 import choco.Choco;
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import static choco.cp.solver.search.BranchingFactory.*;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.search.integer.ValSelector;
+import choco.kernel.solver.search.ValSelector;
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * Created by IntelliJ IDEA.
  * User: grochart

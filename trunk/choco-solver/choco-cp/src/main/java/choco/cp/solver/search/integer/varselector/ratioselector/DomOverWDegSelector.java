@@ -22,10 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.varselector.ratioselector;
 
-import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.addFailure;
-import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.getConstraintFailures;
-import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.getVariableWDeg;
-import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.initConstraintExtensions;
+import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.*;
 import choco.cp.solver.search.integer.varselector.ratioselector.ratios.IntRatio;
 import choco.cp.solver.search.integer.varselector.ratioselector.ratios.RatioFactory;
 import choco.kernel.solver.ContradictionException;
@@ -56,7 +53,7 @@ public final class DomOverWDegSelector extends MinRatioSelector implements Propa
 
 	@Override
 	public String toString() {
-		return getVariableWDeg(solver) + "\n" + getConstraintFailures(solver);
+		return getVariableWDeg(solver) + '\n' + getConstraintFailures(solver);
 	}
 	
 	

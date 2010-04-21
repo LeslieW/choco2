@@ -27,7 +27,7 @@ import choco.kernel.solver.variables.Var;
 /**
  * an interface for objects controlling the selection of a variable (for heuristic purposes)
  */
-public interface VarSelector {
+public interface VarSelector<V extends Var> {
   /**
    * each VarSelector is associated to a branching strategy
    *
@@ -41,5 +41,5 @@ public interface VarSelector {
    *
    * @return a variable on whose domain an alternative can be set (such as a non instantiated search variable)
    */
-  public Var selectVar();
+  public V selectVar();
 }

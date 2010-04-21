@@ -25,13 +25,13 @@ package choco.cp.model.managers.constraints;
 import choco.cp.model.managers.MixedConstraintManager;
 import choco.cp.model.managers.RealConstraintManager;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.ConstantSConstraint;
 import choco.cp.solver.constraints.integer.*;
 import choco.cp.solver.constraints.real.MixedEqXY;
 import choco.cp.solver.constraints.real.exp.RealMinus;
 import choco.cp.solver.constraints.reified.leaves.bool.*;
 import choco.cp.solver.constraints.set.SetEq;
 import choco.cp.solver.constraints.set.SetNotEq;
+import choco.kernel.common.Constant;
 import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.ComponentConstraint;
@@ -244,7 +244,8 @@ public final class EqManager extends MixedConstraintManager {
                 c = ((IntegerConstantVariable) v1).getValue();
                 switch (tv2) {
                     case CONSTANT_INTEGER:
-                        return new ConstantSConstraint(c == ((IntegerConstantVariable) v2).getValue());
+                        return (c == ((IntegerConstantVariable) v2).getValue()?
+                                Constant.TRUE: Constant.FALSE);
                     case INTEGER:
                         return new EqualXC(s.getVar(v2), c);
                 }
@@ -277,7 +278,8 @@ public final class EqManager extends MixedConstraintManager {
                 switch (tv2) {
                     case CONSTANT_DOUBLE:
                         t2 = ((RealIntervalConstant) s.getVar(v2));
-                        return new ConstantSConstraint(v1.getLowB() == v2.getLowB());
+                        return (v1.getLowB() == v2.getLowB()?
+                                Constant.TRUE:Constant.FALSE);
                     case REAL:
                         t2 = (RealVar)s.getVar(v2);
                         return s.makeEquation(t2, (RealIntervalConstant)t1);
@@ -329,7 +331,8 @@ public final class EqManager extends MixedConstraintManager {
                 c = ((IntegerConstantVariable) v1).getValue();
                 switch (tv2) {
                     case CONSTANT_INTEGER:
-                        return new ConstantSConstraint(c != ((IntegerConstantVariable) v2).getValue());
+                        return (c != ((IntegerConstantVariable) v2).getValue()?
+                                Constant.TRUE:Constant.FALSE);
                     case INTEGER:
                         return new NotEqualXC(s.getVar(v2), c);
                 }
@@ -359,7 +362,8 @@ public final class EqManager extends MixedConstraintManager {
                 c = ((IntegerConstantVariable) v1).getValue();
                 switch (tv2) {
                     case CONSTANT_INTEGER:
-                        return new ConstantSConstraint(c >= ((IntegerConstantVariable) v2).getValue());
+                        return (c >= ((IntegerConstantVariable) v2).getValue()?
+                                Constant.TRUE:Constant.FALSE);
                     case INTEGER:
                         return new LessOrEqualXC(s.getVar(v2), c);
                 }
@@ -388,7 +392,8 @@ public final class EqManager extends MixedConstraintManager {
                 c = ((IntegerConstantVariable) v1).getValue();
                 switch (tv2) {
                     case CONSTANT_INTEGER:
-                        return new ConstantSConstraint(c > ((IntegerConstantVariable) v2).getValue());
+                        return (c > ((IntegerConstantVariable) v2).getValue()?
+                                Constant.TRUE:Constant.FALSE);
                     case INTEGER:
                         return new LessOrEqualXC(s.getVar(v2), c-1);
                 }
@@ -416,7 +421,8 @@ public final class EqManager extends MixedConstraintManager {
                 c = ((IntegerConstantVariable) v1).getValue();
                 switch (tv2) {
                     case CONSTANT_INTEGER:
-                        return new ConstantSConstraint(c <= ((IntegerConstantVariable) v2).getValue());
+                        return (c <= ((IntegerConstantVariable) v2).getValue()?
+                                Constant.TRUE:Constant.FALSE);
                     case INTEGER:
                         return new GreaterOrEqualXC(s.getVar(v2), c);
                 }
@@ -451,7 +457,8 @@ public final class EqManager extends MixedConstraintManager {
                 cst = new RealIntervalConstant(v1.getLowB(),dPOS);
                 switch (tv2) {
                     case CONSTANT_DOUBLE:
-                        return new ConstantSConstraint(v1.getUppB() <= v2.getUppB());
+                        return (v1.getUppB() <= v2.getUppB()?
+                                Constant.TRUE:Constant.FALSE);
                     case REAL:
                         t2 = (RealVar)s.getVar(v2);
                         return s.makeEquation(t2, cst);
@@ -502,7 +509,8 @@ public final class EqManager extends MixedConstraintManager {
                 int c1 = ((IntegerConstantVariable) v1).getValue();
                 switch (tv2) {
                     case CONSTANT_INTEGER:
-                        return new ConstantSConstraint(c1 < ((IntegerConstantVariable) v2).getValue());
+                        return (c1 < ((IntegerConstantVariable) v2).getValue()?
+                                Constant.TRUE:Constant.FALSE);
                     case INTEGER:
                         return new GreaterOrEqualXC(s.getVar(v2), c1 + 1);
                 }

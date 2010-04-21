@@ -1,7 +1,6 @@
 package samples.multicostregular.nsp;
 
-import choco.kernel.solver.search.AbstractSearchHeuristic;
-import choco.kernel.solver.search.integer.ValSelector;
+import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
@@ -10,7 +9,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Date: Dec 9, 2008
  * Time: 12:57:27 AM
  */
-public class NSPValSelector implements ValSelector {
+public class NSPValSelector implements ValSelector<IntDomainVar> {
 
     NSPStruct struct;
     NSPVarSelector varselec;

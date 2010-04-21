@@ -23,9 +23,7 @@
 package choco.cp.solver.search.set;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.solver.Solver;
-import choco.kernel.solver.search.AbstractSearchHeuristic;
-import choco.kernel.solver.search.set.SetValSelector;
+import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.variables.set.SetVar;
 
 // **************************************************
@@ -36,7 +34,7 @@ import choco.kernel.solver.variables.set.SetVar;
 // *     for Research and Education                 *
 // **************************************************
 
-public class MinEnv implements SetValSelector {
+public final class MinEnv implements ValSelector<SetVar> {
 
 	
   public int getBestVal(SetVar v) {

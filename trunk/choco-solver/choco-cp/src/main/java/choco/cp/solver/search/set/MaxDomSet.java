@@ -34,7 +34,7 @@ import choco.kernel.solver.variables.set.SetVar;
 // *     for Research and Education                 *
 // **************************************************
 
-public class MaxDomSet extends AbstractSetVarSelector {
+public final class MaxDomSet extends AbstractSetVarSelector {
 
  
 

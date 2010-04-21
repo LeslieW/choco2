@@ -22,20 +22,17 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.varselector.ratioselector;
 
-import gnu.trove.TIntArrayList;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-
-import choco.cp.solver.search.integer.varselector.ratioselector.IntVarRatioSelector;
 import choco.cp.solver.search.integer.varselector.ratioselector.ratios.IntRatio;
 import choco.cp.solver.search.integer.varselector.ratioselector.ratios.SimpleRatio;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.AbstractSearchHeuristic;
-import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import gnu.trove.TIntArrayList;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
 /**
  * A class that select the min/max ratio (a/b) among an arrays.
  * the for-loop of search stores the index of the first not instantiated variable.
@@ -144,15 +141,9 @@ public abstract class AbstractIntVarRatioSelector extends AbstractSearchHeuristi
 	}
 
 	@Override
-	public final IntDomainVar selectIntVar() {
+	public final IntDomainVar selectVar() {
 		final int bestIdx = selectIntRatioIndex();
 		return bestIdx >= 0 ? ratios[bestIdx].getIntVar() : null;
-	}
-
-
-	@Override
-	public final Var selectVar() {
-		return selectIntVar();
 	}
 
 	@Override

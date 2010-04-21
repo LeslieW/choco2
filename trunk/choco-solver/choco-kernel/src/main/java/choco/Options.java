@@ -352,7 +352,7 @@ public class Options {
      * <br/> By default, <i>gap</i>=10.
      * <br/><b>Scope</b> : {@link choco.kernel.solver.Solver}.
      */
-    public static final String S_RECOMPUTION = "cp:recomputation";
+    public static final String S_RECOMPUTATION = "cp:recomputation";
 
     /**
      * <br/><b>Goal</b>: Enable card reasonning: decide if redundant constraints are automatically added

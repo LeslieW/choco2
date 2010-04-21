@@ -22,10 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.valselector;
 
-import choco.kernel.solver.search.integer.ValSelector;
+import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-public class MaxVal implements ValSelector {
+public final class MaxVal implements ValSelector<IntDomainVar> {
   /**
    * selecting the highest value in the domain
    *

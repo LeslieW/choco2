@@ -24,7 +24,7 @@ package choco.shaker.tools.search;
 
 import choco.cp.solver.search.integer.varselector.*;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.search.integer.IntVarSelector;
+import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ import java.util.Random;
 */
 public class IntVarSelectorFactory {
 
-    public ArrayList<V> scope = new ArrayList<V>();
+    public ArrayList<V> scope = new ArrayList<V>(10);
 
     public enum V {
         STATIC, DOMOVERDEG, DOMOVERDYNDEG, DOMOVERWDEG, MINDOMAIN, MAXDOMAIN,
@@ -63,7 +63,7 @@ public class IntVarSelectorFactory {
      * @return type of value selector
      */
     public V any(Random r) {
-        if(scope.size()>0){
+        if(!scope.isEmpty()){
             return scope.get(r.nextInt(scope.size()));
         }
         V[] values = V.values();
@@ -76,7 +76,7 @@ public class IntVarSelectorFactory {
      * @param r random
      * @return value selector
      */
-    public IntVarSelector make(Random r, Solver s, IntDomainVar[] vars){
+    public VarSelector<IntDomainVar> make(Random r, Solver s, IntDomainVar[] vars){
         return make(any(r), r, s, vars);
     }
 
@@ -86,9 +86,9 @@ public class IntVarSelectorFactory {
      * @param r random
      * @return value selector
      */
-    public IntVarSelector make(V v, Random r, Solver s, IntDomainVar[] vars) {
+    public static VarSelector<IntDomainVar> make(V v, Random r, Solver s, IntDomainVar[] vars) {
         //Otherwise, select a new val selector
-        IntVarSelector ivs = null;
+        VarSelector<IntDomainVar> ivs = null;
 
         switch (v) {
             case DOMOVERDEG:

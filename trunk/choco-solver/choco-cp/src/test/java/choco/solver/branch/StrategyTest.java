@@ -46,12 +46,12 @@ import org.junit.Test;
 public class StrategyTest {
 
 
-    class IncorrectVarSelector extends AbstractIntVarSelector{
+    static class IncorrectVarSelector extends AbstractIntVarSelector{
         IncorrectVarSelector(IntDomainVar[] vars) {
             super(null, vars);
         }
 
-        public IntDomainVar selectIntVar() {
+        public IntDomainVar selectVar() {
             if(!vars[0].isInstantiated()){
                 return vars[0];
             }

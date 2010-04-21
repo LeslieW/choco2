@@ -1,19 +1,6 @@
 package choco.cp.solver.search;
 
-import static choco.cp.solver.search.VarSelectorFactory.domDDegSel;
-import static choco.cp.solver.search.VarSelectorFactory.domDegSel;
-import static choco.cp.solver.search.VarSelectorFactory.domWDegSel;
-import static choco.cp.solver.search.integer.varselector.ratioselector.ratios.RatioFactory.createMaxPreservedRatio;
-import static choco.cp.solver.search.integer.varselector.ratioselector.ratios.RatioFactory.createMinPreservedRatio;
-import static choco.cp.solver.search.integer.varselector.ratioselector.ratios.RatioFactory.createPreservedWDegRatio;
-import static choco.cp.solver.search.integer.varselector.ratioselector.ratios.RatioFactory.createSlackWDegRatio;
-import static choco.kernel.common.util.tools.VariableUtils.getIntVars;
-import static choco.kernel.common.util.tools.VariableUtils.getSetVars;
-import static choco.kernel.common.util.tools.VariableUtils.getTaskVars;
-
-import java.util.Arrays;
-import java.util.Comparator;
-
+import static choco.cp.solver.search.VarSelectorFactory.*;
 import choco.cp.solver.search.integer.branching.AssignOrForbidIntVarVal;
 import choco.cp.solver.search.integer.branching.AssignOrForbidIntVarValPair;
 import choco.cp.solver.search.integer.branching.AssignVar;
@@ -26,33 +13,29 @@ import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
-import choco.cp.solver.search.integer.varselector.ratioselector.DomOverWDegSelector;
-import choco.cp.solver.search.integer.varselector.ratioselector.MaxRatioSelector;
-import choco.cp.solver.search.integer.varselector.ratioselector.MinRatioSelector;
-import choco.cp.solver.search.integer.varselector.ratioselector.RandDomOverWDegSelector;
-import choco.cp.solver.search.integer.varselector.ratioselector.RandMaxRatioSelector;
-import choco.cp.solver.search.integer.varselector.ratioselector.RandMinRatioSelector;
+import choco.cp.solver.search.integer.varselector.ratioselector.*;
+import static choco.cp.solver.search.integer.varselector.ratioselector.ratios.RatioFactory.*;
 import choco.cp.solver.search.integer.varselector.ratioselector.ratios.task.CompositePrecValSelector;
 import choco.cp.solver.search.integer.varselector.ratioselector.ratios.task.preserved.MaxPreservedRatio;
 import choco.cp.solver.search.integer.varselector.ratioselector.ratios.task.preserved.MinPreservedRatio;
-import choco.cp.solver.search.set.AssignSetVar;
-import choco.cp.solver.search.set.MinEnv;
-import choco.cp.solver.search.set.RandomSetValSelector;
-import choco.cp.solver.search.set.RandomSetVarSelector;
-import choco.cp.solver.search.set.StaticSetVarOrder;
+import choco.cp.solver.search.set.*;
 import choco.cp.solver.search.task.OrderingValSelector;
 import choco.cp.solver.search.task.SetTimes;
 import choco.cp.solver.search.task.ordering.CentroidOrdering;
 import choco.cp.solver.search.task.ordering.PreservedOrdering;
 import choco.kernel.common.util.comparator.TaskComparators;
+import static choco.kernel.common.util.tools.VariableUtils.*;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.global.scheduling.IPrecedence;
-import choco.kernel.solver.search.integer.ValIterator;
-import choco.kernel.solver.search.integer.ValSelector;
+import choco.kernel.solver.search.ValIterator;
+import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.ITask;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 import choco.kernel.solver.variables.set.SetVar;
+
+import java.util.Arrays;
+import java.util.Comparator;
 
 public final class BranchingFactory {
 

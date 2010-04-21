@@ -49,7 +49,7 @@ public class MyVarSelector extends AbstractIntVarSelector {
         this.objective = null;
     }
 
-    public IntDomainVar selectIntVar() {
+    public IntDomainVar selectVar() {
         int next = dfs();
         if (next == dest && vars[dest].isInstantiated()) {
             if (objective == null) return null;
@@ -65,17 +65,17 @@ public class MyVarSelector extends AbstractIntVarSelector {
     private int dfs() {
         LinkedList toVisit = new LinkedList();
         LinkedList visited = new LinkedList();
-        visited.offer("" + src);
-        toVisit.addFirst("" + src);
+        visited.offer(String.valueOf(src));
+        toVisit.addFirst(String.valueOf(src));
         int lastVisited = src;
-        while (toVisit.size() != 0) {
+        while (!toVisit.isEmpty()) {
             int current = Integer.parseInt((String) toVisit.poll());
             lastVisited = current;
             if (vars[current].isInstantiated()) {
                 int j = vars[current].getVal();
-                if (!visited.contains("" + j)) {
-                    visited.offer("" + j);
-                    toVisit.addFirst("" + j);
+                if (!visited.contains(String.valueOf(j))) {
+                    visited.offer(String.valueOf(j));
+                    toVisit.addFirst(String.valueOf(j));
                 }
             }
         }

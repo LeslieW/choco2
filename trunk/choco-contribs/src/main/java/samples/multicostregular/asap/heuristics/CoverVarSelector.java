@@ -4,12 +4,10 @@ import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.branch.IntBranching;
+import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.search.AbstractSearchHeuristic;
+import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
-import choco.kernel.solver.search.integer.IntVarSelector;
-import choco.kernel.solver.search.integer.ValSelector;
-import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
@@ -18,7 +16,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Date: 5 janv. 2010
  * Time: 13:39:56
  */
-public class CoverVarSelector extends AbstractSearchHeuristic implements IntVarSelector, ValSelector {
+public class CoverVarSelector extends AbstractSearchHeuristic implements VarSelector<IntDomainVar>, ValSelector<IntDomainVar> {
 
 
     AbstractIntVarSelector other;
@@ -67,13 +65,8 @@ public class CoverVarSelector extends AbstractSearchHeuristic implements IntVarS
         return null;
     }
 
-	@Override
-	public final Var selectVar() {
-		return selectIntVar();
-	}
-    
     @Override
-    public IntDomainVar selectIntVar() {
+    public IntDomainVar selectVar() {
         int tmp = 0;
         while (lastCol.get() < vars.length && (tmp = scanCol(lastCol.get())) == Integer.MAX_VALUE)
         {
@@ -81,7 +74,7 @@ public class CoverVarSelector extends AbstractSearchHeuristic implements IntVarS
         }
         if (lastCol.get() == vars.length)
         {
-            selected= other.selectIntVar();
+            selected= other.selectVar();
             nVal = selected == null ? 0 : selected.getSup();
 
         }

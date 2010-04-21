@@ -1,16 +1,8 @@
 package choco.cp.model.managers;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Set;
-
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.global.scheduling.AbstractResourceSConstraint;
-import choco.cp.solver.constraints.global.scheduling.AbstractUseResourcesSConstraint;
-import choco.cp.solver.constraints.global.scheduling.TempTaskConstraintWrapper;
-import choco.cp.solver.constraints.global.scheduling.UseResourcesEq;
-import choco.cp.solver.constraints.global.scheduling.UseResourcesGeq;
+import choco.cp.solver.constraints.global.scheduling.*;
+import choco.kernel.common.Constant;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintManager;
 import choco.kernel.model.variables.Variable;
@@ -21,6 +13,11 @@ import choco.kernel.solver.constraints.reified.INode;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.TaskVar;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Set;
 
 
 public class UseResourcesManager extends ConstraintManager<Variable> {
@@ -59,8 +56,8 @@ public class UseResourcesManager extends ConstraintManager<Variable> {
 									}
 								}
 							}
-							if(k <= 0) return CPSolver.TRUE;
-							else if (rtaskL.size() < k) return CPSolver.FALSE;
+							if(k <= 0) return Constant.TRUE;
+							else if (rtaskL.size() < k) return Constant.FALSE;
 							else {
 								final IntDomainVar[] uvars = new IntDomainVar[rtaskL.size()];
 								final IRTask[] rtasks = new IRTask[rtaskL.size()];

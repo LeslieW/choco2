@@ -27,7 +27,7 @@ import choco.cp.solver.search.integer.varselector.ratioselector.ratios.RatioFact
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.IntBranchingDecision;
-import choco.kernel.solver.search.integer.ValIterator;
+import choco.kernel.solver.search.ValIterator;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 

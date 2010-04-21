@@ -21,67 +21,59 @@
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
 
-package choco.cp.solver.constraints;
+package choco.kernel.solver.constraints;
 
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.Solver;
-import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-public final class ConstantSConstraint extends AbstractIntSConstraint{
-    private boolean satisfied;
+public class ConstantSConstraint extends AbstractIntSConstraint {
 
-    public ConstantSConstraint(boolean value) {
+    private final boolean satisfied;
+
+    protected ConstantSConstraint(boolean value) {
         super(ConstraintEvent.HIGH, new IntDomainVar[]{});
         satisfied = value;
     }
 
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
+    public final Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
 
- 
+
     @Override
-    public boolean isSatisfied(int[] tuple) {
+    public final boolean isSatisfied(int[] tuple) {
         return satisfied;
     }
 
     @Override
-    public boolean isSatisfied() {
+    public final boolean isSatisfied() {
         return satisfied;
     }
 
     @Override
-	public void propagate() throws ContradictionException {
+    public final void propagate() throws ContradictionException {
         if (!satisfied) {
             fail();
         }
     }
 
     @Override
-    public boolean isConsistent() {
+    public final Boolean isEntailed() {
         return satisfied;
     }
 
-
     @Override
-    public Boolean isEntailed() {
-        return satisfied ? Boolean.TRUE : Boolean.FALSE;
+    public final boolean isConsistent() {
+        return satisfied;
     }
 
     @Override
-    public AbstractSConstraint opposite(Solver solver) {
-        return new ConstantSConstraint(!satisfied);
+    public final String pretty() {
+        return "Constant constraint: " + satisfied;
     }
-
-    @Override
-    public String pretty() {
-        return "Constant constraint: " + isSatisfied();
-    }
-
-
+    
 }

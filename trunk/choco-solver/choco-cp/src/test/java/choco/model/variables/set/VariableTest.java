@@ -27,7 +27,6 @@ import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -207,7 +206,7 @@ public class VariableTest {
         }
         s.read(m);
 //        CPSolver.setVerbosity(CPSolver.SOLUTION);
-        ChocoLogging.setVerbosity(Verbosity.VERBOSE);
+//        ChocoLogging.setVerbosity(Verbosity.VERBOSE);
         s.solve();
 //        CPSolver.flushLogs();
         System.out.println(s.isFeasible());

@@ -22,15 +22,14 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.varselector;
 
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.search.integer.AbstractIntVarSelector;
+import choco.kernel.solver.variables.integer.IntDomainVar;
+
 import java.util.ArrayList;
 import java.util.Random;
 
-import choco.kernel.solver.Solver;
-import choco.kernel.solver.search.integer.AbstractIntVarSelector;
-import choco.kernel.solver.search.integer.IntVarSelector;
-import choco.kernel.solver.variables.integer.IntDomainVar;
-
-public class RandomIntVarSelector extends AbstractIntVarSelector implements IntVarSelector {
+public class RandomIntVarSelector extends AbstractIntVarSelector{
 
 	private ArrayList<IntDomainVar> reuseList = new ArrayList<IntDomainVar>();
 	protected final Random random;
@@ -58,7 +57,7 @@ public class RandomIntVarSelector extends AbstractIntVarSelector implements IntV
 	}
 
 
-	public IntDomainVar selectIntVar() {
+	public IntDomainVar selectVar() {
 		reuseList.clear();
 		for (IntDomainVar v : vars) {
 			if (!v.isInstantiated()) {

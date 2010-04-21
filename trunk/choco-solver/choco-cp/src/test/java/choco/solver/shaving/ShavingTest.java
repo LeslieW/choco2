@@ -26,8 +26,6 @@ import choco.Choco;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -57,7 +55,7 @@ public class ShavingTest {
         Solver s = new CPSolver();
         System.out.println(m.pretty());
         s.read(m);
-        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+//        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
         s.minimize(s.getVar(nbNodes), false);
     }
 

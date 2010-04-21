@@ -23,7 +23,7 @@
 package choco.cp.solver.constraints.global.automata.fast_multicostregular;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.Constants;
+import choco.kernel.common.Constant;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.memory.IEnvironment;
@@ -542,12 +542,12 @@ protected void updateUpperBound() throws ContradictionException
                         }
                         newLB = Math.max(uUb[l]- uk * (z[l+1].getSup()-axu),0);
                         newLA = Math.max(uUb[l+nbR]- uk*(axu-z[l+1].getInf()),0);
-                        if (Math.abs(uUb[l] - newLB) >= Constants.MCR_DECIMAL_PREC)
+                        if (Math.abs(uUb[l] - newLB) >= Constant.MCR_DECIMAL_PREC)
                         {
                                 uUb[l] = newLB;
                                 modif = true;
                         }
-                        if (Math.abs(uUb[l+nbR]-newLA) >= Constants.MCR_DECIMAL_PREC)
+                        if (Math.abs(uUb[l+nbR]-newLA) >= Constant.MCR_DECIMAL_PREC)
                         {
                                 uUb[l+nbR] = newLA;
                                 modif = true;
@@ -642,12 +642,12 @@ protected void updateLowerBound() throws ContradictionException {
 
                         newLB = Math.max(uLb[l]+ uk * (axu-z[l+1].getSup()),0);
                         newLA = Math.max(uLb[l+nbR]+uk*(z[l+1].getInf()-axu),0);
-                        if (Math.abs(uLb[l]-newLB) >= Constants.MCR_DECIMAL_PREC)
+                        if (Math.abs(uLb[l]-newLB) >= Constant.MCR_DECIMAL_PREC)
                         {
                                 uLb[l] = newLB;
                                 modif = true;
                         }
-                        if (Math.abs(uLb[l+nbR]-newLA) >= Constants.MCR_DECIMAL_PREC)
+                        if (Math.abs(uLb[l+nbR]-newLA) >= Constant.MCR_DECIMAL_PREC)
                         {
                                 uLb[l+nbR] = newLA;
                                 modif = true;
@@ -692,14 +692,14 @@ protected boolean prefilter() throws ContradictionException {
  */
 protected void filterDown(final double realsp) throws ContradictionException {
 
-        if (realsp - z[0].getSup() >= Constants.MCR_DECIMAL_PREC)
+        if (realsp - z[0].getSup() >= Constant.MCR_DECIMAL_PREC)
         {
                 this.fail();
         }
-        if (realsp - z[0].getInf() >= Constants.MCR_DECIMAL_PREC)
+        if (realsp - z[0].getInf() >= Constant.MCR_DECIMAL_PREC)
         {
                 double mr = Math.round(realsp);
-                double rsp = (realsp-mr <= Constants.MCR_DECIMAL_PREC)? mr : realsp;
+                double rsp = (realsp-mr <= Constant.MCR_DECIMAL_PREC)? mr : realsp;
                 z[0].updateInf((int) Math.ceil(rsp), this, false);
                 modifiedBound[0] = true;
         }
@@ -711,14 +711,14 @@ protected void filterDown(final double realsp) throws ContradictionException {
  * @throws ContradictionException if the cost variable domain is emptied
  */
 protected void filterUp(final double reallp) throws ContradictionException {
-        if (reallp - z[0].getInf() <= -Constants.MCR_DECIMAL_PREC )
+        if (reallp - z[0].getInf() <= -Constant.MCR_DECIMAL_PREC )
         {
                 this.fail();
         }
-        if (reallp - z[0].getSup() <= -Constants.MCR_DECIMAL_PREC )
+        if (reallp - z[0].getSup() <= -Constant.MCR_DECIMAL_PREC )
         {
                 double mr = Math.round(reallp);
-                double rsp = (reallp-mr <= Constants.MCR_DECIMAL_PREC)? mr : reallp;
+                double rsp = (reallp-mr <= Constant.MCR_DECIMAL_PREC)? mr : reallp;
                 z[0].updateSup((int) Math.floor(rsp), this, false);
                 modifiedBound[1] = true;
         }

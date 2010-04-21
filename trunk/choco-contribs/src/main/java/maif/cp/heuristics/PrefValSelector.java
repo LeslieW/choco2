@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package maif.cp.heuristics;
 
-import choco.kernel.solver.search.integer.ValSelector;
+import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import maif.entities.Person;
 
@@ -37,7 +37,7 @@ import java.util.HashSet;
  * Date: Jul 21, 2009
  * Time: 1:33:41 PM
  */
-public class PrefValSelector implements ValSelector {
+public class PrefValSelector implements ValSelector<IntDomainVar> {
 
     HashMap<IntDomainVar,ArrayList<Person>> varPeopleMap;
     HashSet<Person> bouchon;

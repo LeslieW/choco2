@@ -23,10 +23,11 @@
 package choco.cp.solver.search.set;
 
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.search.IntBranchingDecision;
+import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.search.set.AbstractSetBranchingStrategy;
-import choco.kernel.solver.search.set.SetValSelector;
-import choco.kernel.solver.search.set.SetVarSelector;
+import choco.kernel.solver.variables.set.SetVar;
 
 // **************************************************
 // *                   J-CHOCO                      *
@@ -38,16 +39,16 @@ import choco.kernel.solver.search.set.SetVarSelector;
 
 public final class AssignSetVar extends AbstractSetBranchingStrategy {
 
-	SetVarSelector varselector;
-	SetValSelector valselector;
+	VarSelector<SetVar> varselector;
+	ValSelector<SetVar> valselector;
 
-	public AssignSetVar(SetVarSelector varselect, SetValSelector valselect) {
+	public AssignSetVar(VarSelector<SetVar> varselect, ValSelector<SetVar> valselect) {
 		varselector = varselect;
 		valselector = valselect;
 	}
 
 	public Object selectBranchingObject() throws ContradictionException {
-		return varselector.selectSetVar();
+		return varselector.selectVar();
 	}
                                                                                
 	

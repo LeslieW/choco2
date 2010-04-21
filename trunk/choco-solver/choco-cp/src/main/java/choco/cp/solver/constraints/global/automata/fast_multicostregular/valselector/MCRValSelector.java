@@ -25,8 +25,7 @@ package choco.cp.solver.constraints.global.automata.fast_multicostregular.valsel
 
 
 import choco.cp.solver.constraints.global.automata.fast_multicostregular.FastMultiCostRegular;
-import choco.kernel.solver.search.AbstractSearchHeuristic;
-import choco.kernel.solver.search.integer.ValSelector;
+import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
@@ -35,7 +34,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Date: Nov 17, 2008
  * Time: 6:03:16 PM
  */
-public class MCRValSelector implements ValSelector {
+public class MCRValSelector implements ValSelector<IntDomainVar> {
     FastMultiCostRegular[] cons;
     boolean max;
 

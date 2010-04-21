@@ -26,7 +26,7 @@ import choco.Choco;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.model.variables.integer.IntegerVariable;
-import choco.kernel.solver.search.integer.ValSelector;
+import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import jxl.write.WriteException;
 import maif.cp.MaifModel;

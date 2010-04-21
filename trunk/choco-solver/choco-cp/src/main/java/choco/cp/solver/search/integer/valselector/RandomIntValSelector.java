@@ -23,12 +23,12 @@
 package choco.cp.solver.search.integer.valselector;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.solver.search.integer.ValSelector;
+import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.Random;
 
-public class RandomIntValSelector implements ValSelector {
+public final class RandomIntValSelector implements ValSelector<IntDomainVar> {
 	protected Random random;
 
 	/**

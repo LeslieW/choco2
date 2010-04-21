@@ -24,7 +24,7 @@ package choco.shaker.tools.search;
 
 import choco.cp.solver.search.integer.valiterator.DecreasingDomain;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
-import choco.kernel.solver.search.integer.ValIterator;
+import choco.kernel.solver.search.ValIterator;
 
 import java.util.ArrayList;
 import java.util.Arrays;

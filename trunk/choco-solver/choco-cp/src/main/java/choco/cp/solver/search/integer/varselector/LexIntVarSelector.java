@@ -22,21 +22,20 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.varselector;
 
-import java.util.List;
-
 import choco.kernel.solver.branch.IntBranching;
+import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.search.integer.HeuristicIntVarSelector;
-import choco.kernel.solver.search.integer.IntVarSelector;
 import choco.kernel.solver.search.integer.TiedIntVarSelector;
-import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import java.util.List;
 
 /**
  * A class that applies two heuristics lexicographically for selecting a variable:
  *   a first heuristic is applied finding the best constraint
  *   ties are broken with the second heuristic
  */
-public final class LexIntVarSelector implements IntVarSelector {
+public final class LexIntVarSelector implements VarSelector<IntDomainVar> {
 	
 	TiedIntVarSelector h1;
 	
@@ -47,7 +46,7 @@ public final class LexIntVarSelector implements IntVarSelector {
 		this.h2 = h2;
 	}
 
-	public IntDomainVar selectIntVar() {
+	public IntDomainVar selectVar() {
 		List<IntDomainVar> ties = h1.selectTiedIntVars();
 		switch (ties.size()) {
 		case 0: return null;
@@ -60,10 +59,4 @@ public final class LexIntVarSelector implements IntVarSelector {
 	public IntBranching getBranching() {
 		return null;
 	}
-
-	@Override
-	public Var selectVar() {
-		return selectIntVar();
-	}
-
 }

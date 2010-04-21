@@ -25,9 +25,9 @@ package choco.cp.solver.search.real;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.branch.AbstractIntBranchingStrategy;
+import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.search.IntBranchingDecision;
-import choco.kernel.solver.search.integer.ValIterator;
-import choco.kernel.solver.search.real.RealVarSelector;
+import choco.kernel.solver.search.ValIterator;
 import choco.kernel.solver.variables.real.RealMath;
 import choco.kernel.solver.variables.real.RealVar;
 
@@ -37,18 +37,18 @@ import choco.kernel.solver.variables.real.RealVar;
 
 public final class AssignInterval extends AbstractIntBranchingStrategy {
 
-	protected RealVarSelector varSelector;
+	protected VarSelector<RealVar> varSelector;
 	protected ValIterator valIterator;
 
 	protected static final String[] LOG_DECISION_MSG = new String[]{"in first half of ", "in second half of "};
 
-	public AssignInterval(RealVarSelector varSelector, ValIterator valIterator) {
+	public AssignInterval(VarSelector<RealVar> varSelector, ValIterator valIterator) {
 		this.varSelector = varSelector;
 		this.valIterator = valIterator;
 	}
 
 	public Object selectBranchingObject() throws ContradictionException {
-		return varSelector.selectRealVar();
+		return varSelector.selectVar();
 	}
 
 	@Override
@@ -74,7 +74,7 @@ public final class AssignInterval extends AbstractIntBranchingStrategy {
 	}
 
 
-	public void setFirstBranch(final IntBranchingDecision decision) {
+    public void setFirstBranch(final IntBranchingDecision decision) {
 		decision.setBranchingValue( valIterator.getFirstVal(decision.getBranchingRealVar()));
 	}
 

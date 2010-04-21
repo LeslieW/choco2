@@ -25,10 +25,9 @@ package samples.multicostregular.asap.heuristics;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.search.AbstractSearchHeuristic;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
-import choco.kernel.solver.search.integer.IntVarSelector;
-import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
@@ -38,7 +37,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Date: Mar 12, 2009
  * Time: 2:46:42 PM
  */
-public class ASAPVarSelector extends AbstractSearchHeuristic implements IntVarSelector {
+public class ASAPVarSelector extends AbstractSearchHeuristic implements VarSelector<IntDomainVar> {
 
     IntDomainVar[][] vars;
     AbstractIntVarSelector[] varselec;
@@ -81,7 +80,7 @@ public class ASAPVarSelector extends AbstractSearchHeuristic implements IntVarSe
 
     }
 
-    public IntDomainVar selectIntVar() {
+    public IntDomainVar selectVar() {
         int idx =0;
         int num = -1;
         int n = vars[0].length;
@@ -94,13 +93,6 @@ public class ASAPVarSelector extends AbstractSearchHeuristic implements IntVarSe
                 num = nb;
             }
         }
-        return varselec[idx].selectIntVar();
+        return varselec[idx].selectVar();
     }
-
-
-	@Override
-	public final Var selectVar() {
-		return selectIntVar();
-	}
-
 }

@@ -33,7 +33,6 @@ import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.configure.LimitConfiguration;
 import choco.cp.solver.configure.RestartConfiguration;
-import choco.cp.solver.constraints.ConstantSConstraint;
 import choco.cp.solver.constraints.global.Occurrence;
 import choco.cp.solver.constraints.global.scheduling.precedence.PrecedenceDisjoint;
 import choco.cp.solver.constraints.global.scheduling.precedence.PrecedenceVDisjoint;
@@ -73,6 +72,8 @@ import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.cp.solver.variables.integer.IntTerm;
 import choco.cp.solver.variables.real.RealVarImpl;
 import choco.cp.solver.variables.set.SetVarImpl;
+import static choco.kernel.common.Constant.FALSE;
+import static choco.kernel.common.Constant.TRUE;
 import choco.kernel.common.IndexFactory;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
@@ -122,16 +123,10 @@ import choco.kernel.solver.propagation.queue.VarEventQueue;
 import choco.kernel.solver.search.*;
 import static choco.kernel.solver.search.SolutionPoolFactory.makeDefaultSolutionPool;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
-import choco.kernel.solver.search.integer.ValIterator;
-import choco.kernel.solver.search.integer.ValSelector;
 import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.limit.Limit;
 import choco.kernel.solver.search.measure.FailMeasure;
-import choco.kernel.solver.search.real.RealValIterator;
-import choco.kernel.solver.search.real.RealVarSelector;
 import choco.kernel.solver.search.set.AbstractSetVarSelector;
-import choco.kernel.solver.search.set.SetValSelector;
-import choco.kernel.solver.search.set.SetVarSelector;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -156,15 +151,6 @@ import java.util.logging.Level;
  */
 public class CPSolver implements Solver {
 
-	/**
-	 * A constant denoting the true constraint (always satisfied)
-	 */
-	public static final SConstraint TRUE = new ConstantSConstraint(true);
-	/**
-	 * A constant denoting the false constraint (never satisfied)
-	 */
-	public static final SConstraint FALSE = new ConstantSConstraint(false);
-
 	private final IndexFactory indexfactory;
 	/**
 	 * Allows to know if the model is feasible (null if it was not solved).
@@ -184,14 +170,6 @@ public class CPSolver implements Solver {
 	 */
 	private VarEventQueue[] veqCopy = null;
 	private AbstractConstraintEventQueue[] ceqCopy = null;
-
-	/**
-	 * A constant denoting a null integer term. This is useful to make the API
-	 * more robust, for instance with linear expression with null coefficients.
-	 */
-	public static final IntTerm ZERO = new IntTerm(0);
-	public static final IntTerm UN = new IntTerm(1);
-
 
 	/**
 	 * tells the strategy wether or not use recomputation.
@@ -341,47 +319,47 @@ public class CPSolver implements Solver {
 	/**
 	 * Variable selector for integer
 	 */
-	private VarSelector varIntSelector = null;
+	private VarSelector<IntDomainVar> varIntSelector;
 
 	/**
 	 * Variable selector for real
 	 */
-	private RealVarSelector varRealSelector = null;
+	private VarSelector<RealVar> varRealSelector;
 
 	/**
 	 * Variable selector for set
 	 */
-	private SetVarSelector varSetSelector = null;
+	private VarSelector<SetVar> varSetSelector;
 
 	/**
 	 * Value iterator for integer
 	 */
-	private ValIterator valIntIterator = null;
+	private ValIterator<IntDomainVar> valIntIterator;
 
 	/**
 	 * Value iterator for real
 	 */
-	private ValIterator valRealIterator = null;
+	private ValIterator<RealVar> valRealIterator = null;
 
 	/**
 	 * Value iterator for set
 	 */
-	private ValIterator valSetIterator = null;
+	private ValIterator<SetVar> valSetIterator = null;
 
 	/**
 	 * Value selector for integer
 	 */
-	private ValSelector valIntSelector = null;
+	private ValSelector<IntDomainVar> valIntSelector = null;
 
 	/**
 	 * Value selector for real
 	 */
-	private ValSelector valRealSelector = null;
+	private ValSelector<RealVar> valRealSelector = null;
 
 	/**
 	 * Value selector for set
 	 */
-	private SetValSelector valSetSelector = null;
+	private ValSelector<SetVar> valSetSelector = null;
 
 
 	private final LimitConfiguration limitConfig = new LimitConfiguration();
@@ -1216,7 +1194,7 @@ public class CPSolver implements Solver {
 	 * @see choco.cp.solver.CPSolver#addGoal(choco.kernel.solver.branch.AbstractIntBranchingStrategy)
 	 * @see choco.cp.solver.CPSolver#attachGoal(choco.kernel.solver.branch.AbstractIntBranchingStrategy)
 	 */
-	public void setVarIntSelector(VarSelector varSelector) {
+	public void setVarIntSelector(VarSelector<IntDomainVar> varSelector) {
 		// To remove properly the listener from the Propagation engine
 		if(this.varIntSelector!=null && this.varIntSelector instanceof PropagationEngineListener){
 			((PropagationEngineListener)this.varIntSelector).safeDelete();
@@ -1241,7 +1219,7 @@ public class CPSolver implements Solver {
 	 * @see choco.cp.solver.CPSolver#addGoal(choco.kernel.solver.branch.AbstractIntBranchingStrategy)
 	 * @see choco.cp.solver.CPSolver#attachGoal(choco.kernel.solver.branch.AbstractIntBranchingStrategy)
 	 */
-	public void setVarRealSelector(RealVarSelector realVarSelector) {
+	public void setVarRealSelector(VarSelector<RealVar> realVarSelector) {
 		this.varRealSelector = realVarSelector;
 		floatDecisionVars.addAll(floatVars.toList());
 	}
@@ -1252,7 +1230,7 @@ public class CPSolver implements Solver {
 	 * @see choco.cp.solver.CPSolver#addGoal(choco.kernel.solver.branch.AbstractIntBranchingStrategy)
 	 * @see choco.cp.solver.CPSolver#attachGoal(choco.kernel.solver.branch.AbstractIntBranchingStrategy)
 	 */
-	public void setVarSetSelector(SetVarSelector setVarSelector) {
+	public void setVarSetSelector(VarSelector<SetVar> setVarSelector) {
 		this.varSetSelector = setVarSelector;
 		SetVar[] vars = ((AbstractSetVarSelector) setVarSelector).getVars();
 		if (vars != null) {
@@ -1270,42 +1248,42 @@ public class CPSolver implements Solver {
 	/**
 	 * Sets the integer value iterator the search should use
 	 */
-	public void setValIntIterator(ValIterator valIterator) {
+	public void setValIntIterator(ValIterator<IntDomainVar> valIterator) {
 		this.valIntIterator = valIterator;
 	}
 
 	/**
 	 * Sets the real value iterator the search should use
 	 */
-	public void setValRealIterator(RealValIterator realValIterator) {
+	public void setValRealIterator(ValIterator<RealVar> realValIterator) {
 		this.valRealIterator = realValIterator;
 	}
 
 	/**
 	 * Sets the integer value iterator the search should use
 	 */
-	public void setValSetIterator(ValIterator valIterator) {
+	public void setValSetIterator(ValIterator<SetVar> valIterator) {
 		this.valSetIterator = valIterator;
 	}
 
 	/**
 	 * Sets the integer value selector the search should use
 	 */
-	public void setValIntSelector(ValSelector valSelector) {
+	public void setValIntSelector(ValSelector<IntDomainVar> valSelector) {
 		this.valIntSelector = valSelector;
 	}
 
 	/**
 	 * Sets the integer value selector the search should use
 	 */
-	public void setValRealSelector(ValSelector valSelector) {
+	public void setValRealSelector(ValSelector<RealVar> valSelector) {
 		this.valRealSelector = valSelector;
 	}
 
 	/**
 	 * Sets the integer value selector the search should use
 	 */
-	public void setValSetSelector(SetValSelector setValIntSelector) {
+	public void setValSetSelector(ValSelector<SetVar> setValIntSelector) {
 		this.valSetSelector = setValIntSelector;
 	}
 
@@ -2003,9 +1981,9 @@ public class CPSolver implements Solver {
 			// If it is a constant constraint
 			if (exp.getNbVars() == 0) {
 				if (exp.checkTuple(new int[] {})) {
-					this.post(CPSolver.TRUE);
+					this.post(TRUE);
 				} else {
-					this.post(CPSolver.FALSE);
+					this.post(FALSE);
 				}
 			} else {
 				// todo: put the right default test
@@ -2992,10 +2970,10 @@ public class CPSolver implements Solver {
 	 * @return the term (a fresh one)
 	 */
 	public IntExp minus(IntExp v1, IntExp v2) {
-		if (v1 == ZERO){
+		if (v1 == IntTerm.ZERO){
             return mult(-1, v2);
         }
-		if (v2 == ZERO){
+		if (v2 == IntTerm.ZERO){
             return v1;
         }
 
@@ -3030,7 +3008,7 @@ public class CPSolver implements Solver {
 	}
 
 	public IntExp minus(IntExp t, int c) {
-		if (t == ZERO) {
+		if (t == IntTerm.ZERO) {
 			IntTerm t2 = new IntTerm(0);
 			t2.setConstant(-c);
 			return t2;
@@ -3081,10 +3059,10 @@ public class CPSolver implements Solver {
 	 * @return the term (a fresh one)
 	 */
 	public IntExp plus(IntExp v1, IntExp v2) {
-		if (v1 == ZERO) {
+		if (v1 == IntTerm.ZERO) {
 			return v2;
 		}
-		if (v2 == ZERO) {
+		if (v2 == IntTerm.ZERO) {
 			return v1;
 		}
 		if (v1 instanceof IntTerm) {
@@ -3118,7 +3096,7 @@ public class CPSolver implements Solver {
 	}
 
 	public IntExp plus(IntExp t, int c) {
-		if (t == ZERO) {
+		if (t == IntTerm.ZERO) {
 			IntTerm t2 = new IntTerm(0);
 			t2.setConstant(c);
 			return t2;
@@ -3186,13 +3164,13 @@ public class CPSolver implements Solver {
 	 * @return the term
 	 */
 	public IntExp mult(int a, IntExp x) {
-		if (a != 0 && x != ZERO) {
+		if (a != 0 && x != IntTerm.ZERO) {
 			IntTerm t = new IntTerm(1);
 			t.setCoefficient(0, a);
 			t.setVariable(0, (IntVar) x);
 			return t;
 		} else {
-			return ZERO;
+			return IntTerm.ZERO;
 		}
 	}
 
@@ -3560,7 +3538,7 @@ public class CPSolver implements Solver {
 		}
 
 		if( nbNonNullCoeffs == 0){
-            return ZERO;
+            return IntTerm.ZERO;
         }
 		else if( nbNonNullCoeffs == lc.length){
             return new IntTerm(lc, lv);
@@ -4235,9 +4213,7 @@ public class CPSolver implements Solver {
      */
     @Override
     public void addOptions(final String[] options) {
-        for(String opt : options){
-            optionsSet.add(opt);
-        }
+        optionsSet.addAll(Arrays.asList(options));
     }
 
     /**

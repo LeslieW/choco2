@@ -24,14 +24,13 @@ package choco.cp.solver.search.real;
 
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.real.AbstractRealVarSelector;
-import choco.kernel.solver.search.real.RealVarSelector;
 import choco.kernel.solver.variables.real.RealVar;
 
 /**
  * A cyclic variable selector : since a dichotomy algorithm is used, cyclic assiging is nedded for instantiate
  * a real interval variable.
  */
-public class CyclicRealVarSelector extends AbstractRealVarSelector implements RealVarSelector {
+public final class CyclicRealVarSelector extends AbstractRealVarSelector{
     protected int current;
 
     //protected double precision = 1.e-6;
@@ -46,7 +45,7 @@ public class CyclicRealVarSelector extends AbstractRealVarSelector implements Re
         current = -1;
     }
 
-    public RealVar selectRealVar() {
+    public RealVar selectVar() {
         int nbvars = vars.length;
         if (nbvars == 0) return null;
         int start = current == -1 ? nbvars - 1 : current;

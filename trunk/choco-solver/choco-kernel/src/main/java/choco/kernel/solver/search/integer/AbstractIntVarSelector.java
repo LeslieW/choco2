@@ -24,11 +24,11 @@ package choco.kernel.solver.search.integer;
 
 import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.search.AbstractSearchHeuristic;
-import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-public abstract class AbstractIntVarSelector extends AbstractSearchHeuristic implements IntVarSelector {
+public abstract class AbstractIntVarSelector extends AbstractSearchHeuristic implements VarSelector<IntDomainVar> {
 
 	/**
 	 * a specific array of IntVars from which the object seeks the one with smallest domain
@@ -42,16 +42,6 @@ public abstract class AbstractIntVarSelector extends AbstractSearchHeuristic imp
 	public AbstractIntVarSelector(Solver solver, IntDomainVar[] vars) {
 		super(solver);
 		this.vars = vars;
-	}
-
-	
-	/**
-	 * the IVarSelector can be asked to return a variable
-	 *
-	 * @return a variable on whose domain an alternative can be set (such as a non instantiated search variable)
-	 */
-	public final Var selectVar() {
-		return  selectIntVar();
 	}
 
 	/**

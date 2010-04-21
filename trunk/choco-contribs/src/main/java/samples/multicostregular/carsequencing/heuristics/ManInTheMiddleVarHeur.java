@@ -48,7 +48,7 @@ public class ManInTheMiddleVarHeur extends AbstractIntVarSelector {
     }
 
 
-    public IntDomainVar selectIntVar()
+    public IntDomainVar selectVar()
     {
         IntDomainVar out = null;
 

@@ -24,14 +24,14 @@ package choco.kernel.solver.search.real;
 
 import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.search.AbstractSearchHeuristic;
-import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.real.RealVar;
 
 /**
  * An interface for real variable selector during a braching assigning intervals.
  */
-public abstract class AbstractRealVarSelector extends AbstractSearchHeuristic implements RealVarSelector {
+public abstract class AbstractRealVarSelector extends AbstractSearchHeuristic implements VarSelector<RealVar> {
 
     protected final RealVar[] vars;
 
@@ -44,9 +44,5 @@ public abstract class AbstractRealVarSelector extends AbstractSearchHeuristic im
     public AbstractRealVarSelector(Solver solver, RealVar[] rvars) {
         super(solver);
         vars = rvars;
-    }
-
-    public final AbstractVar selectVar() {
-        return (AbstractVar) selectRealVar();
     }
 }

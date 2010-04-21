@@ -22,12 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.multicostregular.carsequencing.heuristics;
 
+import choco.kernel.solver.search.ValSelector;
+import choco.kernel.solver.variables.integer.IntDomainVar;
+import samples.multicostregular.carsequencing.parser.CarSeqInstance;
+
 import java.util.Arrays;
 import java.util.Comparator;
-
-import samples.multicostregular.carsequencing.parser.CarSeqInstance;
-import choco.kernel.solver.search.integer.ValSelector;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
  * Created by IntelliJ IDEA.
@@ -36,7 +36,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Date: Jan 28, 2009
  * Time: 7:18:16 PM
  */
-public class BothValHeur implements ValSelector {
+public class BothValHeur implements ValSelector<IntDomainVar> {
 
 
     Integer[] order;

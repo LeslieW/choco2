@@ -29,8 +29,8 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.goals.Goal;
 import choco.kernel.solver.goals.GoalType;
-import choco.kernel.solver.search.integer.ValIterator;
-import choco.kernel.solver.search.integer.ValSelector;
+import choco.kernel.solver.search.ValIterator;
+import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 

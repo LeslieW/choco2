@@ -24,6 +24,7 @@ package choco.cp.model.managers.constraints.global;
 
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.scheduling.precedence.PrecedenceImplied;
+import choco.kernel.common.Constant;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
@@ -33,7 +34,7 @@ public final class PrecedenceImpliedManager extends AbstractPrecedenceManager {
 	@Override
 	protected SConstraint makeIntConstraintB0(CPSolver s, IntDomainVar x1,
 			int k1, IntDomainVar x2, int k2) {
-		return CPSolver.TRUE;
+		return Constant.TRUE;
 	}
 
 	
@@ -47,7 +48,7 @@ public final class PrecedenceImpliedManager extends AbstractPrecedenceManager {
 	@Override
 	protected SConstraint makeTaskConstraintB0(CPSolver s, TaskVar t1, int k1,
 			TaskVar t2, int k2) {
-		return CPSolver.TRUE;
+		return Constant.TRUE;
 	}
 
 
