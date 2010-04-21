@@ -23,7 +23,7 @@
 package samples.seminar.nqueen;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.solver.search.integer.ValSelector;
+import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 
@@ -34,7 +34,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Since : Choco 2.0.0
  *
  */
-public class NQueenValueSelector implements ValSelector {
+public class NQueenValueSelector implements ValSelector<IntDomainVar> {
 
     // Column variable
     protected IntDomainVar[] dualVar;

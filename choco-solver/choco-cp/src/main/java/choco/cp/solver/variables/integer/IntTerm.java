@@ -22,15 +22,13 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.integer;
 
-import static java.lang.System.*;
-
-import java.security.KeyStore.Builder;
-import java.util.Arrays;
-
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.integer.IntExp;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.integer.IntVar;
+
+import static java.lang.System.arraycopy;
+import java.util.Arrays;
 
 /**
  * Implements linear terms: Sigma_i(a_i*X_i), where a_i are search coefficients,
@@ -38,6 +36,12 @@ import choco.kernel.solver.variables.integer.IntVar;
  */
 public class IntTerm implements IntExp {
 
+    /**
+	 * A constant denoting a null integer term. This is useful to make the API
+	 * more robust, for instance with linear expression with null coefficients.
+	 */
+	public static final IntTerm ZERO = new IntTerm(0);
+    
 	/**
 	 * The coefficients
 	 */
@@ -99,7 +103,7 @@ public class IntTerm implements IntExp {
 
 	
 	protected IntTerm(IntTerm t1, int nbMore, boolean moreFirst) {
-		this(t1.getSize() + nbMore);
+		this(t1.nbVars + nbMore);
 		final int n = t1.getSize();
 		final int offset = moreFirst ? nbMore : 0;
 		arraycopy(t1.variables, 0, variables, offset, n);
@@ -108,7 +112,7 @@ public class IntTerm implements IntExp {
 	}
 	
 	
-	public final static IntTerm opposite(IntTerm t1) {
+	public static IntTerm opposite(IntTerm t1) {
 		final int n = t1.getSize();
 		IntTerm res = new IntTerm(n);
 		arraycopy(t1.variables, 0, res.variables, 0, n);
@@ -117,7 +121,7 @@ public class IntTerm implements IntExp {
 		return res ;
 	}
 	
-	public final static IntTerm plus(IntTerm t1, int coeff, IntVar var, boolean varFirst) {
+	public static IntTerm plus(IntTerm t1, int coeff, IntVar var, boolean varFirst) {
 		IntTerm res = new IntTerm( t1, 1, varFirst);
 		final int idx = varFirst ? 0 : res.nbVars - 1;
 		res.setCoefficient(idx, coeff);
@@ -125,7 +129,7 @@ public class IntTerm implements IntExp {
 		return res ;
 	}
 	
-	public final static IntTerm minus(int coeff, IntVar var, IntTerm t1) {
+	public static IntTerm minus(int coeff, IntVar var, IntTerm t1) {
 		IntTerm res = new IntTerm( t1.getSize() + 1);
 		res.setCoefficient(0, coeff);
 		res.setVariable(0, var);
@@ -136,7 +140,7 @@ public class IntTerm implements IntExp {
 	}
 	
 	
-	public final static IntTerm plus(IntTerm t1, IntTerm t2) {
+	public static IntTerm plus(IntTerm t1, IntTerm t2) {
 		final int n1 = t1.getSize();
 		final int n2 = t2.getSize();
 		IntTerm res = new IntTerm( t1, n2, false);
@@ -146,7 +150,7 @@ public class IntTerm implements IntExp {
 		return res ;
 	}
 	
-	public final static IntTerm minus(IntTerm t1, IntTerm t2) {
+	public static IntTerm minus(IntTerm t1, IntTerm t2) {
 		final int n1 = t1.getSize();
 		final int n2 = t2.getSize();
 		IntTerm res = new IntTerm( t1, n2, false);
@@ -157,7 +161,7 @@ public class IntTerm implements IntExp {
 	}
 	
 	
-	private final static void buildOpposite( IntTerm src, IntTerm dest, int destPos) {
+	private static void buildOpposite( IntTerm src, IntTerm dest, int destPos) {
 		final int n = src.getSize();
 		for (int i = 0; i < n; i++) {
 			dest.coefficients[ destPos + i ] = - src.coefficients[i];

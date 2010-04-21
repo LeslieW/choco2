@@ -26,7 +26,7 @@ import choco.cp.solver.search.integer.varselector.ratioselector.ratios.RatioFact
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.IntBranchingDecision;
-import choco.kernel.solver.search.integer.ValSelector;
+import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 public final class DomOverWDegBinBranchingNew extends AbstractDomOverWDegBinBranching {

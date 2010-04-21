@@ -24,7 +24,7 @@ package choco.cp.solver.search.integer.valselector;
 
 import choco.cp.solver.constraints.global.pack.PackSConstraint;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.solver.search.integer.ValSelector;
+import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
@@ -32,7 +32,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * @since 7 déc. 2008 version 2.0.1</br>
  * @version 2.0.1</br>
  */
-public class BestFit implements ValSelector {
+public final class BestFit implements ValSelector<IntDomainVar> {
 
 	public final PackSConstraint pack;
 

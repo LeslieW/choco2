@@ -22,11 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.seminar.tsp;
 
-import choco.kernel.solver.search.integer.ValSelector;
+import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 
-public class MyValSelector implements ValSelector {
+public class MyValSelector implements ValSelector<IntDomainVar> {
 
     protected IntDomainVar objective;
     protected IntDomainVar[] vars;

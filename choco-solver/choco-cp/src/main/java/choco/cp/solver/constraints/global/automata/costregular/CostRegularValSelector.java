@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.automata.costregular;
 
-import choco.kernel.solver.search.integer.ValSelector;
+import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /*
@@ -33,7 +33,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  *
  */
 
-public class CostRegularValSelector implements ValSelector {
+public class CostRegularValSelector implements ValSelector<IntDomainVar> {
 
     boolean max;
     CostRegular cr;

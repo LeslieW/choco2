@@ -28,7 +28,6 @@ import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.search.integer.HeuristicIntVarSelector;
-import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
@@ -36,7 +35,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * a first heuristic is appled for selecting a constraint.
  * from that constraint a second heuristic is applied for selecting the variable
  */
-public final class CompositeIntVarSelector implements VarSelector {
+public final class CompositeIntVarSelector implements VarSelector<IntDomainVar> {
     protected ConstraintSelector cs;
     protected HeuristicIntVarSelector cvs;
 
@@ -45,7 +44,7 @@ public final class CompositeIntVarSelector implements VarSelector {
         this.cvs = cvs;
     }
 
-    public IntDomainVar selectIntVar() {
+    public IntDomainVar selectVar() {
         SConstraint<?> c = cs.getConstraint();
         if (c == null) return null;
         else return cvs.getMinVar((AbstractIntSConstraint) c);
@@ -63,11 +62,5 @@ public final class CompositeIntVarSelector implements VarSelector {
 	public IntBranching getBranching() {
 		return null;
 	}
-
-	@Override
-	public Var selectVar() {
-		return selectIntVar();
-	}
-    
     
 }

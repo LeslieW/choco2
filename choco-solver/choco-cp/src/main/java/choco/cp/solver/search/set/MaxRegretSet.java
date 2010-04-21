@@ -34,7 +34,7 @@ import choco.kernel.solver.variables.set.SetVar;
 // *     for Research and Education                 *
 // **************************************************
 
-public class MaxRegretSet extends AbstractSetVarSelector {
+public final class MaxRegretSet extends AbstractSetVarSelector {
 
    
     public MaxRegretSet(Solver solver, SetVar[] vars) {

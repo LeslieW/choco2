@@ -22,7 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.search.integer;
 
-import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -56,7 +55,7 @@ public abstract class HeuristicIntVarSelector extends AbstractIntVarSelector imp
 	public abstract IntDomainVar getMinVar(IntDomainVar[] vars);
 
 	
-	public IntDomainVar selectIntVar() {
+	public IntDomainVar selectVar() {
 		return getMinVar(vars);
 	}
 

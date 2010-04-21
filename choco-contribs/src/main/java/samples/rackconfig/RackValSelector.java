@@ -22,9 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.rackconfig;
 
-import gnu.trove.TIntArrayList;
-import choco.kernel.solver.search.integer.ValSelector;
+import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import gnu.trove.TIntArrayList;
 
 /**
  * Created by IntelliJ IDEA.
@@ -33,7 +33,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Date: Nov 25, 2009
  * Time: 12:32:31 AM
  */
-public class RackValSelector implements ValSelector {
+public class RackValSelector implements ValSelector<IntDomainVar> {
 
     int[] ordered;
 

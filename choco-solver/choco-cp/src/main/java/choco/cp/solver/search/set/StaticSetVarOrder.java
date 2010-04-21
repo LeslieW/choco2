@@ -35,7 +35,7 @@ import choco.kernel.solver.variables.set.SetVar;
 // *     for Research and Education                 *
 // **************************************************
 
-public class StaticSetVarOrder extends AbstractSetVarSelector {
+public final class StaticSetVarOrder extends AbstractSetVarSelector {
 
 	private final IStateInt last;
 
@@ -44,9 +44,9 @@ public class StaticSetVarOrder extends AbstractSetVarSelector {
 		this.last = solver.getEnvironment().makeInt(0);
 	}
 
-	@Override
-	public SetVar selectSetVar() {
-		//<hca> it starts at last.get() and not last.get() +1 to be
+    @Override
+    public SetVar selectVar() {
+        //<hca> it starts at last.get() and not last.get() +1 to be
 	    //robust to restart search loop
 	    for (int i = last.get(); i < vars.length; i++) {
 	      if (!vars[i].isInstantiated()) {
@@ -56,9 +56,9 @@ public class StaticSetVarOrder extends AbstractSetVarSelector {
 	      }
 	    }
 	    return null;
-	}
+    }
 
-	@Override
+    @Override
 	public int getHeuristic(SetVar v) {
 		return 0;
 	}

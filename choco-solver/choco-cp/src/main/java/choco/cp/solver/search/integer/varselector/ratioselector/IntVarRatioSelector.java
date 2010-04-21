@@ -23,11 +23,12 @@
 package choco.cp.solver.search.integer.varselector.ratioselector;
 
 import choco.cp.solver.search.integer.varselector.ratioselector.ratios.IntRatio;
-import choco.kernel.solver.search.integer.IntVarSelector;
+import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.search.integer.TiedIntVarSelector;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
 
-public interface IntVarRatioSelector extends IntVarSelector, TiedIntVarSelector {
+public interface IntVarRatioSelector extends VarSelector<IntDomainVar>, TiedIntVarSelector {
 	
 	public final static int NULL = -1;
 	

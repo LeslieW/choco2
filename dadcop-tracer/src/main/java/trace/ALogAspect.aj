@@ -24,7 +24,7 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.search.ISolutionPool;
-import choco.cp.solver.constraints.ConstantSConstraint;
+import choco.kernel.solver.constraints.ConstantSConstraint;
 
 public abstract aspect ALogAspect {
 	

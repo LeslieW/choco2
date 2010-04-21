@@ -35,11 +35,9 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
-import choco.kernel.solver.search.integer.IntVarSelector;
-import choco.kernel.solver.search.integer.ValIterator;
-import choco.kernel.solver.search.integer.ValSelector;
-import choco.kernel.solver.search.set.SetValSelector;
-import choco.kernel.solver.search.set.SetVarSelector;
+import choco.kernel.solver.branch.VarSelector;
+import choco.kernel.solver.search.ValIterator;
+import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetVar;
 import parser.flatzinc.ast.expression.EAnnotation;
@@ -206,7 +204,7 @@ public class SolveGoal {
      * @return {@code true} if a search strategy is defined
      */
     private boolean setIntSearchStrategy(IntDomainVar[] scope, EIdentifier exp, EIdentifier exp1, CPSolver solver) {
-        IntVarSelector varSelector;
+        VarSelector<IntDomainVar> varSelector;
         switch (index(exp.value, varchoiceannos)){
             case 0:
                 varSelector = new StaticVarOrder(solver, scope);
@@ -234,8 +232,8 @@ public class SolveGoal {
                 break;
             default: return false;
         }
-        ValSelector vals = null;
-        ValIterator vali = null;
+        ValSelector<IntDomainVar> vals = null;
+        ValIterator<IntDomainVar> vali = null;
         switch (index(exp1.value, assignmentannos)){
             case 0:
                 vals = new MinVal();
@@ -295,7 +293,7 @@ public class SolveGoal {
      * @return {@code true} if a search strategy is defined
      */
     private boolean setSetSearchStrategy(SetVar[] scope, EIdentifier exp, EIdentifier exp1, CPSolver solver) {
-        SetVarSelector varSelector;
+        VarSelector<SetVar> varSelector;
         switch (index(exp.value, varchoiceannos)){
             case 0:
                 varSelector = new StaticSetVarOrder(solver, scope);
@@ -323,7 +321,7 @@ public class SolveGoal {
                 break;
             default: return false;
         }
-        SetValSelector vals;
+        ValSelector<SetVar> vals;
         switch (index(exp1.value, assignmentannos)){
             case 0:
                 vals = new MinEnv();

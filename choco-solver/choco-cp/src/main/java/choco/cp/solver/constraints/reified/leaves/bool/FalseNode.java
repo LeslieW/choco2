@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.reified.leaves.bool;
 
-import choco.cp.solver.CPSolver;
+import choco.kernel.common.Constant;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.reified.NodeType;
@@ -63,6 +63,6 @@ public final class FalseNode  extends AbstractBoolNode {
      * @return
      */
     public SConstraint extractConstraint(Solver s) {
-        return CPSolver.FALSE;
+        return Constant.FALSE;
     }
 }

@@ -25,6 +25,7 @@ package choco.cp.model.managers.constraints.global;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.regular.Regular;
+import choco.kernel.common.Constant;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.automaton.DFA;
@@ -152,7 +153,7 @@ public final class RegularManager extends IntConstraintManager {
             DFA dfa = new DFA(t, ints, ints.get(0));
             return new Regular(dfa, s.getVar(bools), s.getEnvironment());
         } else {
-            return CPSolver.FALSE;// not satisfiable
+            return Constant.FALSE;// not satisfiable
         }
     }
 

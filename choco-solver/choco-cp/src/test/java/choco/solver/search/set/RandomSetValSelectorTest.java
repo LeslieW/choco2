@@ -32,6 +32,7 @@ import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.set.SetVar;
+import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
@@ -40,7 +41,6 @@ import org.junit.Test;
  * User: charles
  * Date: 23 avr. 2008
  * Time: 15:44:33
- * To change this template use File | Settings | File Templates.
  */
 public class RandomSetValSelectorTest {
 
@@ -59,13 +59,13 @@ public class RandomSetValSelectorTest {
             RandomSetValSelector p = new RandomSetValSelector(j + 1);
             int n=0;
             do {
-                SetVar s = t.selectSetVar();
+                SetVar s = t.selectVar();
                 int i = p.getBestVal(s);
                 try {
                     s.remFromEnveloppe(i, null, true);
                     n++;
                 } catch (ContradictionException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    Assert.fail();
                 }
             } while (solver.getVar(s1).getEnveloppeDomainSize() > 0 || solver.getVar(s2).getEnveloppeDomainSize() > 0);
             assertEquals(n, 14);

@@ -26,7 +26,8 @@ import choco.cp.solver.search.integer.valselector.MaxVal;
 import choco.cp.solver.search.integer.valselector.MidVal;
 import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
-import choco.kernel.solver.search.integer.ValSelector;
+import choco.kernel.solver.search.ValSelector;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,7 +42,7 @@ import java.util.Random;
 */
 public class IntValSelectorFactory {
 
-    public ArrayList<V> scope = new ArrayList<V>();
+    public ArrayList<V> scope = new ArrayList<V>(5);
 
     public enum V {
         MINVAL, MAXVAL, MIDVAL, RANDOM
@@ -63,7 +64,7 @@ public class IntValSelectorFactory {
      * @return type of value selector
      */
     public V any(Random r) {
-        if(scope.size()>0){
+        if(!scope.isEmpty()){
             return scope.get(r.nextInt(scope.size()));
         }
         V[] values = V.values();
@@ -76,7 +77,7 @@ public class IntValSelectorFactory {
      * @param r random
      * @return value selector
      */
-    public ValSelector make(Random r){
+    public ValSelector<IntDomainVar> make(Random r){
         return make(any(r), r);
     }
 
@@ -86,9 +87,9 @@ public class IntValSelectorFactory {
      * @param r random
      * @return value selector
      */
-    public ValSelector make(V v, Random r) {
+    public static ValSelector<IntDomainVar> make(V v, Random r) {
         //Otherwise, select a new val selector
-        ValSelector vs = null;
+        ValSelector<IntDomainVar> vs = null;
 
         switch (v) {
             case MINVAL:

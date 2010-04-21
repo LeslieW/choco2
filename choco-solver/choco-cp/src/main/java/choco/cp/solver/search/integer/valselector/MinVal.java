@@ -22,10 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.valselector;
 
-import choco.kernel.solver.search.integer.ValSelector;
+import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-public class MinVal implements ValSelector {
+public final class MinVal implements ValSelector<IntDomainVar> {
   /**
    * selecting the lowest value in the domain
    *

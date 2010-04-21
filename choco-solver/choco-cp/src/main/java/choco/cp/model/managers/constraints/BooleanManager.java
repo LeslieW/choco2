@@ -22,9 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints;
 
-import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.reified.leaves.bool.FalseNode;
 import choco.cp.solver.constraints.reified.leaves.bool.TrueNode;
+import choco.kernel.common.Constant;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintManager;
@@ -57,9 +57,9 @@ public final class BooleanManager extends ConstraintManager<Variable> {
         if(parameters instanceof Boolean){
             boolean bool = (Boolean)parameters;
             if(bool){
-                return CPSolver.TRUE;
+                return Constant.TRUE;
             }else{
-                return CPSolver.FALSE;
+                return Constant.FALSE;
             }
         }
         return null;
@@ -79,9 +79,9 @@ public final class BooleanManager extends ConstraintManager<Variable> {
          if(parameters instanceof Boolean){
             boolean bool = (Boolean)parameters;
             if(bool){
-                return new SConstraint[]{CPSolver.TRUE, CPSolver.FALSE};
+                return new SConstraint[]{Constant.TRUE, Constant.FALSE};
             }else{
-                return new SConstraint[]{CPSolver.FALSE, CPSolver.TRUE};
+                return new SConstraint[]{Constant.FALSE, Constant.TRUE};
             }
         }
         return null;

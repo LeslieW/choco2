@@ -57,7 +57,7 @@ public class CenterVarSelec extends AbstractIntVarSelector {
     }
 
 
-    public IntDomainVar selectIntVar()
+    public IntDomainVar selectVar()
     {
         IntDomainVar out = null;
 

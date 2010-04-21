@@ -23,8 +23,6 @@
 package choco.cp.solver.constraints.integer.intlincomb;
 
 import choco.cp.solver.CPSolver;
-import static choco.cp.solver.CPSolver.FALSE;
-import static choco.cp.solver.CPSolver.TRUE;
 import choco.cp.solver.constraints.integer.IntLinComb;
 import choco.cp.solver.constraints.integer.bool.BoolIntLinComb;
 import choco.cp.solver.constraints.integer.bool.sum.EqBoolSum;
@@ -32,6 +30,8 @@ import choco.cp.solver.constraints.integer.bool.sum.GeqBoolSum;
 import choco.cp.solver.constraints.integer.bool.sum.LeqBoolSum;
 import choco.cp.solver.constraints.integer.bool.sum.NeqBoolSum;
 import choco.cp.solver.variables.integer.IntTerm;
+import static choco.kernel.common.Constant.FALSE;
+import static choco.kernel.common.Constant.TRUE;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.solver.SolverException;

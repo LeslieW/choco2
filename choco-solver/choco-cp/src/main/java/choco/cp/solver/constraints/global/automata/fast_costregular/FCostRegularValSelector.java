@@ -1,6 +1,6 @@
 package choco.cp.solver.constraints.global.automata.fast_costregular;
 
-import choco.kernel.solver.search.integer.ValSelector;
+import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
@@ -10,7 +10,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Time: 9:22:14 AM
  */
 
-public class FCostRegularValSelector implements ValSelector {
+public class FCostRegularValSelector implements ValSelector<IntDomainVar> {
 
     boolean max;
     FastCostRegular cr;

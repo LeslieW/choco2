@@ -23,13 +23,13 @@
 package choco.cp.solver.search.set;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.solver.search.set.SetValSelector;
+import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.variables.set.SetVar;
 
 import java.util.Random;
 import java.util.Vector;
 
-public class RandomSetValSelector implements SetValSelector {
+public final class RandomSetValSelector implements ValSelector<SetVar> {
   protected Random random;
 
   /**

@@ -41,7 +41,7 @@ import choco.kernel.model.constraints.pack.PackModeler;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.VarSelector;
-import choco.kernel.solver.search.integer.ValSelector;
+import choco.kernel.solver.search.ValSelector;
 import gnu.trove.TIntArrayList;
 
 import java.util.Arrays;

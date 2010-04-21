@@ -25,7 +25,7 @@ package choco.cp.solver.search.integer.branching;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.branch.AbstractBinIntBranchingStrategy;
 import choco.kernel.solver.search.IntBranchingDecision;
-import choco.kernel.solver.search.integer.ValSelector;
+import choco.kernel.solver.search.ValSelector;
 
 public abstract class AbstractAssignOrForbidBranching extends AbstractBinIntBranchingStrategy {
 
