@@ -161,7 +161,7 @@ public final class Occurrence extends AbstractLargeIntSConstraint {
                 for(int i = 0; i < relevantVar.length; i++){
                 //for (IntDomainVar aRelevantVar : relevantVar) {
                     IntDomainVar aRelevantVar = relevantVar[i];
-                    if (aRelevantVar.getDomain().contains(occval) && !aRelevantVar.isInstantiated()) {
+                    if (aRelevantVar.canBeInstantiatedTo(occval) && !aRelevantVar.isInstantiated()) {
                         //nbSure.add(1); // must be dealed by the event listener not here !!
                         aRelevantVar.instantiate(occval,  /*cIndices[i]*/this, true);
                     }
@@ -177,7 +177,7 @@ public final class Occurrence extends AbstractLargeIntSConstraint {
                 for(int i = 0; i< relevantVar.length; i++){
 //                for (IntDomainVar aRelevantVar : relevantVar) {
                     IntDomainVar aRelevantVar = relevantVar[i];
-                    if (aRelevantVar.getDomain().contains(occval) && !aRelevantVar.isInstantiated()) {
+                    if (aRelevantVar.canBeInstantiatedTo(occval) && !aRelevantVar.isInstantiated()) {
                         //nbPossible.add(-1);
                         aRelevantVar.removeVal(occval,  /*cIndices[i]*/this, true);
                     }
@@ -216,7 +216,7 @@ public final class Occurrence extends AbstractLargeIntSConstraint {
         int nbPos = 0;
         int nbSur = 0;
         for (int i = 0; i < relevantVar.length; i++) {
-            if (vars[i].getDomain().contains(occval)) {
+            if (vars[i].canBeInstantiatedTo(occval)) {
                 nbPos++;
                 if (vars[i].isInstantiated() && vars[i].getVal() == occval)
                     nbSur++;
