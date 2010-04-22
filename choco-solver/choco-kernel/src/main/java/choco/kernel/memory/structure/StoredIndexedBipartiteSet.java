@@ -267,4 +267,12 @@ public class StoredIndexedBipartiteSet implements IStateIntVector {
     public final int findIndexOfInt(final int a) {
         return list.length - position[a];
     }
+
+   /**
+    *  DO NOT USE : FOR MEMORY OPTIM ONLY
+    */
+    public final int[] _getStructure()
+    {
+      return list;
+    }
 }

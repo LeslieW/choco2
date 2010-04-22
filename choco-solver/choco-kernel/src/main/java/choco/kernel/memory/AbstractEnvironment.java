@@ -34,7 +34,7 @@ public abstract class AbstractEnvironment implements IEnvironment {
     /**
      * The current world index.
      */
-    private static long TIMESTAMP = System.nanoTime();
+    private static long TIMESTAMP = 0;//System.nanoTime();
 
     protected int currentWorld = 0;
 
