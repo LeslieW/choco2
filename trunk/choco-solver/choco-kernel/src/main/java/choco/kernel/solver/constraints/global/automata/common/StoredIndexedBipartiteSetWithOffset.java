@@ -22,9 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.constraints.global.automata.common;
 
-import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
-import choco.kernel.memory.structure.IndexedObject;
 import choco.kernel.memory.IEnvironment;
+import choco.kernel.memory.structure.IndexedObject;
+import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
 
 import java.util.ArrayList;
 
@@ -93,4 +93,5 @@ public class StoredIndexedBipartiteSetWithOffset extends StoredIndexedBipartiteS
             }
         }
     }
+    public final int getOffset() { return offset; }
 }

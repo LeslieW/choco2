@@ -24,17 +24,17 @@ package choco.kernel.solver.constraints.global.automata.fast_multicostregular.st
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
-import choco.kernel.memory.IStateBitSet;
-import choco.kernel.memory.IStateIntVector;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.global.automata.common.StoredIndexedBipartiteSetWithOffset;
 import choco.kernel.solver.constraints.global.automata.fast_multicostregular.algo.FastPathFinder;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.TIntHashSet;
+import gnu.trove.TIntStack;
 import org.jgrapht.graph.DirectedMultigraph;
 
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Set;
 
 /**
@@ -46,26 +46,27 @@ import java.util.Set;
  */
 public class StoredDirectedMultiGraph {
 
-    public AbstractIntSConstraint constraint;
-    
-
-    int[] starts;
-    public int[] offsets;
-
-    public int sourceIndex;
-    public int tinIndex;
-    public int nbR;
+public AbstractIntSConstraint constraint;
 
 
+int[] starts;
+public int[] offsets;
 
-    StoredIndexedBipartiteSetWithOffset[] supports;
-    public StoredIndexedBipartiteSetWithOffset[] layers;
-    FastPathFinder pf;
-    private IStateBitSet inStack;
+public int sourceIndex;
+public int tinIndex;
+public int nbR;
 
 
-    public class Nodes
-    {
+
+StoredIndexedBipartiteSetWithOffset[] supports;
+public StoredIndexedBipartiteSetWithOffset[] layers;
+FastPathFinder pf;
+public BitSet inStack;
+private IntDomainVar[] z;
+
+
+public class Nodes
+{
         public int[] states;
         public int[] layers;
         public StoredIndexedBipartiteSetWithOffset[] outArcs;
@@ -81,11 +82,21 @@ public class StoredDirectedMultiGraph {
         public double[] lpfs;
         public double[] lpft;
 
-    }
+        public int[][] nextSPI;
+        public int[][] prevSPI;
+        public int[][] nextLPI;
+        public int[][] prevLPI;
+
+        public double[][] spfsI;
+        public double[][] spftI;
+        public double[][] lpfsI;
+        public double[][] lpftI;
+
+}
 
 
-    public class Arcs
-    {
+public class Arcs
+{
         public int[] values;
         public int[] dests;
         public int[] origs;
@@ -93,28 +104,29 @@ public class StoredDirectedMultiGraph {
         public double[] temporaryCost;
 
 
-    }
+}
 
 
 
-    public Nodes GNodes;
-    public Arcs GArcs;
+public Nodes GNodes;
+public Arcs GArcs;
 
 
 
 
 
 
-    public StoredDirectedMultiGraph(IEnvironment environment, AbstractIntSConstraint constraint, DirectedMultigraph<Node, Arc> graph, int[][] layers, int[] starts, int[] offsets, int supportLength,int[][][][] costs)
-    {      
+public StoredDirectedMultiGraph(IEnvironment environment, AbstractIntSConstraint constraint, DirectedMultigraph<Node, Arc> graph, int[][] layers, int[] starts, int[] offsets, int supportLength,int[][][][] costs,IntDomainVar[] z)
+{
         this.nbR = costs[0][0].length;
+        this.z = z;
         this.constraint = constraint;
         this.starts = starts;
         this.offsets =offsets;
         this.layers = new StoredIndexedBipartiteSetWithOffset[layers.length];
         for (int i = 0 ; i < layers.length ; i++)
         {
-            this.layers[i] = new StoredIndexedBipartiteSetWithOffset(environment,layers[i]);
+                this.layers[i] = new StoredIndexedBipartiteSetWithOffset(environment,layers[i]);
         }
         this.sourceIndex = layers[0][0];
         this.tinIndex = layers[layers.length-1][0];
@@ -128,7 +140,7 @@ public class StoredDirectedMultiGraph {
 
         Set<Arc> arcs = graph.edgeSet();
 
-        this.inStack = environment.makeBitSet(arcs.size());
+        this.inStack = new BitSet(arcs.size());//environment.makeBitSet(arcs.size());
 
         GArcs.values = new int[arcs.size()];
         GArcs.dests = new int[arcs.size()];
@@ -141,32 +153,32 @@ public class StoredDirectedMultiGraph {
         for (Arc a : arcs)
         {
 
-            GArcs.values[a.id] = a.value;
-            GArcs.dests[a.id] = a.dest.id;
-            GArcs.origs[a.id] = a.orig.id;
-            int state = a.orig.state;
-            int layer = a.orig.layer;
-            for (int r = 0 ; r < nbR ; r++)
-            {
-                GArcs.originalCost[a.id][r] = layer < layers.length -2 ?costs[layer][a.value][r][state]:0.0;
-            }
+                GArcs.values[a.id] = a.value;
+                GArcs.dests[a.id] = a.dest.id;
+                GArcs.origs[a.id] = a.orig.id;
+                int state = a.orig.state;
+                int layer = a.orig.layer;
+                for (int r = 0 ; r < nbR ; r++)
+                {
+                        GArcs.originalCost[a.id][r] = layer < layers.length -2 ?costs[layer][a.value][r][state]:0.0;
+                }
 
 
 
-            if (a.orig.layer < starts.length)
-            {
-                int idx = starts[a.orig.layer]+a.value-offsets[a.orig.layer];
-                if (sups[idx] == null)
-                    sups[idx] = new TIntHashSet();
-                sups[idx].add(a.id);
-            }
+                if (a.orig.layer < starts.length)
+                {
+                        int idx = starts[a.orig.layer]+a.value-offsets[a.orig.layer];
+                        if (sups[idx] == null)
+                                sups[idx] = new TIntHashSet();
+                        sups[idx].add(a.id);
+                }
 
         }
 
         for (int i =0 ;i < sups.length ;i++)
         {
-            if (sups[i] != null)
-                supports[i] = new StoredIndexedBipartiteSetWithOffset(environment,sups[i].toArray());
+                if (sups[i] != null)
+                        supports[i] = new StoredIndexedBipartiteSetWithOffset(environment,sups[i].toArray());
         }
 
         Set<Node> nodes = graph.vertexSet();
@@ -191,57 +203,75 @@ public class StoredDirectedMultiGraph {
         GNodes.spft = new double[nodes.size()];
 
 
+        GNodes.lpfsI = new double[nodes.size()][nbR];
+        GNodes.lpftI = new double[nodes.size()][nbR];
+        GNodes.spfsI = new double[nodes.size()][nbR];
+        GNodes.spftI = new double[nodes.size()][nbR];
+
+        GNodes.prevLPI = new int[nodes.size()][nbR];
+        GNodes.nextLPI = new int[nodes.size()][nbR];
+        GNodes.prevSPI = new int[nodes.size()][nbR];
+        GNodes.nextSPI = new int[nodes.size()][nbR];
+        for (int k = 0 ;k < nbR ; k++)
+        {
+                Arrays.fill(GNodes.prevLPI[k],Integer.MIN_VALUE);
+                Arrays.fill(GNodes.nextLPI[k],Integer.MIN_VALUE);
+                Arrays.fill(GNodes.prevSPI[k],Integer.MIN_VALUE);
+                Arrays.fill(GNodes.nextSPI[k],Integer.MIN_VALUE);
+        }
+
+
 
 
         for (Node n : nodes)
         {
-            GNodes.layers[n.id] = n.layer;
-            GNodes.states[n.id] = n.state;
-            int i;
-            Set<Arc> outarc = graph.outgoingEdgesOf(n);
-            if (!outarc.isEmpty())
-            {
-                int[] out = new int[outarc.size()];
-                i = 0;
-                for (Arc a : outarc)
+                GNodes.layers[n.id] = n.layer;
+                GNodes.states[n.id] = n.state;
+                int i;
+                Set<Arc> outarc = graph.outgoingEdgesOf(n);
+                if (!outarc.isEmpty())
                 {
-                    out[i++] = a.id;
+                        int[] out = new int[outarc.size()];
+                        i = 0;
+                        for (Arc a : outarc)
+                        {
+                                out[i++] = a.id;
+                        }
+                        GNodes.outArcs[n.id] = new StoredIndexedBipartiteSetWithOffset(environment,out);
                 }
-                GNodes.outArcs[n.id] = new StoredIndexedBipartiteSetWithOffset(environment,out);
-            }
 
-            Set<Arc> inarc = graph.incomingEdgesOf(n);
-            if (!inarc.isEmpty())
-            {
-                int[] in = new int[inarc.size()];
-                i = 0;
-                for (Arc a : inarc)
+                Set<Arc> inarc = graph.incomingEdgesOf(n);
+                if (!inarc.isEmpty())
                 {
-                    in[i++] = a.id;
+                        int[] in = new int[inarc.size()];
+                        i = 0;
+                        for (Arc a : inarc)
+                        {
+                                in[i++] = a.id;
+                        }
+                        GNodes.inArcs[n.id] = new StoredIndexedBipartiteSetWithOffset(environment,in);
                 }
-                GNodes.inArcs[n.id] = new StoredIndexedBipartiteSetWithOffset(environment,in);
-            }
         }
 
 
         this.pf = new FastPathFinder(this);
 
-    }
+}
 
-    public final StoredIndexedBipartiteSetWithOffset getSupport(int i, int j)
-    {
+public final StoredIndexedBipartiteSetWithOffset getSupport(int i, int j)
+{
         int idx = starts[i]+j-offsets[i];
         if (idx == -1)
-            System.err.println("stop");
+                System.err.println("stop");
         return supports[idx];
 
 
-    }
+}
 
-    public final FastPathFinder getPathFinder()
-    {
+public final FastPathFinder getPathFinder()
+{
         return pf;
-    }
+}
 
 
 
@@ -249,8 +279,9 @@ public class StoredDirectedMultiGraph {
 
 
 
-    public void removeArc(int arcId, IStateIntVector toRemove) throws ContradictionException {
+public boolean removeArc(int arcId, TIntStack toRemove, TIntStack[] updateLeft, TIntStack[] updateRight) throws ContradictionException {
         inStack.clear(arcId);
+        boolean needUpdate = false;
 
         int orig = GArcs.origs[arcId];
         int dest = GArcs.dests[arcId];
@@ -260,17 +291,18 @@ public class StoredDirectedMultiGraph {
 
         if (layer < starts.length)
         {
-            StoredIndexedBipartiteSetWithOffset support = getSupport(layer,value);
-            support.remove(arcId);
+                StoredIndexedBipartiteSetWithOffset support = getSupport(layer,value);
+                support.remove(arcId);
 
-            if (support.isEmpty())
-            {
-                IntDomainVar var = this.constraint.getVar(layer);
-                var.removeVal(value, this.constraint, false);
-            }
+                if (support.isEmpty())
+                {
+                        IntDomainVar var = this.constraint.getVar(layer);
+                        var.removeVal(value, this.constraint, false);
+                }
         }
 
-        DisposableIntIterator it;
+        int[] list;
+        int size;
         StoredIndexedBipartiteSetWithOffset out = GNodes.outArcs[orig];
         StoredIndexedBipartiteSetWithOffset in;
 
@@ -279,22 +311,37 @@ public class StoredDirectedMultiGraph {
 
         if (out.isEmpty())
         {    layers[layer].remove(orig);
-            if (layer > 0 )
-            {
-                in = GNodes.inArcs[orig];
-                it = in.getIterator();
-                while(it.hasNext())
+                if (layer > 0 )
                 {
-                    int id = it.next();
-                    if(!isInStack(id))
-                    {
-                        setInStack(id);
-                        toRemove.add(id);
-                    }
+                        in = GNodes.inArcs[orig];
+                        list = in._getStructure();
+                        size = in.size();
+                        for (int i = 0 ; i < size ; i++)//while(it.hasNext())
+                        {
+                                int id = list[i];//it.next();
+                                if(!isInStack(id))
+                                {
+                                        setInStack(id);
+                                        toRemove.push(id);
+                                }
+                        }
+                        //it.dispose();
                 }
-                it.dispose();
-            }
         }
+        else
+        {
+                for (int k = 0 ; k < nbR ; k++)
+                {
+                        //   System.out.println(GNodes.nextSPI[orig][k] + " " + arcId);
+                        if (GNodes.nextSPI[orig][k] ==  arcId || GNodes.nextLPI[orig][k] == arcId)
+                        {
+                                updateRight[k].push(orig);
+                                needUpdate = true;
+                                //  updateRight(orig,toRemove,k,modBound);
+                        }
+                }
+        }
+
 
         in = GNodes.inArcs[dest];
         in.remove(arcId);
@@ -302,66 +349,264 @@ public class StoredDirectedMultiGraph {
 
         if (in.isEmpty())
         {
-            layers[layer+1].remove(dest);
-            if (layer+1 < this.constraint.getNbVars())
-            {
-                out = GNodes.outArcs[dest];
-                it = out.getIterator();
-                while (it.hasNext())
+                layers[layer+1].remove(dest);
+                if (layer+1 < starts.length)
                 {
-                    int id = it.next();
-                    if (!isInStack(id))
-                    {
-                        setInStack(id);
-                        toRemove.add(id);
-                    }
-                }
-                it.dispose();
+                        out = GNodes.outArcs[dest];
+                        list = out._getStructure();
+                        size = out.size();
+                        for (int i = 0 ; i < size ; i++)//while(it.hasNext())
+                        {
+                                int id = list[i];//it.next();
+                                if (!isInStack(id))
+                                {
+                                        setInStack(id);
+                                        toRemove.push(id);
+                                }
+                        }
+                       // it.dispose();
 
-            }
+                }
+        }
+        else
+        {
+                for (int k = 0 ; k < nbR ; k++)
+                {
+                        if (GNodes.prevSPI[dest][k] == arcId || GNodes.prevLPI[dest][k] == arcId)
+                        {
+                                updateLeft[k].push(dest);//dest,toRemove,k,modBound);
+                                needUpdate = true;
+                        }
+                }
+        }
+        return needUpdate;
+
+}
+
+private static boolean contains(int[] arr, int elem)
+{
+        int lg = arr.length-1;
+        for (int s = lg ; s >=0 ; s--)
+        {
+                if (arr[s] == elem) return true;
+        }
+        return false;
+}
+
+public void updateRight(TIntStack updateRight, TIntStack toRemove, int dim, boolean[] modBound) throws ContradictionException
+{
+
+        int nid = updateRight.pop();
+        double tempPval = Double.POSITIVE_INFINITY;
+        double tempPval2 = Double.NEGATIVE_INFINITY;
+        int tempP = Integer.MIN_VALUE;
+        int temp2 = Integer.MIN_VALUE;
+
+        int[] list = GNodes.outArcs[nid]._getStructure();
+        int size = GNodes.outArcs[nid].size();
+
+
+        for (int i = 0 ; i < size ; i++)// while(it.hasNext())
+        {
+                int arcId = list[i];//it.next();
+                int dest = GArcs.dests[arcId];
+                double spft = GNodes.spftI[dest][dim] + GArcs.originalCost[arcId][dim];
+                if (tempPval > spft)
+                {
+                        tempPval = spft;
+                        tempP = arcId;
+                }
+
+                double lpft = GNodes.lpftI[dest][dim] + GArcs.originalCost[arcId][dim];
+                if (tempPval2 < lpft)
+                {
+                        tempPval2 = lpft;
+                        temp2 = arcId;
+                }
+
+
+        }
+        //it.dispose();
+        double old = GNodes.spftI[nid][dim];
+        GNodes.spftI[nid][dim] = tempPval ;
+        GNodes.nextSPI[nid][dim] = tempP;
+
+        double old2 = GNodes.lpftI[nid][dim];
+        GNodes.lpftI[nid][dim] = tempPval2;
+        GNodes.nextLPI[nid][dim] = temp2;
+
+        if (nid == sourceIndex)
+        {
+                if (dim ==0)
+                {
+                        modBound[0]|= z[0].updateInf((int)Math.ceil(tempPval),constraint,false);
+                        modBound[1]|= z[0].updateSup((int)Math.floor(tempPval2),constraint,false);
+                }
+                else
+                {
+                      z[dim].updateInf((int)Math.ceil(tempPval),constraint,false);
+                      z[dim].updateSup((int)Math.floor(tempPval2),constraint,false);
+                }
         }
 
-    }
+        if (nid != sourceIndex && (old != tempPval || old2 != tempPval2))
+        {
+                list = GNodes.inArcs[nid]._getStructure();
+                size = GNodes.inArcs[nid].size();
+
+                for (int i = 0 ; i < size ; i++) //while(it.hasNext())
+                {
+                        int arcId = list[i];//it.next();
+                        int orig =  GArcs.origs[arcId];
+                        if ((GNodes.nextSPI[orig][dim] == arcId &&old!=tempPval) || (old2!=tempPval2 && GNodes.nextLPI[orig][dim]== arcId))
+                        {
+                                updateRight.push(orig);
+                                //updateRight(orig,toRemove,dim,modBound);
+                        }
+                        double spfs = GNodes.spfsI[orig][dim];//.quickGet(orig);
+                        double lpfs = GNodes.lpfsI[orig][dim];
+
+                        double acost = GArcs.originalCost[arcId][dim];
+                        if (!isInStack(arcId) && (tempPval + spfs+acost > z[dim].getSup()
+                                || tempPval2 + lpfs+acost < z[dim].getInf()))
+                        {
+                                setInStack(arcId);
+                                toRemove.push(arcId);
+                        }
+                }
+             //   it.dispose();
+        }
 
 
-    /**
-     * Getter to the is arc in to be removed stack bitSet
-     * @return an instance of a storable bitset
-     */
-    public final IStateBitSet getInStack()
-    {
+}
+
+
+public void updateLeft(TIntStack updateLeft, TIntStack toRemove, int dim, boolean[] modBound) throws ContradictionException
+{
+        int nid = updateLeft.pop();
+        double tempPval = Double.POSITIVE_INFINITY;
+        int tempP = Integer.MIN_VALUE;
+
+        double tempPval2 = Double.NEGATIVE_INFINITY;
+        int tempP2 = Integer.MIN_VALUE;
+
+        int[] list = GNodes.inArcs[nid]._getStructure();
+        int size = GNodes.inArcs[nid].size();
+
+
+        for (int i = 0 ; i < size ; i++) //while(it.hasNext())
+        {
+                int arcId = list[i];//it.next();
+                int orig = GArcs.origs[arcId];
+                double spfs = GNodes.spfsI[orig][dim] + GArcs.originalCost[arcId][dim];
+                if (tempPval > spfs)
+                {
+                        tempPval = spfs;
+                        tempP = arcId;
+                }
+                double lpfs = GNodes.lpfsI[orig][dim] + GArcs.originalCost[arcId][dim];
+                if (tempPval2 < lpfs)
+                {
+                        tempPval2 = lpfs;
+                        tempP2 = arcId;
+                }
+
+        }
+
+        //it.dispose();
+        double old = GNodes.spfsI[nid][dim] ;
+        GNodes.spfsI[nid][dim] = tempPval;
+        GNodes.prevSPI[nid][dim] = tempP;
+        double old2 = GNodes.lpfsI[nid][dim];
+        GNodes.lpfsI[nid][dim] = tempPval2;
+        GNodes.prevLPI[nid][dim] = tempP2;
+
+        if (nid == tinIndex)
+        {
+                if (dim ==0)
+                {
+                        modBound[0]|= z[0].updateInf((int)Math.ceil(tempPval),constraint,false);
+                        modBound[1]|= z[0].updateSup((int)Math.floor(tempPval2),constraint,false);
+                }
+                else
+                {
+                      z[dim].updateInf((int)Math.ceil(tempPval),constraint,false);
+                      z[dim].updateSup((int)Math.floor(tempPval2),constraint,false);
+                }
+
+        }
+
+        if (nid != tinIndex && (old != tempPval || old2 != tempPval2))
+        {
+                list = GNodes.outArcs[nid]._getStructure();
+                size = GNodes.outArcs[nid].size();
+
+                for (int i = 0 ; i < size ; i++)//while(it.hasNext())
+                {
+                        int arcId = list[i];//it.next();
+                        int dest =  GArcs.dests[arcId];
+                        if ((old != tempPval && GNodes.prevSPI[dest][dim] == arcId) || (old2!=tempPval2 && GNodes.prevLPI[dest][dim] == arcId))
+                        {
+                                // updateLeft(dest,toRemove,dim,modBound);
+                                updateLeft.push(dest);
+                        }
+                        double spft = GNodes.spftI[dest][dim];
+                        double acost = GArcs.originalCost[arcId][dim];
+                        double lpft = GNodes.lpftI[dest][dim];
+                        if (!isInStack(arcId) && (tempPval + spft+acost > z[dim].getSup()
+                                ||tempPval2 + lpft+acost < z[dim].getInf()))
+                        {
+                                setInStack(arcId);
+                                toRemove.push(arcId);
+                        }
+                }
+                //it.dispose();
+        }
+
+
+}
+
+
+
+
+/**
+ * Getter to the is arc in to be removed stack bitSet
+ * @return an instance of a storable bitset
+ */
+public final BitSet getInStack()
+{
         return inStack;
-    }
+}
 
-    /**
-     *  Getter, the idx th bit of the inStack bitSet
-     * @param idx the index of the arc
-     * @return true if a given arc is to be deleted
-     */
-    public final boolean isInStack(int idx)
-    {
+/**
+ *  Getter, the idx th bit of the inStack bitSet
+ * @param idx the index of the arc
+ * @return true if a given arc is to be deleted
+ */
+public final boolean isInStack(int idx)
+{
         return inStack.get(idx);
-    }
+}
 
-    /**
-     * Set the idx th bit of the to be removed bitset
-     * @param idx the index of the bit
-     */
-    public final void setInStack(int idx)
-    {
+/**
+ * Set the idx th bit of the to be removed bitset
+ * @param idx the index of the bit
+ */
+public final void setInStack(int idx)
+{
         inStack.set(idx);
-    }
+}
 
-    /**
-     * Clear the idx th bit of the to be removed bitset
-     * @param idx the index of the bit
-     */
-    public final void clearInStack(int idx)
-    {
+/**
+ * Clear the idx th bit of the to be removed bitset
+ * @param idx the index of the bit
+ */
+public final void clearInStack(int idx)
+{
         inStack.clear(idx);
-    }
+}
 
-    public int getRegret(int layer, int value, int... resources)
+public int getRegret(int layer, int value, int... resources)
 {
         int result  = Integer.MAX_VALUE;
         StoredIndexedBipartiteSetWithOffset arcs = this.getSupport(layer,value);
@@ -389,9 +634,42 @@ public class StoredDirectedMultiGraph {
                 result -= pf.spft[sourceIndex][r];
         }
         if (result < 0)
-             ;//   System.err.println("STR");
+                ;//   System.err.println("STR");
 
         return result;
 }
+
+public int getMinPathCostForAssignment(int layer, int value, int... resources)
+{
+	int result  = Integer.MAX_VALUE;
+	StoredIndexedBipartiteSetWithOffset arcs = this.getSupport(layer,value);
+
+        DisposableIntIterator it = arcs.getIterator();
+        int[] list = arcs._getStructure();
+        int size = arcs.size();
+	for (int i = 0 ; i < size ; i ++) {//while (it.hasNext()) {
+		int arcId = list[i];//it.next();
+		int origId = GArcs.origs[arcId];
+		int destId = GArcs.dests[arcId];
+		int cost = 0;
+		for (int r : resources) {
+			cost+=pf.spfs[origId][r] + GArcs.originalCost[arcId][r] + pf.spft[destId][r];
+		}
+		if (cost < result)
+			result = cost;
+	}
+	it.dispose();
+	return result;
+}
+
+public int getMinPathCost(int... resources)
+{
+	int result  = 0;
+	for (int r : resources) {
+		result += pf.spft[sourceIndex][r];
+	}
+	return result;
+}
+
 
 }

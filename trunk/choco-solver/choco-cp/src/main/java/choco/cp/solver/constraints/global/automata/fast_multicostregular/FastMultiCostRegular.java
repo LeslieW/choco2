@@ -27,10 +27,10 @@ import choco.kernel.common.Constant;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.memory.IEnvironment;
-import choco.kernel.memory.IStateIntVector;
 import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.global.automata.fast_multicostregular.algo.FastPathFinder;
 import choco.kernel.solver.constraints.global.automata.fast_multicostregular.structure.Arc;
 import choco.kernel.solver.constraints.global.automata.fast_multicostregular.structure.Node;
@@ -39,6 +39,7 @@ import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.TIntHashSet;
 import gnu.trove.TIntIterator;
+import gnu.trove.TIntStack;
 import gnu.trove.TObjectIntHashMap;
 import org.jgrapht.graph.DirectedMultigraph;
 
@@ -172,7 +173,10 @@ protected final int nbR;
 /**
  * Stack to store removed edges index, for delayed update
  */
-protected final IStateIntVector toRemove;
+protected final TIntStack toRemove;
+
+protected final TIntStack[] toUpdateLeft;
+protected final TIntStack[] toUpdateRight;
 
 
 /**
@@ -181,9 +185,11 @@ protected final IStateIntVector toRemove;
 protected final TIntHashSet removed = new TIntHashSet();
 
 private final IEnvironment environment;
+private final Solver solver;
 
-public int lastVisitedWorld = -1;
-public long lastWorldStamp = -1;
+public int lastWorld = -1;
+public int lastNbOfBacktracks = -1;
+public int lastNbOfRestarts = -1;
 
 /**
  * Constructs a multi-cost-regular constraint propagator
@@ -191,11 +197,10 @@ public long lastWorldStamp = -1;
  * @param CR    cost variables
  * @param auto  finite automaton
  * @param costs assignment cost arrays
- * @param environment environment
+ * @param solver solver
  */
-public FastMultiCostRegular(final IntDomainVar[] vars, final IntDomainVar[] CR, final FiniteAutomaton auto, final int[][][] costs, IEnvironment environment)
-{
-        this(vars,CR,auto,make4dim(costs,auto),environment);
+public FastMultiCostRegular(final IntDomainVar[] vars, final IntDomainVar[] CR, final FiniteAutomaton auto, final int[][][] costs, Solver solver) {
+        this(vars,CR,auto,make4dim(costs,auto),solver);
 }
 
 private static int[][][][] make4dim(int[][][] costs, FiniteAutomaton auto) {
@@ -228,12 +233,13 @@ private static int[][][][] make4dim(int[][][] costs, FiniteAutomaton auto) {
  * @param CR    cost variables
  * @param auto  finite automaton
  * @param costs assignment cost arrays
- * @param environment environment
+ * @param solver solver
  */
-public FastMultiCostRegular(final IntDomainVar[] vars, final IntDomainVar[] CR, final FiniteAutomaton auto, final int[][][][] costs, IEnvironment environment)
+public FastMultiCostRegular(final IntDomainVar[] vars, final IntDomainVar[] CR, final FiniteAutomaton auto, final int[][][][] costs, Solver solver)
 {
         super(ArrayUtils.<IntDomainVar>append(vars,CR));
-        this.environment = environment;
+        this.environment = solver.getEnvironment();
+        this.solver= solver;
         this.vs = vars;
         this.costs = costs;
         this.z= CR;
@@ -253,7 +259,17 @@ public FastMultiCostRegular(final IntDomainVar[] vars, final IntDomainVar[] CR, 
         {
                 this.map.put(vars[i],i);
         }
-        this.toRemove = environment.makeIntVector();
+        this.toRemove = new TIntStack();
+        this.toUpdateLeft = new TIntStack[nbR+1];
+        this.toUpdateRight = new TIntStack[nbR+1];
+
+        for (int i = 0 ; i <= nbR ; i++)
+        {
+                this.toUpdateLeft[i] = new TIntStack();
+                this.toUpdateRight[i] = new TIntStack();
+        }
+
+
         LOGGER.finest("NB STATES : "+auto.getNbStates());
         LOGGER.finest("NB ARCS : "+auto.getTransitions().size());
 
@@ -465,7 +481,7 @@ public void initGraph()
         intLayer[n+1] = new int[]{tink.id};
 
         if (intLayer[0].length > 0)
-                this.graph = new StoredDirectedMultiGraph(environment, this,graph,intLayer,starts,offsets,totalSizes,costs);
+                this.graph = new StoredDirectedMultiGraph(environment, this,graph,intLayer,starts,offsets,totalSizes,costs,z);
 }
 
 
@@ -674,12 +690,11 @@ protected boolean prefilter() throws ContradictionException {
         while (cont)
         {
                 modified = p.computeShortestAndLongestPath(toRemove,z);
-                cont = !toRemove.isEmpty();
+                cont = toRemove.size() > 0;
                 modifiedBound[0] |= modified[0];
                 modifiedBound[1] |= modified[1];
                 this.delayedGraphUpdate();
-             //   if (modifiedBound[0] || modifiedBound[1])
-                    //    return true;
+
         }
         return (modifiedBound[0] || modifiedBound[1]);
 }
@@ -724,7 +739,275 @@ protected void filterUp(final double reallp) throws ContradictionException {
         }
 }
 
+protected void checkWorld() throws ContradictionException
+{
+        int currentworld = environment.getWorldIndex();
+        int currentbt = solver.getBackTrackCount();
+        int currentrestart = solver.getRestartCount();
+        //System.err.println("TIME STAMP : "+currentbt+"   BT COUNT : "+solver.getBackTrackCount());
+       // assert (currentbt == solver.getBackTrackCount());
+        if (currentworld < lastWorld || currentbt != lastNbOfBacktracks || currentrestart > lastNbOfRestarts)
+        {
 
+                for (int i = 0 ; i <= nbR ; i++)
+                {
+                        this.toUpdateLeft[i].reset();
+                        this.toUpdateRight[i].reset();
+                }
+
+                this.toRemove.reset();
+                this.graph.inStack.clear();
+
+
+                this.getGraph().getPathFinder().computeShortestAndLongestPath(toRemove,z);
+//                assert(toRemove.size() == 0); // PAS SUR DE L'ASSERT
+                //  this.delayedGraphUpdate();
+                // this.graph.toUpdateLeft.reset();
+                //this.graph.toUpdateRight.reset();
+        }
+        lastWorld = currentworld;
+        lastNbOfBacktracks = currentbt;
+        lastNbOfRestarts = currentrestart;
+}
+
+
+
+
+
+/**
+ * Updates the graphs w.r.t. the caught event during event-based propagation
+ * @throws ContradictionException if removing an edge causes a domain to be emptied
+ */
+protected void delayedGraphUpdate() throws ContradictionException {
+
+        boolean needUpdate=false;
+        try {
+        do
+        //while (toRemove.size() > 0)
+        {
+                while (toRemove.size() > 0)
+               {
+                        int n = toRemove.pop();
+                        needUpdate = this.graph.removeArc(n, toRemove,toUpdateLeft,toUpdateRight);
+                       // modifiedBound[0] = modifiedBound[1]  = true;
+                }
+               // if (needUpdate)
+                for (int k = 0 ; k <= nbR ; k++)
+                {
+                        while (this.toUpdateLeft[k].size() > 0)
+                        {
+                                this.graph.updateLeft(this.toUpdateLeft[k],toRemove,k,modifiedBound);
+                                if (toRemove.size() > 0) break;
+                        }
+                        while(this.toUpdateRight[k].size() > 0)
+                        {
+                                this.graph.updateRight(this.toUpdateRight[k],toRemove,k,modifiedBound);
+                                if (toRemove.size() > 0) break;
+                        }
+                }
+
+
+
+
+        } while (toRemove.size() > 0) ;
+        } catch (ArrayIndexOutOfBoundsException ignored) {}
+       // System.err.println("MAX : "+max);
+        //  this.prefilter();
+}
+
+
+
+
+
+
+/**
+ * Iteratively compute upper and lower bound for the underlying RCSPP
+ * @throws ContradictionException if a domain gets empty
+ */
+public void computeSharpBounds() throws ContradictionException
+{
+        // do
+        // {
+        while (modifiedBound[0] || modifiedBound[1])
+        {
+                if (modifiedBound[1])
+                {
+                        modifiedBound[1] = false;
+                        updateLowerBound();
+                }
+                if (modifiedBound[0])
+                {
+                        modifiedBound[0] = false;
+                        updateUpperBound();
+                }
+                /*if (!modifiedBound[0] && !modifiedBound[1]) */this.delayedGraphUpdate();
+        }  // } while(this.prefilter());
+}
+
+
+private boolean remContains(int e)
+{
+        int[] element = toRemove.toNativeArray();
+        for (int i = 0 ; i < toRemove.size() ; i++)
+                if (element[i] == e)
+                        return true;
+        return false;
+}
+
+
+public void awakeOnRem(final int idx, final int val) throws ContradictionException {
+        checkWorld();
+        StoredIndexedBipartiteSet support = this.graph.getSupport(idx,val);
+        if (support != null)
+        {
+                final int[] list = support._getStructure();
+                final int size = support.size();
+                for (int i = 0 ; i < size ; i++)//while (it.hasNext())
+                {
+                        int e = list[i];//t.next();
+                        assert(graph.isInStack(e)==remContains(e));
+                        if (!graph.isInStack(e))
+                        {
+                                graph.setInStack(e);
+                                toRemove.push(e);
+                        }
+                }
+                //it.dispose();
+                if (toRemove.size() > 0)
+                {
+                        this.constAwake(false);
+                }
+
+        }
+
+}
+
+public final void awakeOnInst(final int idx)
+{
+        this.constAwake(false);
+}
+
+public final void awakeOnSup(final int idx)
+{
+        this.constAwake(false);
+}
+
+public final void awakeOnInf(final int idx)
+{
+        this.constAwake(false);
+}
+
+
+
+
+public void awake() throws ContradictionException
+{
+
+        initGraph();
+        if (this.graph == null)
+                this.fail();
+
+        this.slp = this.graph.getPathFinder();
+
+        for (int i  = 0 ; i < vs.length ; i++)
+        {
+                for (int j = vs[i].getInf() ; j <= vs[i].getSup() ; j = vs[i].getNextDomainValue(j))
+                {
+                        StoredIndexedBipartiteSet sup = graph.getSupport(i,j);
+                        if (sup == null || sup.isEmpty())
+                        {
+                                vs[i].removeVal(j, this, false);
+                        }
+                }
+        }
+        //prefilter();
+        this.slp.computeShortestAndLongestPath(toRemove,z);
+        propagate();
+
+}
+
+public void propagate() throws ContradictionException
+{
+        checkWorld();
+        this.delayedGraphUpdate();
+        this.modifiedBound[0] = true;
+        this.modifiedBound[1] = true;
+        this.computeSharpBounds();
+        assert(toRemove.size() == 0);
+
+
+        assert(check());
+        assert(isGraphConsistent());
+}
+
+public void rebuildCostRegInfo() throws ContradictionException
+{
+        //  propagate();
+        checkWorld();   /*
+        this.lastWorld = environment.getWorldIndex();
+        this.lastNbOfBacktracks = environment.getWorldTimeStamp();
+        this.graph.getPathFinder().computeShortestAndLongestPath(toRemove,z); */
+        // toRemove.clear();
+        // this.graph.inStack.clear();
+
+}
+
+public final boolean needPropagation()
+{
+        int currentworld = environment.getWorldIndex();
+        int currentbt = solver.getBackTrackCount();
+        int currentrestart = solver.getRestartCount();
+
+        return (currentworld < lastWorld || currentbt != lastNbOfBacktracks || currentrestart > lastNbOfRestarts);
+
+}
+
+
+public boolean isGraphConsistent()
+{
+        boolean ret = true;
+        for (int i = 0 ; i < vs.length ; i++)
+        {
+                DisposableIntIterator iter = this.graph.layers[i].getIterator();
+                while (iter.hasNext())
+                {
+                        int n = iter.next();
+                        DisposableIntIterator it = this.graph.GNodes.outArcs[n].getIterator();
+                        while(it.hasNext())
+                        {
+                                int arc = it.next();
+                                int val = this.graph.GArcs.values[arc];
+                                if (!vars[i].canBeInstantiatedTo(val))
+                                {
+                                        System.err.println("Arc "+arc+" from node "+n+" to node"+this.graph.GArcs.dests[arc]+" with value "+val+" in layer "+i+" should not be here");
+                                        return false;
+                                }
+                        }
+                }
+                iter.dispose();
+        }
+        return ret;
+}
+
+
+
+
+
+public final StoredDirectedMultiGraph getGraph()
+{
+        return graph;
+}
+
+public final int getRegret(int layer, int value, int... resources)
+{
+        //System.out.println("WORLD : " + this.environment.getWorldIndex());
+        return this.graph.getRegret(layer,value,resources);
+}
+
+public int[][][][] getCosts()
+{
+        return costs;
+}
 
 public boolean isSatisfied()
 {
@@ -817,215 +1100,8 @@ public int getFilteredEventMask(int idx) {
 }
 
 
-/**
- * Updates the graphs w.r.t. the caught event during event-based propagation
- * @throws ContradictionException if removing an edge causes a domain to be emptied
- */
-protected void delayedGraphUpdate() throws ContradictionException {
-
-        while (toRemove.size() > 0)
-        {
-                int n = toRemove.get(toRemove.size()-1);
-                toRemove.removeLast();
-                this.graph.removeArc(n, toRemove);
-        }
-        //  this.prefilter();
-}
-
-
-
-
-
-
-/**
- * Iteratively compute upper and lower bound for the underlying RCSPP
- * @throws ContradictionException if a domain gets empty
- */
-public void computeSharpBounds() throws ContradictionException
-{
-        do
-        {
-        while (modifiedBound[0] || modifiedBound[1])
-        {
-                if (modifiedBound[1])
-                {
-                        modifiedBound[1] = false;
-                        updateLowerBound();
-                }
-                if (modifiedBound[0])
-                {
-                        modifiedBound[0] = false;
-                        updateUpperBound();
-                }
-                this.delayedGraphUpdate();
-     }   } while(this.prefilter());
-}
-
-
-private boolean remContains(int e)
-{
-        for (int i = 0 ; i < toRemove.size() ; i++)
-                if (toRemove.get(i) == e)
-                        return true;
-        return false;
-}
-
-
-public void awakeOnRem(final int idx, final int val) throws ContradictionException {
-        StoredIndexedBipartiteSet support = this.graph.getSupport(idx,val);
-        if (support != null)
-        {
-                DisposableIntIterator it = support.getIterator();
-                while (it.hasNext())
-                {
-                        int e = it.next();
-                        assert(graph.isInStack(e)==remContains(e));
-                        if (!graph.isInStack(e))
-                        {
-                                graph.setInStack(e);
-                                toRemove.add(e);
-                        }
-                }
-                it.dispose();
-                if (!toRemove.isEmpty())
-                {
-                        this.constAwake(false);
-                }
-
-        }
-
-}
-
-public final void awakeOnInst(final int idx)
-{
-        this.constAwake(false);
-}
-
-public final void awakeOnSup(final int idx)
-{
-        this.constAwake(false);
-}
-
-public final void awakeOnInf(final int idx)
-{
-        this.constAwake(false);
-}
-
-
-
-
-public void awake() throws ContradictionException
-{
-
-        initGraph();
-        if (this.graph == null)
-                this.fail();
-
-        this.slp = this.graph.getPathFinder();
-
-        /*    ArrayList<int[]> pattern = new ArrayList<int[]>();
-   pattern.add(new int[]{0});
- //  pattern.add(new int[]{0});
-   pattern.add(new int[]{1});
-
-   System.out.println("NB OCCURENCE MAX : "+this.slp.getMaxNbOccurence(pattern,pi));
-   System.out.println("NB OCCURENCE MIN : "+this.slp.getMinNbOccurence(pattern,pi)); */
-
-
-        for (int i  = 0 ; i < vs.length ; i++)
-        {
-                for (int j = vs[i].getInf() ; j <= vs[i].getSup() ; j = vs[i].getNextDomainValue(j))
-                {
-                        StoredIndexedBipartiteSet sup = graph.getSupport(i,j);
-                        if (sup == null || sup.isEmpty())
-                        {
-                                vs[i].removeVal(j, this, false);
-                        }
-                }
-        }
-        prefilter();
-        propagate();
-
-}
-
-public void propagate() throws ContradictionException
-{
-        this.lastVisitedWorld = environment.getWorldIndex();
-        this.lastWorldStamp = environment.getWorldTimeStamp();
-        this.delayedGraphUpdate();
-        this.modifiedBound[0] = true;
-        this.modifiedBound[1] = true;
-        this.computeSharpBounds();
-        if (toRemove.size() > 0)
-                System.out.println("PB");
-
-
-        assert(check());
-        assert(isGraphConsistent());
-}
-
-public void rebuildCostRegInfo() throws ContradictionException
-{
-        this.lastVisitedWorld = environment.getWorldIndex();
-        this.lastWorldStamp = environment.getWorldTimeStamp();
-        this.graph.getPathFinder().computeShortestAndLongestPath(toRemove,z);
-
-}
-
-public final boolean needPropagation()
-{
-        int current = environment.getWorldIndex();
-        long currentstamp = environment.getWorldTimeStamp();
-        return (current < lastVisitedWorld || (current >= lastVisitedWorld && currentstamp != lastWorldStamp+1));
-}
-
-
-public boolean isGraphConsistent()
-{
-        boolean ret = true;
-        for (int i = 0 ; i < vs.length ; i++)
-        {
-                DisposableIntIterator iter = this.graph.layers[i].getIterator();
-                while (iter.hasNext())
-                {
-                        int n = iter.next();
-                        DisposableIntIterator it = this.graph.GNodes.outArcs[n].getIterator();
-                        while(it.hasNext())
-                        {
-                                int arc = it.next();
-                                int val = this.graph.GArcs.values[arc];
-                                if (!vars[i].canBeInstantiatedTo(val))
-                                {
-                                        System.err.println("Arc "+arc+" from node "+n+" to node"+this.graph.GArcs.dests[arc]+" with value "+val+" in layer "+i+" should not be here");
-                                        return false;
-                                }
-                        }
-                }
-                iter.dispose();
-        }
-        return ret;
-}
-
-
-
-
-
-public final StoredDirectedMultiGraph getGraph()
-{
-        return graph;
-}
-
-public final int getRegret(int layer, int value, int... resources)
-{
-        //System.out.println("WORLD : " + this.environment.getWorldIndex());
-        return this.graph.getRegret(layer,value,resources);
-}
-
-public int[][][][] getCosts()
-{
-        return costs;
-}
-
+public int getMinPathCostForAssignment(int col, int val, int... resources) { return this.graph.getMinPathCostForAssignment(col, val, resources); }
+public int getMinPathCost(int... resources) { return this.graph.getMinPathCost(resources); }
 
 
 }

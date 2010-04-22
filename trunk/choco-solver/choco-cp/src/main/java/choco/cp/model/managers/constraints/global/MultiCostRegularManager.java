@@ -65,12 +65,12 @@ int n;
                 if (param[2] instanceof int[][][])
                 {
                     int[][][] csts = (int[][][]) param[2];
-                    return new FastMultiCostRegular(vs,z,pi,csts, solver.getEnvironment());
+                    return new FastMultiCostRegular(vs,z,pi,csts, solver);
                 }
                 else if (param[2] instanceof int[][][][])
                 {
                     int[][][][] csts = (int[][][][]) param[2];
-                    return new FastMultiCostRegular(vs,z,pi,csts, solver.getEnvironment());
+                    return new FastMultiCostRegular(vs,z,pi,csts, solver);
                 }
             }
         }

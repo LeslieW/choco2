@@ -311,14 +311,14 @@ public int delta(int source, int symbol) throws NonDeterministicOperationExcepti
                 return -1;
 
 }
-
+private HashSet<State> nexts = new HashSet<State>();
 public void delta(int source, int symbol, TIntHashSet states) {
         try {
                 checkState(source);
         } catch (StateNotInAutomatonException e) {
                 LOGGER.severe("Unable perform delta lookup, state not in automaton : "+e);
         }        State s = this.states.get(source);
-        HashSet<State> nexts = new HashSet<State>();
+        nexts.clear();
         s.step(getCharFromInt(symbol),nexts);
         for (State to : nexts)
         {
@@ -345,21 +345,23 @@ public TIntArrayList getOutSymbols(int source) {
 
 }
 
+private TIntHashSet tmpSet = new TIntHashSet();
 public int[] getOutSymbolsArray(int source) {
         try {
                 checkState(source);
         } catch (StateNotInAutomatonException e) {
                 LOGGER.severe("Unable to get outgoing transition, state not in automaton : "+e);
-        }        TIntHashSet set = new TIntHashSet();
+        }
+        tmpSet.clear();
         State s = states.get(source);
         for (Transition t : s.getTransitions())
         {
                 for (char c =  t.getMin() ; c <= t.getMax() ; c++)
                 {
-                        set.add(getIntFromChar(c));
+                        tmpSet.add(getIntFromChar(c));
                 }
         }
-        return set.toArray();
+        return tmpSet.toArray();
 
 }
 
