@@ -22,18 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.configure;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
-import choco.kernel.solver.search.limit.BackTrackLimit;
-import choco.kernel.solver.search.limit.FailLimit;
-import choco.kernel.solver.search.limit.Limit;
-import choco.kernel.solver.search.limit.NodeLimit;
-import choco.kernel.solver.search.limit.RestartLimit;
-import choco.kernel.solver.search.limit.TimeLimit;
+import choco.kernel.solver.search.limit.*;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Arnaud Malapert</br> 
@@ -72,7 +66,7 @@ public class LimitConfiguration {
 	}
 
 	public final void setRestartStrategyLimitType(Limit restartStrategyLimitType) {
-		this.restartStrategyLimitType = restartStrategyLimitType == null ? restartStrategyLimitType : Limit.BACKTRACK;
+		this.restartStrategyLimitType = restartStrategyLimitType != null ? restartStrategyLimitType : Limit.BACKTRACK;
 	}
 
 	/**
