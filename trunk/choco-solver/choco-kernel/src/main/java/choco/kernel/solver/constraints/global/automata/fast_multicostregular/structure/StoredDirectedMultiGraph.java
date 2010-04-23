@@ -662,6 +662,31 @@ public int getMinPathCostForAssignment(int layer, int value, int... resources)
 	return result;
 }
 
+private int[] minmax = new int[2];
+public int[] getMinMaxPathCostForAssignment(int layer, int value, int... resources)
+{
+	minmax[0] = Integer.MAX_VALUE;
+        minmax[1] = Integer.MIN_VALUE;
+	StoredIndexedBipartiteSetWithOffset arcs = this.getSupport(layer,value);
+	DisposableIntIterator it = arcs.getIterator();
+
+	while (it.hasNext()) {
+		int arcId = it.next();
+		int origId = GArcs.origs[arcId];
+		int destId = GArcs.dests[arcId];
+		int cost = 0;
+		for (int r : resources) {
+			cost+=pf.spfs[origId][r] + GArcs.originalCost[arcId][r] + pf.spft[destId][r];
+		}
+		if (cost < minmax[0])
+			minmax[0] = cost;
+		if (cost > minmax[1])
+			minmax[1] = cost;
+	}
+	it.dispose();
+	return minmax;
+}
+
 public int getMinPathCost(int... resources)
 {
 	int result  = 0;

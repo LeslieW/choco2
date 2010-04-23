@@ -1101,6 +1101,7 @@ public int getFilteredEventMask(int idx) {
 
 
 public int getMinPathCostForAssignment(int col, int val, int... resources) { return this.graph.getMinPathCostForAssignment(col, val, resources); }
+public int[] getMinMaxPathCostForAssignment(int col, int val, int... resources) { return this.graph.getMinMaxPathCostForAssignment(col, val, resources); }
 public int getMinPathCost(int... resources) { return this.graph.getMinPathCost(resources); }
 
 
