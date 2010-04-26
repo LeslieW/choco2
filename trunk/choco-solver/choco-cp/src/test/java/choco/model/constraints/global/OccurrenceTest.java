@@ -447,6 +447,25 @@ public class OccurrenceTest {
         return solver.getNbSolutions();
     }
 
+    public static Model makeModel(int n) {
+        IntegerVariable[] serie;
+        Model m = new CPModel();
+        serie = makeIntVarArray("", n, 0, n - 1);
+        for (int i = 0; i < n; i++) {
+            m.addConstraint(occurrence(i, serie[i], serie));
+        }
+        return m;
+    }
+
+    @Test
+    public void testMagicSquare() {
+        for(int i = 4; i < 8; i++){
+            Model m = makeModel(i);
+            Solver s = new CPSolver();
+            s.read(m);
+            s.solve();
+        }
+    }
 
 
 }
