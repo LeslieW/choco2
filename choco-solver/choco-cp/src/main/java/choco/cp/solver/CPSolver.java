@@ -2301,7 +2301,7 @@ public class CPSolver implements Solver {
 	}
 
 	protected Boolean optimize(boolean maximize, Var obj, boolean restart) {
-//		setDoMaximize(maximize);
+		setDoMaximize(maximize);
 		setObjective(obj);
 		setRestart(restart);
 		setFirstSolution(false);
