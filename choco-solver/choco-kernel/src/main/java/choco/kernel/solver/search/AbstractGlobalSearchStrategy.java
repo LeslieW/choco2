@@ -33,6 +33,7 @@ import static choco.kernel.common.util.tools.StringUtils.prettyOnePerLine;
 
 import java.util.logging.Level;
 
+import choco.Options;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.solver.ContradictionException;
@@ -129,8 +130,10 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 		}
 	}
 
-
-
+	public IObjectiveManager getObjectiveManager() {
+		return null;
+	}
+	
 	public final StrategyConfiguration getConfiguration() {
 		return configuration;
 	}
@@ -218,7 +221,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 
 
 	protected void advancedInitialPropagation() throws ContradictionException {
-		//if(configuration.shavingTools != null) shavingTools.shaving();
+		if( solver.containsOption(Options.S_ROOT_SHAVING) ) shavingTools.shaving();
 	}
 
 
@@ -273,6 +276,13 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	}
 
 
+
+	public final static boolean isUsingShavingTools(Solver solver) {
+		return solver.containsOption(Options.S_ROOT_SHAVING) ||
+		solver.containsOption(Options.S_DESTRUCTIVE_LOWER_BOUND) ||
+		solver.containsOption(Options.S_BOTTOM_UP);
+	}
+	
 	/**
 	 * called before a new search tree is explored
 	 * @throws choco.kernel.solver.ContradictionException
@@ -282,11 +292,11 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 		LOGGER.info(ChocoLogging.START_MESSAGE);
 		baseWorld = solver.getWorldIndex();
 		resetSolutions();
+		if( isUsingShavingTools(solver) && shavingTools == null) shavingTools = new ShavingTools(solver); 
 		initialTrace.setBranching(this.mainGoal);
 		limitManager.initialize();
 		searchLoop.initialize();
 		solver.getFailMeasure().safeReset();
-		if(shavingTools == null) shavingTools = new ShavingTools(solver);
 	}
 
 	/**
@@ -296,9 +306,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 		solver.worldPush();
 	}
 
-	/**
-	 * called before a new search tree is explored
-	 */
+	
 	public void endTreeSearch() {
 		if ( ! solutionPool.isEmpty() && (!stopAtFirstSol)) {
 			solver.worldPopUntil(baseWorld);

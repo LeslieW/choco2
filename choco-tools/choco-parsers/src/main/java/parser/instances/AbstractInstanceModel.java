@@ -412,11 +412,15 @@ public abstract class AbstractInstanceModel {
 			logMsg.appendDiagnostics("NODES", solver.getNodeCount(), rtime);
 			logMsg.appendDiagnostics("BACKTRACKS", solver.getBackTrackCount(), rtime);
 			logMsg.appendDiagnostics("RESTARTS", solver.getRestartCount(), rtime);
-			//best solution
-			if(solver.existsSolution() && doMaximize != null) {
-				final IMeasures mes = solver.getSearchStrategy().getSolutionPool().getBestSolution().getMeasures();
-				logMsg.appendDiagnostic("BESTSOLTIME", mes.getTimeCount());
-				logMsg.appendDiagnostic("BESTSOLBACKTRACKS", mes.getBackTrackCount());
+			if(solver.isOptimizationSolver()) {
+				//best lower bound on the objective
+				logMsg.appendDiagnostic("BEST_LOWER_BOUND", solver.getSearchStrategy().getObjectiveManager().getObjectiveFloor());
+				//best solution
+				if(solver.existsSolution()) {
+					final IMeasures mes = solver.getSearchStrategy().getSolutionPool().getBestSolution().getMeasures();
+					logMsg.appendDiagnostic("BESTSOLTIME", mes.getTimeCount());
+					logMsg.appendDiagnostic("BESTSOLBACKTRACKS", mes.getBackTrackCount());
+				}
 			}
 			//nogood
 			if (solver instanceof CPSolver) {

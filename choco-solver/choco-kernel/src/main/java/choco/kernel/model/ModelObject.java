@@ -72,7 +72,7 @@ public class ModelObject extends VariableArray implements IOptions, IIndex {
 	}
 	
 	@Override
-	public boolean containsOption(String option) {
+	public final boolean containsOption(String option) {
 		return options.contains(option);
 	}
 

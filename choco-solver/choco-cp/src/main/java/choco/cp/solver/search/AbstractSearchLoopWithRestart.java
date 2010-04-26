@@ -52,8 +52,8 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 		super(searchStrategy);
 		this.kickRestart = kickRestart;
 	}
-	
-	
+
+
 
 	public final IntBranchingTrace getCurrentTrace() {
 		return ctx;
@@ -65,7 +65,7 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 		return kickRestart;
 	}
 
-	
+
 	public final void setRestartAfterEachSolution(boolean restart) {
 		moveAfterSolution = restart ? RESTART : UP_BRANCH; 
 	}
@@ -234,49 +234,49 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 	}
 
 
-//*****************************************************************//
-//*******************  DOWN_BRANCH  ********************************//
-//***************************************************************//
+	//*****************************************************************//
+	//*******************  DOWN_BRANCH  ********************************//
+	//***************************************************************//
 
-protected abstract void worldPush();
+	protected abstract void worldPush();
 
-@Override
-public void downBranch() {
-	try {
-		worldPush();
-		ctx.getBranching().goDownBranch(ctx);
-		searchStrategy.solver.propagate();
-		searchStrategy.nextMove = AbstractGlobalSearchStrategy.OPEN_NODE;
-	} catch (ContradictionException e) {
-		searchStrategy.nextMove = e.getContradictionMove();
-	}
-}
-
-//*****************************************************************//
-//*******************  RESTART  ********************************//
-//***************************************************************//
-
-
-/**
- * perform the restart.
- */
-@Override
-public void restart() {
-	if(LOGGER.isLoggable(Level.CONFIG)) LOGGER.log(Level.CONFIG, "- Restarting search - {0} Restarts", getRestartCount());
-	kickRestart.restoreRootNode(ctx);
-	try {
-		searchStrategy.postDynamicCut();
-		searchStrategy.solver.propagate();
-		ctx = searchStrategy.getReusableInitialTrace();
-		searchStrategy.nextMove = INIT_SEARCH;
-		if( searchStrategy.limitManager.newRestart()) {
-			LOGGER.config("- Limit reached: stop restarting");
-			setRestartAfterEachSolution(false);
-			searchStrategy.limitManager.cancelRestartStrategy();
+	@Override
+	public void downBranch() {
+		try {
+			worldPush();
+			ctx.getBranching().goDownBranch(ctx);
+			searchStrategy.solver.propagate();
+			searchStrategy.nextMove = AbstractGlobalSearchStrategy.OPEN_NODE;
+		} catch (ContradictionException e) {
+			searchStrategy.nextMove = e.getContradictionMove();
 		}
-	} catch (ContradictionException e) {
-		stop = true;
 	}
-}
+
+	//*****************************************************************//
+	//*******************  RESTART  ********************************//
+	//***************************************************************//
+
+
+	/**
+	 * perform the restart.
+	 */
+	@Override
+	public void restart() {
+		if(LOGGER.isLoggable(Level.CONFIG)) LOGGER.log(Level.CONFIG, "- Restarting search - {0} Restarts", getRestartCount());
+		kickRestart.restoreRootNode(ctx);
+		try {
+			searchStrategy.postDynamicCut();
+			searchStrategy.solver.propagate();
+			ctx = searchStrategy.getReusableInitialTrace();
+			searchStrategy.nextMove = INIT_SEARCH;
+			if( searchStrategy.limitManager.newRestart()) {
+				LOGGER.config("- Limit reached: stop restarting");
+				setRestartAfterEachSolution(false);
+				searchStrategy.limitManager.cancelRestartStrategy();
+			}
+		} catch (ContradictionException e) {
+			stop = true;
+		}
+	}
 
 }

@@ -28,6 +28,30 @@
  *************************************************/
 package choco.cp.solver;
 
+import static choco.cp.solver.search.BranchingFactory.incDomWDeg;
+import static choco.cp.solver.search.BranchingFactory.incDomWDegBin;
+import static choco.kernel.common.Constant.FALSE;
+import static choco.kernel.common.Constant.TRUE;
+import static choco.cp.solver.variables.integer.IntTerm.*;
+import static choco.kernel.common.util.tools.StringUtils.prettyOnePerLine;
+import static choco.kernel.solver.search.SolutionPoolFactory.makeDefaultSolutionPool;
+import gnu.trove.THashSet;
+import gnu.trove.TLongObjectHashMap;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.logging.Level;
+
 import choco.Choco;
 import choco.Options;
 import choco.cp.model.CPModel;
@@ -37,23 +61,59 @@ import choco.cp.solver.constraints.global.Occurrence;
 import choco.cp.solver.constraints.global.scheduling.precedence.PrecedenceDisjoint;
 import choco.cp.solver.constraints.global.scheduling.precedence.PrecedenceVDisjoint;
 import choco.cp.solver.constraints.global.scheduling.precedence.PrecedenceVSDisjoint;
-import choco.cp.solver.constraints.integer.*;
+import choco.cp.solver.constraints.integer.EqualXC;
+import choco.cp.solver.constraints.integer.EqualXYC;
+import choco.cp.solver.constraints.integer.EqualXY_C;
+import choco.cp.solver.constraints.integer.GreaterOrEqualXC;
+import choco.cp.solver.constraints.integer.GreaterOrEqualXYC;
+import choco.cp.solver.constraints.integer.GreaterOrEqualXY_C;
+import choco.cp.solver.constraints.integer.IntLinComb;
+import choco.cp.solver.constraints.integer.LessOrEqualXC;
+import choco.cp.solver.constraints.integer.LessOrEqualXY_C;
+import choco.cp.solver.constraints.integer.MaxOfAList;
+import choco.cp.solver.constraints.integer.NotEqualXC;
+import choco.cp.solver.constraints.integer.NotEqualXYC;
+import choco.cp.solver.constraints.integer.NotEqualXY_C;
 import choco.cp.solver.constraints.integer.bool.sat.ClauseStore;
 import choco.cp.solver.constraints.integer.channeling.ReifiedIntSConstraint;
-import choco.cp.solver.constraints.integer.extension.*;
+import choco.cp.solver.constraints.integer.extension.AC2001BinSConstraint;
+import choco.cp.solver.constraints.integer.extension.AC3BinSConstraint;
+import choco.cp.solver.constraints.integer.extension.AC3rmBinSConstraint;
+import choco.cp.solver.constraints.integer.extension.AC3rmBitBinSConstraint;
+import choco.cp.solver.constraints.integer.extension.CspLargeSConstraint;
+import choco.cp.solver.constraints.integer.extension.GAC2001LargeSConstraint;
+import choco.cp.solver.constraints.integer.extension.GAC2001PositiveLargeConstraint;
+import choco.cp.solver.constraints.integer.extension.GAC3rmLargeConstraint;
+import choco.cp.solver.constraints.integer.extension.GAC3rmPositiveLargeConstraint;
+import choco.cp.solver.constraints.integer.extension.GACstrPositiveLargeSConstraint;
 import choco.cp.solver.constraints.integer.intlincomb.IntLinCombFactory;
 import choco.cp.solver.constraints.real.Equation;
 import choco.cp.solver.constraints.real.MixedEqXY;
-import choco.cp.solver.constraints.real.exp.*;
+import choco.cp.solver.constraints.real.exp.RealCos;
+import choco.cp.solver.constraints.real.exp.RealIntegerPower;
+import choco.cp.solver.constraints.real.exp.RealMinus;
+import choco.cp.solver.constraints.real.exp.RealMult;
+import choco.cp.solver.constraints.real.exp.RealPlus;
+import choco.cp.solver.constraints.real.exp.RealSin;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
 import choco.cp.solver.constraints.set.Disjoint;
-import choco.cp.solver.constraints.set.*;
+import choco.cp.solver.constraints.set.IsIncluded;
+import choco.cp.solver.constraints.set.MemberXY;
+import choco.cp.solver.constraints.set.SetCard;
+import choco.cp.solver.constraints.set.SetEq;
+import choco.cp.solver.constraints.set.SetIntersection;
+import choco.cp.solver.constraints.set.SetNotEq;
+import choco.cp.solver.constraints.set.SetUnion;
 import choco.cp.solver.goals.GoalSearchSolver;
 import choco.cp.solver.propagation.ChocEngine;
 import choco.cp.solver.propagation.EventQueueFactory;
-import choco.cp.solver.search.*;
-import static choco.cp.solver.search.BranchingFactory.incDomWDeg;
-import static choco.cp.solver.search.BranchingFactory.incDomWDegBin;
+import choco.cp.solver.search.AbstractSearchLoopWithRestart;
+import choco.cp.solver.search.BranchAndBound;
+import choco.cp.solver.search.GlobalSearchStrategy;
+import choco.cp.solver.search.GoalSearchLoop;
+import choco.cp.solver.search.SearchLimitManager;
+import choco.cp.solver.search.SearchLoop;
+import choco.cp.solver.search.SearchLoopWithRecomputation;
 import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.branching.ImpactBasedBranching;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
@@ -66,21 +126,22 @@ import choco.cp.solver.search.real.RealIncreasingDomain;
 import choco.cp.solver.search.restart.BasicKickRestart;
 import choco.cp.solver.search.restart.IKickRestart;
 import choco.cp.solver.search.restart.NogoodKickRestart;
-import choco.cp.solver.search.set.*;
+import choco.cp.solver.search.set.AssignSetVar;
+import choco.cp.solver.search.set.MinDomSet;
+import choco.cp.solver.search.set.MinEnv;
+import choco.cp.solver.search.set.RandomSetValSelector;
+import choco.cp.solver.search.set.RandomSetVarSelector;
 import choco.cp.solver.variables.integer.BooleanVarImpl;
 import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.cp.solver.variables.integer.IntTerm;
 import choco.cp.solver.variables.real.RealVarImpl;
 import choco.cp.solver.variables.set.SetVarImpl;
-import static choco.kernel.common.Constant.FALSE;
-import static choco.kernel.common.Constant.TRUE;
 import choco.kernel.common.IndexFactory;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.common.util.tools.StringUtils;
-import static choco.kernel.common.util.tools.StringUtils.prettyOnePerLine;
 import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
@@ -107,7 +168,15 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.global.MetaSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.constraints.integer.IntExp;
-import choco.kernel.solver.constraints.integer.extension.*;
+import choco.kernel.solver.constraints.integer.extension.BinRelation;
+import choco.kernel.solver.constraints.integer.extension.CouplesBitSetTable;
+import choco.kernel.solver.constraints.integer.extension.CouplesTable;
+import choco.kernel.solver.constraints.integer.extension.ExtensionalBinRelation;
+import choco.kernel.solver.constraints.integer.extension.IterLargeRelation;
+import choco.kernel.solver.constraints.integer.extension.IterTuplesTable;
+import choco.kernel.solver.constraints.integer.extension.LargeRelation;
+import choco.kernel.solver.constraints.integer.extension.TuplesList;
+import choco.kernel.solver.constraints.integer.extension.TuplesTable;
 import choco.kernel.solver.constraints.real.RealExp;
 import choco.kernel.solver.goals.Goal;
 import choco.kernel.solver.propagation.AbstractPropagationEngine;
@@ -120,8 +189,12 @@ import choco.kernel.solver.propagation.queue.AbstractConstraintEventQueue;
 import choco.kernel.solver.propagation.queue.ConstraintEventQueue;
 import choco.kernel.solver.propagation.queue.EventQueue;
 import choco.kernel.solver.propagation.queue.VarEventQueue;
-import choco.kernel.solver.search.*;
-import static choco.kernel.solver.search.SolutionPoolFactory.makeDefaultSolutionPool;
+import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import choco.kernel.solver.search.AbstractSearchLoop;
+import choco.kernel.solver.search.AbstractSearchStrategy;
+import choco.kernel.solver.search.ISolutionPool;
+import choco.kernel.solver.search.ValIterator;
+import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.limit.Limit;
@@ -137,12 +210,6 @@ import choco.kernel.solver.variables.real.RealVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 import choco.kernel.solver.variables.set.SetVar;
 import choco.kernel.visu.IVisu;
-import gnu.trove.THashSet;
-import gnu.trove.TLongObjectHashMap;
-
-import java.lang.reflect.Array;
-import java.util.*;
-import java.util.logging.Level;
 
 
 /**
@@ -314,22 +381,22 @@ public class CPSolver implements Solver {
 	/**
 	 * The object controlling the global search exploration
 	 */
-	protected AbstractGlobalSearchStrategy strategy;
+	private AbstractGlobalSearchStrategy strategy;
 
 	/**
 	 * Variable selector for integer
 	 */
-	private VarSelector<IntDomainVar> varIntSelector;
+	private VarSelector<IntDomainVar> varIntSelector = null;
 
 	/**
 	 * Variable selector for real
 	 */
-	private VarSelector<RealVar> varRealSelector;
+	private VarSelector<RealVar> varRealSelector = null;
 
 	/**
 	 * Variable selector for set
 	 */
-	private VarSelector<SetVar> varSetSelector;
+	private VarSelector<SetVar> varSetSelector = null;
 
 	/**
 	 * Value iterator for integer
@@ -418,8 +485,8 @@ public class CPSolver implements Solver {
 		this.constraints = env.makePartiallyStoredVector();
 		indexfactory = new IndexFactory();
 		this.indexOfLastInitializedStaticConstraint = env.makeInt(PartiallyStoredVector.getFirstStaticIndex() - 1);
-        optionsSet = new THashSet<String>();
-        optionsSet.addAll(Arrays.asList(options));
+        this.optionsSet = new THashSet<String>();
+        this.optionsSet.addAll(Arrays.asList(options));
 	}
 
     protected void clearVarLists() {
@@ -1155,8 +1222,9 @@ public class CPSolver implements Solver {
 
 	@Override
 	public final Number getObjectiveValue() {
-		if (strategy instanceof AbstractOptimize) {
-			return ( (AbstractOptimize) strategy).getObjectiveValue();
+		if (strategy.getObjectiveManager() != null 
+				&& existsSolution() ) {
+			return strategy.getObjectiveManager().getBestObjectiveValue();
 		}
 		return null;
 	}
@@ -1453,25 +1521,14 @@ public class CPSolver implements Solver {
 		return strategyConfig;
 	}
 
-	@Override
-	public void setDestructiveLowerBound(boolean isDestructiveLowerBound) {
-		strategyConfig.setDestructiveLowerBound(isDestructiveLowerBound);
-		
-	}
-
-	@Override
-	public void setRootSinglotonConsistency(boolean isSinglotonConsistent) {
-		strategyConfig.setRootSinglotonConsistency(isSinglotonConsistent);
-		
-	}
-
 	/**
 	 * Set the variable to optimize
 	 *
 	 * @param anObjective objective variable
 	 */
 	public void setObjective(Var anObjective) {
-		this.objective = anObjective;
+		if(strategy == null) this.objective = anObjective;
+		else if(this.objective != anObjective) throw new SolverException("Set the objective before the generation of the strategy.");
 	}
 
 	@Override
@@ -1481,17 +1538,11 @@ public class CPSolver implements Solver {
 
 	@Override
 	public boolean isOptimizationSolver() {
-		return objective != null && ( strategy == null || strategy instanceof AbstractOptimize);
+		return objective != null; // && ( strategy == null || strategy instanceof AbstractOptimize);
 	}
 
 	@Deprecated
 	public Number getOptimumValue() {
-		//		if (strategy instanceof AbstractOptimize) {
-		//			return ((AbstractOptimize) strategy).getBestObjectiveValue();
-		//		} else if (strategy instanceof AbstractRealOptimize) {
-		//			return ((AbstractRealOptimize) strategy).getBestObjectiveValue();
-		//		}
-		//		return null;
 		return getObjectiveValue();
 	}
 
@@ -2465,7 +2516,7 @@ public class CPSolver implements Solver {
 
 
 	/**
-	 * Record a solution by getting every variables' value.
+	 * Restore a solution by getting every variables' value.
 	 */
 	@Override
 	public void restoreSolution(Solution sol) {
@@ -2488,7 +2539,7 @@ public class CPSolver implements Solver {
 			for (int i = 0; i < nbv; i++) {
 				getRealVarQuick(i).intersect(sol.getRealValue(i));
 			}
-
+		
           
 		} catch (ContradictionException e) {
             // TODO : see how to deal with error
@@ -2970,10 +3021,10 @@ public class CPSolver implements Solver {
 	 * @return the term (a fresh one)
 	 */
 	public IntExp minus(IntExp v1, IntExp v2) {
-		if (v1 == IntTerm.ZERO){
+		if (v1 == ZERO){
             return mult(-1, v2);
         }
-		if (v2 == IntTerm.ZERO){
+		if (v2 == ZERO){
             return v1;
         }
 
@@ -3008,7 +3059,7 @@ public class CPSolver implements Solver {
 	}
 
 	public IntExp minus(IntExp t, int c) {
-		if (t == IntTerm.ZERO) {
+		if (t == ZERO) {
 			IntTerm t2 = new IntTerm(0);
 			t2.setConstant(-c);
 			return t2;
@@ -3059,10 +3110,10 @@ public class CPSolver implements Solver {
 	 * @return the term (a fresh one)
 	 */
 	public IntExp plus(IntExp v1, IntExp v2) {
-		if (v1 == IntTerm.ZERO) {
+		if (v1 == ZERO) {
 			return v2;
 		}
-		if (v2 == IntTerm.ZERO) {
+		if (v2 == ZERO) {
 			return v1;
 		}
 		if (v1 instanceof IntTerm) {
@@ -3096,7 +3147,7 @@ public class CPSolver implements Solver {
 	}
 
 	public IntExp plus(IntExp t, int c) {
-		if (t == IntTerm.ZERO) {
+		if (t == ZERO) {
 			IntTerm t2 = new IntTerm(0);
 			t2.setConstant(c);
 			return t2;
@@ -3164,13 +3215,13 @@ public class CPSolver implements Solver {
 	 * @return the term
 	 */
 	public IntExp mult(int a, IntExp x) {
-		if (a != 0 && x != IntTerm.ZERO) {
+		if (a != 0 && x != ZERO) {
 			IntTerm t = new IntTerm(1);
 			t.setCoefficient(0, a);
 			t.setVariable(0, (IntVar) x);
 			return t;
 		} else {
-			return IntTerm.ZERO;
+			return ZERO;
 		}
 	}
 
@@ -3538,7 +3589,7 @@ public class CPSolver implements Solver {
 		}
 
 		if( nbNonNullCoeffs == 0){
-            return IntTerm.ZERO;
+            return ZERO;
         }
 		else if( nbNonNullCoeffs == lc.length){
             return new IntTerm(lc, lv);
@@ -4197,7 +4248,7 @@ public class CPSolver implements Solver {
      * @param options
      */
     @Override
-    public void addOptions(final String options) {
+    public final void addOptions(final String options) {
         DisposableIterator<String> iter = StringUtils.getOptionIterator(options);
 		while(iter.hasNext()){
             addOption(iter.next());
@@ -4212,8 +4263,10 @@ public class CPSolver implements Solver {
      * @param options array of options
      */
     @Override
-    public void addOptions(final String[] options) {
-        optionsSet.addAll(Arrays.asList(options));
+    public final void addOptions(final String[] options) {
+        for(String opt : options){
+            addOption(opt);
+        }
     }
 
     /**
@@ -4223,8 +4276,10 @@ public class CPSolver implements Solver {
      * @param options set of options
      */
     @Override
-    public void addOptions(final Set<String> options) {
-        optionsSet.addAll(options);
+    public final void addOptions(final Set<String> options) {
+    	 for(String opt : options){
+             addOption(opt);
+         }
     }
 
     /**
