@@ -156,7 +156,7 @@ public final class Occurrence extends AbstractLargeIntSConstraint {
 
     public void checkNbPossible() throws ContradictionException {
         if (constrainOnInfNumber) {
-            vars[nbListVars].updateSup(nbPossible.get(), this, false);
+            vars[nbListVars].updateSup(nbPossible.get(), this, true);
             if (vars[nbListVars].getInf() == nbPossible.get()) {
                 for(int i = 0; i < relevantVar.length; i++){
                 //for (IntDomainVar aRelevantVar : relevantVar) {
@@ -172,7 +172,7 @@ public final class Occurrence extends AbstractLargeIntSConstraint {
 
     public void checkNbSure() throws ContradictionException {
         if (constrainOnSupNumber) {
-            vars[nbListVars].updateInf(nbSure.get(), this, false);
+            vars[nbListVars].updateInf(nbSure.get(), this, true);
             if (vars[nbListVars].getSup() == nbSure.get()) {
                 for(int i = 0; i< relevantVar.length; i++){
 //                for (IntDomainVar aRelevantVar : relevantVar) {
