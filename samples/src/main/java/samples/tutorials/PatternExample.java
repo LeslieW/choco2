@@ -27,7 +27,6 @@ import choco.kernel.model.Model;
 import choco.kernel.solver.Solver;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /*
  * User : charles
@@ -37,8 +36,6 @@ import java.util.logging.Logger;
  * Update : Choco 2.0.1
  */
 public abstract class PatternExample implements Example {
-
-    protected static final Logger LOGGER  = ChocoLogging.getEngineLogger();
 
 	public Model _m;
 
