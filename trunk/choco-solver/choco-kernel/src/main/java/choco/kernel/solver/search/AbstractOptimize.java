@@ -22,9 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.search;
 
+import static choco.Options.*;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.Var;
 
 
@@ -44,7 +46,7 @@ public abstract class AbstractOptimize extends AbstractGlobalSearchStrategy {
 	/**
 	 * the bounding object, record objective value and compute target bound.
 	 */
-	protected final IObjectiveManager bounds;
+	protected final IObjectiveManager objManager;
 
 	/**
 	 * constructor
@@ -53,44 +55,35 @@ public abstract class AbstractOptimize extends AbstractGlobalSearchStrategy {
 	 */
 	protected AbstractOptimize(Solver solver, IObjectiveManager bounds, boolean maximize) {
 		super(solver);
-		this.bounds = bounds;
+		this.objManager = bounds;
 		objective = bounds.getObjective();
 		doMaximize = maximize;
 	}
 
 
-	public Var getObjective() {
-		return objective;
-	}
-
-	public final Number getObjectiveValue() {
-		return existsSolution() ? bounds.getObjectiveValue() : (Number) null;
-	}
-
-
+	@Override
 	public final IObjectiveManager getObjectiveManager() {
-		return bounds;
+		return objManager;
 	}
-
 
 	@Override
 	public void newFeasibleRootState() {
 		super.newFeasibleRootState();
-		bounds.initBounds();
+		objManager.initBounds();
 	}
 
 
 	@Override
 	public void writeSolution(Solution sol) {
 		super.writeSolution(sol);
-		bounds.writeObjective(sol);
+		objManager.writeObjective(sol);
 	}
 
 	@Override
 	public void recordSolution() {
 		super.recordSolution();
-		bounds.setBound();
-		bounds.setTargetBound();
+		objManager.setBound();
+		objManager.setTargetBound();
 	}
 
 
@@ -99,20 +92,23 @@ public abstract class AbstractOptimize extends AbstractGlobalSearchStrategy {
 	 */
 	@Override
 	public void postDynamicCut() throws ContradictionException {
-		bounds.postTargetBound();
+		objManager.postTargetBound();
 	}
 
 
 
 	@Override
 	protected void advancedInitialPropagation() throws ContradictionException {
-//		if(configuration.isDestructiveLowerBound() || configuration.isBottomUpSearch() ) shavingTools.destructiveLowerBound(bounds);
-//		else super.advancedInitialPropagation();
+		if(solver.containsOption(S_DESTRUCTIVE_LOWER_BOUND) 
+				|| solver.containsOption(S_BOTTOM_UP) ) {
+			shavingTools.destructiveLowerBound(objManager);
+		}
+		super.advancedInitialPropagation();
 	}
 
 	@Override
 	public Boolean nextSolution() {
-		if( bounds.isTargetInfeasible()) {
+		if( objManager.isTargetInfeasible()) {
 			//the search is finished as the optimum has been proven by the bounding mechanism.
 			return Boolean.FALSE;
 		}else {
@@ -123,10 +119,10 @@ public abstract class AbstractOptimize extends AbstractGlobalSearchStrategy {
 
 
 	protected final void bottomUpSearch() {
-		while( shavingTools.nextBottomUp(bounds) == Boolean.FALSE) {
+		while( shavingTools.nextBottomUp(objManager) == Boolean.FALSE) {
 			//The current upper bound is infeasible, try next
-			bounds.incrementFloorBound();
-			if(bounds.isTargetInfeasible() ) return; //problem is infeasible
+			objManager.incrementFloorBound();
+			if(objManager.isTargetInfeasible() ) return; //problem is infeasible
 			else {
 				//partially initialize a new search tree
 				clearTrace();
@@ -136,24 +132,24 @@ public abstract class AbstractOptimize extends AbstractGlobalSearchStrategy {
 		}
 	}
 
-//	@Override
-//	public void incrementalRun() {
-//		initialPropagation();
-//		if(isFeasibleRootState()) {
-//			assert(solver.getWorldIndex() > baseWorld);
-//			if( configuration.isTopDownSearch() ) topDownSearch();
-//			else bottomUpSearch();
-//		}
-//		endTreeSearch();
-//	}
+	@Override
+	public void incrementalRun() {
+		initialPropagation();
+		if(isFeasibleRootState()) {
+			assert(solver.getWorldIndex() > baseWorld);
+			if( solver.containsOption(S_BOTTOM_UP) ) bottomUpSearch();
+			else topDownSearch();
+		}
+		endTreeSearch();
+	}
 
 
 	@Override
 	public String partialRuntimeStatistics(boolean logOnSolution) {
 		if( logOnSolution) {
-			return "Objective: "+bounds.getObjectiveValue()+", "+super.partialRuntimeStatistics(logOnSolution);
+			return "Objective: "+objManager.getObjectiveValue()+", "+super.partialRuntimeStatistics(logOnSolution);
 		}else {
-			return "Upper-bound: "+bounds.getBestObjectiveValue()+", "+super.partialRuntimeStatistics(logOnSolution);
+			return "Upper-bound: "+objManager.getBestObjectiveValue()+", "+super.partialRuntimeStatistics(logOnSolution);
 		}
 
 	}
@@ -161,7 +157,16 @@ public abstract class AbstractOptimize extends AbstractGlobalSearchStrategy {
 
 	@Override
 	public String runtimeStatistics() {
-		return "  "+ (doMaximize ? "Maximize: " : "Minimize: ") + getObjective() + "\n" +super.runtimeStatistics();
+		return "  "+ (doMaximize ? "Maximize: " : "Minimize: ") + objective + "\n" +super.runtimeStatistics();
+	}
+
+
+	@Override
+	public void restoreBestSolution() {
+		super.restoreBestSolution();
+		if( ! objManager.getBestObjectiveValue().equals(objManager.getObjectiveValue())) {
+			throw new SolverException("Illegal state: the best objective "+objManager.getBestObjectiveValue()+" is not equal to the best solution objective "+objManager.getObjectiveValue());
+		}
 	}
 
 

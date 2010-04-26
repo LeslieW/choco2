@@ -25,8 +25,7 @@ package choco.kernel.solver.search.measure;
 public interface IOptimizationMeasures extends ISolutionMeasures {
 	
 	/**
-     * Get the objective value of the measure, optimization only.
-     * @return objective value
+     * Get the best objective value of a solution.
      */
 	Number getObjectiveValue();
 	

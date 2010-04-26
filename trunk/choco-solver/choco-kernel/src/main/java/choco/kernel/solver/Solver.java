@@ -245,16 +245,6 @@ public interface Solver extends IMeasures, IPretty, IOptions {
 	 */
 
 	public PropagationEngine getPropagationEngine();
-
-	/**
-	 * apply a simple singloton consistency algorithm before starting the search (at the root node)
-	 */
-	void setRootSinglotonConsistency(boolean b);
-	
-	/**
-	 * apply a destructive lower bound before starting the search (at the root node)
-	 */
-	void setDestructiveLowerBound(boolean b);
 		
 	/**
 	 * set the optimization strategy:

@@ -30,7 +30,34 @@
 /* File choco.currentElement.search.SolveTest.java, last modified by Francois 2 d�c. 2003 23:49:19 */
 package choco.solver.search;
 
-import static choco.Choco.*;
+import static choco.Choco.abs;
+import static choco.Choco.and;
+import static choco.Choco.eq;
+import static choco.Choco.geq;
+import static choco.Choco.gt;
+import static choco.Choco.leq;
+import static choco.Choco.makeIntVar;
+import static choco.Choco.makeIntVarArray;
+import static choco.Choco.minus;
+import static choco.Choco.neq;
+import static choco.Choco.regular;
+import static choco.Choco.scalar;
+import static java.text.MessageFormat.format;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Random;
+import java.util.logging.Logger;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import choco.Choco;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -39,6 +66,7 @@ import choco.cp.solver.search.integer.valiterator.DecreasingDomain;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
@@ -50,17 +78,6 @@ import choco.kernel.solver.propagation.Propagator;
 import choco.kernel.solver.search.restart.AbstractRestartStrategy;
 import choco.kernel.solver.search.restart.GeometricalRestartStrategy;
 import choco.kernel.solver.search.restart.LubyRestartStrategy;
-import org.junit.After;
-import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-
-import static java.text.MessageFormat.format;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Random;
-import java.util.logging.Logger;
 
 public class SolveTest {
 	protected final static Logger LOGGER = ChocoLogging.getTestLogger();
@@ -716,5 +733,28 @@ public class SolveTest {
         s.printRuntimeStatistics();
         assertTrue(s.isFeasible());
     }
+    
+    @Test
+    public void testShavingBug() {
+    	 Model m = new CPModel();
+         IntegerVariable [] pos = new IntegerVariable[4];
+         for (int i = 0; i < pos.length; i++) {
+             pos[i] = Choco.makeIntVar("VM" + i + "on-?", 0, 4);
+             IntegerVariable [] bools = Choco.makeBooleanVarArray("VM" + i + "on", 6);
+             m.addConstraint(Choco.domainConstraint(pos[i], bools));
+             m.addConstraint(Choco.neq(pos[i], 3));
+             m.addConstraint(Choco.neq(pos[i], 4));
+         }
+         IntegerVariable nbNodes = Choco.makeIntVar("nbNodes", 3, 3, Options.V_OBJECTIVE);
+         m.addConstraint(Choco.atMostNValue(pos,nbNodes));
+         Solver s = new CPSolver(Options.S_ROOT_SHAVING);
+         s.read(m);
+        //ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+         s.minimize(s.getVar(nbNodes), false);
+    	
+    }
 }
+
+
+
 

@@ -1,5 +1,6 @@
 package choco.kernel.solver.propagation;
 
+import choco.Options;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.solver.ContradictionException;
@@ -9,7 +10,6 @@ import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import choco.kernel.solver.search.IObjectiveManager;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.solver.variables.integer.IntVar;
 
 
 public class ShavingTools {
@@ -18,14 +18,10 @@ public class ShavingTools {
 
 	public final IntDomainVar[] vars;
 
-	public boolean backwardPropagation = true;
-
-	public boolean shaveLowerBound= false;
-
-	public boolean shaveFinalLowerBound= true;
-
+	public boolean backwardPropagation = false;
+	
 	private int nbRemovals;
-
+	
 	/**
 	 * 
 	 * @param solver
@@ -39,31 +35,49 @@ public class ShavingTools {
 
 	public ShavingTools(Solver solver) {
 		this(solver, buildVars(solver));
-	}	
-	private static IntDomainVar[] buildVars(Solver solver) {
-		if(solver.getObjective() != null && solver.getObjective() instanceof IntDomainVar ) {
-			final IntVar obj = (IntVar) solver.getObjective();
-			final int n = solver.getNbIntVars();
-			final IntDomainVar[] vars = new IntDomainVar[n - 1];
-			int idx = 0;
-			for (int i = 0; i < n; i++) {
-				final IntDomainVar v = (IntDomainVar) solver.getIntVarQuick(i);
-				if(v != obj) vars[idx++] = v;
-			}
-			return vars;
-		}else return VariableUtils.getIntVars(solver);
 	}
-
 
 	public final boolean isBackwardPropagation() {
 		return backwardPropagation;
 	}
-
-
-
+	
 	public final void setBackwardPropagation(boolean backwardPropagation) {
 		this.backwardPropagation = backwardPropagation;
 	}
+	
+	
+
+	public final boolean isShavingLowerBound() {
+		return solver.containsOption(Options.S_DLB_SHAVING);
+	}
+
+	private static int findObjective(Solver s) {
+		final int n = s.getNbIntVars();
+		final Var obj = s.getObjective();
+		for (int i = 0; i < n; i++) {
+			if( s.getIntVarQuick(i) == obj) return i;
+		}
+		return -1;
+	}
+
+	private static IntDomainVar[] buildVars(Solver solver) {
+		if(solver.getObjective() != null && solver.getObjective() instanceof IntDomainVar) {
+			int idx = findObjective(solver);
+			if(idx >= 0) {
+				final int n = solver.getNbIntVars();
+				final IntDomainVar[] vars = new IntDomainVar[n - 1];
+				for (int i = 0; i < idx; i++) {
+					vars[i] = solver.getIntVarQuick(i);
+				}
+				for (int i = idx + 1; i < n; i++) {
+					vars[i - 1] = solver.getIntVarQuick(i);
+				}
+				return vars;
+			}
+		}
+		return VariableUtils.getIntVars(solver);
+	}
+
 
 	public final Solver getSolver() {
 		return solver;
@@ -72,7 +86,6 @@ public class ShavingTools {
 	public final IntDomainVar[] getVars() {
 		return vars;
 	}
-
 
 	public final int getNbRemovals() {
 		return nbRemovals;
@@ -87,7 +100,7 @@ public class ShavingTools {
 				else shaveBoundVar(var);			
 			}
 		}	
-		if(nbRemovals > 0 && ! backwardPropagation) {
+		if(nbRemovals > 0 && !isBackwardPropagation() ) {
 			solver.propagate();
 		}
 	}
@@ -130,7 +143,7 @@ public class ShavingTools {
 			solver.worldPop();
 			nbRemovals++;
 			var.removeVal(val, null, true);
-			if(backwardPropagation) solver.propagate();
+			if(isBackwardPropagation()) solver.propagate();
 		}
 	}
 
@@ -149,7 +162,6 @@ public class ShavingTools {
 					throw new SolverException("Destructive Lower Bound: Invalid bounds");
 				}
 				solver.propagate();
-				if(shaveFinalLowerBound) shaving();
 			}
 		} catch (LuckySolutionException e) {}
 	}
@@ -162,7 +174,7 @@ public class ShavingTools {
 		try {
 			solver.propagate();
 			detectLuckySolution();
-			if(shaveLowerBound) shaveVars();
+			if(isShavingLowerBound()) shaveVars();
 		} catch (ContradictionException e) {
 			shave = true;
 		} 
@@ -178,7 +190,7 @@ public class ShavingTools {
 		}
 		try {
 			solver.propagate();
-			if(shaveLowerBound) shaving();
+			if(isShavingLowerBound()) shaving();
 		} catch (ContradictionException e) {
 			return Boolean.FALSE;
 		}
@@ -192,18 +204,20 @@ public class ShavingTools {
 	}
 
 
-	//TODO optimize by keeping the last not instantiated variables
-	protected void detectLuckySolution() throws LuckySolutionException {
-		int n = solver.getNbIntVars();
-		for (int i = 0; i < n; i++) {
-			if( ! solver.getIntVarQuick(i).isInstantiated()) return;
+	//TODO optimize by keeping trace of the last not instantiated variables
+	protected final void detectLuckySolution() throws LuckySolutionException {
+		if( ! solver.containsOption( Options.S_SOLVE_ALL) ) {
+			int n = solver.getNbIntVars();
+			for (int i = 0; i < n; i++) {
+				if( ! solver.getIntVarQuick(i).isInstantiated()) return;
+			}
+			n = solver.getNbSetVars();
+			for (int i = 0; i < n; i++) {
+				if( ! solver.getSetVarQuick(i).isInstantiated()) return;
+			}
+			if(solver.getNbRealVars() > 0) return; //FIXME what about real
+			throw LuckySolutionException.SINGLOTON;
 		}
-		n = solver.getNbSetVars();
-		for (int i = 0; i < n; i++) {
-			if( ! solver.getSetVarQuick(i).isInstantiated()) return;
-		}
-		if(solver.getNbRealVars() > 0) return; //FIXME what about real
-		throw LuckySolutionException.SINGLOTON;
 	}
 
 	final static class LuckySolutionException extends Exception {

@@ -44,7 +44,8 @@ public class RealVarTest {
 
     @Test
     public void testWayne99() {
-        final Model m = new CPModel();
+        //ChocoLogging.setVerbosity(Verbosity.SEARCH);
+    	final Model m = new CPModel();
         final RealVariable r = makeRealVar("test_r", 0, 1.0);
 
         m.addConstraint(leq(r, 0.4));

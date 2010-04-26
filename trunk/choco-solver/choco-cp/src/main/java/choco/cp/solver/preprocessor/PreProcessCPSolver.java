@@ -101,17 +101,12 @@ public class PreProcessCPSolver extends CPSolver {
         return (PPModelToCPSolver) mod2sol;
     }
 
-    public void addOption(final String opt) {
-        optionsSet.add(opt);
-    }
-
-
     void setAllProcessing() {
-        optionsSet.add("bb:exp");
-        optionsSet.add("bb:cliques");
-        optionsSet.add("bb:exttoint");
-        optionsSet.add("bb:disjunctive");
-        optionsSet.add("bb:breaksym");
+       optionsSet.add("bb:exp");
+       optionsSet.add("bb:cliques");
+       optionsSet.add("bb:exttoint");
+       optionsSet.add("bb:disjunctive");
+       optionsSet.add("bb:breaksym");
     }
 
     public void setRandomValueOrdering(final int seed) {
@@ -160,7 +155,7 @@ public class PreProcessCPSolver extends CPSolver {
         mod2sol.readVariables(model);
 
         getMod2Sol().readBBDecisionVariables();
-        getMod2Sol().readConstraints(model, !optionsSet.contains(Options.S_MULTIPLE_READINGS));
+        getMod2Sol().readConstraints(model, ! optionsSet.contains(Options.S_MULTIPLE_READINGS));
     }
 
     /**

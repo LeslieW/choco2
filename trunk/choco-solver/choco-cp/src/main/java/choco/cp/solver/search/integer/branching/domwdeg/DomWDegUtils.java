@@ -210,6 +210,23 @@ public final class DomWDegUtils {
 		return new String(b);
 	}
 
+	public static final String checkVariableIncWDeg(Solver solver) {
+		final StringBuilder b = new StringBuilder();
+		final DisposableIterator<IntDomainVar> iter = solver.getIntVarIterator();
+		while(iter.hasNext() ) {
+			final IntDomainVar v = iter.next();
+			int w1 = computeWeightedDegreeFromScratch(v);
+			int w2 = getVarExtension(v).get();
+			if(w1 != w2) {
+			b.append("wdeg=").append(w2).append(" vs ").append(w1);
+			b.append("\t").append(v.pretty());
+			b.append('\n');
+			}
+		}
+		iter.dispose();
+		return new String(b);
+	}
+	
 	public static final String getVariableIncWDeg(Solver solver) {
 		final StringBuilder b = new StringBuilder();
 		final DisposableIterator<IntDomainVar> iter = solver.getIntVarIterator();

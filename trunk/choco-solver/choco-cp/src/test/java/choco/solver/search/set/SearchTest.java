@@ -22,7 +22,34 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.solver.search.set;
 
-import static choco.Choco.*;
+import static choco.Choco.eq;
+import static choco.Choco.eqCard;
+import static choco.Choco.geq;
+import static choco.Choco.geqCard;
+import static choco.Choco.isIncluded;
+import static choco.Choco.leqCard;
+import static choco.Choco.makeIntVar;
+import static choco.Choco.makeSetVar;
+import static choco.Choco.member;
+import static choco.Choco.mult;
+import static choco.Choco.neq;
+import static choco.Choco.notMember;
+import static choco.Choco.plus;
+import static choco.Choco.setDisjoint;
+import static choco.Choco.setInter;
+import static choco.Choco.setUnion;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import samples.Examples.MinimumEdgeDeletion;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -32,6 +59,7 @@ import choco.cp.solver.search.set.MinEnv;
 import choco.cp.solver.search.set.RandomSetValSelector;
 import choco.cp.solver.search.set.RandomSetVarSelector;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
@@ -40,14 +68,6 @@ import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.propagation.Propagator;
-import org.junit.After;
-import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.Test;
-import samples.Examples.MinimumEdgeDeletion;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class SearchTest {
 
@@ -374,31 +394,31 @@ public class SearchTest {
 		assertEquals(nbN, s.getNodeCount());
 	}
 	@Test
-	public void testInitialPropagation1() {
+	public void testDestructiveLowerBound1() {
 		buildLP(1);
-		s.setDestructiveLowerBound(true);
+		s.addOption(Options.S_DESTRUCTIVE_LOWER_BOUND);
 		testLP(3);
 	}
 
 	@Test
-	public void testInitialPropagation2() {
+	public void testDestructiveLowerBound2() {
 		buildLP(2);
-		s.setDestructiveLowerBound(true);
+		s.addOption(Options.S_DESTRUCTIVE_LOWER_BOUND);
 		testLP(1);
 	}
 
 
 	@Test
-	public void testInitialPropagation3() {
+	public void testDestructiveLowerBound3() {
 		buildLP(3);
-		s.setDestructiveLowerBound(true);
+		s.addOption(Options.S_DESTRUCTIVE_LOWER_BOUND);
 		testLP(3);
 	}
 
 	@Test
-	public void testInitialPropagation4() {
+	public void testDestructiveLowerBound4() {
 		buildLP(4);
-		s.setDestructiveLowerBound(true);
+		s.addOption(Options.S_DESTRUCTIVE_LOWER_BOUND);
 		testLP(1);
 	}
 

@@ -36,7 +36,7 @@ public final class MaxRealObjManager extends RealObjectiveManager {
 
 	@Override
 	public double getInitialBoundValue() {
-		return Double.POSITIVE_INFINITY;
+		return Double.NEGATIVE_INFINITY;
 	}
 
 	@Override

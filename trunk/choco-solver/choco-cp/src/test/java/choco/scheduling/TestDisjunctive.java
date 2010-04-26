@@ -37,15 +37,20 @@ import org.junit.Test;
 
 import samples.scheduling.DisjunctiveWebEx;
 import choco.Choco;
+import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.SettingType;
 import choco.cp.solver.constraints.BitFlags;
 import choco.cp.solver.constraints.global.scheduling.disjunctive.Disjunctive;
 import choco.cp.solver.constraints.global.scheduling.disjunctive.Disjunctive.Rule;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.tools.MathUtils;
+import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.model.variables.scheduling.TaskVariable;
+import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
 
 
 class DisjProblem extends AbstractTestProblem {
@@ -250,4 +255,29 @@ public class TestDisjunctive {
 		Assert.assertEquals("Disjunctive Website Example",obj, cwe._s.getObjectiveValue());
 	}
 
+	@Test
+	public void testBugNilDuration1() throws ContradictionException {
+		//bug detected on: [T_5_7[0, 31], T_6_7[31, 191], T_4_7[199, 325], T_2_7[315, 523], T_1_7[513, 860], T_0_7[885, 1098], T_7_7[1104, 1104], T_3_7[1097, 1104]]
+		final TaskVariable[] tasks = { Choco.makeTaskVar("t1", 0, 5, 5), Choco.makeTaskVar("t2", 5, 10, 5),Choco.makeTaskVar("t2", 9, 16, 6), Choco.makeTaskVar("t1", 16,16, 0)};
+		Model m = new CPModel();
+		m.addConstraint( Choco.disjunctive(tasks, SettingType.NF_NL.getOptionName()));
+		Solver s = new CPSolver();
+		s.read(m);
+		s.propagate();
+	}
+	
+	@Test
+	public void testBugNilDuration2() throws ContradictionException {
+		//bug detected on: [T_5_7[0, 31], T_6_7[31, 191], T_4_7[199, 325], T_2_7[315, 523], T_1_7[513, 860], T_0_7[885, 1098], T_7_7[1104, 1104], T_3_7[1097, 1104]]
+		final TaskVariable[] tasks = { Choco.makeTaskVar("t1", 0, 5, 5), Choco.makeTaskVar("t2", 5, 10, 5),Choco.makeTaskVar("t2", 9, 16, 6), Choco.makeTaskVar("t1", 16,16, 0)};
+		final IntegerVariable[] usages = Choco.makeBooleanVarArray("u", 2);
+		Model m = new CPModel();
+		m.addConstraint( Choco.disjunctive(tasks, usages, SettingType.NF_NL.getOptionName()));
+		Solver s = new CPSolver();
+		s.read(m);
+		s.getVar(usages[0]).setVal(1);
+		s.getVar(usages[1]).setVal(1);
+		s.propagate();
+	}
+	
 }
