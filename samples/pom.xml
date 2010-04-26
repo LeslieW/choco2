@@ -13,11 +13,7 @@
     <dependencies>
         <dependency>
             <groupId>choco</groupId>
-            <artifactId>choco-contribs</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>choco</groupId>
-            <artifactId>choco-visu</artifactId>
+            <artifactId>choco-cp</artifactId>
         </dependency>
     </dependencies>
     <reporting>

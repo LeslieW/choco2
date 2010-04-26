@@ -28,30 +28,30 @@
 //**************************************************
 package choco.kernel.solver.search;
 
-import static choco.kernel.common.util.tools.StringUtils.pretty;
-import static choco.kernel.common.util.tools.StringUtils.prettyOnePerLine;
-
-import java.util.logging.Level;
-
 import choco.Options;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.tools.VariableUtils;
+import static choco.kernel.common.util.tools.StringUtils.pretty;
+import static choco.kernel.common.util.tools.StringUtils.prettyOnePerLine;
+import choco.kernel.solver.Configuration;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.AbstractBranchingStrategy;
 import choco.kernel.solver.branch.AbstractIntBranchingStrategy;
-import choco.kernel.solver.configure.StrategyConfiguration;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.ShavingTools;
 import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.measure.ISearchMeasures;
+
+import java.util.logging.Level;
 
 /**
  * An abstract class for controlling tree search in various ways
  * version 2.0.3 : change the value of search constant to use bit masks.
  */
 public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrategy implements ISearchMeasures {
+
+    protected final Configuration configuration;
 
 	/**
 	 * constants for driving the incremental search algorithm
@@ -86,7 +86,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	/**
 	 * indicates whether the control should stop after the first solution is found
 	 */
-	public boolean stopAtFirstSol = true;
+	public final boolean stopAtFirstSol;
 
 	/**
 	 * indicates whether a limit was encountered in the alst incremental search
@@ -104,18 +104,18 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 */
 	public int baseWorld = 0;
 
-	public StrategyConfiguration configuration;
-
 	public ShavingTools shavingTools;
 	
 	public GlobalSearchLimitManager limitManager;
 
 	public AbstractSearchLoop searchLoop;
 
-	protected AbstractGlobalSearchStrategy(Solver solver) {
+	protected AbstractGlobalSearchStrategy(Solver solver, final Configuration configuration) {
 		this.solver = solver;
+        this.configuration = configuration;
 		traceStack = new IntBranchingTrace[solver.getNbIntVars() + solver.getNbSetVars()];
 		nextMove = INIT_SEARCH;
+        stopAtFirstSol = configuration.getAsBoolean(Configuration.STOP_AT_FIRST_SOLUTION);
 	}
 
 
@@ -133,15 +133,6 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	public IObjectiveManager getObjectiveManager() {
 		return null;
 	}
-	
-	public final StrategyConfiguration getConfiguration() {
-		return configuration;
-	}
-
-	public final void setConfiguration(StrategyConfiguration configuration) {
-		this.configuration = configuration;
-	}
-
 
 	public final GlobalSearchLimitManager getLimitManager() {
 		return limitManager;
@@ -277,7 +268,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 
 
 
-	public final static boolean isUsingShavingTools(Solver solver) {
+	public static boolean isUsingShavingTools(Solver solver) {
 		return solver.containsOption(Options.S_ROOT_SHAVING) ||
 		solver.containsOption(Options.S_DESTRUCTIVE_LOWER_BOUND) ||
 		solver.containsOption(Options.S_BOTTOM_UP);
@@ -454,7 +445,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 
 
 	public String runtimeStatistics() {
-		return "  Solutions: "+getSolutionCount() + "\n"+prettyOnePerLine(this);
+		return "  Solutions: "+getSolutionCount() + '\n' +prettyOnePerLine(this);
 	}
 
 	public String partialRuntimeStatistics(boolean logOnSolution) {

@@ -72,7 +72,7 @@ import java.util.logging.Logger;
  * Time: 16:43:08
  * Interface for Solver class, declare main expected methods.
  */
-public interface Solver extends IMeasures, IPretty, IOptions {
+public interface Solver extends IMeasures, IPretty, IOptions{
 	
 	public static final SolutionCheckerEngine DEFAULT_SOLUTION_CHECKER = new SolutionCheckerEngine();
 	
@@ -173,11 +173,13 @@ public interface Solver extends IMeasures, IPretty, IOptions {
 	
     /**
 	 * @return true if only the first solution must be found
+     * @deprecated
 	 */
 	public boolean getFirstSolution();
 
 	/**
 	 * Sets wether only the first solution must be found
+     * @deprecated
 	 */
 	public void setFirstSolution(boolean firstSolution);
 
@@ -258,7 +260,9 @@ public interface Solver extends IMeasures, IPretty, IOptions {
 	 * a boolean indicating if the strategy minize or maximize the objective function
 	 *
 	 * @param doMaximize
+     * @deprecated
 	 */
+    @Deprecated
 	public void setDoMaximize(boolean doMaximize);
 
 	/**
@@ -277,11 +281,13 @@ public interface Solver extends IMeasures, IPretty, IOptions {
 	/**
 	 * set the scheduling horizon.
      * @param horizon scheduling horizon
+     * @deprecated
      */
 	void setHorizon(int horizon);
 	
 	/**
 	 * get the scheduling horizon.
+     * @deprecated
 	 */
 	int getHorizon();
 	
@@ -432,24 +438,32 @@ public interface Solver extends IMeasures, IPretty, IOptions {
     /**
      * Set the precision of the search for a real model.
      * @param precision the new precision
+     * @deprecated
      */
+    @Deprecated
     public void setPrecision(double precision);
     /**
      * Get the precision of the search for a real model.
      * @return the actual precision
+     * @deprecated
      */
+    @Deprecated
     public double getPrecision();
 
     /**
      * Set the minimal width reduction between two propagations.
      * @param reduction new width reduction
+     * @deprecated
      */
+    @Deprecated
     public void setReduction(double reduction);
 
     /**
      * Get the minimal width reduction between two propagations.
      * @return width reduction
+     * @deprecated
      */
+    @Deprecated
     public double getReduction();
 
 
@@ -472,6 +486,7 @@ public interface Solver extends IMeasures, IPretty, IOptions {
 
     public Boolean minimize(Var obj, boolean restart);
 
+    @Deprecated
     public void setSolutionPoolCapacity(int capacity);
 
     public void printRuntimeStatistics();
@@ -534,6 +549,18 @@ public interface Solver extends IMeasures, IPretty, IOptions {
      */
     public void restoreSolution(Solution sol);
 
+
+    /**
+     * Override the default configuration
+     * @param configuration the configuration
+     */
+    public void setConfiguration(Configuration configuration);
+
+    /**
+     * Return the current configuration of the solver
+     * @return the configuration
+     */
+    public Configuration getConfiguration();
 
     /**
 	 * Returns the memory environment used by the model.
@@ -723,6 +750,7 @@ public interface Solver extends IMeasures, IPretty, IOptions {
 
 	public RealConstant createRealConstant(String name, double val);
 
+    @Deprecated
 	public void setCardReasoning(boolean creas);
 
 	public LargeRelation makeLargeRelation(int[] min, int[] max, List<int[]> tuples, boolean feas);

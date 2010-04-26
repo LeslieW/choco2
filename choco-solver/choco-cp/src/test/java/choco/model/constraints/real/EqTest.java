@@ -56,19 +56,19 @@ public class EqTest {
 
         Model m1 = new CPModel();
         m1.addConstraint(c1);
-        m1.setPrecision(0.01);
 
         Model m2 = new CPModel();
         m2.addConstraint(c2);
-        m2.setPrecision(0.01);
 
 
         Solver s1 = new CPSolver();
+        s1.setPrecision(0.01);
         s1.read(m1);
         System.out.println(s1.pretty());
         s1.solveAll();
 
         Solver s2 = new CPSolver();
+        s2.setPrecision(0.01);
         s2.read(m2);
         s2.solveAll();
 
@@ -84,18 +84,17 @@ public class EqTest {
 
         Model m1 = new CPModel();
         m1.addConstraint(c1);
-        m1.setPrecision(0.01);
 
         Model m2 = new CPModel();
         m2.addConstraint(c2);
-        m2.setPrecision(0.01);
-
 
         Solver s1 = new CPSolver();
+        s1.setPrecision(0.01);
         s1.read(m1);
         s1.solveAll();
 
         Solver s2 = new CPSolver();
+        s2.setPrecision(0.01);
         s2.read(m2);
         s2.solveAll();
 
@@ -112,18 +111,18 @@ public class EqTest {
 
         Model m1 = new CPModel();
         m1.addConstraint(c1);
-        m1.setPrecision(0.01);
 
         Model m2 = new CPModel();
         m2.addConstraint(c2);
-        m2.setPrecision(0.01);
 
 
         Solver s1 = new CPSolver();
+        s1.setPrecision(0.01);
         s1.read(m1);
         s1.solveAll();
 
         Solver s2 = new CPSolver();
+        s2.setPrecision(0.01);
         s2.read(m2);
         s2.solveAll();
 
@@ -142,19 +141,19 @@ public class EqTest {
         Model m1 = new CPModel();
         m1.addVariables(x,y,z);
         m1.addConstraint(c1);
-        m1.setPrecision(0.1);
 
         Model m2 = new CPModel();
         m2.addVariables(x,y,z);
         m2.addConstraint(c2);
-        m2.setPrecision(0.1);
 
 
         Solver s1 = new CPSolver();
+        s1.setPrecision(0.01);
         s1.read(m1);
         s1.solveAll();
 
         Solver s2 = new CPSolver();
+        s2.setPrecision(0.1);
         s2.read(m2);
 //        s2.solveAll();
 
@@ -170,19 +169,19 @@ public class EqTest {
 
         Model m1 = new CPModel();
         m1.addConstraint(c1);
-        m1.setPrecision(0.1);
 
         Model m2 = new CPModel();
         m2.addVariables(x,y,z);
         m2.addConstraint(c1);
-        m2.setPrecision(0.1);
 
 
         Solver s1 = new CPSolver();
+        s1.setPrecision(0.1);
         s1.read(m1);
         s1.solveAll();
 
         Solver s2 = new CPSolver();
+        s2.setPrecision(0.1);
         s2.read(m2);
         s2.solveAll();
 
@@ -198,19 +197,19 @@ public class EqTest {
 
         Model m1 = new CPModel();
         m1.addConstraint(c1);
-        m1.setPrecision(0.1);
 
         Model m2 = new CPModel();
         m2.addVariables(x,y,z);
         m2.addConstraint(c1);
-        m2.setPrecision(0.1);
 
 
         Solver s1 = new CPSolver();
+        s1.setPrecision(0.1);
         s1.read(m1);
         s1.solveAll();
 
         Solver s2 = new CPSolver();
+        s2.setPrecision(0.1);
         s2.read(m2);
         s2.solveAll();
 
@@ -227,18 +226,18 @@ public class EqTest {
 
         Model m1 = new CPModel();
         m1.addConstraint(c1);
-        m1.setPrecision(0.01);
 
         Model m2 = new CPModel();
         m2.addConstraint(c2);
-        m2.setPrecision(0.01);
 
 
         Solver s1 = new CPSolver();
+        s1.setPrecision(0.01);
         s1.read(m1);
         s1.solveAll();
 
         Solver s2 = new CPSolver();
+        s2.setPrecision(0.01);
         s2.read(m2);
         s2.solveAll();
 

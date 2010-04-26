@@ -30,9 +30,6 @@ import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import org.junit.Assert;
 import org.junit.Test;
-import samples.Examples.CycloHexan;
-import samples.Examples.Queen;
-import samples.scheduling.DisjunctiveWebEx;
 
 import java.io.*;
 import java.util.logging.Logger;
@@ -139,88 +136,6 @@ public class SerializableTest {
         }
         Assert.assertNotNull(cstr);
         LOGGER.info(cstr.pretty());
-    }
-
-    @Test
-    public void testQueen() throws IOException {
-        final Queen pb = new Queen();
-        pb.buildModel();
-        final File file = create();
-        try {
-            CPModel.writeInFile((CPModel)pb._m, file);
-        } catch (IOException e) {
-            LOGGER.severe(e.getMessage());
-            Assert.fail("IOException");
-        }
-        pb._m = null;
-        Assert.assertNull(pb._m);
-        try {
-            pb._m = CPModel.readFromFile(file);
-        } catch (IOException e) {
-            LOGGER.severe(e.getMessage());
-            Assert.fail("IOException");
-        } catch (ClassNotFoundException e) {
-            LOGGER.severe(e.getMessage());
-            Assert.fail("ClassNotFoundException");
-        }
-        pb.buildSolver();
-        pb.solve();
-        Assert.assertEquals(92, pb._s.getSolutionCount());
-    }
-
-
-    @Test
-    public void testDisjunctiveWebEx() throws IOException {
-        final DisjunctiveWebEx pb = new DisjunctiveWebEx();
-        pb.buildModel();
-        File file = null;
-        try {
-            file = CPModel.writeInFile((CPModel)pb._m);
-        } catch (IOException e) {
-            LOGGER.severe(e.getMessage());
-            Assert.fail("IOException");
-        }
-        pb._m = null;
-        Assert.assertNull(pb._m);
-        try {
-            pb._m = CPModel.readFromFile(file);
-        } catch (IOException e) {
-            LOGGER.severe(e.getMessage());
-            Assert.fail("IOException");
-        } catch (ClassNotFoundException e) {
-            LOGGER.severe(e.getMessage());
-            Assert.fail("ClassNotFoundException");
-        }
-        pb.buildSolver();
-        pb.solve();
-        Assert.assertEquals(9, pb._s.getSolutionCount());
-    }
-
-    @Test
-    public void testCycloHexan() throws IOException {
-        final CycloHexan pb = new CycloHexan();
-        pb.buildModel();
-        File file = null;
-        try {
-            file = CPModel.writeInFile((CPModel)pb._m);
-        } catch (IOException e) {
-            LOGGER.severe(e.getMessage());
-            Assert.fail("IOException");
-        }
-        pb._m = null;
-        Assert.assertNull(pb._m);
-        try {
-            pb._m = CPModel.readFromFile(file);
-        } catch (IOException e) {
-            LOGGER.severe(e.getMessage());
-            Assert.fail("IOException");
-        } catch (ClassNotFoundException e) {
-            LOGGER.severe(e.getMessage());
-            Assert.fail("ClassNotFoundException");
-        }
-        pb.buildSolver();
-        pb.solve();
-        Assert.assertEquals(69, pb._s.getSolutionCount());
     }
 
 }

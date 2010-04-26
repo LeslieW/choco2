@@ -27,11 +27,11 @@ import static choco.Choco.makeIntVarArray;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.search.SearchLimitManager;
 import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.model.variables.integer.IntegerVariable;
-import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.limit.Limit;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -66,7 +66,7 @@ public class LimitTest {
 	private void check(Limit type) {
 		solver.solveAll();
 		assertTrue(solver.isEncounteredLimit());
-		assertEquals(type, ( ( AbstractGlobalSearchLimit) solver.getEncounteredLimit()).getType());
+		assertEquals(type, solver.getEncounteredLimit().getType());
 	}
 
 	@Test
@@ -96,6 +96,17 @@ public class LimitTest {
 		check(Limit.TIME);
 	}
 
+    @Test
+	public void testTimeLimit2() {
+		solver.setTimeLimit(SIZE*10);
+        solver.setFirstSolution(false);
+        solver.generateSearchStrategy();
+        SearchLimitManager slm = (SearchLimitManager)solver.getSearchStrategy().getLimitManager();
+        slm.getSearchLimit().setNbMax(10);
+        solver.launch();
+        assertTrue(solver.isEncounteredLimit());
+		assertEquals(Limit.TIME, solver.getEncounteredLimit().getType());
+	}
 	
 	@Test
 	public void testRestartLimit1() {

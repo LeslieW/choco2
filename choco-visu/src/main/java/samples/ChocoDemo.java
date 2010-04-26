@@ -18,8 +18,8 @@ import org.jfree.data.xy.YIntervalSeries;
 import org.jfree.data.xy.YIntervalSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
-import samples.pack.BinPackingExample;
-import samples.pack.CPpack;
+import samples.tutorials.pack.BinPackingExample;
+import samples.tutorials.pack.CPpack;
 
 import java.awt.*;
 import java.util.logging.Level;
