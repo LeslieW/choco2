@@ -138,7 +138,6 @@ public class PreProcessCPSolver extends CPSolver {
         SolverDetectorFactory.taskVarEqDet(model, this).applyThenCommit();
 
         mod2sol.readMultipleVariables(model);
-        mod2sol.readParameters(model);
 
         if (optionsSet.contains("bb:disjunctive")){
             SolverDetectorFactory.disjunctionDetector(model, this).applyThenCommit();

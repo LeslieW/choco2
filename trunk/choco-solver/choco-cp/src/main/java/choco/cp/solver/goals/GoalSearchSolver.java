@@ -24,6 +24,7 @@ package choco.cp.solver.goals;
 
 
 import choco.cp.solver.goals.choice.Generate;
+import choco.kernel.solver.Configuration;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.goals.Goal;
@@ -38,8 +39,6 @@ import java.util.logging.Level;
  * Created by IntelliJ IDEA.
  * User: grochart
  * Date: 19 mai 2007
- * Time: 09:10:43
- * To change this template use File | Settings | File Templates.
  */
 @Deprecated
 public class GoalSearchSolver extends AbstractGlobalSearchStrategy {
@@ -65,8 +64,8 @@ public class GoalSearchSolver extends AbstractGlobalSearchStrategy {
   protected boolean globalContradiction = false;
 
 
-  public GoalSearchSolver(Solver s, Goal mainGoal) {
-    super(s);
+  public GoalSearchSolver(Solver s, Goal mainGoal, final Configuration configuration) {
+    super(s, configuration);
     this.mainGoal = mainGoal;
   }
 
@@ -78,7 +77,7 @@ public class GoalSearchSolver extends AbstractGlobalSearchStrategy {
     GoalTrace trace = new GoalTrace(currentChoice, currentGoalStack, currentChoiceIndex);
     goalTraceStack.add(trace);
 
-    List<Goal> l2 = new ArrayList<Goal>();
+    List<Goal> l2 = new ArrayList<Goal>(8);
     l2.addAll(currentGoalStack);
     currentChoice = null;
     currentChoiceIndex = -1;
@@ -134,9 +133,9 @@ public class GoalSearchSolver extends AbstractGlobalSearchStrategy {
     // specific initialization for the very first solution search (start from the tree root, instead of last leaf)
     if (nextMove == INIT_SEARCH) {
       nextMove = OPEN_NODE;
-      currentGoalStack = new ArrayList<Goal>();
+      currentGoalStack = new ArrayList<Goal>(8);
       currentGoalStack.add(mainGoal);
-      goalTraceStack = new ArrayList<GoalTrace>();
+      goalTraceStack = new ArrayList<GoalTrace>(8);
     } /*else {
       topGoalTrace();
     }   */

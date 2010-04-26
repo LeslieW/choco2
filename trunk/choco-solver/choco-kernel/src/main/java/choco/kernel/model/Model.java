@@ -115,31 +115,6 @@ public interface Model extends IPretty, Serializable {
     public String solutionToString();
 
     /**
-     * Return the precision of RealVariable of the Model.
-     * @return the precision of RealVariable
-     */
-    public double getPrecision();
-
-    /**
-     * Set the precision of RealVariable of the model to <i>precision</i>.
-     * @param precision new precision to take into account
-     */
-    public void setPrecision(double precision);
-
-    /**
-     * Return minimal width reduction between two propagations.
-     * @return Minimal width reduction between two propagations.
-     */
-    public double getReduction();
-
-    /**
-     * Set minimal width reduction between two propagations.
-     * @param reduction the new minimal width reduction between two propagations.
-     */
-    public void setReduction(double reduction);
-
-
-    /**
      * <i>Network management:</i>
      * Retrieve a variable by its index (all integer variables of
      * the model are numbered in sequence from 0 on)

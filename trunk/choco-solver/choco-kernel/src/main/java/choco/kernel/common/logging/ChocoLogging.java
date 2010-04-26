@@ -42,7 +42,7 @@ public final class ChocoLogging {
 
 	public final static String START_MESSAGE =
 		"** CHOCO : Constraint Programming Solver\n"+
-		"** CHOCO v2.1.1 (April, 2009), Copyleft (c) 1999-2010";
+		"** CHOCO v2.1.1 (April, 2010), Copyleft (c) 1999-2010";
 
 	public final static Formatter LIGHT_FORMATTER = new LightFormatter();
 

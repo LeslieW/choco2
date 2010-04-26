@@ -25,8 +25,6 @@ package choco.model.variables.real;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.real.RealExpressionVariable;
@@ -59,7 +57,6 @@ public class RealVarTest {
     public void testDemeter() {
         // Build the model
         final Model m = new CPModel();
-        m.setPrecision(0.1);
         // Creation of an array of variables
         final double[] prices = new double[2];
         prices[0] = 2.0;
@@ -91,6 +88,7 @@ public class RealVarTest {
 
 
         final Solver s = new CPSolver();
+        s.setPrecision(0.1);
 
         //ChocoLogging.setVerbosity(Verbosity.SEARCH);
         s.read(m);
@@ -103,11 +101,11 @@ public class RealVarTest {
         final Model m = new CPModel();
         final RealVariable s1 = makeRealVar( "start1", 0.0, 4.0 );
         final RealVariable s2 = makeRealVar( "stop1", 0.0, 60.0 );
-        m.setPrecision(0.1);
 
         m.addConstraint(geq( s2, plus( 2.0, s1 )));
 
         final Solver s = new CPSolver();
+        s.setPrecision(0.1);
         s.read(m);
         s.solve();
     }

@@ -16,6 +16,10 @@
             <artifactId>choco-cp</artifactId>
         </dependency>
         <dependency>
+            <groupId>choco</groupId>
+            <artifactId>samples</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.processing</groupId>
             <artifactId>core</artifactId>
             <version>1.0.9</version>

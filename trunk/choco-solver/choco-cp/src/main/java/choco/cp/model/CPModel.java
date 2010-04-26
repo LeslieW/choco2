@@ -68,15 +68,6 @@ public class CPModel implements Model {
 	protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
 	/**
-	 * Precision of the search for a real model.
-	 */
-	protected double precision = 1.0e-6;
-	/**
-	 * Minimal width reduction between two propagations.
-	 */
-	protected double reduction = 0.99;
-
-	/**
 	 * All the constraint of the model
 	 */
 	protected final DeterministicIndicedList<Constraint> constraints;
@@ -195,7 +186,7 @@ public class CPModel implements Model {
 
 
 	public String solutionToString() {
-		final StringBuffer buf = new StringBuffer();
+		final StringBuffer buf = new StringBuffer(24);
 		buf.append(StringUtils.prettyOnePerLine(intVars.iterator()));
 		buf.append(StringUtils.prettyOnePerLine(floatVars.iterator()));
 		buf.append(StringUtils.prettyOnePerLine(setVars.iterator()));
@@ -212,22 +203,6 @@ public class CPModel implements Model {
 	@Deprecated
 	public int getIntVarIndex(final IntVar c) {
 		throw new ModelException("CPModel: ?");
-	}
-
-	public double getPrecision() {
-		return precision;
-	}
-
-	public void setPrecision(final double precision) {
-		this.precision = precision;
-	}
-
-	public double getReduction() {
-		return reduction;
-	}
-
-	public void setReduction(final double reduction) {
-		this.reduction = reduction;
 	}
 
 	public Boolean getDefaultExpressionDecomposition() {

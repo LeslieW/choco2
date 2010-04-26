@@ -22,14 +22,15 @@ cd  *          _       _                            *
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search;
 
+import choco.kernel.solver.Configuration;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 
 
 public final class GlobalSearchStrategy extends AbstractGlobalSearchStrategy {
 	
-	public GlobalSearchStrategy(Solver solver) {
-		super(solver);
+	public GlobalSearchStrategy(Solver solver, final Configuration configuration) {
+		super(solver, configuration);
 	}
 
 }

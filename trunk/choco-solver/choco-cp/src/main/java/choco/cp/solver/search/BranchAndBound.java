@@ -24,6 +24,7 @@ package choco.cp.solver.search;
 
 import choco.cp.solver.search.integer.objective.MaxIntObjManager;
 import choco.cp.solver.search.integer.objective.MinIntObjManager;
+import choco.kernel.solver.Configuration;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.AbstractOptimize;
 import choco.kernel.solver.search.IObjectiveManager;
@@ -35,12 +36,13 @@ public class BranchAndBound extends AbstractOptimize {
 	 * Builds a new optimizing strategy with the specified variable.
 	 * @param solver
      * @param maximize states if the objective variable should be maximized
-	 */
-	public BranchAndBound(Solver solver, IntDomainVar objective, boolean maximize) {
-		super(solver, makeDefaultObjManager(objective, maximize), maximize);
+     * @param configuration
+     */
+	public BranchAndBound(Solver solver, IntDomainVar objective, boolean maximize, Configuration configuration) {
+		super(solver, makeDefaultObjManager(objective, maximize), maximize, configuration);
 	}
 
-	private final static IObjectiveManager makeDefaultObjManager(IntDomainVar objective, boolean maximize) {
+	private static IObjectiveManager makeDefaultObjManager(IntDomainVar objective, boolean maximize) {
 		return maximize ? new MaxIntObjManager(objective) : new MinIntObjManager(objective);
 	}
 	

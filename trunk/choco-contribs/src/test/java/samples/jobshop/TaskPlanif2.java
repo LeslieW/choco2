@@ -16,7 +16,7 @@ import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.search.IntBranchingDecision;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
-import samples.Examples.PatternExample;
+import samples.tutorials.PatternExample;
 
 import java.util.Random;
 import java.util.logging.Level;

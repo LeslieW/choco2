@@ -22,44 +22,15 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.solver.search.set;
 
-import static choco.Choco.eq;
-import static choco.Choco.eqCard;
-import static choco.Choco.geq;
-import static choco.Choco.geqCard;
-import static choco.Choco.isIncluded;
-import static choco.Choco.leqCard;
-import static choco.Choco.makeIntVar;
-import static choco.Choco.makeSetVar;
-import static choco.Choco.member;
-import static choco.Choco.mult;
-import static choco.Choco.neq;
-import static choco.Choco.notMember;
-import static choco.Choco.plus;
-import static choco.Choco.setDisjoint;
-import static choco.Choco.setInter;
-import static choco.Choco.setUnion;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import samples.Examples.MinimumEdgeDeletion;
+import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.cp.solver.search.set.MinDomSet;
 import choco.cp.solver.search.set.MinEnv;
 import choco.cp.solver.search.set.RandomSetValSelector;
 import choco.cp.solver.search.set.RandomSetVarSelector;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
@@ -68,6 +39,13 @@ import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.propagation.Propagator;
+import org.junit.After;
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SearchTest {
 
@@ -338,41 +316,6 @@ public class SearchTest {
 		} catch (ContradictionException e) {
 			e.printStackTrace();
 		}
-	}
-
-	private int capa = 0;
-
-	class PoolSwitcher extends MinimumEdgeDeletion {
-
-		@Override
-		public void buildSolver() {
-			_s = new CPSolver();
-			_s.read(_m);
-			_s.setFirstSolution(false);
-			_s.setDoMaximize(false);
-			_s.setSolutionPoolCapacity(capa);
-			_s.setValIntSelector(new MinVal());
-			//_s.generateSearchStrategy();
-
-		}
-
-		@Override
-		public void execute() {
-			super.execute();
-			assertEquals(Math.min( capa, _s.getNbSolutions()),  _s.getSearchStrategy().getSolutionPool().size());
-		}
-
-	}
-
-	@Test
-	public void testSolutionPool() {
-		//ChocoLogging.setVerbosity(Verbosity.SEARCH);
-		PoolSwitcher pl = new PoolSwitcher();
-		for (capa = 0; capa  < 7; capa++) {
-			pl.execute();
-		}
-		capa = Integer.MAX_VALUE;
-		pl.execute();
 	}
 
 	private void buildLP(int v) {

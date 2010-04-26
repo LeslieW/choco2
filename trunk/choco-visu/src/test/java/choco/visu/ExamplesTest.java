@@ -43,8 +43,8 @@ import gnu.trove.TIntObjectHashMap;
 import gnu.trove.TObjectIntHashMap;
 import org.junit.Before;
 import org.junit.Test;
-import samples.Picross;
-import static samples.seminar.ExDonaldGeraldRobert.*;
+import samples.tutorials.Picross;
+import static samples.tutorials.seminar.ExDonaldGeraldRobert.*;
 
 import java.awt.*;
 import java.util.logging.Logger;

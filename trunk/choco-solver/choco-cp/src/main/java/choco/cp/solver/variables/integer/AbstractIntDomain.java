@@ -90,7 +90,9 @@ public abstract class AbstractIntDomain implements IntDomain {
 		if (_updateSup(x, cause)) {
             boolean awake = true;
 			final int val = getInf();
-			if (getSup() == x) awake = forceAwake;
+			if (getSup() == x){
+                awake = forceAwake; //TODO: remove and test, forceAwake should be forget for instantiation!
+            }
 			if (val == getSup()) {
 				//instantiate(getSup(), cause);
 				restrict(val);
@@ -119,7 +121,9 @@ public abstract class AbstractIntDomain implements IntDomain {
 		if (_updateInf(x, cause)) {
             boolean awake = true;
 			final int val = getSup();
-			if (getInf() == x) awake = forceAwake;
+			if (getInf() == x){
+                awake = forceAwake; //TODO: remove and test, forceAwake should be forget for instantiation!
+            }
 			if (val == getInf()) {
 				//        instantiate(getInf(), cause);
 				restrict(val);

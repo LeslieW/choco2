@@ -36,7 +36,6 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import org.junit.Ignore;
 import org.junit.Test;
-import samples.scheduling.pert.DeterministicPert;
 
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -263,32 +262,6 @@ public class TestPrecedences {
 	public void testLargePertExample() {
 		setPertExample(32);
 		solve(504726,"pert example (sat)");
-	}
-
-
-	@Test
-	public void testIlogExample() {
-		DeterministicPert ex=new DeterministicPert(17);
-		//		m=ex.getModel();
-		//		solve(0,"Ilog ex.");
-		//
-		//		ex=new DeterministicPert(18);
-		//		m=ex.getModel();
-		//		solve(154,"Ilog ex.");
-
-		ex=new DeterministicPert(19);
-		m=ex.getModel();
-		solve(1764,"Ilog ex.");
-
-		//		ex=new DeterministicPert(28);
-		//		ex.requireUnaryResource();
-		//		m=ex.getModel();
-		//		solve(0,"Ilog ex.");
-		//
-		//		ex=new DeterministicPert(29);
-		//		ex.requireUnaryResource();
-		//		m=ex.getModel();
-		//		solve(112,"Ilog ex.");
 	}
 
 

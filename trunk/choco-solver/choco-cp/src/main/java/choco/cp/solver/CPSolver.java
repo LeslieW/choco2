@@ -28,30 +28,6 @@
  *************************************************/
 package choco.cp.solver;
 
-import static choco.cp.solver.search.BranchingFactory.incDomWDeg;
-import static choco.cp.solver.search.BranchingFactory.incDomWDegBin;
-import static choco.kernel.common.Constant.FALSE;
-import static choco.kernel.common.Constant.TRUE;
-import static choco.cp.solver.variables.integer.IntTerm.*;
-import static choco.kernel.common.util.tools.StringUtils.prettyOnePerLine;
-import static choco.kernel.solver.search.SolutionPoolFactory.makeDefaultSolutionPool;
-import gnu.trove.THashSet;
-import gnu.trove.TLongObjectHashMap;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.logging.Level;
-
 import choco.Choco;
 import choco.Options;
 import choco.cp.model.CPModel;
@@ -61,59 +37,23 @@ import choco.cp.solver.constraints.global.Occurrence;
 import choco.cp.solver.constraints.global.scheduling.precedence.PrecedenceDisjoint;
 import choco.cp.solver.constraints.global.scheduling.precedence.PrecedenceVDisjoint;
 import choco.cp.solver.constraints.global.scheduling.precedence.PrecedenceVSDisjoint;
-import choco.cp.solver.constraints.integer.EqualXC;
-import choco.cp.solver.constraints.integer.EqualXYC;
-import choco.cp.solver.constraints.integer.EqualXY_C;
-import choco.cp.solver.constraints.integer.GreaterOrEqualXC;
-import choco.cp.solver.constraints.integer.GreaterOrEqualXYC;
-import choco.cp.solver.constraints.integer.GreaterOrEqualXY_C;
-import choco.cp.solver.constraints.integer.IntLinComb;
-import choco.cp.solver.constraints.integer.LessOrEqualXC;
-import choco.cp.solver.constraints.integer.LessOrEqualXY_C;
-import choco.cp.solver.constraints.integer.MaxOfAList;
-import choco.cp.solver.constraints.integer.NotEqualXC;
-import choco.cp.solver.constraints.integer.NotEqualXYC;
-import choco.cp.solver.constraints.integer.NotEqualXY_C;
+import choco.cp.solver.constraints.integer.*;
 import choco.cp.solver.constraints.integer.bool.sat.ClauseStore;
 import choco.cp.solver.constraints.integer.channeling.ReifiedIntSConstraint;
-import choco.cp.solver.constraints.integer.extension.AC2001BinSConstraint;
-import choco.cp.solver.constraints.integer.extension.AC3BinSConstraint;
-import choco.cp.solver.constraints.integer.extension.AC3rmBinSConstraint;
-import choco.cp.solver.constraints.integer.extension.AC3rmBitBinSConstraint;
-import choco.cp.solver.constraints.integer.extension.CspLargeSConstraint;
-import choco.cp.solver.constraints.integer.extension.GAC2001LargeSConstraint;
-import choco.cp.solver.constraints.integer.extension.GAC2001PositiveLargeConstraint;
-import choco.cp.solver.constraints.integer.extension.GAC3rmLargeConstraint;
-import choco.cp.solver.constraints.integer.extension.GAC3rmPositiveLargeConstraint;
-import choco.cp.solver.constraints.integer.extension.GACstrPositiveLargeSConstraint;
+import choco.cp.solver.constraints.integer.extension.*;
 import choco.cp.solver.constraints.integer.intlincomb.IntLinCombFactory;
 import choco.cp.solver.constraints.real.Equation;
 import choco.cp.solver.constraints.real.MixedEqXY;
-import choco.cp.solver.constraints.real.exp.RealCos;
-import choco.cp.solver.constraints.real.exp.RealIntegerPower;
-import choco.cp.solver.constraints.real.exp.RealMinus;
-import choco.cp.solver.constraints.real.exp.RealMult;
-import choco.cp.solver.constraints.real.exp.RealPlus;
-import choco.cp.solver.constraints.real.exp.RealSin;
+import choco.cp.solver.constraints.real.exp.*;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
 import choco.cp.solver.constraints.set.Disjoint;
-import choco.cp.solver.constraints.set.IsIncluded;
-import choco.cp.solver.constraints.set.MemberXY;
-import choco.cp.solver.constraints.set.SetCard;
-import choco.cp.solver.constraints.set.SetEq;
-import choco.cp.solver.constraints.set.SetIntersection;
-import choco.cp.solver.constraints.set.SetNotEq;
-import choco.cp.solver.constraints.set.SetUnion;
+import choco.cp.solver.constraints.set.*;
 import choco.cp.solver.goals.GoalSearchSolver;
 import choco.cp.solver.propagation.ChocEngine;
 import choco.cp.solver.propagation.EventQueueFactory;
-import choco.cp.solver.search.AbstractSearchLoopWithRestart;
-import choco.cp.solver.search.BranchAndBound;
-import choco.cp.solver.search.GlobalSearchStrategy;
-import choco.cp.solver.search.GoalSearchLoop;
-import choco.cp.solver.search.SearchLimitManager;
-import choco.cp.solver.search.SearchLoop;
-import choco.cp.solver.search.SearchLoopWithRecomputation;
+import choco.cp.solver.search.*;
+import static choco.cp.solver.search.BranchingFactory.incDomWDeg;
+import static choco.cp.solver.search.BranchingFactory.incDomWDegBin;
 import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.branching.ImpactBasedBranching;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
@@ -126,22 +66,21 @@ import choco.cp.solver.search.real.RealIncreasingDomain;
 import choco.cp.solver.search.restart.BasicKickRestart;
 import choco.cp.solver.search.restart.IKickRestart;
 import choco.cp.solver.search.restart.NogoodKickRestart;
-import choco.cp.solver.search.set.AssignSetVar;
-import choco.cp.solver.search.set.MinDomSet;
-import choco.cp.solver.search.set.MinEnv;
-import choco.cp.solver.search.set.RandomSetValSelector;
-import choco.cp.solver.search.set.RandomSetVarSelector;
+import choco.cp.solver.search.set.*;
 import choco.cp.solver.variables.integer.BooleanVarImpl;
 import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.cp.solver.variables.integer.IntTerm;
 import choco.cp.solver.variables.real.RealVarImpl;
 import choco.cp.solver.variables.set.SetVarImpl;
+import static choco.kernel.common.Constant.FALSE;
+import static choco.kernel.common.Constant.TRUE;
 import choco.kernel.common.IndexFactory;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.common.util.tools.StringUtils;
+import static choco.kernel.common.util.tools.StringUtils.prettyOnePerLine;
 import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
@@ -155,28 +94,16 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.real.RealVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.model.variables.set.SetVariable;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.Solution;
-import choco.kernel.solver.Solver;
-import choco.kernel.solver.SolverException;
+import choco.kernel.solver.*;
 import choco.kernel.solver.branch.AbstractIntBranchingStrategy;
 import choco.kernel.solver.branch.BranchingWithLoggingStatements;
 import choco.kernel.solver.branch.VarSelector;
-import choco.kernel.solver.configure.StrategyConfiguration;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.global.MetaSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.constraints.integer.IntExp;
-import choco.kernel.solver.constraints.integer.extension.BinRelation;
-import choco.kernel.solver.constraints.integer.extension.CouplesBitSetTable;
-import choco.kernel.solver.constraints.integer.extension.CouplesTable;
-import choco.kernel.solver.constraints.integer.extension.ExtensionalBinRelation;
-import choco.kernel.solver.constraints.integer.extension.IterLargeRelation;
-import choco.kernel.solver.constraints.integer.extension.IterTuplesTable;
-import choco.kernel.solver.constraints.integer.extension.LargeRelation;
-import choco.kernel.solver.constraints.integer.extension.TuplesList;
-import choco.kernel.solver.constraints.integer.extension.TuplesTable;
+import choco.kernel.solver.constraints.integer.extension.*;
 import choco.kernel.solver.constraints.real.RealExp;
 import choco.kernel.solver.goals.Goal;
 import choco.kernel.solver.propagation.AbstractPropagationEngine;
@@ -189,12 +116,8 @@ import choco.kernel.solver.propagation.queue.AbstractConstraintEventQueue;
 import choco.kernel.solver.propagation.queue.ConstraintEventQueue;
 import choco.kernel.solver.propagation.queue.EventQueue;
 import choco.kernel.solver.propagation.queue.VarEventQueue;
-import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import choco.kernel.solver.search.AbstractSearchLoop;
-import choco.kernel.solver.search.AbstractSearchStrategy;
-import choco.kernel.solver.search.ISolutionPool;
-import choco.kernel.solver.search.ValIterator;
-import choco.kernel.solver.search.ValSelector;
+import choco.kernel.solver.search.*;
+import static choco.kernel.solver.search.SolutionPoolFactory.makeDefaultSolutionPool;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.limit.Limit;
@@ -210,6 +133,12 @@ import choco.kernel.solver.variables.real.RealVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 import choco.kernel.solver.variables.set.SetVar;
 import choco.kernel.visu.IVisu;
+import gnu.trove.THashSet;
+import gnu.trove.TLongObjectHashMap;
+
+import java.lang.reflect.Array;
+import java.util.*;
+import java.util.logging.Level;
 
 
 /**
@@ -237,19 +166,6 @@ public class CPSolver implements Solver {
 	 */
 	private VarEventQueue[] veqCopy = null;
 	private AbstractConstraintEventQueue[] ceqCopy = null;
-
-	/**
-	 * tells the strategy wether or not use recomputation.
-	 * The value of the parameter indicates the maximum recomputation gap, i.e. the maximum number of decisions between two storages.
-	 * If the parameter is lower than or equal to 1, the trailing storage mechanism is used (default).
-	 */
-	private int recomputationGap = 1;
-
-	/**
-	 * Decide if redundant constraints are automatically to the model to reason
-	 * on cardinalities on sets as well as kernel and enveloppe
-	 */
-	private boolean cardinalityReasonningsOnSETS = true;
 
 	/**
 	 * an index useful for re-propagating cuts (static constraints) upon
@@ -315,25 +231,9 @@ public class CPSolver implements Solver {
 	protected final TLongObjectHashMap<SConstraint> mapconstraints;
 
 	/**
-	 * Precision of the search for a real model.
-	 */
-	private double precision = 1.0e-6;
-	/**
-	 * Minimal width reduction between two propagations.
-	 */
-	private double reduction = 0.99;
-
-	/**
 	 * The variable modelling the objective function
 	 */
 	private Var objective;
-
-	/**
-	 * Maximization / Minimization model
-	 */
-	private boolean doMaximize;
-
-	private int horizon = Choco.MAX_UPPER_BOUND;
 
 	private IntDomainVar makespan;
 
@@ -366,17 +266,10 @@ public class CPSolver implements Solver {
 	 * you can easily provide set your own policy with @{link {@link AbstractSearchStrategy#setSolutionPool(ISolutionPool)}.
 	 */
 	@Override
+    @Deprecated
 	public void setSolutionPoolCapacity(int capacity) {
-		this.solutionPoolCapacity = capacity;
+		configuration.putAsInt(Configuration.SOLUTION_POOL_CAPACITY, capacity);
 	}
-
-	private int solutionPoolCapacity = 1;
-
-
-	/**
-	 * do we want to explore one or all solutions (default=one solution)
-	 */
-	private boolean firstSolution = true;
 
 	/**
 	 * The object controlling the global search exploration
@@ -435,8 +328,6 @@ public class CPSolver implements Solver {
 
 	private final RestartConfiguration restartConfig = new RestartConfiguration();
 	
-	private final StrategyConfiguration strategyConfig = new StrategyConfiguration();
-
 	protected CPModelToCPSolver mod2sol;
 
 	/**
@@ -453,12 +344,18 @@ public class CPSolver implements Solver {
 
     protected final THashSet<String> optionsSet;
 
+    protected Configuration configuration = new Configuration();
+
 	public final AbstractGlobalSearchStrategy getSearchStrategy() {
 		return strategy;
 	}
 
 	public void resetSearchStrategy() {
 		strategy = null;
+	}
+
+    public CPSolver() {
+		this(new EnvironmentTrailing());
 	}
 
 	public CPSolver(String... options) {
@@ -675,32 +572,36 @@ public class CPSolver implements Solver {
 	 * Set the precision of the search for a real model.
 	 */
 	@Override
+    @Deprecated
 	public final void setPrecision(double aPrecision) {
-		this.precision = aPrecision;
+        configuration.putAsDouble(Configuration.REAL_PRECISION, aPrecision);
 	}
 
 	/**
 	 * Get the precision of the search for a real model.
 	 */
 	@Override
+    @Deprecated
 	public final double getPrecision() {
-		return precision;
+		return configuration.getAsDouble(Configuration.REAL_PRECISION);
 	}
 
 	/**
 	 * Set the minimal width reduction between two propagations.
 	 */
 	@Override
+    @Deprecated
 	public final void setReduction(double aReduction) {
-		this.reduction = aReduction;
+		configuration.putAsDouble(Configuration.REAL_REDUCTION, aReduction);
 	}
 
 	/**
 	 * Get the minimal width reduction between two propagations.
 	 */
 	@Override
+    @Deprecated
 	public final double getReduction() {
-		return reduction;
+		return configuration.getAsDouble(Configuration.REAL_REDUCTION);
 	}
 
 	/**
@@ -811,14 +712,14 @@ public class CPSolver implements Solver {
 				// an ilogGoal has been defined
 				if(GOAL){
                     if (ilogGoal != null) {
-                        strategy = new GoalSearchSolver(this, ilogGoal);
+                        strategy = new GoalSearchSolver(this, ilogGoal, configuration);
                     }
                     // Basic search strategy
                     else {
-                        strategy = new GlobalSearchStrategy(this);
+                        strategy = new GlobalSearchStrategy(this, configuration);
                     }
                 }else{
-                    strategy = new GlobalSearchStrategy(this);
+                    strategy = new GlobalSearchStrategy(this, configuration);
                 }
 			}
 			// there is an objective to reach
@@ -828,24 +729,23 @@ public class CPSolver implements Solver {
 					throw new UnsupportedOperationException(
 					"Ilog goal are not yet available in optimization");
 				}
+                final boolean doMaximize = configuration.getAsBoolean(Configuration.MAXIMIZE);
 				if (objective instanceof IntDomainVar) {
 					strategy = new BranchAndBound(
-                            this, (IntDomainVar) objective, doMaximize);
+                            this, (IntDomainVar) objective, doMaximize, configuration);
 				} else if (objective instanceof RealVar) {
 					strategy = new RealBranchAndBound(this, (RealVar) objective,
-							doMaximize);
+							doMaximize, configuration);
 				}
 			}
 		}
 
 
 		assert strategy != null;
-		strategy.stopAtFirstSol = firstSolution;
+        final int solutionPoolCapacity =  configuration.getAsInt(Configuration.SOLUTION_POOL_CAPACITY);
 		strategy.setSolutionPool(makeDefaultSolutionPool(strategy, solutionPoolCapacity));
 		generateSearchLoop();
 		generateLimitManager();
-		strategy.setConfiguration(strategyConfig);
-
 
         if(ilogGoal==null){
 			if (tempGoal == null) {
@@ -887,12 +787,13 @@ public class CPSolver implements Solver {
 		);
 
 		AbstractSearchLoop searchLoop;
+        final int recomputationGap = configuration.getAsInt(Configuration.RECOMPUTATION_GAP);
 		if(!GOAL){
 			if(ilogGoal!=null){
 				searchLoop = new GoalSearchLoop(strategy, ilogGoal);
 			}else{
 				searchLoop =  (
-						useRecomputation() ?
+						recomputationGap>1 ?
 								new SearchLoopWithRecomputation(strategy, kickRestart, recomputationGap):
 									new SearchLoop(strategy, kickRestart) )
 									;
@@ -900,7 +801,7 @@ public class CPSolver implements Solver {
 			}
 		}else{
 			searchLoop =  (
-					useRecomputation() ?
+					recomputationGap>1 ?
 							new SearchLoopWithRecomputation(strategy, kickRestart, recomputationGap):
 								new SearchLoop(strategy, kickRestart) )
 								;
@@ -1231,6 +1132,7 @@ public class CPSolver implements Solver {
 
 	@Override
 	public boolean isObjectiveOptimal() {
+        final boolean firstSolution = configuration.getAsBoolean(Configuration.STOP_AT_FIRST_SOLUTION);
 		return existsSolution() &&  !firstSolution && !isEncounteredLimit();
 	}
 
@@ -1243,16 +1145,18 @@ public class CPSolver implements Solver {
 
 	/**
 	 * @return true if only the first solution must be found
+     * @deprecated
 	 */
 	public final boolean getFirstSolution() {
-		return firstSolution;
+        return configuration.getAsBoolean(Configuration.STOP_AT_FIRST_SOLUTION);
 	}
 
 	/**
 	 * Sets wether only the first solution must be found
+     * @deprecated
 	 */
 	public final void setFirstSolution(boolean stopAtFirstSolution) {
-		this.firstSolution = stopAtFirstSolution;
+        configuration.putAsBoolean(Configuration.STOP_AT_FIRST_SOLUTION, stopAtFirstSolution);
 	}
 
 
@@ -1510,15 +1414,11 @@ public class CPSolver implements Solver {
 	 * function
 	 *
 	 * @param maximize indicates wether the strategy is maximizing or not (minimizing)
+     * @deprecated
 	 */
+    @Deprecated
 	public void setDoMaximize(boolean maximize) {
-		this.doMaximize = maximize;
-	}
-
-	
-	
-	public final StrategyConfiguration getStrategyConfiguration() {
-		return strategyConfig;
+		configuration.putAsBoolean(Configuration.MAXIMIZE, maximize);
 	}
 
 	/**
@@ -1549,14 +1449,17 @@ public class CPSolver implements Solver {
 
 	/**
 	 * set the value before reading the model (>=0);
+     * @deprecated
 	 */
 	public void setHorizon(int horizon) {
-		if(makespan == null) this.horizon = horizon;
+		if(makespan == null){
+            configuration.putAsInt(Configuration.HORIZON_UPPER_BOUND, horizon);
+        }
 		else {throw new SolverException("cant set the scheduling horizon: makespan variable already exists.");}
 	}
 
 	public final int getHorizon() {
-		return horizon;
+		return configuration.getAsInt(Configuration.HORIZON_UPPER_BOUND);
 	}
 
 	protected void setMakespan(Var makespan) {
@@ -1566,6 +1469,7 @@ public class CPSolver implements Solver {
 
 	public IntDomainVar createMakespan() {
 		if(makespan == null) {
+            final int horizon = configuration.getAsInt(Configuration.HORIZON_UPPER_BOUND);
 			this.makespan = createBoundIntVar("makespan", 0, horizon);
 		}
 		return this.makespan;
@@ -1577,6 +1481,7 @@ public class CPSolver implements Solver {
 	}
 
 	public int getMakespanValue() {
+        final int horizon = configuration.getAsInt(Configuration.HORIZON_UPPER_BOUND);
 		return makespan == null ? horizon : makespan.getVal();
 	}
 
@@ -1603,11 +1508,14 @@ public class CPSolver implements Solver {
 					vars[i + 1] = getTaskVar(i).end();
 				}
 				post(new MaxOfAList(environment, vars));
-			}else if( horizon < Choco.MAX_UPPER_BOUND) {
-				// create makespan constraint : horizon >= end(T)
-				for (TaskVar t : taskVars) {
-					t.postHorizonConstraint(this);
-				}
+			}else{
+                final int horizon = configuration.getAsInt(Configuration.HORIZON_UPPER_BOUND);
+                if( horizon < Choco.MAX_UPPER_BOUND) {
+                    // create makespan constraint : horizon >= end(T)
+                    for (TaskVar t : taskVars) {
+                        t.postHorizonConstraint(this);
+                    }
+                }
 			}
 		} else if ( makespan != null) throw new SolverException("Unused makespan variable");
 	}
@@ -2049,7 +1957,8 @@ public class CPSolver implements Solver {
 	 * @param p constraint
 	 */
 	public void postRedundantSetConstraints(SConstraint p) {
-		if (cardinalityReasonningsOnSETS && p instanceof SetPropagator
+		if (configuration.getAsBoolean(Configuration.CARD_REASONNING)
+                && p instanceof SetPropagator
 				&& p.getNbVars() > 1) {
 
 			if (p instanceof MemberXY) {
@@ -2392,7 +2301,7 @@ public class CPSolver implements Solver {
 	}
 
 	protected Boolean optimize(boolean maximize, Var obj, boolean restart) {
-		setDoMaximize(maximize);
+//		setDoMaximize(maximize);
 		setObjective(obj);
 		setRestart(restart);
 		setFirstSolution(false);
@@ -2401,31 +2310,36 @@ public class CPSolver implements Solver {
 		return this.isFeasible();
 	}
 
+    @Deprecated
 	public void setMinimizationObjective(IntVar obj) {
 		objective = obj;
-		doMaximize = false;
+		configuration.putAsBoolean(Configuration.MAXIMIZE, false);
 	}
 
+    @Deprecated
 	public void setMaximizationObjective(IntVar obj) {
 		objective = obj;
-		doMaximize = true;
+		configuration.putAsBoolean(Configuration.MAXIMIZE, true);
 	}
 
+    @Deprecated
 	public boolean useRecomputation() {
-		return recomputationGap > 1;
+		return configuration.getAsInt(Configuration.RECOMPUTATION_GAP) >1;
 	}
 
+    @Deprecated
 	public void setRecomputation(boolean on) {
-		recomputationGap = on ? 10 : 1;
+		configuration.putAsInt(Configuration.RECOMPUTATION_GAP, (on?10:1));
 	}
 
-
+    @Deprecated
 	public final int getRecomputationGap() {
-		return recomputationGap;
+		return configuration.getAsInt(Configuration.RECOMPUTATION_GAP);
 	}
 
+    @Deprecated
 	public void setRecomputationGap(int aRecomputationGap) {
-		this.recomputationGap = aRecomputationGap;
+		configuration.putAsInt(Configuration.RECOMPUTATION_GAP, aRecomputationGap);
 	}
 
     @SuppressWarnings({"unchecked"})
@@ -2497,8 +2411,9 @@ public class CPSolver implements Solver {
 		return mapconstraints.get(ic.getIndex());
 	}
 
+    @Deprecated
 	public final void setCardReasoning(boolean creas) {
-		cardinalityReasonningsOnSETS = creas;
+        configuration.putAsBoolean(Configuration.CARD_REASONNING, creas);
 	}
 
 
@@ -2547,6 +2462,22 @@ public class CPSolver implements Solver {
             throw new SolverException("Restored solution not consistent !!");
 		}
 	}
+
+    /**
+     * Override the default configuration 
+     * @param configuration the configuration
+     */
+    public void setConfiguration(final Configuration configuration){
+        this.configuration = configuration;
+    }
+
+    /**
+     * Return the current configuration of the solver
+     * @return the configuration
+     */
+    public Configuration getConfiguration(){
+        return this.configuration;
+    }
 
 	// **********************************************************************
 	// LOGGERS MANAGEMENT
@@ -3021,10 +2952,10 @@ public class CPSolver implements Solver {
 	 * @return the term (a fresh one)
 	 */
 	public IntExp minus(IntExp v1, IntExp v2) {
-		if (v1 == ZERO){
+		if (v1 == IntTerm.ZERO){
             return mult(-1, v2);
         }
-		if (v2 == ZERO){
+		if (v2 == IntTerm.ZERO){
             return v1;
         }
 
@@ -3059,7 +2990,7 @@ public class CPSolver implements Solver {
 	}
 
 	public IntExp minus(IntExp t, int c) {
-		if (t == ZERO) {
+		if (t == IntTerm.ZERO) {
 			IntTerm t2 = new IntTerm(0);
 			t2.setConstant(-c);
 			return t2;
@@ -3110,10 +3041,10 @@ public class CPSolver implements Solver {
 	 * @return the term (a fresh one)
 	 */
 	public IntExp plus(IntExp v1, IntExp v2) {
-		if (v1 == ZERO) {
+		if (v1 == IntTerm.ZERO) {
 			return v2;
 		}
-		if (v2 == ZERO) {
+		if (v2 == IntTerm.ZERO) {
 			return v1;
 		}
 		if (v1 instanceof IntTerm) {
@@ -3147,7 +3078,7 @@ public class CPSolver implements Solver {
 	}
 
 	public IntExp plus(IntExp t, int c) {
-		if (t == ZERO) {
+		if (t == IntTerm.ZERO) {
 			IntTerm t2 = new IntTerm(0);
 			t2.setConstant(c);
 			return t2;
@@ -3215,13 +3146,13 @@ public class CPSolver implements Solver {
 	 * @return the term
 	 */
 	public IntExp mult(int a, IntExp x) {
-		if (a != 0 && x != ZERO) {
+		if (a != 0 && x != IntTerm.ZERO) {
 			IntTerm t = new IntTerm(1);
 			t.setCoefficient(0, a);
 			t.setVariable(0, (IntVar) x);
 			return t;
 		} else {
-			return ZERO;
+			return IntTerm.ZERO;
 		}
 	}
 
@@ -3589,7 +3520,7 @@ public class CPSolver implements Solver {
 		}
 
 		if( nbNonNullCoeffs == 0){
-            return ZERO;
+            return IntTerm.ZERO;
         }
 		else if( nbNonNullCoeffs == lc.length){
             return new IntTerm(lc, lv);
@@ -4248,7 +4179,7 @@ public class CPSolver implements Solver {
      * @param options
      */
     @Override
-    public final void addOptions(final String options) {
+    public void addOptions(final String options) {
         DisposableIterator<String> iter = StringUtils.getOptionIterator(options);
 		while(iter.hasNext()){
             addOption(iter.next());
@@ -4263,10 +4194,8 @@ public class CPSolver implements Solver {
      * @param options array of options
      */
     @Override
-    public final void addOptions(final String[] options) {
-        for(String opt : options){
-            addOption(opt);
-        }
+    public void addOptions(final String[] options) {
+        optionsSet.addAll(Arrays.asList(options));
     }
 
     /**
@@ -4276,10 +4205,8 @@ public class CPSolver implements Solver {
      * @param options set of options
      */
     @Override
-    public final void addOptions(final Set<String> options) {
-    	 for(String opt : options){
-             addOption(opt);
-         }
+    public void addOptions(final Set<String> options) {
+        optionsSet.addAll(options);
     }
 
     /**

@@ -94,8 +94,8 @@ public class ReifiedSomeTest {
     @Before
     public void setUp() throws Exception {
         m = new CPModel();
-        m.setPrecision(0.1);
         s = new CPSolver();
+        s.setPrecision(0.1);
     }
 
     @Test

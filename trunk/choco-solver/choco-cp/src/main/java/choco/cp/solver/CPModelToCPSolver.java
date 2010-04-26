@@ -107,9 +107,7 @@ public class CPModelToCPSolver {
 		readSetVariables(model);
 		readConstants(model);
         readMultipleVariables(model);
-
-		readParameters(model);
-	}
+    }
 
     public void readIntegerVariables(final CPModel model){
         IntegerVariable i;
@@ -190,11 +188,6 @@ public class CPModelToCPSolver {
 				cpsolver.mapvariables.put(mv.getIndex(), readModelVariable(mv));
 			}
 		}
-    }
-
-    public void readParameters(final CPModel model) {
-        cpsolver.setPrecision(model.getPrecision());
-        cpsolver.setReduction(model.getReduction());
     }
 
 

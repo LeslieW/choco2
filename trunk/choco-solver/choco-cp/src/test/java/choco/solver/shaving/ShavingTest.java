@@ -40,7 +40,7 @@ import org.junit.Test;
 public class ShavingTest {
 
     @Test
-    public void test2989765() {
+    public void test2989765_1() {
         Model m = new CPModel();
         IntegerVariable[] pos = new IntegerVariable[4];
         for (int i = 0; i < pos.length; i++) {
@@ -53,9 +53,25 @@ public class ShavingTest {
         IntegerVariable nbNodes = Choco.makeIntVar("nbNodes", 3, 3, Options.V_OBJECTIVE);
         m.addConstraint(Choco.atMostNValue(pos,nbNodes));
         Solver s = new CPSolver();
-        System.out.println(m.pretty());
         s.read(m);
-//        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+        s.minimize(s.getVar(nbNodes), false);
+    }
+
+     @Test
+    public void test2989765_2() {
+        Model m = new CPModel();
+        IntegerVariable[] pos = new IntegerVariable[4];
+        for (int i = 0; i < pos.length; i++) {
+            pos[i] = Choco.makeIntVar("VM" + i + "on ?", 0, 0);
+            IntegerVariable [] bools = Choco.constantArray(new int[]{0,0,0,0,0,0});
+            m.addConstraint(Choco.domainConstraint(pos[i], bools));
+            m.addConstraint(Choco.neq(pos[i], 3));
+            m.addConstraint(Choco.neq(pos[i], 4));
+        }
+        IntegerVariable nbNodes = Choco.makeIntVar("nbNodes", 3, 3, Options.V_OBJECTIVE);
+        m.addConstraint(Choco.atMostNValue(pos,nbNodes));
+        Solver s = new CPSolver();
+        s.read(m);
         s.minimize(s.getVar(nbNodes), false);
     }
 
