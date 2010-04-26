@@ -1,24 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <document>
-  <properties>
-    <title>Documentation</title>
-    <author>CHOCO Development Team</author>
+    <properties>
+        <title>Documentation</title>
+        <author>CHOCO Development Team</author>
     </properties>
-<body>
+    <body>
 
-<section name="Documentation">
+        <section name="Documentation">
 
-<p>
-  In this documentation, we ensure that code parts are up-to-date but not the other part. If you want to participate, or
-  find some typos, please mail us at <A HREF="choco@emn.fr" TITLE="[DOC]">documentation of <tt>choco</tt></A>.
-</p>  
-<p>
-  You can download the current <a href="./tex/choco.pdf" class="externalLink" target="_blank">documentation of <tt>choco</tt></a> in PDF format
-</p>
-<p>
-  For further more informations, you can read the <a href="./pdf/choco-presentation.pdf" class="externalLink" target="_blank">white paper of <tt>choco</tt></a>.
-</p>
-</section>
-</body>
+            <p>
+                You can download the current
+                <a href="./tex/choco.pdf" class="externalLink" target="_blank">documentation of
+                    <tt>choco</tt>
+                </a>
+                in PDF format
+            </p>
+            <p>
+                In this documentation, we ensure that code parts are up-to-date but not the other part. If you want to
+                participate, or
+                find some typos, please mail us at
+                <A HREF="mailto:choco@emn.fr?subject=[DOC]">documentation of <TT>choco</TT></A>
+                .
+            </p>
+            <p>
+                For further more informations, you can read the
+                <a href="./pdf/choco-presentation.pdf" class="externalLink" target="_blank">white paper of
+                    <tt>choco</tt>
+                </a>
+                .
+            </p>
+        </section>
+    </body>
 </document>
 
