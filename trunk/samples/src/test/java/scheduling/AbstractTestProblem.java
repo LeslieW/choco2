@@ -34,7 +34,6 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.global.MetaSConstraint;
-import choco.scheduling.SchedUtilities;
 
 import java.util.Random;
 import java.util.logging.Logger;

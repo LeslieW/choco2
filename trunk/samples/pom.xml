@@ -15,6 +15,14 @@
             <groupId>choco</groupId>
             <artifactId>choco-cp</artifactId>
         </dependency>
+        <dependency>
+            <groupId>choco</groupId>
+            <artifactId>choco-db</artifactId>
+            <!-- why do I need to mention the version number ? 
+				same problem in choco-parsers.
+			-->
+			<version>${version}</version>
+        </dependency>
     </dependencies>
     <reporting>
         <plugins>

@@ -3,6 +3,7 @@ package choco.kernel.solver.propagation;
 import choco.Options;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.VariableUtils;
+import choco.kernel.solver.Configuration;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
@@ -21,6 +22,8 @@ public class ShavingTools {
 	public boolean backwardPropagation = false;
 	
 	private int nbRemovals;
+
+    private final Configuration configuration;
 	
 	/**
 	 * 
@@ -30,7 +33,8 @@ public class ShavingTools {
 	public ShavingTools(Solver solver, IntDomainVar[] vars) {
 		super();
 		this.solver = solver;
-		this.vars = vars;
+		this.configuration = solver.getConfiguration();
+        this.vars = vars;
 	}
 
 	public ShavingTools(Solver solver) {
@@ -206,7 +210,7 @@ public class ShavingTools {
 
 	//TODO optimize by keeping trace of the last not instantiated variables
 	protected final void detectLuckySolution() throws LuckySolutionException {
-		if( ! solver.containsOption( Options.S_SOLVE_ALL) ) {
+		if( configuration.getAsBoolean(Configuration.STOP_AT_FIRST_SOLUTION)) {
 			int n = solver.getNbIntVars();
 			for (int i = 0; i < n; i++) {
 				if( ! solver.getIntVarQuick(i).isInstantiated()) return;
