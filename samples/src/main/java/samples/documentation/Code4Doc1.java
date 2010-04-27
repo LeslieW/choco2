@@ -43,16 +43,21 @@ import choco.kernel.solver.Solver;
 * Every method represents a sample for a specific chapter/part of the documentation.
 * It ensures the code presented in the documentation is closed to the trunk source.
 * Before creating the documentation, one has to run the j2tex jar to export code between
-* commentary slashes // and the 'totex' tags. 
+* commentary slashes // and the 'totex' or 'apptex' tags.
 * The opening tag must be followed with the file name without extension
 * and the closing tag must be empty.
  *
- * Example (remove '_' character to work)
+ * Create a new file (remove '_' character to make it work)
  * //_totex filename    (<- opening tag)
  * ...                  (<- code to export)
  * //_totex             (<- closing tag)
  *
- * Tags can be overlap, it removes automatically totex tags in the exported file.
+ * Append to an existing file (remove '_' character to make it work):
+ * //_apptex filename    (<- opening tag)
+ * ...                  (<- code to export)
+ * //_totex             (<- closing tag)
+ *
+ * Tags can be overlaped, it removes automatically totex tags in the exported file.
 */
 public class Code4Doc1 {
 
