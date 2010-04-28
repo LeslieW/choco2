@@ -210,7 +210,7 @@ public class ShavingTools {
 
 	//TODO optimize by keeping trace of the last not instantiated variables
 	protected final void detectLuckySolution() throws LuckySolutionException {
-		if( configuration.getAsBoolean(Configuration.STOP_AT_FIRST_SOLUTION)) {
+		if( configuration.readBoolean(Configuration.STOP_AT_FIRST_SOLUTION)) {
 			int n = solver.getNbIntVars();
 			for (int i = 0; i < n; i++) {
 				if( ! solver.getIntVarQuick(i).isInstantiated()) return;

@@ -228,7 +228,7 @@ class Dintroduction {
 
         //4- Search for all solution
         CPSolver s = new CPSolver();
-        s.getConfiguration().putAsDouble(Configuration.REAL_PRECISION, 1e-8);
+        s.getConfiguration().putDouble(Configuration.REAL_PRECISION, 1e-8);
         s.read(pb);
         s.setVarRealSelector(new CyclicRealVarSelector(s));
         s.setValRealIterator(new RealIncreasingDomain());

@@ -115,7 +115,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
         this.configuration = configuration;
 		traceStack = new IntBranchingTrace[solver.getNbIntVars() + solver.getNbSetVars()];
 		nextMove = INIT_SEARCH;
-        stopAtFirstSol = configuration.getAsBoolean(Configuration.STOP_AT_FIRST_SOLUTION);
+        stopAtFirstSol = configuration.readBoolean(Configuration.STOP_AT_FIRST_SOLUTION);
 	}
 
 

@@ -24,7 +24,9 @@ package choco.solver;
 
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.Configuration;
+import choco.kernel.solver.search.limit.Limit;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
@@ -43,50 +45,126 @@ public class ConfigurationTest {
 
     private static final String USER_KEY = "user.key";
 
+    private Configuration configuration;
+
+
+    @Before
+    public void load() {
+        configuration = new Configuration();
+    }
+
+
     @Test
     public void test1() {
-        Configuration conf = new Configuration();
-        conf.put(USER_KEY, true);
-        Boolean mykey = (Boolean) conf.get(USER_KEY);
+        configuration.putBoolean(USER_KEY, true);
+        Boolean mykey = configuration.readBoolean(USER_KEY);
         Assert.assertTrue(mykey);
-        Boolean safs = conf.getAsBoolean(Configuration.STOP_AT_FIRST_SOLUTION);
+        Boolean safs = configuration.readBoolean(Configuration.STOP_AT_FIRST_SOLUTION);
         Assert.assertTrue(safs);
     }
 
     @Test(expected = NullPointerException.class)
+    public void testNoInt() {
+        configuration.readInt(USER_KEY);
+    }
+
+    @Test
+    public void testInt() {
+        configuration.putInt(USER_KEY, 99);
+        int value = configuration.readInt(USER_KEY);
+        Assert.assertEquals(99, value);
+        configuration.putInt(USER_KEY, 9);
+        value = configuration.readInt(USER_KEY);
+        Assert.assertEquals(9, value);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testNoBoolean() {
+        configuration.readBoolean(USER_KEY);
+    }
+
+    @Test
+    public void testBoolean() {
+        configuration.putBoolean(USER_KEY, true);
+        boolean value = configuration.readBoolean(USER_KEY);
+        Assert.assertEquals(true, value);
+        configuration.putBoolean(USER_KEY, false);
+        value = configuration.readBoolean(USER_KEY);
+        Assert.assertEquals(false, value);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testNoDouble() {
+        configuration.readDouble(USER_KEY);
+    }
+
+    @Test
+    public void testDouble() {
+        configuration.putDouble(USER_KEY, 9.99);
+        double value = configuration.readDouble(USER_KEY);
+        Assert.assertEquals(9.99, value, 0.01);
+        configuration.putDouble(USER_KEY, 1.e-9);
+        value = configuration.readDouble(USER_KEY);
+        Assert.assertEquals(1.e-9, value, 0.01);
+    }
+
+    @SuppressWarnings({"UnusedDeclaration"})
+    @Test(expected = NullPointerException.class)
+    public void testNoEnum() {
+        Limit lim = configuration.readEnum(USER_KEY, Limit.class);
+    }
+
+    @Test
+    public void testEnum() {
+        configuration.putEnum(USER_KEY, Limit.TIME);
+        Enum value = configuration.readEnum(USER_KEY, Limit.class);
+        Assert.assertEquals(Limit.TIME, value);
+        configuration.putEnum(USER_KEY, Limit.UNDEFINED);
+        value = configuration.readEnum(USER_KEY, Limit.class);
+        Assert.assertEquals(Limit.UNDEFINED, value);
+    }
+
     public void test2() {
-        Configuration conf = new Configuration();
-        conf.clear();
-        conf.put(USER_KEY, true);
-        Boolean mykey = (Boolean) conf.get(USER_KEY);
+        configuration.clear();
+        configuration.putBoolean(USER_KEY, true);
+        Boolean mykey = configuration.readBoolean(USER_KEY);
         Assert.assertTrue(mykey);
-        Boolean safs = conf.getAsBoolean(Configuration.STOP_AT_FIRST_SOLUTION);
+        Boolean safs = configuration.readBoolean(Configuration.STOP_AT_FIRST_SOLUTION);
+        Assert.assertTrue(safs);
     }
 
     @Test
     public void test3() throws IOException {
-        Configuration conf = new Configuration();
         FileOutputStream fos = new FileOutputStream(File.createTempFile("CONF_", ".properties"));
-        conf.store(fos, ChocoLogging.START_MESSAGE);
+        configuration.store(fos, ChocoLogging.START_MESSAGE);
     }
 
     @Test
     public void test4() throws IOException {
-
         Properties properties = new Properties();
         try {
-			final InputStream is = getClass().getResourceAsStream( "/conf1.properties" );
+            final InputStream is = getClass().getResourceAsStream("/conf1.properties");
             properties.load(is);
-		} catch (IOException e) {
-			Assert.fail();
-		}
-
-        Configuration conf = new Configuration(properties);
-        conf.putAsBoolean(USER_KEY, true);
-        Boolean mykey = conf.getAsBoolean(USER_KEY);
+        } catch (IOException e) {
+            Assert.fail();
+        }
+        configuration = new Configuration(properties);
+        configuration.putBoolean(USER_KEY, true);
+        Boolean mykey = configuration.readBoolean(USER_KEY);
         Assert.assertTrue(mykey);
-        Boolean safs = conf.getAsBoolean(Configuration.STOP_AT_FIRST_SOLUTION);
+        Boolean safs = configuration.readBoolean(Configuration.STOP_AT_FIRST_SOLUTION);
         Assert.assertTrue(safs);
     }
-    
+
+    @Test
+    public void test5() throws IOException {
+        Properties empty = new Properties();
+        configuration = new Configuration(empty);
+        configuration.putBoolean(USER_KEY, true);
+        Boolean mykey = configuration.readBoolean(USER_KEY);
+        Assert.assertTrue(mykey);
+        Boolean safs = configuration.readBoolean(Configuration.STOP_AT_FIRST_SOLUTION);
+        Assert.assertTrue(safs);
+    }
+
 }

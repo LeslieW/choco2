@@ -45,9 +45,9 @@ public class SearchTest {
             _s = new CPSolver();
             _s.read(_m);
             Configuration configuration = _s.getConfiguration();
-            configuration.putAsBoolean(Configuration.STOP_AT_FIRST_SOLUTION, false);
-            configuration.putAsBoolean(Configuration.MAXIMIZE, false);
-            configuration.putAsInt(Configuration.SOLUTION_POOL_CAPACITY, capa);
+            configuration.putBoolean(Configuration.STOP_AT_FIRST_SOLUTION, false);
+            configuration.putBoolean(Configuration.MAXIMIZE, false);
+            configuration.putInt(Configuration.SOLUTION_POOL_CAPACITY, capa);
             _s.setValIntSelector(new MinVal());
             //_s.generateSearchStrategy();
 

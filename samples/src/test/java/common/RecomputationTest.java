@@ -48,7 +48,7 @@ public class RecomputationTest {
         public void donaldGeraldRobert(){
         	Model m = ExDonaldGeraldRobert.modelIt1();
             CPSolver s = new CPSolver();
-            s.getConfiguration().putAsInt(Configuration.RECOMPUTATION_GAP, 10);
+            s.getConfiguration().putInt(Configuration.RECOMPUTATION_GAP, 10);
             Solver _s = new CPSolver();
             // Read the model
             s.read(m);
@@ -91,10 +91,10 @@ public class RecomputationTest {
             CPSolver sr1 = new CPSolver();
             CPSolver sr2 = new CPSolver(new EnvironmentCopying());
 
-            sr1.getConfiguration().putAsInt(Configuration.RECOMPUTATION_GAP, 10);
+            sr1.getConfiguration().putInt(Configuration.RECOMPUTATION_GAP, 10);
 //            sr1.attachGoal(new AssignOrForbidIntVarVal(new MinDomain(sr1), new MinVal()));
 
-            sr2.getConfiguration().putAsInt(Configuration.RECOMPUTATION_GAP, 10);
+            sr2.getConfiguration().putInt(Configuration.RECOMPUTATION_GAP, 10);
 //            sr2.attachGoal(new AssignOrForbidIntVarVal(new MinDomain(sr2), new MinVal()));
             // Read the model
             sr1.read(pb._m);

@@ -22,10 +22,13 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver;
 
-import java.lang.annotation.Annotation;
+import choco.kernel.common.logging.ChocoLogging;
+
 import java.lang.annotation.Retention;
 import java.lang.reflect.Field;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * User : cprudhom<br/>
@@ -34,6 +37,8 @@ import java.util.Properties;
  * Since : Choco 2.1.1<br/>
  */
 public class Configuration extends Properties {
+
+    private final static Logger LOGGER = ChocoLogging.getMainLogger();
 
     //////////////////////////////////////// ANNOTATION ////////////////////////////////////////////////////////////////
 
@@ -137,8 +142,8 @@ public class Configuration extends Properties {
 
     /**
      * <br/><b>Goal</b>: Tells the strategy wether or not use recomputation.
-	 * The value of the parameter indicates the maximum recomputation gap, i.e. the maximum number of decisions between two storages.
-	 * If the parameter is lower than or equal to 1, the trailing storage mechanism is used (default).
+     * The value of the parameter indicates the maximum recomputation gap, i.e. the maximum number of decisions between two storages.
+     * If the parameter is lower than or equal to 1, the trailing storage mechanism is used (default).
      * <br/><b>Type</b>: int
      * <br/><b>Default value</b>: 1
      */
@@ -163,46 +168,38 @@ public class Configuration extends Properties {
     public static final String RANDOM_SEED = "cp.random.seed";
 
     /**
-     * <br/><b>Goal</b>: time limit in millisecond. If the search has not ended in the define time limit, it is automatically stopped.
-     * <br/><b>Type</b>: int
-     * <br/><b>Default value</b>: 2147483647 ({@link Integer.MAX_VALUE})
+     * <br/><b>Goal</b>: Search limit type. If the search has not ended in the define limit bound, it is automatically stopped.
+     * <br/><b>Type</b>: Limit
+     * <br/><b>Default value</b>: UNDEFINED
      */
-    @Default(value = "2147483647")
-    public static final String TIME_LIMIT = "cp.limit.time";
+    @Default(value = "UNDEFINED")
+    public static final String SEARCH_LIMIT = "cp.search.limit.type";
 
     /**
-     * <br/><b>Goal</b>: Nodes limit. If the search has not ended in the define nodes limit, it is automatically stopped.
-     * <br/><b>Type</b>: int
-     * <br/><b>Default value</b>: 2147483647 ({@link Integer.MAX_VALUE})
-     */
-    @Default(value = "2147483647")
-    public static final String NODE_LIMIT = "cp.limit.node";
-
-    /**
-     * <br/><b>Goal</b>: Backtracks limit. If the search has not ended in the define backtracks limit,
+     * <br/><b>Goal</b>: Search limit bound. If the search has not ended in the define search limit bound,
      * it is automatically stopped.
      * <br/><b>Type</b>: int
      * <br/><b>Default value</b>: 2147483647 ({@link Integer.MAX_VALUE})
      */
     @Default(value = "2147483647")
-    public static final String BACKTRACK_LIMIT = "cp.limit.backtrack";
+    public static final String SEARCH_LIMIT_BOUND = "cp.search.limit.value";
 
     /**
-     * <br/><b>Goal</b>: Fails limit. If the search has not ended in the define fails limit, it is automatically stopped.
-     * <br/><b>Type</b>: int
-     * <br/><b>Default value</b>: 2147483647 ({@link Integer.MAX_VALUE})
+     * <br/><b>Goal</b>: Restart limit type. If the limit bound is reached, the search is restarted.
+     * <br/><b>Type</b>: Limit
+     * <br/><b>Default value</b>: BACKTRACK
      */
-    @Default(value = "2147483647")
-    public static final String FAIL_LIMIT = "cp.limit.fail";
+    @Default(value = "BACKTRACK")
+    public static final String RESTART_LIMIT = "cp.restart.limit.type";
 
     /**
-     * <br/><b>Goal</b>: Restarts limit. If the search has not ended in the define restarts limit,
+     * <br/><b>Goal</b>: Restart limit bound. If the limit bound is reached, the search is restarted.
      * it is automatically stopped.
      * <br/><b>Type</b>: int
      * <br/><b>Default value</b>: 2147483647 ({@link Integer.MAX_VALUE})
      */
     @Default(value = "2147483647")
-    public static final String RESTART_LIMIT = "cp.limit.restart";
+    public static final String RESTART_LIMIT_BOUND = "cp.restart.limit.value";
 
     /**
      * <br/><b>Goal</b>: Enforce the use of shaving before starting the search.
@@ -211,7 +208,7 @@ public class Configuration extends Properties {
      * <br/><b>Default value</b>: false
      */
     @Default(value = "false")
-    public static final String ROOT_SHAVING = "cp:shaving:root";
+    public static final String ROOT_SHAVING = "cp.shaving.root";
 
     /**
      * <br/><b>Goal</b>: Compute a destructive lower bound before starting the search (optimization).
@@ -219,7 +216,7 @@ public class Configuration extends Properties {
      * <br/><b>Default value</b>: false
      */
     @Default(value = "false")
-    public static final String DESTRUCTIVE_LOWER_BOUND = "cp:destructive_lb";
+    public static final String DESTRUCTIVE_LOWER_BOUND = "cp.destructive_lb";
 
     /**
      * <br/><b>Goal</b>: Apply shaving while computing the destructive lower bound.
@@ -228,7 +225,7 @@ public class Configuration extends Properties {
      * <br/><b>Default value</b>: false
      */
     @Default(value = "false")
-    public static final String DLB_SHAVING = "cp:shaving:destructive_lb";
+    public static final String DLB_SHAVING = "cp.shaving.destructive_lb";
 
     /**
      * <br/><b>Goal</b>: Apply a bottom-up search algorithm (optimization).
@@ -239,7 +236,7 @@ public class Configuration extends Properties {
      * <br/><b>Default value</b>: false
      */
     @Default(value = "false")
-    public static final String BOTTOM_UP = "cp:bottom_up";
+    public static final String BOTTOM_UP = "cp.search.bottom_up";
 
     /**
      * <br/><b>Goal</b>:
@@ -305,11 +302,7 @@ public class Configuration extends Properties {
      */
     public void setDefault() {
         this.clear();
-        try {
-            load();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        load();
     }
 
     /**
@@ -318,52 +311,38 @@ public class Configuration extends Properties {
      * @throws IllegalAccessException if the specified object is not an
      *                                instance of the class or interface declaring the underlying
      */
-    private void load() throws IllegalAccessException {
+    private void load() {
         Field[] fields = Configuration.class.getFields();
         for (Field f : fields) {
-            Annotation[] ann = f.getAnnotations();
-            for (Annotation anno : ann) {
-                if (Default.class.isInstance(anno)) {
-                    Default k = (Default) anno;
-                    this.put(f.get(this), k.value());
-                }
+            Default annotation = f.getAnnotation(Default.class);
+            try {
+                this.put(f.get(this), annotation.value());
+            } catch (IllegalAccessException e) {
+                logOnFailure(f.getName());
             }
         }
-    }
-
-
-    /**
-     * Returns the value to which the specified key is mapped.
-     *
-     * @param key the key whose associated value is to be returned
-     * @return the value to which the specified key is mapped
-     * @throws NullPointerException  if the specified key is null
-     * @throws NumberFormatException if the value cannot be parsed
-     *                               as an integer.
-     */
-    public int getAsInt(String key) {
-        String value = (String) this.get(key);
-        if (value == null) {
-            throw new NullPointerException("key is not mapped");
-        }
-        return Integer.valueOf(value);
+        logOnSuccess("default");
     }
 
     /**
-     * Returns the value to which the specified key is mapped.
+     * Load the default value of keys defined in @Default annotation
      *
-     * @param key the key whose associated value is to be returned
-     * @return the value to which the specified key is mapped
-     * @throws NullPointerException  if the specified key is null
-     * @throws NumberFormatException if the value cannot be parsed
-     *                               as a double.
+     * @throws IllegalAccessException if the specified object is not an
+     *                                instance of the class or interface declaring the underlying
      */
-    public double getAsDouble(String key) {
-        String value = (String) this.get(key);
-        if (value == null) {
-            throw new NullPointerException("key is not mapped");
+    private String loadDefault(String key){
+        Field[] fields = Configuration.class.getFields();
+        for (Field f : fields) {
+            try {
+                if(f.get(this).equals(key)){
+                    Default ann = f.getAnnotation(Default.class);
+                    return ann.value();
+                }
+            } catch (IllegalAccessException e) {
+                logOnFailure("key");
+            }
         }
-        return Double.valueOf(value);
+        throw new NullPointerException();
     }
 
     /**
@@ -375,12 +354,191 @@ public class Configuration extends Properties {
      * @throws NumberFormatException if the value cannot be parsed
      *                               as a boolean.
      */
-    public boolean getAsBoolean(String key) {
-        String value = (String) this.get(key);
+    public boolean readBoolean(String key) {
+        String value = this.getProperty(key);
         if (value == null) {
-            throw new NullPointerException("key is not mapped");
+            logOnAbsence(key);
+            value = loadDefault(key);
         }
         return Boolean.valueOf(value);
+    }
+
+    /**
+     * Returns the value to which the specified key is mapped, if exists.
+     * Otherwise, return default value.
+     *
+     * @param key          the key whose associated value is to be returned
+     * @param defaultValue value to return the key does not exist in the configuration
+     * @return the value to which the specified key is mapped
+     * @throws NullPointerException  if the specified key is null
+     * @throws NumberFormatException if the value cannot be parsed
+     *                               as an integer.
+     */
+    public boolean readBoolean(final String key, boolean defaultValue) {
+        final String b = this.getProperty(key);
+        if (b == null) {
+            logOnAbsence(key);
+            return defaultValue;
+        } else{
+            return Boolean.parseBoolean(b);
+        }
+    }
+
+    /**
+     * Returns the value to which the specified key is mapped.
+     *
+     * @param key the key whose associated value is to be returned
+     * @return the value to which the specified key is mapped
+     * @throws NullPointerException  if the specified key is null
+     * @throws NumberFormatException if the value cannot be parsed
+     *                               as an integer.
+     */
+    public int readInt(String key) {
+        String value = this.getProperty(key);
+        if (value == null) {
+            logOnAbsence(key);
+            value = loadDefault(key);
+        }
+        return Integer.valueOf(value);
+    }
+
+    /**
+     * Returns the value to which the specified key is mapped, if exists.
+     * Otherwise, return default value.
+     *
+     * @param key          the key whose associated value is to be returned
+     * @param defaultValue value to return the key does not exist in the configuration
+     * @return the value to which the specified key is mapped
+     * @throws NullPointerException  if the specified key is null
+     * @throws NumberFormatException if the value cannot be parsed
+     *                               as an integer.
+     */
+    public int readInt(final String key, int defaultValue) {
+        final String b = this.getProperty(key);
+        if (b == null) {
+            logOnAbsence(key);
+            return defaultValue;
+        } else{
+            return Integer.parseInt(b);
+        }
+    }
+
+    /**
+     * Returns the value to which the specified key is mapped.
+     *
+     * @param key the key whose associated value is to be returned
+     * @return the value to which the specified key is mapped
+     * @throws NullPointerException  if the specified key is null
+     * @throws NumberFormatException if the value cannot be parsed
+     *                               as a double.
+     */
+    public double readDouble(String key) {
+        String value = this.getProperty(key);
+        if (value == null) {
+            logOnAbsence(key);
+            value = loadDefault(key);
+        }
+        return Double.valueOf(value);
+    }
+
+    /**
+     * Returns the value to which the specified key is mapped, if exists.
+     * Otherwise, return default value.
+     *
+     * @param key          the key whose associated value is to be returned
+     * @param defaultValue value to return the key does not exist in the configuration
+     * @return the value to which the specified key is mapped
+     * @throws NullPointerException  if the specified key is null
+     * @throws NumberFormatException if the value cannot be parsed
+     *                               as an integer.
+     */
+    public double readDouble(final String key, double defaultValue) {
+        final String b = this.getProperty(key);
+        if (b == null) {
+            logOnAbsence(key);
+            return defaultValue;
+        } else{
+            return Double.parseDouble(b);
+        }
+    }
+
+    /**
+     * Returns the value to which the specified key is mapped.
+     *
+     * @param key the key whose associated value is to be returned
+     * @return the value to which the specified key is mapped
+     * @throws NullPointerException  if the specified key is null
+     * @throws NumberFormatException if the value cannot be parsed
+     *                               as an integer.
+     */
+    public String readString(final String key) {
+        String value = this.getProperty(key);
+        if (value == null) {
+            logOnAbsence(key);
+            value = loadDefault(key);
+        }
+        return value;
+    }
+
+
+    /**
+     * Returns the value to which the specified key is mapped, if exists.
+     * Otherwise, return default value.
+     *
+     * @param key          the key whose associated value is to be returned
+     * @param defaultValue value to return the key does not exist in the configuration
+     * @return the value to which the specified key is mapped
+     * @throws NullPointerException  if the specified key is null
+     * @throws NumberFormatException if the value cannot be parsed
+     *                               as an integer.
+     */
+    public String readString(final String key, String defaultValue) {
+        final String b = this.getProperty(key);
+        if (b == null) {
+            logOnAbsence(key);
+            return defaultValue;
+        } else return b;
+    }
+
+    /**
+     * Returns the value to which the specified key is mapped.
+     *
+     * @param key   the key whose associated value is to be returned
+     * @param clazz the class of the enum expected
+     * @return the value to which the specified key is mapped
+     * @throws NullPointerException  if the specified key is null
+     * @throws NumberFormatException if the value cannot be parsed
+     *                               as a boolean.
+     */
+    @SuppressWarnings({"unchecked"})
+    public <T extends Enum<T>> T readEnum(String key, Class clazz) {
+        String value = this.getProperty(key);
+        if (value == null) {
+            logOnAbsence(key);
+            value = loadDefault(key);
+        }
+        return (T) Enum.valueOf(clazz, value);
+    }
+
+    /**
+     * Returns the value to which the specified key is mapped, if exists.
+     * Otherwise, return default value.
+     *
+     * @param key          the key whose associated value is to be returned
+     * @param clazz        the class of the enum expected
+     * @param defaultValue value to return the key does not exist in the configuration
+     * @return the value to which the specified key is mapped
+     * @throws NullPointerException  if the specified key is null
+     * @throws NumberFormatException if the value cannot be parsed
+     *                               as a boolean.
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends Enum<T>> T readEnum(final String key, T defaultValue) {
+        final String b = this.getProperty(key);
+        if (b == null) {
+            logOnAbsence(key);
+            return defaultValue;
+        } else return (T) Enum.valueOf(defaultValue.getClass(), b);
     }
 
     /**
@@ -394,7 +552,7 @@ public class Configuration extends Properties {
      * @throws NullPointerException if the key or value is
      *                              <code>null</code>
      */
-    public void putAsInt(String key, int value) {
+    public void putInt(String key, int value) {
         this.put(key, Integer.toString(value));
     }
 
@@ -409,7 +567,7 @@ public class Configuration extends Properties {
      * @throws NullPointerException if the key or value is
      *                              <code>null</code>
      */
-    public void putAsDouble(String key, double value) {
+    public void putDouble(String key, double value) {
         this.put(key, Double.toString(value));
     }
 
@@ -424,7 +582,35 @@ public class Configuration extends Properties {
      * @throws NullPointerException if the key or value is
      *                              <code>null</code>
      */
-    public void putAsBoolean(String key, boolean value) {
+    public void putBoolean(String key, boolean value) {
         this.put(key, Boolean.toString(value));
     }
+
+    /**
+     * Maps the specified <code>key</code> to the specified
+     * <code>value</code> in this hashtable. Neither the key nor the
+     * value can be <code>null</code>. <p>
+     * *
+     *
+     * @param key   the hashtable key
+     * @param value the value
+     * @throws NullPointerException if the key or value is
+     *                              <code>null</code>
+     */
+    public void putEnum(String key, Enum value) {
+        this.put(key, value.name());
+    }
+
+    private static void logOnAbsence(String key) {
+        LOGGER.log(Level.CONFIG, "properties...[read-property-from-key:{0}][FAIL]", key);
+    }
+
+    private static void logOnFailure(String resource) {
+        System.err.println("properties...[load-properties:" + resource + "][FAIL]");
+    }
+
+    private static void logOnSuccess(String resource) {
+        LOGGER.log(Level.CONFIG, "properties...[load-properties:{0}]", resource);
+    }
+
 }

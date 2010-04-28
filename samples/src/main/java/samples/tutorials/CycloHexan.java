@@ -133,7 +133,7 @@ public class CycloHexan extends PatternExample {
 
     private static void packSolutions(Solver solver, Model m) {
         List solus = solver.getSearchStrategy().getStoredSolutions();
-        double precision = solver.getConfiguration().getAsDouble(Configuration.REAL_PRECISION);
+        double precision = solver.getConfiguration().readDouble(Configuration.REAL_PRECISION);
         for (int i = 0; i < solus.size(); i++) {
             Solution sol = (Solution) solus.get(i);
             for (int j = 0; j < i; j++) {
