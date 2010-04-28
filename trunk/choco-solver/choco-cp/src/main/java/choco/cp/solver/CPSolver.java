@@ -268,7 +268,7 @@ public class CPSolver implements Solver {
 	@Override
     @Deprecated
 	public void setSolutionPoolCapacity(int capacity) {
-		configuration.putAsInt(Configuration.SOLUTION_POOL_CAPACITY, capacity);
+		configuration.putInt(Configuration.SOLUTION_POOL_CAPACITY, capacity);
 	}
 
 	/**
@@ -322,11 +322,11 @@ public class CPSolver implements Solver {
 	private ValSelector<SetVar> valSetSelector = null;
 
 
-	private final LimitConfiguration limitConfig = new LimitConfiguration();
+	private final LimitConfiguration limitConfig;
 
 	private FailMeasure failMeasure;
 
-	private final RestartConfiguration restartConfig = new RestartConfiguration();
+	private final RestartConfiguration restartConfig;
 	
 	protected CPModelToCPSolver mod2sol;
 
@@ -344,7 +344,7 @@ public class CPSolver implements Solver {
 
     protected final THashSet<String> optionsSet;
 
-    protected Configuration configuration = new Configuration();
+    protected Configuration configuration;
 
 	public final AbstractGlobalSearchStrategy getSearchStrategy() {
 		return strategy;
@@ -384,6 +384,10 @@ public class CPSolver implements Solver {
 		this.indexOfLastInitializedStaticConstraint = env.makeInt(PartiallyStoredVector.getFirstStaticIndex() - 1);
         this.optionsSet = new THashSet<String>();
         this.optionsSet.addAll(Arrays.asList(options));
+        //configs
+        configuration = new Configuration();
+        restartConfig = new RestartConfiguration();
+        limitConfig = new LimitConfiguration();
 	}
 
     protected void clearVarLists() {
@@ -574,7 +578,7 @@ public class CPSolver implements Solver {
 	@Override
     @Deprecated
 	public final void setPrecision(double aPrecision) {
-        configuration.putAsDouble(Configuration.REAL_PRECISION, aPrecision);
+        configuration.putDouble(Configuration.REAL_PRECISION, aPrecision);
 	}
 
 	/**
@@ -583,7 +587,7 @@ public class CPSolver implements Solver {
 	@Override
     @Deprecated
 	public final double getPrecision() {
-		return configuration.getAsDouble(Configuration.REAL_PRECISION);
+		return configuration.readDouble(Configuration.REAL_PRECISION);
 	}
 
 	/**
@@ -592,7 +596,7 @@ public class CPSolver implements Solver {
 	@Override
     @Deprecated
 	public final void setReduction(double aReduction) {
-		configuration.putAsDouble(Configuration.REAL_REDUCTION, aReduction);
+		configuration.putDouble(Configuration.REAL_REDUCTION, aReduction);
 	}
 
 	/**
@@ -601,7 +605,7 @@ public class CPSolver implements Solver {
 	@Override
     @Deprecated
 	public final double getReduction() {
-		return configuration.getAsDouble(Configuration.REAL_REDUCTION);
+		return configuration.readDouble(Configuration.REAL_REDUCTION);
 	}
 
 	/**
@@ -729,7 +733,7 @@ public class CPSolver implements Solver {
 					throw new UnsupportedOperationException(
 					"Ilog goal are not yet available in optimization");
 				}
-                final boolean doMaximize = configuration.getAsBoolean(Configuration.MAXIMIZE);
+                final boolean doMaximize = configuration.readBoolean(Configuration.MAXIMIZE);
 				if (objective instanceof IntDomainVar) {
 					strategy = new BranchAndBound(
                             this, (IntDomainVar) objective, doMaximize, configuration);
@@ -742,7 +746,7 @@ public class CPSolver implements Solver {
 
 
 		assert strategy != null;
-        final int solutionPoolCapacity =  configuration.getAsInt(Configuration.SOLUTION_POOL_CAPACITY);
+        final int solutionPoolCapacity =  configuration.readInt(Configuration.SOLUTION_POOL_CAPACITY);
 		strategy.setSolutionPool(makeDefaultSolutionPool(strategy, solutionPoolCapacity));
 		generateSearchLoop();
 		generateLimitManager();
@@ -787,7 +791,7 @@ public class CPSolver implements Solver {
 		);
 
 		AbstractSearchLoop searchLoop;
-        final int recomputationGap = configuration.getAsInt(Configuration.RECOMPUTATION_GAP);
+        final int recomputationGap = configuration.readInt(Configuration.RECOMPUTATION_GAP);
 		if(!GOAL){
 			if(ilogGoal!=null){
 				searchLoop = new GoalSearchLoop(strategy, ilogGoal);
@@ -1132,7 +1136,7 @@ public class CPSolver implements Solver {
 
 	@Override
 	public boolean isObjectiveOptimal() {
-        final boolean firstSolution = configuration.getAsBoolean(Configuration.STOP_AT_FIRST_SOLUTION);
+        final boolean firstSolution = configuration.readBoolean(Configuration.STOP_AT_FIRST_SOLUTION);
 		return existsSolution() &&  !firstSolution && !isEncounteredLimit();
 	}
 
@@ -1148,7 +1152,7 @@ public class CPSolver implements Solver {
      * @deprecated
 	 */
 	public final boolean getFirstSolution() {
-        return configuration.getAsBoolean(Configuration.STOP_AT_FIRST_SOLUTION);
+        return configuration.readBoolean(Configuration.STOP_AT_FIRST_SOLUTION);
 	}
 
 	/**
@@ -1156,7 +1160,7 @@ public class CPSolver implements Solver {
      * @deprecated
 	 */
 	public final void setFirstSolution(boolean stopAtFirstSolution) {
-        configuration.putAsBoolean(Configuration.STOP_AT_FIRST_SOLUTION, stopAtFirstSolution);
+        configuration.putBoolean(Configuration.STOP_AT_FIRST_SOLUTION, stopAtFirstSolution);
 	}
 
 
@@ -1418,7 +1422,7 @@ public class CPSolver implements Solver {
 	 */
     @Deprecated
 	public void setDoMaximize(boolean maximize) {
-		configuration.putAsBoolean(Configuration.MAXIMIZE, maximize);
+		configuration.putBoolean(Configuration.MAXIMIZE, maximize);
 	}
 
 	/**
@@ -1453,13 +1457,13 @@ public class CPSolver implements Solver {
 	 */
 	public void setHorizon(int horizon) {
 		if(makespan == null){
-            configuration.putAsInt(Configuration.HORIZON_UPPER_BOUND, horizon);
+            configuration.putInt(Configuration.HORIZON_UPPER_BOUND, horizon);
         }
 		else {throw new SolverException("cant set the scheduling horizon: makespan variable already exists.");}
 	}
 
 	public final int getHorizon() {
-		return configuration.getAsInt(Configuration.HORIZON_UPPER_BOUND);
+		return configuration.readInt(Configuration.HORIZON_UPPER_BOUND);
 	}
 
 	protected void setMakespan(Var makespan) {
@@ -1469,7 +1473,7 @@ public class CPSolver implements Solver {
 
 	public IntDomainVar createMakespan() {
 		if(makespan == null) {
-            final int horizon = configuration.getAsInt(Configuration.HORIZON_UPPER_BOUND);
+            final int horizon = configuration.readInt(Configuration.HORIZON_UPPER_BOUND);
 			this.makespan = createBoundIntVar("makespan", 0, horizon);
 		}
 		return this.makespan;
@@ -1481,7 +1485,7 @@ public class CPSolver implements Solver {
 	}
 
 	public int getMakespanValue() {
-        final int horizon = configuration.getAsInt(Configuration.HORIZON_UPPER_BOUND);
+        final int horizon = configuration.readInt(Configuration.HORIZON_UPPER_BOUND);
 		return makespan == null ? horizon : makespan.getVal();
 	}
 
@@ -1509,7 +1513,7 @@ public class CPSolver implements Solver {
 				}
 				post(new MaxOfAList(environment, vars));
 			}else{
-                final int horizon = configuration.getAsInt(Configuration.HORIZON_UPPER_BOUND);
+                final int horizon = configuration.readInt(Configuration.HORIZON_UPPER_BOUND);
                 if( horizon < Choco.MAX_UPPER_BOUND) {
                     // create makespan constraint : horizon >= end(T)
                     for (TaskVar t : taskVars) {
@@ -1957,7 +1961,7 @@ public class CPSolver implements Solver {
 	 * @param p constraint
 	 */
 	public void postRedundantSetConstraints(SConstraint p) {
-		if (configuration.getAsBoolean(Configuration.CARD_REASONNING)
+		if (configuration.readBoolean(Configuration.CARD_REASONNING)
                 && p instanceof SetPropagator
 				&& p.getNbVars() > 1) {
 
@@ -2313,33 +2317,33 @@ public class CPSolver implements Solver {
     @Deprecated
 	public void setMinimizationObjective(IntVar obj) {
 		objective = obj;
-		configuration.putAsBoolean(Configuration.MAXIMIZE, false);
+		configuration.putBoolean(Configuration.MAXIMIZE, false);
 	}
 
     @Deprecated
 	public void setMaximizationObjective(IntVar obj) {
 		objective = obj;
-		configuration.putAsBoolean(Configuration.MAXIMIZE, true);
+		configuration.putBoolean(Configuration.MAXIMIZE, true);
 	}
 
     @Deprecated
 	public boolean useRecomputation() {
-		return configuration.getAsInt(Configuration.RECOMPUTATION_GAP) >1;
+		return configuration.readInt(Configuration.RECOMPUTATION_GAP) >1;
 	}
 
     @Deprecated
 	public void setRecomputation(boolean on) {
-		configuration.putAsInt(Configuration.RECOMPUTATION_GAP, (on?10:1));
+		configuration.putInt(Configuration.RECOMPUTATION_GAP, (on?10:1));
 	}
 
     @Deprecated
 	public final int getRecomputationGap() {
-		return configuration.getAsInt(Configuration.RECOMPUTATION_GAP);
+		return configuration.readInt(Configuration.RECOMPUTATION_GAP);
 	}
 
     @Deprecated
 	public void setRecomputationGap(int aRecomputationGap) {
-		configuration.putAsInt(Configuration.RECOMPUTATION_GAP, aRecomputationGap);
+		configuration.putInt(Configuration.RECOMPUTATION_GAP, aRecomputationGap);
 	}
 
     @SuppressWarnings({"unchecked"})
@@ -2413,7 +2417,7 @@ public class CPSolver implements Solver {
 
     @Deprecated
 	public final void setCardReasoning(boolean creas) {
-        configuration.putAsBoolean(Configuration.CARD_REASONNING, creas);
+        configuration.putBoolean(Configuration.CARD_REASONNING, creas);
 	}
 
 

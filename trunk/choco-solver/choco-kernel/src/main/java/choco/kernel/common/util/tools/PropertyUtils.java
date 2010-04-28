@@ -1,20 +1,15 @@
 package choco.kernel.common.util.tools;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import choco.kernel.common.logging.ChocoLogging;
+
+import java.io.*;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import choco.kernel.common.logging.ChocoLogging;
-
 public final class PropertyUtils {
 
-	public final static Logger LOGGER= ChocoLogging.getMainLogger();
+	private final static Logger LOGGER= ChocoLogging.getMainLogger();
 
 	public static final String TOOLS_PREFIX = "chocotools.";
 
@@ -35,7 +30,7 @@ public final class PropertyUtils {
 	}
 
 
-	public final static void loadProperties(Properties properties, File... files) {
+	public static void loadProperties(Properties properties, File... files) {
 		for (File file : files) {
 			try {
 				properties.load(new FileReader(file));
@@ -48,7 +43,7 @@ public final class PropertyUtils {
 		}
 	}
 
-	public final static void loadProperties(Properties properties, String... resources) {
+	public static void loadProperties(Properties properties, String... resources) {
 		for (String resource : resources) {
 		try {
 			properties.load(new InputStreamReader(properties.getClass().getResourceAsStream(resource), "ISO-8859-1"));
@@ -59,7 +54,7 @@ public final class PropertyUtils {
 		}
 	}
 
-	public final static boolean readBoolean(Properties properties, final String key, boolean defaultValue) {
+	public static boolean readBoolean(Properties properties, final String key, boolean defaultValue) {
 		final String b = properties.getProperty(key);
 		if( b == null ) {
 			logOnAbsence(key);
@@ -67,7 +62,7 @@ public final class PropertyUtils {
 		} else return Boolean.parseBoolean(b);
 	}
 
-	public final static int readInteger(Properties properties, final String key, int defaultValue) {
+	public static int readInteger(Properties properties, final String key, int defaultValue) {
 		final String b = properties.getProperty(key);
 		if( b == null ) {
 			logOnAbsence(key);
@@ -75,7 +70,7 @@ public final class PropertyUtils {
 		} else return Integer.parseInt(b);
 	}
 
-	public final static double readDouble(Properties properties, final String key, double defaultValue) {
+	public static double readDouble(Properties properties, final String key, double defaultValue) {
 		final String b = properties.getProperty(key);
 		if( b == null ) {
 			logOnAbsence(key);
@@ -83,7 +78,7 @@ public final class PropertyUtils {
 		} else return Double.parseDouble(b);
 	}
 
-	public final static String readString(Properties properties, final String key, String defaultValue) {
+	public static String readString(Properties properties, final String key, String defaultValue) {
 		final String b = properties.getProperty(key);
 		if( b == null ) {
 			logOnAbsence(key);
@@ -92,7 +87,7 @@ public final class PropertyUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	public final static   <T extends Enum<T>> T readEnum(Properties properties, final String key, T defaultValue) {
+	public static   <T extends Enum<T>> T readEnum(Properties properties, final String key, T defaultValue) {
 		final String b = properties.getProperty(key);
 		if( b == null ) {
 			logOnAbsence(key);
@@ -103,4 +98,4 @@ public final class PropertyUtils {
 
 
 
-}
+        }

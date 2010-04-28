@@ -10,6 +10,7 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.propagation.AbstractPropagationEngine;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.solver.search.IntBranchingTrace;
 
 public aspect CPLogAspect extends ALogAspect{
 
@@ -23,7 +24,17 @@ public aspect CPLogAspect extends ALogAspect{
 	/*************************************************/
 	
 	// Choice point on world push
-	pointcut choicePoint() : execution(public void IEnvironment.worldPush());
+	//pointcut choicePoint() : execution(public void IEnvironment.worldPush());
+	
+	// Choice point on world push
+	pointcut setIntVal(IntBranchingTrace ibt) : 
+		execution(public void IntBranchingTrace.setIntVal()) && 
+		target(ibt);
+	
+	// Choice point on world push
+	pointcut remIntVal(IntBranchingTrace ibt) : 
+		execution(public void IntBranchingTrace.remIntVal()) && 
+		target(ibt);
 	
 	// Back track on world pop
 	pointcut backTo() : execution(public void IEnvironment.worldPop());
@@ -78,8 +89,30 @@ public aspect CPLogAspect extends ALogAspect{
 	/*************************************************/
 	
 	// Choice point and back track
-	before() : choicePoint() {
-		singleElementLn("<choice-point " + eventAttributes(thisJoinPointStaticPart) + "/>");
+	//before() : choicePoint() {
+	//	singleElementLn("<choice-point " + eventAttributes(thisJoinPointStaticPart) + "/>");
+	//}
+	
+	// Choice point and back track
+	//before() : choicePoint() {
+	before(IntBranchingTrace ibt) : setIntVal(ibt) {//
+		IntDomainVar var = ibt.getBranchingIntVar();
+		int val = ibt.getBranchingValue();
+		elementOpening("<choice-point " + eventAttributes(thisJoinPointStaticPart) + ">");	
+		singleElementLn("<choice-constraint vident=\"v"+var.varNumber+"\" constraints=\":=\" value=\""+val+"\" />");
+		elementClosing("</choice-point>");
+		stream.flush();
+	}
+	
+	before(IntBranchingTrace ibt) : remIntVal(ibt) {
+		//singleElementLn("<choice-point " + eventAttributes(thisJoinPointStaticPart) + "/>");
+		IntDomainVar var = ibt.getBranchingIntVar();
+		int val = ibt.getBranchingValue();
+		elementOpening("<choice-point " + eventAttributes(thisJoinPointStaticPart) + ">");	
+		singleElementLn("<choice-constraint vident="+var.varNumber+" constraints=\"!=\" value="+val+" />");
+		elementClosing("</choice-point>");
+		System.err.println("AAAAAAAAAAAAAAAAAAAAA");
+		stream.flush();
 	}
 	
 	after() : backTo() {
