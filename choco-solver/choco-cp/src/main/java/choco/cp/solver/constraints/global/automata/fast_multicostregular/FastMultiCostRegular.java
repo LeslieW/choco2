@@ -481,14 +481,17 @@ public void initGraph()
         intLayer[n+1] = new int[]{tink.id};
 
         if (intLayer[0].length > 0)
+        {
                 this.graph = new StoredDirectedMultiGraph(environment, this,graph,intLayer,starts,offsets,totalSizes,costs,z);
+                this.graph.makePathFinder();
+        }
 }
 
 
 /**
  * Performs a lagrangian relaxation to compute a new Upper bound of the underlying RCSPP problem
  * Each built subproblem is a longest path one can use to perform cost based filtering
- * @throws ContradictionException if a domain becomes empty
+ * @th*rows ContradictionException if a domain becomes empty
  */
 protected void updateUpperBound() throws ContradictionException
 {

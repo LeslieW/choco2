@@ -1,25 +1,3 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * 
- *          _       _                            *
- *         |  °(..)  |                           *
- *         |_  J||L _|        CHOCO solver       *
- *                                               *
- *    Choco is a java library for constraint     *
- *    satisfaction problems (CSP), constraint    *
- *    programming (CP) and explanation-based     *
- *    constraint solving (e-CP). It is built     *
- *    on a event-based propagation mechanism     *
- *    with backtrackable structures.             *
- *                                               *
- *    Choco is an open-source software,          *
- *    distributed under a BSD licence            *
- *    and hosted by sourceforge.net              *
- *                                               *
- *    + website : http://choco.emn.fr            *
- *    + support : choco@emn.fr                   *
- *                                               *
- *    Copyright (C) F. Laburthe,                 *
- *                  N. Jussien    1999-2008      *
- * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.constraints.global.automata.fast_multicostregular.structure;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
@@ -40,11 +18,11 @@ import java.util.Set;
 /**
  * Created by IntelliJ IDEA.
  * User: julien
- * Mail: julien.menana{at}emn.fr
- * Date: Nov 4, 2009
- * Time: 1:07:19 PM
+ * Date: Apr 28, 2010
+ * Time: 3:17:28 PM
  */
-public class StoredDirectedMultiGraph {
+public class SoftStoredMultiValuedDirectedMultiGraph
+{
 
 public AbstractIntSConstraint constraint;
 
@@ -62,7 +40,7 @@ StoredIndexedBipartiteSetWithOffset[] supports;
 public StoredIndexedBipartiteSetWithOffset[] layers;
 FastPathFinder pf;
 public BitSet inStack;
-private IntDomainVar[] z;
+private IntDomainVar[] y;
 
 
 public class Nodes
@@ -116,10 +94,10 @@ public Arcs GArcs;
 
 
 
-public StoredDirectedMultiGraph(IEnvironment environment, AbstractIntSConstraint constraint, DirectedMultigraph<Node, Arc> graph, int[][] layers, int[] starts, int[] offsets, int supportLength,int[][][][] costs,IntDomainVar[] z)
+public SoftStoredMultiValuedDirectedMultiGraph(IEnvironment environment, AbstractIntSConstraint constraint, DirectedMultigraph<Node, Arc> graph, int[][] layers, int[] starts, int[] offsets, int supportLength,int[][][][] costs,IntDomainVar[] y)
 {
         this.nbR = costs[0][0].length;
-        this.z = z;
+        this.y = y;
         this.constraint = constraint;
         this.starts = starts;
         this.offsets =offsets;
@@ -258,34 +236,15 @@ public StoredDirectedMultiGraph(IEnvironment environment, AbstractIntSConstraint
 
 }
 
-public final void makePathFinder()
-{
-        this.pf = new FastPathFinder(this);
-}
-
-
 public final StoredIndexedBipartiteSetWithOffset getSupport(int i, int j)
 {
         int idx = starts[i]+j-offsets[i];
-        if (idx == -1)
-                System.err.println("stop");
         return supports[idx];
-
-
 }
 
-public final FastPathFinder getPathFinder()
+
+public boolean removeArc(int arcId, TIntStack toRemove, TIntStack[] updateLeft, TIntStack[] updateRight) throws ContradictionException
 {
-        return pf;
-}
-
-
-
-
-
-
-
-public boolean removeArc(int arcId, TIntStack toRemove, TIntStack[] updateLeft, TIntStack[] updateRight) throws ContradictionException {
         inStack.clear(arcId);
         boolean needUpdate = false;
 
@@ -370,8 +329,6 @@ public boolean removeArc(int arcId, TIntStack toRemove, TIntStack[] updateLeft, 
                                         toRemove.push(id);
                                 }
                         }
-                       // it.dispose();
-
                 }
         }
         else
@@ -380,7 +337,7 @@ public boolean removeArc(int arcId, TIntStack toRemove, TIntStack[] updateLeft, 
                 {
                         if (GNodes.prevSPI[dest][k] == arcId || GNodes.prevLPI[dest][k] == arcId)
                         {
-                                updateLeft[k].push(dest);//dest,toRemove,k,modBound);
+                                updateLeft[k].push(dest);
                                 needUpdate = true;
                         }
                 }
@@ -389,19 +346,11 @@ public boolean removeArc(int arcId, TIntStack toRemove, TIntStack[] updateLeft, 
 
 }
 
-private static boolean contains(int[] arr, int elem)
-{
-        int lg = arr.length-1;
-        for (int s = lg ; s >=0 ; s--)
-        {
-                if (arr[s] == elem) return true;
-        }
-        return false;
-}
 
-public void updateRight(TIntStack updateRight, TIntStack toRemove, int dim, boolean[] modBound) throws ContradictionException
+public boolean updateRight(TIntStack updateRight, TIntStack toRemove, int dim, AbstractIntSConstraint table) throws ContradictionException
 {
 
+        boolean mod = false;
         int nid = updateRight.pop();
         double tempPval = Double.POSITIVE_INFINITY;
         double tempPval2 = Double.NEGATIVE_INFINITY;
@@ -443,15 +392,15 @@ public void updateRight(TIntStack updateRight, TIntStack toRemove, int dim, bool
 
         if (nid == sourceIndex)
         {
-                if (dim ==0)
+                if (y[dim].updateInf((int)Math.ceil(tempPval),constraint,false))
                 {
-                        modBound[0]|= z[0].updateInf((int)Math.ceil(tempPval),constraint,false);
-                        modBound[1]|= z[0].updateSup((int)Math.floor(tempPval2),constraint,false);
+                        mod = true;
+                        table.awakeOnInf(0);
                 }
-                else
+                if (y[dim].updateSup((int)Math.floor(tempPval2),constraint,false))
                 {
-                      z[dim].updateInf((int)Math.ceil(tempPval),constraint,false);
-                      z[dim].updateSup((int)Math.floor(tempPval2),constraint,false);
+                        mod = true;
+                        table.awakeOnSup(0);
                 }
         }
 
@@ -473,22 +422,24 @@ public void updateRight(TIntStack updateRight, TIntStack toRemove, int dim, bool
                         double lpfs = GNodes.lpfsI[orig][dim];
 
                         double acost = GArcs.originalCost[arcId][dim];
-                        if (!isInStack(arcId) && (tempPval + spfs+acost > z[dim].getSup()
-                                || tempPval2 + lpfs+acost < z[dim].getInf()))
+                        if (!isInStack(arcId) && (tempPval + spfs+acost > y[dim].getSup()
+                                || tempPval2 + lpfs+acost < y[dim].getInf()))
                         {
                                 setInStack(arcId);
                                 toRemove.push(arcId);
                         }
                 }
-             //   it.dispose();
+                //   it.dispose();
         }
 
+        return mod;
 
 }
 
 
-public void updateLeft(TIntStack updateLeft, TIntStack toRemove, int dim, boolean[] modBound) throws ContradictionException
+public boolean updateLeft(TIntStack updateLeft, TIntStack toRemove, int dim, AbstractIntSConstraint table) throws ContradictionException
 {
+        boolean mod = false;
         int nid = updateLeft.pop();
         double tempPval = Double.POSITIVE_INFINITY;
         int tempP = Integer.MIN_VALUE;
@@ -529,16 +480,18 @@ public void updateLeft(TIntStack updateLeft, TIntStack toRemove, int dim, boolea
 
         if (nid == tinIndex)
         {
-                if (dim ==0)
-                {
-                        modBound[0]|= z[0].updateInf((int)Math.ceil(tempPval),constraint,false);
-                        modBound[1]|= z[0].updateSup((int)Math.floor(tempPval2),constraint,false);
-                }
-                else
-                {
-                      z[dim].updateInf((int)Math.ceil(tempPval),constraint,false);
-                      z[dim].updateSup((int)Math.floor(tempPval2),constraint,false);
-                }
+
+                        if (y[dim].updateInf((int)Math.ceil(tempPval),constraint,false))
+                        {
+                                mod = true;
+                                table.awakeOnInf(0);
+                        }
+                        if (y[dim].updateSup((int)Math.floor(tempPval2),constraint,false))
+                        {
+                                mod = true;
+                                table.awakeOnSup(0);
+                        }
+
 
         }
 
@@ -559,8 +512,8 @@ public void updateLeft(TIntStack updateLeft, TIntStack toRemove, int dim, boolea
                         double spft = GNodes.spftI[dest][dim];
                         double acost = GArcs.originalCost[arcId][dim];
                         double lpft = GNodes.lpftI[dest][dim];
-                        if (!isInStack(arcId) && (tempPval + spft+acost > z[dim].getSup()
-                                ||tempPval2 + lpft+acost < z[dim].getInf()))
+                        if (!isInStack(arcId) && (tempPval + spft+acost > y[dim].getSup()
+                                ||tempPval2 + lpft+acost < y[dim].getInf()))
                         {
                                 setInStack(arcId);
                                 toRemove.push(arcId);
@@ -569,6 +522,7 @@ public void updateLeft(TIntStack updateLeft, TIntStack toRemove, int dim, boolea
                 //it.dispose();
         }
 
+        return mod;
 
 }
 
@@ -647,59 +601,59 @@ public int getRegret(int layer, int value, int... resources)
 
 public int getMinPathCostForAssignment(int layer, int value, int... resources)
 {
-	int result  = Integer.MAX_VALUE;
-	StoredIndexedBipartiteSetWithOffset arcs = this.getSupport(layer,value);
+        int result  = Integer.MAX_VALUE;
+        StoredIndexedBipartiteSetWithOffset arcs = this.getSupport(layer,value);
 
         DisposableIntIterator it = arcs.getIterator();
         int[] list = arcs._getStructure();
         int size = arcs.size();
-	for (int i = 0 ; i < size ; i ++) {//while (it.hasNext()) {
-		int arcId = list[i];//it.next();
-		int origId = GArcs.origs[arcId];
-		int destId = GArcs.dests[arcId];
-		int cost = 0;
-		for (int r : resources) {
-			cost+=pf.spfs[origId][r] + GArcs.originalCost[arcId][r] + pf.spft[destId][r];
-		}
-		if (cost < result)
-			result = cost;
-	}
-	it.dispose();
-	return result;
+        for (int i = 0 ; i < size ; i ++) {//while (it.hasNext()) {
+                int arcId = list[i];//it.next();
+                int origId = GArcs.origs[arcId];
+                int destId = GArcs.dests[arcId];
+                int cost = 0;
+                for (int r : resources) {
+                        cost+=pf.spfs[origId][r] + GArcs.originalCost[arcId][r] + pf.spft[destId][r];
+                }
+                if (cost < result)
+                        result = cost;
+        }
+        it.dispose();
+        return result;
 }
 
 private int[] minmax = new int[2];
 public int[] getMinMaxPathCostForAssignment(int layer, int value, int... resources)
 {
-	minmax[0] = Integer.MAX_VALUE;
+        minmax[0] = Integer.MAX_VALUE;
         minmax[1] = Integer.MIN_VALUE;
-	StoredIndexedBipartiteSetWithOffset arcs = this.getSupport(layer,value);
-	DisposableIntIterator it = arcs.getIterator();
+        StoredIndexedBipartiteSetWithOffset arcs = this.getSupport(layer,value);
+        DisposableIntIterator it = arcs.getIterator();
 
-	while (it.hasNext()) {
-		int arcId = it.next();
-		int origId = GArcs.origs[arcId];
-		int destId = GArcs.dests[arcId];
-		int cost = 0;
-		for (int r : resources) {
-			cost+=pf.spfs[origId][r] + GArcs.originalCost[arcId][r] + pf.spft[destId][r];
-		}
-		if (cost < minmax[0])
-			minmax[0] = cost;
-		if (cost > minmax[1])
-			minmax[1] = cost;
-	}
-	it.dispose();
-	return minmax;
+        while (it.hasNext()) {
+                int arcId = it.next();
+                int origId = GArcs.origs[arcId];
+                int destId = GArcs.dests[arcId];
+                int cost = 0;
+                for (int r : resources) {
+                        cost+=pf.spfs[origId][r] + GArcs.originalCost[arcId][r] + pf.spft[destId][r];
+                }
+                if (cost < minmax[0])
+                        minmax[0] = cost;
+                if (cost > minmax[1])
+                        minmax[1] = cost;
+        }
+        it.dispose();
+        return minmax;
 }
 
 public int getMinPathCost(int... resources)
 {
-	int result  = 0;
-	for (int r : resources) {
-		result += pf.spft[sourceIndex][r];
-	}
-	return result;
+        int result  = 0;
+        for (int r : resources) {
+                result += pf.spft[sourceIndex][r];
+        }
+        return result;
 }
 
 

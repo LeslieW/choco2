@@ -104,6 +104,7 @@ public enum ConstraintType {
     SETINTER("setInter", "constraint.setInter", false),
     SETUNION("union", "constraint.union", false),
     SIGNOP("signop", "constraint.signop", true),
+    SOFTMULTICOSTREGULAR("soft_multicostregular", "constraint.softmulticostregular", false),
     SORTING("sorting", "constraint.sorting", false),
     STRETCHPATH("stretchPath", "constraint.stretchPath", false),
     TABLE("table", "constraint.table", false),
