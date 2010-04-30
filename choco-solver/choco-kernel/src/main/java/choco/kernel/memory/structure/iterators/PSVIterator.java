@@ -1,10 +1,12 @@
 package choco.kernel.memory.structure.iterators;
 
 import static choco.kernel.common.Constant.STORED_OFFSET;
+import choco.kernel.common.util.disposable.Disposable;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.IStateInt;
 
 import java.util.NoSuchElementException;
+import java.util.Queue;
 
 public final class PSVIterator<E> extends DisposableIterator<E> {
 
@@ -17,18 +19,17 @@ public final class PSVIterator<E> extends DisposableIterator<E> {
     private static final class Holder {
         private Holder() {}
 
-        private static PSVIterator instance = PSVIterator.build();
+        private static final Queue<PSVIterator> container = Disposable.createContainer();
 
-        private static void set(final PSVIterator iterator) {
-            instance = iterator;
-        }
     }
 
     @SuppressWarnings({"unchecked"})
     public static <E> DisposableIterator getIterator(final int theNStaticObjects, final E[] theStaticObjects,
                     final IStateInt theNStoredObjects,final E[] theStoredObjects) {
-        PSVIterator<E> it = Holder.instance;
-        if (!it.isReusable()) {
+        PSVIterator<E> it;
+        try{
+            it = Holder.container.remove();
+        }catch (NoSuchElementException e){
             it = build();
         }
         it.init(theNStaticObjects, theStaticObjects, theNStoredObjects, theStoredObjects);
@@ -57,7 +58,7 @@ public final class PSVIterator<E> extends DisposableIterator<E> {
      */
     public void init(final int theNStaticObjects, final E[] theStaticObjects,
                     final IStateInt theNStoredObjects,final E[] theStoredObjects) {
-        super.init();
+        init();
         idx = -1;
         this.nStaticObjects = theNStaticObjects;
         this.staticObjects = theStaticObjects;
@@ -95,12 +96,12 @@ public final class PSVIterator<E> extends DisposableIterator<E> {
     }
 
     /**
-     * This method allows to declare that the iterator is not used anymoure. It
-     * can be reused by another object.
+     * Get the containerof disposable objects where free ones are available
+     *
+     * @return a {@link java.util.Deque}
      */
     @Override
-    public void dispose() {
-        super.dispose();
-        Holder.set(this);
+    public Queue getContainer() {
+        return Holder.container;
     }
 }

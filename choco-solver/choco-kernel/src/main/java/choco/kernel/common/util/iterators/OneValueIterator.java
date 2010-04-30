@@ -22,6 +22,11 @@
  **************************************************/
 package choco.kernel.common.util.iterators;
 
+import choco.kernel.common.util.disposable.Disposable;
+
+import java.util.NoSuchElementException;
+import java.util.Queue;
+
 /*
 * User : charles
 * Mail : cprudhom(a)emn.fr
@@ -41,18 +46,13 @@ public final class OneValueIterator extends DisposableIntIterator {
         private Holder() {
         }
 
-        private static OneValueIterator instance = OneValueIterator.build();
-
-        private static void set(final OneValueIterator iterator) {
-            instance = iterator;
-        }
+        private static final Queue<OneValueIterator> container = Disposable.createContainer();
     }
 
     private int value;
     private boolean next;
 
-    private OneValueIterator() {
-    }
+    private OneValueIterator() {}
 
     private static OneValueIterator build() {
         return new OneValueIterator();
@@ -60,8 +60,10 @@ public final class OneValueIterator extends DisposableIntIterator {
 
     @SuppressWarnings({"unchecked"})
     public synchronized static OneValueIterator getIterator(final int aValue) {
-        OneValueIterator it = Holder.instance;
-        if (!it.isReusable()) {
+        OneValueIterator it;
+        try{
+            it = Holder.container.remove();
+        }catch (NoSuchElementException e){
             it = build();
         }
         it.init(aValue);
@@ -72,7 +74,7 @@ public final class OneValueIterator extends DisposableIntIterator {
      * Freeze the iterator, cannot be reused.
      */
     public void init(final int aValue) {
-        super.init();
+        init();
         this.value = aValue;
         next = true;
     }
@@ -104,12 +106,12 @@ public final class OneValueIterator extends DisposableIntIterator {
 
 
     /**
-     * This method allows to declare that the iterator is not used anymoure. It
-     * can be reused by another object.
+     * Get the containerof disposable objects where free ones are available
+     *
+     * @return a {@link java.util.Deque}
      */
     @Override
-    public void dispose() {
-        super.dispose();
-        Holder.set(this);
+    public Queue getContainer() {
+        return Holder.container;
     }
 }

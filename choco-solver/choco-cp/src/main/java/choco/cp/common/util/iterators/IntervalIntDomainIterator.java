@@ -23,7 +23,11 @@
 package choco.cp.common.util.iterators;
 
 import choco.cp.solver.variables.integer.IntervalIntDomain;
+import choco.kernel.common.util.disposable.Disposable;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+
+import java.util.NoSuchElementException;
+import java.util.Queue;
 
 /**
  * User : cprudhom<br/>
@@ -43,11 +47,7 @@ public final class IntervalIntDomainIterator extends DisposableIntIterator {
         private Holder() {
         }
 
-        private static IntervalIntDomainIterator instance = IntervalIntDomainIterator.build();
-
-        private static void set(final IntervalIntDomainIterator iterator) {
-            instance = iterator;
-        }
+        private static final Queue<IntervalIntDomainIterator> container = Disposable.createContainer();
     }
 
     private IntervalIntDomain domain;
@@ -62,8 +62,10 @@ public final class IntervalIntDomainIterator extends DisposableIntIterator {
 
     @SuppressWarnings({"unchecked"})
     public synchronized static IntervalIntDomainIterator getIterator(final IntervalIntDomain aDomain) {
-        IntervalIntDomainIterator it = Holder.instance;
-        if (!it.isReusable()) {
+        IntervalIntDomainIterator it;
+        try{
+            it = Holder.container.remove();
+        }catch (NoSuchElementException e){
             it = build();
         }
         it.init(aDomain);
@@ -74,7 +76,7 @@ public final class IntervalIntDomainIterator extends DisposableIntIterator {
      * Freeze the iterator, cannot be reused.
      */
     public void init(final IntervalIntDomain aDomain) {
-        super.init();
+        init();
         this.domain = aDomain;
         value = aDomain.getInf() - 1;
     }
@@ -105,12 +107,12 @@ public final class IntervalIntDomainIterator extends DisposableIntIterator {
 
 
     /**
-     * This method allows to declare that the iterator is not used anymoure. It
-     * can be reused by another object.
+     * Get the containerof disposable objects where free ones are available
+     *
+     * @return a {@link java.util.Deque}
      */
     @Override
-    public void dispose() {
-        super.dispose();
-        Holder.set(this);
+    public Queue getContainer() {
+        return Holder.container;
     }
 }

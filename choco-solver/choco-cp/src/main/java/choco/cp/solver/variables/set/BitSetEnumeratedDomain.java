@@ -63,7 +63,7 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
   /**
    * the initial size of the domain (never increases)
    */
-  private int capacity;
+  private final int capacity;
 
     private final IDeltaDomain delatDom;
 
@@ -89,7 +89,6 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
       for (int i = 0; i < capacity; i++)
         contents.set(i);
     }
-    //delatDom = new ChainDeltaDomain(capacity, offset);
         delatDom = new BitSetDeltaDomain(capacity, offset);
   }
 
@@ -110,7 +109,6 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
               contents.set(sortedValue - a);
           }
       }
-//      delatDom = new ChainDeltaDomain(capacity, offset);
       delatDom = new BitSetDeltaDomain(capacity, offset);
   }
 
@@ -124,7 +122,6 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
       this.offset = 0;
       size = environment.makeInt(0);
       contents = environment.makeBitSet(capacity);
-//      delatDom = new ChainDeltaDomain(capacity, offset);
         delatDom = new BitSetDeltaDomain(capacity, offset);
   }
 
@@ -332,7 +329,7 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
      */
     @Override
     public String pretty() {
-        StringBuffer buf = new StringBuffer("{");
+        StringBuilder buf = new StringBuilder("{");
         int maxDisplay = 15;
         int count = 0;
         int val = getFirstVal();
@@ -348,7 +345,7 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
             buf.append("..., ");
             buf.append(this.getLastVal());
         }
-        buf.append("}");
+        buf.append('}');
         return buf.toString();
     }
 }

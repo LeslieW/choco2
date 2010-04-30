@@ -113,6 +113,7 @@ public abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint
 		if(idx==SET_INDEX && deltaDomain.hasNext()) {
 			awakeOnEnv(idx, deltaDomain.next());
 		}
+        deltaDomain.dispose();
 	}
 
 
@@ -122,6 +123,7 @@ public abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint
 		if(idx==SET_INDEX && deltaDomain.hasNext()) {
 			awakeOnKer(idx, deltaDomain.next());
 		}
+        deltaDomain.dispose();
 	}
 
 	@Override

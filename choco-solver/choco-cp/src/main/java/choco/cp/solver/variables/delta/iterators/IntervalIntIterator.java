@@ -22,7 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.delta.iterators;
 
+import choco.kernel.common.util.disposable.Disposable;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+
+import java.util.NoSuchElementException;
+import java.util.Queue;
 
 /**
  * User : cprudhom<br/>
@@ -42,11 +46,7 @@ public final class IntervalIntIterator extends DisposableIntIterator {
         private Holder() {
         }
 
-        private static IntervalIntIterator instance = IntervalIntIterator.build();
-
-        private static void set(final IntervalIntIterator iterator) {
-            instance = iterator;
-        }
+        private static final Queue<IntervalIntIterator> container = Disposable.createContainer();
     }
 
     private int current, currentInfPropagated, currentSupPropagated, lastSupPropagated;
@@ -61,8 +61,10 @@ public final class IntervalIntIterator extends DisposableIntIterator {
     @SuppressWarnings({"unchecked"})
     public static synchronized IntervalIntIterator getIterator(final int theCurrentInfPropagated, final int theCurrentSupPropagated,
                      final int theLastIntPropagated, final int theLastSupPropagated) {
-        IntervalIntIterator it = Holder.instance;
-        if (!it.isReusable()) {
+        IntervalIntIterator it;
+        try{
+            it = Holder.container.remove();
+        }catch (NoSuchElementException e){
             it = build();
         }
         it.init(theCurrentInfPropagated, theCurrentSupPropagated, theLastIntPropagated, theLastSupPropagated);
@@ -74,7 +76,6 @@ public final class IntervalIntIterator extends DisposableIntIterator {
      */
     public void init(final int theCurrentInfPropagated, final int theCurrentSupPropagated,
                      final int theLastIntPropagated, final int theLastSupPropagated) {
-        super.init();
         current = theLastIntPropagated - 1;
         this.currentInfPropagated = theCurrentInfPropagated;
         this.currentSupPropagated = theCurrentSupPropagated;
@@ -113,12 +114,12 @@ public final class IntervalIntIterator extends DisposableIntIterator {
 
 
     /**
-     * This method allows to declare that the iterator is not used anymoure. It
-     * can be reused by another object.
+     * Get the containerof disposable objects where free ones are available
+     *
+     * @return a {@link java.util.Deque}
      */
     @Override
-    public void dispose() {
-        super.dispose();
-        Holder.set(this);
+    public Queue getContainer() {
+        return Holder.container;
     }
 }

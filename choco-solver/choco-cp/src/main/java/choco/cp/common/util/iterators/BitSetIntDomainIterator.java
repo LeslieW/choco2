@@ -22,8 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.common.util.iterators;
 
+import choco.kernel.common.util.disposable.Disposable;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateBitSet;
+
+import java.util.NoSuchElementException;
+import java.util.Queue;
 
 /**
  * User : cprudhom<br/>
@@ -43,11 +47,7 @@ public final class BitSetIntDomainIterator extends DisposableIntIterator {
         private Holder() {
         }
 
-        private static BitSetIntDomainIterator instance = BitSetIntDomainIterator.build();
-
-        private static void set(final BitSetIntDomainIterator iterator) {
-            instance = iterator;
-        }
+        private static final Queue<BitSetIntDomainIterator> container = Disposable.createContainer();
     }
 
     private int nextValue;
@@ -64,8 +64,10 @@ public final class BitSetIntDomainIterator extends DisposableIntIterator {
     @SuppressWarnings({"unchecked"})
     public synchronized static BitSetIntDomainIterator getIterator(final int theOffset,
                                                                    final IStateBitSet theContents) {
-        BitSetIntDomainIterator it = Holder.instance;
-        if (!it.isReusable()) {
+        BitSetIntDomainIterator it;
+        try{
+            it = Holder.container.remove();
+        }catch (NoSuchElementException e){
             it = build();
         }
         it.init(theOffset, theContents);
@@ -76,7 +78,7 @@ public final class BitSetIntDomainIterator extends DisposableIntIterator {
      * Freeze the iterator, cannot be reused.
      */
     public void init(final int theOffset, final IStateBitSet theContents) {
-        super.init();
+        init();
         this.contents = theContents;
         this.offset = theOffset;
         nextValue = theContents.nextSetBit(0);
@@ -108,14 +110,13 @@ public final class BitSetIntDomainIterator extends DisposableIntIterator {
         return v + offset;
     }
 
-
-    /**
-     * This method allows to declare that the iterator is not used anymoure. It
-     * can be reused by another object.
+/**
+     * Get the containerof disposable objects where free ones are available
+     *
+     * @return a {@link java.util.Deque}
      */
     @Override
-    public void dispose() {
-        super.dispose();
-        Holder.set(this);
+    public Queue getContainer() {
+        return Holder.container;
     }
 }

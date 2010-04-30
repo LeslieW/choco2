@@ -22,10 +22,14 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.memory.structure.iterators;
 
+import choco.kernel.common.util.disposable.Disposable;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.structure.StoredBipartiteVarSet;
 import choco.kernel.solver.variables.Var;
+
+import java.util.NoSuchElementException;
+import java.util.Queue;
 
 /**
  * User : cprudhom<br/>
@@ -45,11 +49,7 @@ public final class SBVSIterator1<E extends Var> extends DisposableIterator<E> {
         private Holder() {
         }
 
-        private static SBVSIterator1 instance = SBVSIterator1.build();
-
-        private static void set(final SBVSIterator1 iterator) {
-            instance = iterator;
-        }
+        private static final Queue<SBVSIterator1> container = Disposable.createContainer();
     }
 
     private int i = -1;
@@ -67,8 +67,10 @@ public final class SBVSIterator1<E extends Var> extends DisposableIterator<E> {
     @SuppressWarnings({"unchecked"})
     public synchronized static <E extends Var> SBVSIterator1 getIterator(final StoredBipartiteVarSet aStoredBipartiteVarSet,
                                                 final E[] someElements, final IStateInt last) {
-        SBVSIterator1 it = Holder.instance;
-        if (!it.isReusable()) {
+        SBVSIterator1 it;
+        try{
+            it = Holder.container.remove();
+        }catch (NoSuchElementException e){
             it = build();
         }
         it.init(aStoredBipartiteVarSet, someElements, last);
@@ -79,7 +81,7 @@ public final class SBVSIterator1<E extends Var> extends DisposableIterator<E> {
      * Freeze the iterator, cannot be reused.
      */
     public void init(final StoredBipartiteVarSet aStoredBipartiteVarSet, final E[] someElements, final IStateInt aLast) {
-        super.init();
+        init();
         this.storedBipartiteVarSet = aStoredBipartiteVarSet;
         this.elements = someElements;
         this.last = aLast;
@@ -116,14 +118,13 @@ public final class SBVSIterator1<E extends Var> extends DisposableIterator<E> {
         return elements[i];
     }
 
-
     /**
-     * This method allows to declare that the iterator is not used anymoure. It
-     * can be reused by another object.
+     * Get the containerof disposable objects where free ones are available
+     *
+     * @return a {@link java.util.Deque}
      */
     @Override
-    public void dispose() {
-        super.dispose();
-        Holder.set(this);
+    public Queue getContainer() {
+        return Holder.container;
     }
 }

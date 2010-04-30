@@ -22,6 +22,11 @@
  **************************************************/
 package choco.kernel.common.util.iterators;
 
+import choco.kernel.common.util.disposable.Disposable;
+
+import java.util.NoSuchElementException;
+import java.util.Queue;
+
 public final class ArrayIterator<E> extends DisposableIterator<E> {
 
     /**
@@ -31,14 +36,9 @@ public final class ArrayIterator<E> extends DisposableIterator<E> {
      * see http://en.wikipedia.org/wiki/Singleton_pattern
      */
     private static final class Holder {
-        private Holder() {
-        }
+        private Holder() {}
 
-        private static ArrayIterator instance = ArrayIterator.build();
-
-        private static void set(final ArrayIterator iterator) {
-            instance = iterator;
-        }
+        private static final Queue<ArrayIterator> container = Disposable.createContainer();
     }
 
     private E[] elements;
@@ -55,9 +55,11 @@ public final class ArrayIterator<E> extends DisposableIterator<E> {
     }
 
     @SuppressWarnings({"unchecked"})
-    public synchronized static <E> ArrayIterator <E> getIterator(final E[] elements, final int size) {
-        ArrayIterator<E> it = Holder.instance;
-        if (!it.isReusable()) {
+    public synchronized static <E> ArrayIterator<E> getIterator(final E[] elements, final int size) {
+        ArrayIterator<E> it;
+        try{
+            it = Holder.container.remove();
+        }catch (NoSuchElementException e){
             it = build();
         }
         it.init(elements, size);
@@ -65,9 +67,11 @@ public final class ArrayIterator<E> extends DisposableIterator<E> {
     }
 
     @SuppressWarnings({"unchecked"})
-    public synchronized static <E> ArrayIterator <E> getIterator(final E[] elements) {
-        ArrayIterator<E> it = Holder.instance;
-        if (!it.isReusable()) {
+    public synchronized static <E> ArrayIterator<E> getIterator(final E[] elements) {
+        ArrayIterator<E> it;
+        try{
+            it = Holder.container.remove();
+        }catch (NoSuchElementException e){
             it = build();
         }
         it.init(elements, elements.length);
@@ -78,7 +82,7 @@ public final class ArrayIterator<E> extends DisposableIterator<E> {
      * Freeze the iterator, cannot be reused.
      */
     private void init(final E[] someElements, final int aSize) {
-        super.init();
+        init();
         this.elements = someElements;
         this.size = aSize;
         cursor = 0;
@@ -109,12 +113,11 @@ public final class ArrayIterator<E> extends DisposableIterator<E> {
     }
 
     /**
-     * This method allows to declare that the iterator is not used anymoure. It
-     * can be reused by another object.
+     * Get the containerof disposable objects where free ones are available
+     *
+     * @return a {@link java.util.Deque}
      */
-    @Override
-    public void dispose() {
-        super.dispose();
-        Holder.set(this);
+    public Queue getContainer() {
+        return Holder.container;
     }
 }

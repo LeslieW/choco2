@@ -32,6 +32,7 @@ import choco.kernel.solver.variables.scheduling.ITask;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Queue;
 
 /*
  * User : charles
@@ -45,7 +46,9 @@ import java.util.Iterator;
  *
  */
 public class StringUtils {
-	/**
+    private StringUtils() {}
+
+    /**
 	 * Pads out a string upto padlen with pad chars
 	 *
 	 * @param str    string to be padded
@@ -54,7 +57,7 @@ public class StringUtils {
 	 * @return padded string
 	 */
 	public static String pad(String str, int padlen, String pad) {
-		final StringBuffer padding = new StringBuffer();
+        final StringBuilder padding = new StringBuilder(32);
 		final int len = Math.abs(padlen) - str.length();
 		if (len < 1) {
 			return str;
@@ -85,8 +88,7 @@ public class StringUtils {
 
 				@Override
 				public String next() {
-					final String r = options.substring(b, e);
-					return r;
+                    return options.substring(b, e);
 				}
 
 				@Override
@@ -95,7 +97,22 @@ public class StringUtils {
 				}
 
 
-			};
+                /**
+                 * Get the containerof disposable objects where free ones are available
+                 *
+                 * @return a {@link java.util.Deque}
+                 */
+                public Queue getContainer() {
+                    return null;
+                }
+
+                /**
+                 * This method allows to declare that an object is not used anymore. It
+                 * can be reused by another object.
+                 */
+                @Override
+                public void dispose() {}
+            };
 		} else {
 			return EmptyIterator.getIterator();
 		}
@@ -106,13 +123,13 @@ public class StringUtils {
 	//*******************  Pretty  ********************************//
 	//***************************************************************//
 	public static String pretty(final IPretty[] elems, int begin, int end) {
-		final StringBuilder buffer = new StringBuilder();
+		final StringBuilder buffer = new StringBuilder(32);
 		buffer.append("{ ");
 		for (int i = begin; i < end; i++) {
 			buffer.append(elems[i].pretty()).append(", ");
 		}
 		buffer.deleteCharAt(buffer.length() - 2);
-		buffer.append("}");
+		buffer.append('}');
 		return new String(buffer);
 	}
 
@@ -130,7 +147,7 @@ public class StringUtils {
 	 * @return pretty print of elements into a String
 	 */
 	public static String prettyOnePerLine(Iterator<? extends IPretty> iter) {
-		final StringBuilder buffer = new StringBuilder();
+		final StringBuilder buffer = new StringBuilder(32);
 		while (iter.hasNext()) {
 			buffer.append(iter.next().pretty()).append('\n');
 		}
@@ -142,7 +159,7 @@ public class StringUtils {
 	}
 
 	public static String pretty(final Iterator<? extends IPretty> iter) {
-		final StringBuilder buffer = new StringBuilder();
+		final StringBuilder buffer = new StringBuilder(32);
 		buffer.append("{ ");
 		if (iter.hasNext()) {
 			while (iter.hasNext()) {
@@ -150,37 +167,37 @@ public class StringUtils {
 			}
 			buffer.deleteCharAt(buffer.length() - 2);
 		}
-		buffer.append("}");
+		buffer.append('}');
 		return new String(buffer);
 	}
 
 	public static String pretty(int[] lval) {
-		StringBuffer sb = new StringBuffer();
-		sb.append("{");
+        StringBuilder sb = new StringBuilder(32);
+		sb.append('{');
 		for (int i = 0; i < lval.length - 1; i++) {
 			sb.append(lval[i]);
-			sb.append(",");
+			sb.append(',');
 		}
 		sb.append(lval[lval.length - 1]);
-		sb.append("}");
+		sb.append('}');
 		return sb.toString();
 	}
 
 	public static String pretty(int[][] lvals) {
-		StringBuffer sb = new StringBuffer();
-		sb.append("{");
+        StringBuilder sb = new StringBuilder(32);
+		sb.append('{');
 		for (int i = 0; i < lvals.length; i++) {
 			if (i > 0) sb.append(", ");
 			int[] lval = lvals[i];
-			sb.append("{");
+			sb.append('{');
 			for (int j = 0; j < lval.length; j++) {
-				if (j > 0) sb.append(",");
+				if (j > 0) sb.append(',');
 				int val = lval[j];
 				sb.append(val);
 			}
-			sb.append("}");
+			sb.append('}');
 		}
-		sb.append("}");
+		sb.append('}');
 		return sb.toString();
 	}
 
@@ -193,7 +210,7 @@ public class StringUtils {
 
 
 	public static String prettyOnePerLine(ISearchMeasures measures) {
-		StringBuilder b = new StringBuilder();
+		StringBuilder b = new StringBuilder(32);
 		for (Limit type : Limit.values()) {
 			final int val = type.getValue(measures);
 			if(val != Integer.MIN_VALUE) {
@@ -205,11 +222,11 @@ public class StringUtils {
 	}
 
 	public static String pretty(ISearchMeasures measures) {
-		StringBuilder b = new StringBuilder();
+		StringBuilder b = new StringBuilder(32);
 		for (Limit type : Limit.values()) {
 			final int val = type.getValue(measures);
 			if(val != Integer.MIN_VALUE) {
-				b.append(", ").append(val).append(" ").append(type.getUnit());
+				b.append(", ").append(val).append(' ').append(type.getUnit());
 			}
 		}
 		if(b.length() > 1) b.delete(0, 2);
@@ -226,7 +243,7 @@ public class StringUtils {
 	 * @return a char regexp
 	 */
 	public static String toCharExp(String strRegExp) {
-		StringBuffer b = new StringBuffer();
+        StringBuilder b = new StringBuilder(32);
 		for (int i =0 ;i < strRegExp.length() ;i++)
 		{
 			char c = strRegExp.charAt(i);
@@ -234,12 +251,12 @@ public class StringUtils {
 			{
 				int out = strRegExp.indexOf('>',i+1);
 				int tmp = Integer.parseInt(strRegExp.substring(i+1,out));
-				b.append((char) FiniteAutomaton.getCharFromInt(tmp));
+				b.append(FiniteAutomaton.getCharFromInt(tmp));
 				i = out;
 			}
 			else if (Character.isDigit(c))
 			{
-				b.append((char) FiniteAutomaton.getCharFromInt(Character.getNumericValue(c)));
+				b.append(FiniteAutomaton.getCharFromInt(Character.getNumericValue(c)));
 
 			}
             else if (c == '{')
@@ -267,7 +284,7 @@ public class StringUtils {
 	 */
 	public static String toIntExp (String charExp)
 	{
-		StringBuffer b = new StringBuffer();
+        StringBuilder b = new StringBuilder(32);
 		for (int i = 0 ; i < charExp.length() ; i++)
 		{
 			char c = charExp.charAt(i);
@@ -287,7 +304,7 @@ public class StringUtils {
 		return b.toString();
 	}
 
-	private static long next = 0;
+	private static long next;
 	/**
 	 * Return a generated short, random string
 	 * @return String
@@ -296,16 +313,16 @@ public class StringUtils {
 		return "TMP_" + next++;
 	}
 	
-	private static final String format(int lb, int ub) {
+	private static String format(int lb, int ub) {
 		return lb == ub ? String.valueOf(lb) : lb + ".."+ub ;	
 	}
 
 	public static String pretty(ITask t) {
-		final StringBuilder  b = new StringBuilder();
+		final StringBuilder  b = new StringBuilder(32);
 		b.append(t.getName()).append(":[");
 		b.append(format(t.getEST(), t.getLST())).append(" + ");
 		b.append(format(t.getMinDuration(), t.getMaxDuration())).append(" -> ");
-		b.append(format(t.getECT(), t.getLCT())).append("]");
+		b.append(format(t.getECT(), t.getLCT())).append(']');
 		return new String(b);
 	}
 	
@@ -318,7 +335,7 @@ public class StringUtils {
 	 * @return
 	 */
 	public static String toDotty(ITask t, String label,boolean format,String... options) {
-		StringBuilder b= new StringBuilder();
+		StringBuilder b= new StringBuilder(32);
 		b.append(t.getID()).append("[ shape=record,");
 		//label
 		b.append("label=\"{ ");
@@ -356,7 +373,7 @@ public class StringUtils {
 
 
 	public static String getDotArc(ITask t1, ITask t2) {
-		return getDotBase(t1, t2)+";";
+		return getDotBase(t1, t2)+ ';';
 	}
 
 

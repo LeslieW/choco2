@@ -22,6 +22,8 @@
  **************************************************/
 package choco.kernel.common.util.iterators;
 
+import choco.kernel.common.util.disposable.Disposable;
+
 import java.util.Iterator;
 
 /*
@@ -31,24 +33,7 @@ import java.util.Iterator;
 * Since : Choco 2.1.0
 * Update : Choco 2.1.0
 */
-public abstract class DisposableIterator<E> implements Iterator<E> {
-
-    private boolean reusable = true;
-
-    /**
-     * Freeze the iterator, cannot be reused.
-     */
-    public void init() {
-        reusable = false;
-    }
-
-    /**
-     * This method allows to declare that the iterator is not used anymoure. It
-     * can be reused by another object.
-     */
-    public void dispose() {
-        reusable = true;
-    }
+public abstract class DisposableIterator<E> extends Disposable implements Iterator<E> {
 
     /**
      * Removes from the underlying collection the last element returned by the
@@ -67,13 +52,5 @@ public abstract class DisposableIterator<E> implements Iterator<E> {
     @Override
     public void remove() {
         throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Retrieve wether the iterator is free for reuse.
-     * @return true if the iterator is free for use, false otherwise.
-     */
-    public final boolean isReusable() {
-        return reusable;
     }
 }

@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.memory.structure.iterators;
 
+import choco.kernel.common.util.disposable.Disposable;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.structure.Couple;
@@ -29,13 +30,16 @@ import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.memory.structure.PartiallyStoredVector;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 
+import java.util.NoSuchElementException;
+import java.util.Queue;
+
 /**
  * User : cprudhom<br/>
  * Mail : cprudhom(a)emn.fr<br/>
  * Date : 26 mars 2010<br/>
  * Since : Choco 2.1.1<br/>
  */
-public final class PSCLIterator<C extends AbstractSConstraint> extends DisposableIterator<Couple<C>>{
+public final class PSCLIterator<C extends AbstractSConstraint> extends DisposableIterator<Couple<C>> {
 
     /**
      * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
@@ -47,11 +51,7 @@ public final class PSCLIterator<C extends AbstractSConstraint> extends Disposabl
         private Holder() {
         }
 
-        private static PSCLIterator instance = PSCLIterator.build();
-
-        private static void set(final PSCLIterator iterator) {
-            instance = iterator;
-        }
+        private static final Queue<PSCLIterator> container = Disposable.createContainer();
     }
 
     private C cstrCause;
@@ -62,12 +62,13 @@ public final class PSCLIterator<C extends AbstractSConstraint> extends Disposabl
 
     private PartiallyStoredIntVector indices;
 
-    private final Couple<C> cc  = new Couple<C>();
+    private final Couple<C> cc = new Couple<C>();
 
-    
-    private PSCLIterator() {}
 
-    private static PSCLIterator build(){
+    private PSCLIterator() {
+    }
+
+    private static PSCLIterator build() {
         return new PSCLIterator();
     }
 
@@ -76,8 +77,10 @@ public final class PSCLIterator<C extends AbstractSConstraint> extends Disposabl
             final PartiallyStoredVector<C> someElements,
             final PartiallyStoredIntVector someIndices,
             final C aCause, final DisposableIntIterator aCit) {
-        PSCLIterator it = Holder.instance;
-        if (!it.isReusable()) {
+        PSCLIterator it;
+        try{
+            it = Holder.container.remove();
+        }catch (NoSuchElementException e){
             it = build();
         }
         it.init(someElements, someIndices, aCause, aCit);
@@ -89,7 +92,7 @@ public final class PSCLIterator<C extends AbstractSConstraint> extends Disposabl
      */
     public void init(final PartiallyStoredVector<C> someElements, final PartiallyStoredIntVector someIndices,
                      final C aCause, final DisposableIntIterator aCit) {
-        super.init();
+        init();
         this.elements = someElements;
         this.indices = someIndices;
         this.cit = aCit;
@@ -135,8 +138,17 @@ public final class PSCLIterator<C extends AbstractSConstraint> extends Disposabl
      */
     @Override
     public void dispose() {
-        super.dispose();
         cit.dispose();
-        Holder.set(this);
+        super.dispose();
+    }
+
+    /**
+     * Get the containerof disposable objects where free ones are available
+     *
+     * @return a {@link java.util.Deque}
+     */
+    @Override
+    public Queue getContainer() {
+        return Holder.container;
     }
 }

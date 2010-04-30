@@ -22,7 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.common.util.iterators;
 
+import choco.kernel.common.util.disposable.Disposable;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+
+import java.util.NoSuchElementException;
+import java.util.Queue;
 
 /**
  * User : cprudhom<br/>
@@ -39,14 +43,9 @@ public final class BipartiteIntDomainIterator extends DisposableIntIterator {
      * see http://en.wikipedia.org/wiki/Singleton_pattern
      */
     private static final class Holder {
-        private Holder() {
-        }
+        private Holder() {}
 
-        private static BipartiteIntDomainIterator instance = BipartiteIntDomainIterator.build();
-
-        private static void set(final BipartiteIntDomainIterator iterator) {
-            instance = iterator;
-        }
+        private static final Queue<BipartiteIntDomainIterator> container = Disposable.createContainer();
     }
 
     private int nextIdx;
@@ -61,8 +60,10 @@ public final class BipartiteIntDomainIterator extends DisposableIntIterator {
 
     @SuppressWarnings({"unchecked"})
     public synchronized static BipartiteIntDomainIterator getIterator(final int firstIdx, final int[] someValues) {
-        BipartiteIntDomainIterator it = Holder.instance;
-        if (!it.isReusable()) {
+        BipartiteIntDomainIterator it;
+        try{
+            it = Holder.container.remove();
+        }catch (NoSuchElementException e){
             it = build();
         }
         it.init(firstIdx, someValues);
@@ -73,7 +74,7 @@ public final class BipartiteIntDomainIterator extends DisposableIntIterator {
      * Freeze the iterator, cannot be reused.
      */
     public void init(final int firstIdx, final int[] someValues) {
-        super.init();
+        init();
         nextIdx = firstIdx;
         this.values = someValues;
     }
@@ -104,14 +105,14 @@ public final class BipartiteIntDomainIterator extends DisposableIntIterator {
         return values[v];
     }
 
-
     /**
-     * This method allows to declare that the iterator is not used anymoure. It
-     * can be reused by another object.
+     * Get the containerof disposable objects where free ones are available
+     *
+     * @return a {@link java.util.Deque}
      */
     @Override
-    public void dispose() {
-        super.dispose();
-        Holder.set(this);
+    public Queue getContainer() {
+        return Holder.container;
     }
+
 }
