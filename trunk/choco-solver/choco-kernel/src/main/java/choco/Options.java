@@ -292,46 +292,7 @@ public class Options {
     //////////////////////////////////////////// SOLVER ////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	/**
-	 * <br/><b>Goal</b>: Allow a solver to read a model more than one time.
-	 * <br/><i>In that case, the redundant constraints for scheduling must be posted explicitly</i>.
-	 * <br/><b>Scope</b> : {@link choco.kernel.solver.Solver}.
-	 */
-	public static final String S_MULTIPLE_READINGS = "cp:multiple_readings";
-
-    /**
-     * <br/><b>Goal</b>: Enforce the use of shaving before starting the search.
-     * <br/><i>The shaving mechanism is related to singloton consistency</i>.
-     * <br/><b>Scope</b> : {@link choco.kernel.solver.Solver}.
-     */
-    //TODO : move to Configuration.java
-    public static final String S_ROOT_SHAVING = "cp:shaving:root";
-
-    /**
-	 * <br/><b>Goal</b>: Compute a destructive lower bound before starting the search (optimization).
-	 * <br/><b>Scope</b> : {@link choco.kernel.solver.Solver}.
-	 */
-	//TODO : move to Configuration.java
-    public static final String S_DESTRUCTIVE_LOWER_BOUND = "cp:destructive_lb";
-
-    /**
-	 * <br/><b>Goal</b>: Apply shaving while computing the destructive lower bound.
-	 * <br/><i> For each hypothetical upper bound, the consistency test applies shaving</i>.
-	 * <br/><b>Scope</b> : {@link choco.kernel.solver.Solver}.
-	 */
-	//TODO : move to Configuration.java
-    public static final String S_DLB_SHAVING = "cp:shaving:destructive_lb";
-
-    /**
-	 * <br/><b>Goal</b>: Apply a bottom-up search algorithm (optimization).
-	 * <br/><i> The top-down strategy (default) starts with a upper bound and tries to improve it.</i>
-	 *  <br/><i> The bottom-up starts with a lower bound as target upper bound which is incremented by one unit until the
-problem becomes feasible.</i>.
-	 * <br/><b>Scope</b> : {@link choco.kernel.solver.Solver}.
-	 */
-    //TODO : move to Configuration.java
-	public static final String S_BOTTOM_UP = "cp:bottom_up";
-
+	
 
 	private Options() {
 		super();

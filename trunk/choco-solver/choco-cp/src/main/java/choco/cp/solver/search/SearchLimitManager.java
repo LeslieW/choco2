@@ -187,7 +187,7 @@ public class SearchLimitManager implements GlobalSearchLimitManager {
 
 	@Override
 	public String toString() {
-		if( searchLimit.getUnit() != NoLimit.NO_LIMIT_UNIT) {
+		if( searchLimit != null && searchLimit.getUnit() != NoLimit.NO_LIMIT_UNIT) {
 			return searchLimit.pretty();
 		}
 		return "";
@@ -195,7 +195,7 @@ public class SearchLimitManager implements GlobalSearchLimitManager {
 
 	@Override
 	public String pretty() {
-		if( restartLimit.getUnit() != NoLimit.NO_LIMIT_UNIT) {
+		if( restartLimit!= null && restartLimit.getUnit() != NoLimit.NO_LIMIT_UNIT) {
 			return toString()+ ",  restart: "+restartLimit.pretty();
 		}
 		return toString();

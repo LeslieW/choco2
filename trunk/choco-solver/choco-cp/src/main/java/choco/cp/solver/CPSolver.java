@@ -28,32 +28,91 @@
  *************************************************/
 package choco.cp.solver;
 
+import static choco.cp.solver.search.BranchingFactory.incDomWDeg;
+import static choco.cp.solver.search.BranchingFactory.incDomWDegBin;
+import static choco.kernel.common.Constant.FALSE;
+import static choco.kernel.common.Constant.TRUE;
+import static choco.kernel.common.util.tools.StringUtils.prettyOnePerLine;
+import static choco.kernel.solver.search.SolutionPoolFactory.makeDefaultSolutionPool;
+import gnu.trove.THashSet;
+import gnu.trove.TLongObjectHashMap;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.logging.Level;
+
 import choco.Choco;
-import choco.Options;
 import choco.cp.model.CPModel;
-import choco.cp.solver.configure.LimitConfiguration;
-import choco.cp.solver.configure.RestartConfiguration;
+import choco.cp.solver.configure.LimitFactory;
+import choco.cp.solver.configure.RestartFactory;
+import choco.cp.solver.configure.StrategyFactory;
 import choco.cp.solver.constraints.global.Occurrence;
 import choco.cp.solver.constraints.global.scheduling.precedence.PrecedenceDisjoint;
 import choco.cp.solver.constraints.global.scheduling.precedence.PrecedenceVDisjoint;
 import choco.cp.solver.constraints.global.scheduling.precedence.PrecedenceVSDisjoint;
-import choco.cp.solver.constraints.integer.*;
+import choco.cp.solver.constraints.integer.EqualXC;
+import choco.cp.solver.constraints.integer.EqualXYC;
+import choco.cp.solver.constraints.integer.EqualXY_C;
+import choco.cp.solver.constraints.integer.GreaterOrEqualXC;
+import choco.cp.solver.constraints.integer.GreaterOrEqualXYC;
+import choco.cp.solver.constraints.integer.GreaterOrEqualXY_C;
+import choco.cp.solver.constraints.integer.IntLinComb;
+import choco.cp.solver.constraints.integer.LessOrEqualXC;
+import choco.cp.solver.constraints.integer.LessOrEqualXY_C;
+import choco.cp.solver.constraints.integer.MaxOfAList;
+import choco.cp.solver.constraints.integer.NotEqualXC;
+import choco.cp.solver.constraints.integer.NotEqualXYC;
+import choco.cp.solver.constraints.integer.NotEqualXY_C;
 import choco.cp.solver.constraints.integer.bool.sat.ClauseStore;
 import choco.cp.solver.constraints.integer.channeling.ReifiedIntSConstraint;
-import choco.cp.solver.constraints.integer.extension.*;
+import choco.cp.solver.constraints.integer.extension.AC2001BinSConstraint;
+import choco.cp.solver.constraints.integer.extension.AC3BinSConstraint;
+import choco.cp.solver.constraints.integer.extension.AC3rmBinSConstraint;
+import choco.cp.solver.constraints.integer.extension.AC3rmBitBinSConstraint;
+import choco.cp.solver.constraints.integer.extension.CspLargeSConstraint;
+import choco.cp.solver.constraints.integer.extension.GAC2001LargeSConstraint;
+import choco.cp.solver.constraints.integer.extension.GAC2001PositiveLargeConstraint;
+import choco.cp.solver.constraints.integer.extension.GAC3rmLargeConstraint;
+import choco.cp.solver.constraints.integer.extension.GAC3rmPositiveLargeConstraint;
+import choco.cp.solver.constraints.integer.extension.GACstrPositiveLargeSConstraint;
 import choco.cp.solver.constraints.integer.intlincomb.IntLinCombFactory;
 import choco.cp.solver.constraints.real.Equation;
 import choco.cp.solver.constraints.real.MixedEqXY;
-import choco.cp.solver.constraints.real.exp.*;
+import choco.cp.solver.constraints.real.exp.RealCos;
+import choco.cp.solver.constraints.real.exp.RealIntegerPower;
+import choco.cp.solver.constraints.real.exp.RealMinus;
+import choco.cp.solver.constraints.real.exp.RealMult;
+import choco.cp.solver.constraints.real.exp.RealPlus;
+import choco.cp.solver.constraints.real.exp.RealSin;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
 import choco.cp.solver.constraints.set.Disjoint;
-import choco.cp.solver.constraints.set.*;
+import choco.cp.solver.constraints.set.IsIncluded;
+import choco.cp.solver.constraints.set.MemberXY;
+import choco.cp.solver.constraints.set.SetCard;
+import choco.cp.solver.constraints.set.SetEq;
+import choco.cp.solver.constraints.set.SetIntersection;
+import choco.cp.solver.constraints.set.SetNotEq;
+import choco.cp.solver.constraints.set.SetUnion;
 import choco.cp.solver.goals.GoalSearchSolver;
 import choco.cp.solver.propagation.ChocEngine;
 import choco.cp.solver.propagation.EventQueueFactory;
-import choco.cp.solver.search.*;
-import static choco.cp.solver.search.BranchingFactory.incDomWDeg;
-import static choco.cp.solver.search.BranchingFactory.incDomWDegBin;
+import choco.cp.solver.search.AbstractSearchLoopWithRestart;
+import choco.cp.solver.search.BranchAndBound;
+import choco.cp.solver.search.GlobalSearchStrategy;
+import choco.cp.solver.search.GoalSearchLoop;
+import choco.cp.solver.search.SearchLimitManager;
+import choco.cp.solver.search.SearchLoop;
+import choco.cp.solver.search.SearchLoopWithRecomputation;
 import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.branching.ImpactBasedBranching;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
@@ -66,21 +125,22 @@ import choco.cp.solver.search.real.RealIncreasingDomain;
 import choco.cp.solver.search.restart.BasicKickRestart;
 import choco.cp.solver.search.restart.IKickRestart;
 import choco.cp.solver.search.restart.NogoodKickRestart;
-import choco.cp.solver.search.set.*;
+import choco.cp.solver.search.set.AssignSetVar;
+import choco.cp.solver.search.set.MinDomSet;
+import choco.cp.solver.search.set.MinEnv;
+import choco.cp.solver.search.set.RandomSetValSelector;
+import choco.cp.solver.search.set.RandomSetVarSelector;
 import choco.cp.solver.variables.integer.BooleanVarImpl;
 import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.cp.solver.variables.integer.IntTerm;
 import choco.cp.solver.variables.real.RealVarImpl;
 import choco.cp.solver.variables.set.SetVarImpl;
-import static choco.kernel.common.Constant.FALSE;
-import static choco.kernel.common.Constant.TRUE;
 import choco.kernel.common.IndexFactory;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.common.util.tools.StringUtils;
-import static choco.kernel.common.util.tools.StringUtils.prettyOnePerLine;
 import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
@@ -94,7 +154,11 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.real.RealVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.model.variables.set.SetVariable;
-import choco.kernel.solver.*;
+import choco.kernel.solver.Configuration;
+import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solution;
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.SolverException;
 import choco.kernel.solver.branch.AbstractIntBranchingStrategy;
 import choco.kernel.solver.branch.BranchingWithLoggingStatements;
 import choco.kernel.solver.branch.VarSelector;
@@ -103,7 +167,15 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.global.MetaSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.constraints.integer.IntExp;
-import choco.kernel.solver.constraints.integer.extension.*;
+import choco.kernel.solver.constraints.integer.extension.BinRelation;
+import choco.kernel.solver.constraints.integer.extension.CouplesBitSetTable;
+import choco.kernel.solver.constraints.integer.extension.CouplesTable;
+import choco.kernel.solver.constraints.integer.extension.ExtensionalBinRelation;
+import choco.kernel.solver.constraints.integer.extension.IterLargeRelation;
+import choco.kernel.solver.constraints.integer.extension.IterTuplesTable;
+import choco.kernel.solver.constraints.integer.extension.LargeRelation;
+import choco.kernel.solver.constraints.integer.extension.TuplesList;
+import choco.kernel.solver.constraints.integer.extension.TuplesTable;
 import choco.kernel.solver.constraints.real.RealExp;
 import choco.kernel.solver.goals.Goal;
 import choco.kernel.solver.propagation.AbstractPropagationEngine;
@@ -116,8 +188,12 @@ import choco.kernel.solver.propagation.queue.AbstractConstraintEventQueue;
 import choco.kernel.solver.propagation.queue.ConstraintEventQueue;
 import choco.kernel.solver.propagation.queue.EventQueue;
 import choco.kernel.solver.propagation.queue.VarEventQueue;
-import choco.kernel.solver.search.*;
-import static choco.kernel.solver.search.SolutionPoolFactory.makeDefaultSolutionPool;
+import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import choco.kernel.solver.search.AbstractSearchLoop;
+import choco.kernel.solver.search.AbstractSearchStrategy;
+import choco.kernel.solver.search.ISolutionPool;
+import choco.kernel.solver.search.ValIterator;
+import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.limit.Limit;
@@ -133,12 +209,6 @@ import choco.kernel.solver.variables.real.RealVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 import choco.kernel.solver.variables.set.SetVar;
 import choco.kernel.visu.IVisu;
-import gnu.trove.THashSet;
-import gnu.trove.TLongObjectHashMap;
-
-import java.lang.reflect.Array;
-import java.util.*;
-import java.util.logging.Level;
 
 
 /**
@@ -173,6 +243,12 @@ public class CPSolver implements Solver {
 	 */
 	private IStateInt indexOfLastInitializedStaticConstraint;
 
+	/**
+	 * <br/><b>Goal</b>: specify that a solver read a model only once.
+	 * <br/><i>Otherwise, the redundant constraints for scheduling must be posted explicitly</i>.
+	 */
+	private boolean uniqueReading = true;
+	
 	/**
 	 * The (optimization or decision) model to which the entity belongs.
 	 */
@@ -321,12 +397,7 @@ public class CPSolver implements Solver {
 	 */
 	private ValSelector<SetVar> valSetSelector = null;
 
-
-	private final LimitConfiguration limitConfig;
-
-	private FailMeasure failMeasure;
-
-	private final RestartConfiguration restartConfig;
+	
 	
 	protected CPModelToCPSolver mod2sol;
 
@@ -342,27 +413,13 @@ public class CPSolver implements Solver {
 
 	private int eventQueueType = EventQueueFactory.BASIC;
 
-    protected final THashSet<String> optionsSet;
-
     protected Configuration configuration;
-
-	public final AbstractGlobalSearchStrategy getSearchStrategy() {
-		return strategy;
-	}
-
-	public void resetSearchStrategy() {
-		strategy = null;
-	}
 
     public CPSolver() {
 		this(new EnvironmentTrailing());
 	}
 
-	public CPSolver(String... options) {
-		this(new EnvironmentTrailing(), options);
-	}
-
-	public CPSolver(IEnvironment env, String... options) {
+	public CPSolver(IEnvironment env) {
 		mod2sol = new CPModelToCPSolver(this);
 		mapvariables = new TLongObjectHashMap<Var>();
 		mapconstraints = new TLongObjectHashMap<SConstraint>();
@@ -377,17 +434,20 @@ public class CPSolver implements Solver {
 		intconstantVars = new HashMap<Integer, IntDomainVar>(10);
 		realconstantVars = new HashMap<Double, RealIntervalConstant>(8);
 		this.propagationEngine = new ChocEngine(this);
-		failMeasure = new FailMeasure(propagationEngine);
 		this.environment = env;
 		this.constraints = env.makePartiallyStoredVector();
 		indexfactory = new IndexFactory();
 		this.indexOfLastInitializedStaticConstraint = env.makeInt(PartiallyStoredVector.getFirstStaticIndex() - 1);
-        this.optionsSet = new THashSet<String>();
-        this.optionsSet.addAll(Arrays.asList(options));
         //configs
         configuration = new Configuration();
-        restartConfig = new RestartConfiguration();
-        limitConfig = new LimitConfiguration();
+	}
+
+	public final AbstractGlobalSearchStrategy getSearchStrategy() {
+		return strategy;
+	}
+
+	public void resetSearchStrategy() {
+		strategy = null;
 	}
 
     protected void clearVarLists() {
@@ -412,10 +472,17 @@ public class CPSolver implements Solver {
     	mod2sol.clear();
 		clearVarLists();
 		this.propagationEngine = new ChocEngine(this);
-		failMeasure = new FailMeasure(propagationEngine);
 		this.constraints.clear();
 //		indexfactory = new IndexFactory();
 		this.indexOfLastInitializedStaticConstraint.set(PartiallyStoredVector.getFirstStaticIndex() - 1);
+	}
+    
+    public final boolean isUniqueReading() {
+		return uniqueReading;
+	}
+
+	public final void setUniqueReading(boolean multipleReading) {
+		this.uniqueReading = multipleReading;
 	}
 
 	/**
@@ -513,7 +580,7 @@ public class CPSolver implements Solver {
         }
 		mod2sol.readVariables(model);
 		mod2sol.readDecisionVariables();
-		mod2sol.readConstraints(model, !optionsSet.contains(Options.S_MULTIPLE_READINGS));
+		mod2sol.readConstraints(model );
 	}
 
 	/**
@@ -713,17 +780,18 @@ public class CPSolver implements Solver {
 
 			// There is no objective to reach
 			if (null == objective) {
+				StrategyFactory.checkIsCSP(this);
 				// an ilogGoal has been defined
 				if(GOAL){
                     if (ilogGoal != null) {
-                        strategy = new GoalSearchSolver(this, ilogGoal, configuration);
+                        strategy = new GoalSearchSolver(this, ilogGoal);
                     }
                     // Basic search strategy
                     else {
-                        strategy = new GlobalSearchStrategy(this, configuration);
+                        strategy = new GlobalSearchStrategy(this);
                     }
                 }else{
-                    strategy = new GlobalSearchStrategy(this, configuration);
+                    strategy = new GlobalSearchStrategy(this);
                 }
 			}
 			// there is an objective to reach
@@ -733,23 +801,16 @@ public class CPSolver implements Solver {
 					throw new UnsupportedOperationException(
 					"Ilog goal are not yet available in optimization");
 				}
-                final boolean doMaximize = configuration.readBoolean(Configuration.MAXIMIZE);
-				if (objective instanceof IntDomainVar) {
-					strategy = new BranchAndBound(
-                            this, (IntDomainVar) objective, doMaximize, configuration);
-				} else if (objective instanceof RealVar) {
-					strategy = new RealBranchAndBound(this, (RealVar) objective,
-							doMaximize, configuration);
-				}
+				strategy = StrategyFactory.createBranchAndBound(this);
 			}
 		}
 
 
 		assert strategy != null;
-        final int solutionPoolCapacity =  configuration.readInt(Configuration.SOLUTION_POOL_CAPACITY);
-		strategy.setSolutionPool(makeDefaultSolutionPool(strategy, solutionPoolCapacity));
+		strategy.setSolutionPool(StrategyFactory.createSolutionPool(strategy));
 		generateSearchLoop();
-		generateLimitManager();
+		strategy.setLimitManager( LimitFactory.createLimitManager(strategy));
+		strategy.setShavingTools( StrategyFactory.createShavingTools(this) );
 
         if(ilogGoal==null){
 			if (tempGoal == null) {
@@ -770,46 +831,16 @@ public class CPSolver implements Solver {
 		}
 	}
 
-	protected void generateLimitManager() {
-		SearchLimitManager limitManager = new SearchLimitManager(strategy);
-		limitManager.setSearchLimit(limitConfig.makeSearchLimit(strategy)); //controlling the search
-		limitManager.setRestartLimit(limitConfig.makeRestartLimit(strategy)); //controlling the restart
-		//controlling the restart strategy
-		limitManager.setRestartStrategy(
-				restartConfig.getRestartStrategy(),
-				limitConfig.createLimit(strategy,limitConfig.getRestartStrategyLimitType(), Integer.MAX_VALUE)
-		);
-		strategy.setLimitManager(limitManager);
-	}
-
 	protected void generateSearchLoop() {
-		final IKickRestart kickRestart = (
-
-				restartConfig.isRecordNogoodFromRestart() ?
-						new NogoodKickRestart(strategy) :
-							new BasicKickRestart(strategy)
-		);
-
 		AbstractSearchLoop searchLoop;
-        final int recomputationGap = configuration.readInt(Configuration.RECOMPUTATION_GAP);
 		if(!GOAL){
 			if(ilogGoal!=null){
 				searchLoop = new GoalSearchLoop(strategy, ilogGoal);
-			}else{
-				searchLoop =  (
-						recomputationGap>1 ?
-								new SearchLoopWithRecomputation(strategy, kickRestart, recomputationGap):
-									new SearchLoop(strategy, kickRestart) )
-									;
-				((AbstractSearchLoopWithRestart)searchLoop).setRestartAfterEachSolution(restartConfig.isRestartAfterEachSolution());
+			}else{				
+				searchLoop = StrategyFactory.createSearchLoop(strategy);
 			}
 		}else{
-			searchLoop =  (
-					recomputationGap>1 ?
-							new SearchLoopWithRecomputation(strategy, kickRestart, recomputationGap):
-								new SearchLoop(strategy, kickRestart) )
-								;
-			((AbstractSearchLoopWithRestart)searchLoop).setRestartAfterEachSolution(restartConfig.isRestartAfterEachSolution());
+			searchLoop =  StrategyFactory.createSearchLoop(strategy);
 		}
 		strategy.setSearchLoop(searchLoop);
 	}
@@ -1018,12 +1049,8 @@ public class CPSolver implements Solver {
 	 *            indicates wether the search stategy monitor the fail limit
 	 */
 	public void monitorFailLimit(boolean b) {
-		if(b) {
-			failMeasure.safeAdd();
-		}
-		else{
-			failMeasure.safeDelete();
-		}
+		if(b) propagationEngine.getFailMeasure().safeAdd();
+		else propagationEngine.getFailMeasure().safeDelete();
 	}
 
 	/**
@@ -1031,7 +1058,7 @@ public class CPSolver implements Solver {
 	 * algorithm
 	 */
 	public void setTimeLimit(int timeLimit) {
-		limitConfig.setSearchLimit(Limit.TIME, timeLimit);
+		LimitFactory.setSearchLimit(this, Limit.TIME, timeLimit);
 	}
 
 
@@ -1040,7 +1067,7 @@ public class CPSolver implements Solver {
 	 * search algorithm
 	 */
 	public void setNodeLimit(int nodeLimit) {
-		limitConfig.setSearchLimit(Limit.NODE, nodeLimit);
+		LimitFactory.setSearchLimit(this, Limit.NODE, nodeLimit);
 	}
 
 	/**
@@ -1048,7 +1075,7 @@ public class CPSolver implements Solver {
 	 * by the search algorithm
 	 */
 	public void setBackTrackLimit(int backTrackLimit) {
-		limitConfig.setSearchLimit(Limit.BACKTRACK, backTrackLimit);
+		LimitFactory.setSearchLimit(this, Limit.BACKTRACK, backTrackLimit);
 	}
 
 	/**
@@ -1056,7 +1083,7 @@ public class CPSolver implements Solver {
 	 * search algorithm
 	 */
 	public void setFailLimit(int failLimit) {
-		limitConfig.setSearchLimit(Limit.FAIL, failLimit);
+		LimitFactory.setSearchLimit(this, Limit.FAIL, failLimit);
 	}
 
 	/**
@@ -1064,18 +1091,9 @@ public class CPSolver implements Solver {
 	 * The limit does not stop the search only the restart process.
 	 */
 	public void setRestartLimit(int restartLimit) {
-		limitConfig.setRestartLimit(Limit.RESTART, restartLimit);
+		LimitFactory.setRestartLimit(this, Limit.RESTART, restartLimit);
 	}
 
-
-	public final LimitConfiguration getLimitConfig() {
-		return limitConfig;
-	}
-
-	@Override
-	public final FailMeasure getFailMeasure() {
-		return failMeasure;
-	}
 
 	/**
 	 * Get the time count of the search algorithm
@@ -1264,27 +1282,6 @@ public class CPSolver implements Solver {
 	}
 
 
-	public void cancelRestartConfiguration() {
-		limitConfig.setRestartStrategyLimitType(null); //set default;
-		restartConfig.cancelRestarts();
-	}
-
-	/**
-	 * Perform a search with restarts regarding the number of backtrack. An
-	 * initial allowed number of backtrack is given (parameter base) and once
-	 * this limit is reached a restart is performed and the new limit imposed to
-	 * the search is increased by multiplying the previous limit with the
-	 * parameter grow. Restart strategies makes really sense with strategies
-	 * that make choices based on the past experience of the search :
-	 * DomOverWdeg or Impact based search. It could also be used with a random
-	 * heuristic
-	 *
-	 * @param base
-	 *            : the initial number of fails limiting the first search
-	 */
-	public void setGeometricRestart(int base) {
-		restartConfig.setGeometricalRestartPolicy(base, 1.2);
-	}
 	/**
 	 * Perform a search with restarts regarding the number of backtrack. An
 	 * initial allowed number of backtrack is given (parameter base) and once
@@ -1302,7 +1299,7 @@ public class CPSolver implements Solver {
 	 *            base;
 	 */
 	public void setGeometricRestart(int base, double grow) {
-		restartConfig.setGeometricalRestartPolicy(base, grow);
+		RestartFactory.setGeometricalRestartPolicy(this, base, grow);
 	}
 
 	/**
@@ -1325,8 +1322,8 @@ public class CPSolver implements Solver {
 	 *            the maximum number of restarts
 	 */
 	public void setGeometricRestart(int base, double grow, int restartLimit) {
-		restartConfig.setGeometricalRestartPolicy(base, grow);
-		limitConfig.setRestartLimit(Limit.RESTART, restartLimit);
+		RestartFactory.setGeometricalRestartPolicy(this, base, grow);
+		LimitFactory.setRestartLimit(this, Limit.RESTART, restartLimit);
 	}
 
 
@@ -1353,8 +1350,8 @@ public class CPSolver implements Solver {
 	 *            the maximum number of restarts
 	 */
 	public void setLubyRestart(int base, int grow, int restartLimit) {
-		restartConfig.setLubyRestartPolicy(base, grow);
-		limitConfig.setRestartLimit(Limit.RESTART, restartLimit);
+		RestartFactory.setLubyRestartPolicy(this, base, grow);
+		LimitFactory.setRestartLimit(this, Limit.RESTART, restartLimit);
 	}
 
 	/**
@@ -1378,25 +1375,13 @@ public class CPSolver implements Solver {
 	 *            : the geometrical factor for Luby restart strategy
 	 */
 	public void setLubyRestart(int base, int grow) {
-		restartConfig.setLubyRestartPolicy(base, grow);
-	}
-
-	/**
-	 * default growing factor:2
-	 *
-	 * @param base scale factor
-	 */
-	public void setLubyRestart(int base) {
-		restartConfig.setLubyRestartPolicy(base, 2);
+		RestartFactory.setLubyRestartPolicy(this, base, grow);
 	}
 
 
-	public boolean isRecordingNogoodFromRestart() {
-		return restartConfig.isRecordNogoodFromRestart();
-	}
-
+	@Deprecated
 	public void setRecordNogoodFromRestart(boolean recordNogoodFromRestart) {
-		restartConfig.setRecordNogoodFromRestart(recordNogoodFromRestart);
+		configuration.putBoolean(Configuration.NOGOOD_RECORDING_FROM_RESTART, recordNogoodFromRestart);
 	}
 
 	/**
@@ -1404,14 +1389,15 @@ public class CPSolver implements Solver {
 	 *
 	 * @param restart indicates wether to restart or not
 	 */
+	@Deprecated
 	public void setRestart(boolean restart) {
-		restartConfig.setRestartAfterEachSolution(restart);
+		configuration.readBoolean(Configuration.RESTART_AFTER_SOLUTION);
 	}
 
 
-	public final RestartConfiguration getRestartConfiguration() {
-		return restartConfig;
-	}
+//	public final RestartConfiguration getRestartConfiguration() {
+//		return restartConfig;
+//	}
 
 	/**
 	 * a boolean indicating if the strategy minize or maximize the objective
@@ -1422,7 +1408,7 @@ public class CPSolver implements Solver {
 	 */
     @Deprecated
 	public void setDoMaximize(boolean maximize) {
-		configuration.putBoolean(Configuration.MAXIMIZE, maximize);
+		StrategyFactory.setDoOptimize(this, maximize);
 	}
 
 	/**
@@ -4167,70 +4153,5 @@ public class CPSolver implements Solver {
 				(AbstractIntSConstraint) opc);
 	}
 
-    /**
-     * Add a single option to the pool of option.
-     *
-     * @param the option.
-     */
-    @Override
-    public void addOption(final String option) {
-        optionsSet.add(option);
-    }
-
-    /**
-     * Add several options to the pool of option.
-     *
-     * @param options
-     */
-    @Override
-    public void addOptions(final String options) {
-        DisposableIterator<String> iter = StringUtils.getOptionIterator(options);
-		while(iter.hasNext()){
-            addOption(iter.next());
-        }
-        iter.dispose();
-    }
-
-    /**
-     * Add an array of options to the pool of options
-     * of the object
-     *
-     * @param options array of options
-     */
-    @Override
-    public void addOptions(final String[] options) {
-        optionsSet.addAll(Arrays.asList(options));
-    }
-
-    /**
-     * Add a set of options to the pool of options
-     * of the object
-     *
-     * @param options set of options
-     */
-    @Override
-    public void addOptions(final Set<String> options) {
-        optionsSet.addAll(options);
-    }
-
-    /**
-     * Get the pool of unique options
-     *
-     * @return set of options
-     */
-    @Override
-    public Set<String> getOptions() {
-        return optionsSet;
-    }
-
-    /**
-     * check if the option is activated
-     *
-     * @return <code>true</code> if the set contains the option
-     */
-    @Override
-    public boolean containsOption(final String option) {
-        return optionsSet.contains(option);
-    }
 }
 

@@ -31,6 +31,7 @@ import choco.kernel.solver.propagation.listener.PropagationEngineListener;
 import choco.kernel.solver.propagation.queue.AbstractConstraintEventQueue;
 import choco.kernel.solver.propagation.queue.EventQueue;
 import choco.kernel.solver.propagation.queue.VarEventQueue;
+import choco.kernel.solver.search.measure.FailMeasure;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.real.RealVar;
@@ -45,6 +46,7 @@ public interface PropagationEngine {
 
 	public final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
+	FailMeasure getFailMeasure();
 	/**
 	 * Raising a contradiction with a cause.
 	 */

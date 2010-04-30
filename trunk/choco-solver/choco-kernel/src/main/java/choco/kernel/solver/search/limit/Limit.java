@@ -37,7 +37,7 @@ public enum Limit {
 	BACKTRACK("limit.backtrack","Backtracks"),
     FAIL("limit.fail","Fails"),
     RESTART("limit.restart","Restarts"),
-    UNDEFINED("", "");
+    UNDEF("", "");
 
     private final String property;
 

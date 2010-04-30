@@ -82,6 +82,7 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 		filtering = new PackFiltering(this,flags);
 		availableBins = environment.makeBipartiteIntList(ArrayUtils.zeroToN(getNbBins()));
 		reuseStatus = new NoSumList(this.sizes);
+		//Pas de MaskgetFilteredEventMask(idx)
 	}
 
 	public final boolean isEmpty(int bin) {
@@ -194,7 +195,6 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 			}
 			res |= bins[item].instantiate(bin, this, false);
 		}else {
-			LOGGER.warning("should not raise a contradiction here.");
 			this.fail();
 		}
 		return res;
@@ -224,9 +224,10 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 		final int idx = ivars.length-1;
 		//LOGGER.info(min+ " "+max + " -> "+ivars[idx].pretty());
 		ivars[idx].updateInf( min, this, false);
+		final int oldSup = ivars[idx].getSup(); 
 		if( ivars[idx].updateSup(max, this, false)
 				&& flags.contains(SettingType.LAST_BINS_EMPTY)) {
-			for (int b = max; b < getNbBins(); b++) {
+			for (int b = max; b < oldSup; b++) {
 				final DisposableIntIterator iter = svars[b].getDomain().getEnveloppeIterator();
 				try{
 					while(iter.hasNext()) {
@@ -387,232 +388,245 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 			final int b = bins[item].getVal();
 			svars[b].addToKernel(item, this, false);
 			checkDeltaDomain(item);
-		}
+		} else handleNbBinsEvent(varIdx);
 		constAwake(false);
 	}
 
-
-	@Override
-	public void awakeOnKer(int varIdx, int x) throws ContradictionException {
-		pack(x,varIdx);
-		this.constAwake(false);
-	}
-
-	@Override
-	public void awakeOnRem(int varIdx, int val) throws ContradictionException {
-		if(isItemEvent(varIdx)) {
-			//remove from associated enveloppe
-			svars[val].remFromEnveloppe(getItemIndex(varIdx), this, false);
-		}
-		this.constAwake(false);
-	}
-
-	@Override
-	public void awakeOnSup(int varIdx) throws ContradictionException {
-		awakeOnBounds(varIdx);
-	}
-
-	@Override
-	public void propagate() throws ContradictionException {
-		do {
-			filtering.propagate();
-			//feasibility test (DDFF)
-			if ( ! bounds.computeBounds(flags.contains(DYNAMIC_LB)) ) {
-				bounds.computeBounds(flags.contains(DYNAMIC_LB));
-				fail();
-			}
-		}while( updateNbNonEmpty(bounds.getMinimumNumberOfBins(), bounds.getMaximumNumberOfBins()));
-
-
-	}
-
-	@Override
-	public boolean isSatisfied() {
-		int[] l = new int[loads.length];
-		int[] c = new int[loads.length];
-		for (int i = 0; i < bins.length; i++) {
-			final int b =  bins[i].getVal();
-			if( ! svars[b].isInDomainKernel(i)) return false; //check channeling
-			l[b] += sizes[i].getVal();
-			c[b] ++;
-		}
-		int nbb = 0;
-		for (int i = 0; i < loads.length; i++) {
-			if( svars[i].getCard().getVal() != c[i]) return false; //check cardinality
-			if( loads[i].getVal() != l[i]) return false; //check load
-			if( c[i] != 0) {nbb++;}
-		}
-		return ivars[ivars.length-1].getVal() == nbb; //check number of bins
-	}
-
-
-
-	protected final class BoundNumberOfBins {
-
-		private final int[] remainingSpace;
-
-		private final TIntArrayList itemsMLB;
-
-		protected int capacityMLB;
-
-		private final TIntArrayList binsMLB;
-
-		private int sizeIMLB;
-		
-		private int totalSizeCLB;
-
-		private final TIntArrayList binsCLB;
-
-		protected int nbEmpty;
-
-		protected int nbSome;
-
-		protected int nbFull;
-
-		protected int nbNewCLB;
-		
-		private final TIntProcedure minimumNumberOfNewBins = new TIntProcedure() {
-			@Override
-			public boolean execute(int arg0) {
-				nbNewCLB++;
-				if( totalSizeCLB <= arg0) {
-					return false;
-				}
-				totalSizeCLB -= arg0;
-				return true;
-			}
-		};
-
-		
-		public BoundNumberOfBins() {
-			super();
-			itemsMLB=new TIntArrayList(getNbBins() + getNbItems());
-			binsMLB = new TIntArrayList(getNbBins());
-			binsCLB = new TIntArrayList(getNbBins());
-			remainingSpace = new int[getNbBins()];
-		}
-
-
-		public void reset() {
-			Arrays.fill(remainingSpace, 0);
-			itemsMLB.resetQuick();
-			capacityMLB=0;
-			binsMLB.resetQuick();
-			totalSizeCLB = 0;
-			binsCLB.resetQuick();
-			nbEmpty=0;
-			nbSome = 0;
-			nbFull=0;
-			nbNewCLB = 0;
-		}
-
-		/**
-		 * add unpacked items (MLB) compute their total size (CLB).
-		 */
-		private void handleItems() {
-			final int n = getNbItems();
-			for (int i = 0; i < n; i++) {
-				final int size = sizes[i].getVal();
-				if(bins[i].isInstantiated()) {
-					remainingSpace[bins[i].getVal()] -= size;
-				}else {
-					totalSizeCLB += size;
-					itemsMLB.add(size);
+	private void handleNbBinsEvent(int varIdx) throws ContradictionException {
+		if(varIdx == getNbVars() - 1 &&
+				flags.contains(SettingType.LAST_BINS_EMPTY)) {
+			for (int b = ivars[ivars.length - 1].getSup(); b < getNbBins(); b++) {
+				final DisposableIntIterator iter = svars[b].getDomain().getEnveloppeIterator();
+				try{
+					while(iter.hasNext()) remove(iter.next(), b);
+				}finally {
+					iter.dispose();
 				}
 			}
-			sizeIMLB = itemsMLB.size();
+		}
+	}
+		@Override
+		public void awakeOnKer(int varIdx, int x) throws ContradictionException {
+			pack(x,varIdx);
+			this.constAwake(false);
+		}
+
+		@Override
+		public void awakeOnRem(int varIdx, int val) throws ContradictionException {
+			if(isItemEvent(varIdx)) {
+				//remove from associated enveloppe
+				svars[val].remFromEnveloppe(getItemIndex(varIdx), this, false);
+			}
+			this.constAwake(false);
+		}
+
+		@Override
+		public void awakeOnSup(int varIdx) throws ContradictionException {
+			handleNbBinsEvent(varIdx);
+			awakeOnBounds(varIdx);
+		}
+
+		@Override
+		public void propagate() throws ContradictionException {
+			do {
+				filtering.propagate();
+				//feasibility test (DDFF)
+				if ( ! bounds.computeBounds(flags.contains(DYNAMIC_LB)) ) {
+					bounds.computeBounds(flags.contains(DYNAMIC_LB));
+					fail();
+				}
+			}while( updateNbNonEmpty(bounds.getMinimumNumberOfBins(), bounds.getMaximumNumberOfBins()));
+
+
+		}
+
+		@Override
+		public boolean isSatisfied() {
+			int[] l = new int[loads.length];
+			int[] c = new int[loads.length];
+			for (int i = 0; i < bins.length; i++) {
+				final int b =  bins[i].getVal();
+				if( ! svars[b].isInDomainKernel(i)) return false; //check channeling
+				l[b] += sizes[i].getVal();
+				c[b] ++;
+			}
+			int nbb = 0;
+			for (int i = 0; i < loads.length; i++) {
+				if( svars[i].getCard().getVal() != c[i]) return false; //check cardinality
+				if( loads[i].getVal() != l[i]) return false; //check load
+				if( c[i] != 0) {nbb++;}
+			}
+			return ivars[ivars.length-1].getVal() == nbb; //check number of bins
 		}
 
 
-		/**
-		 * compute the remaining space in each bin and the cardinality of sets (empty, partially filled, full)
-		 */
-		private void handleBins() {
-			final int n = getNbBins();
-			//compute the number of empty, partially filled and closed bins
-			//also compute the remaining space in each open bins
-			for (int b = 0; b < n; b++) {
-				if(svars[b].isInstantiated()) {
-					//we ignore closed bins
-					if(loads[b].isInstantiatedTo(0)) nbEmpty++;
-					else nbFull++;
-				}else {
-					//the bins is used by the modified lower bound
-					binsMLB.add(b);
-					remainingSpace[b] += loads[b].getSup();
-					capacityMLB = Math.max(capacityMLB, remainingSpace[b]);
-					if(svars[b].getKernelDomainSize()>0) {
-						//partially filled
-						nbSome++;
-						totalSizeCLB -= remainingSpace[b]; //fill partially filled bin before empty ones
-					} else {
-						//still empty
-						binsCLB.add(remainingSpace[b]); //record empty bins to fill them later
+
+		protected final class BoundNumberOfBins {
+
+			private final int[] remainingSpace;
+
+			private final TIntArrayList itemsMLB;
+
+			protected int capacityMLB;
+
+			private final TIntArrayList binsMLB;
+
+			private int sizeIMLB;
+
+			private int totalSizeCLB;
+
+			private final TIntArrayList binsCLB;
+
+			protected int nbEmpty;
+
+			protected int nbSome;
+
+			protected int nbFull;
+
+			protected int nbNewCLB;
+
+			private final TIntProcedure minimumNumberOfNewBins = new TIntProcedure() {
+				@Override
+				public boolean execute(int arg0) {
+					nbNewCLB++;
+					if( totalSizeCLB <= arg0) {
+						return false;
+					}
+					totalSizeCLB -= arg0;
+					return true;
+				}
+			};
+
+
+			public BoundNumberOfBins() {
+				super();
+				itemsMLB=new TIntArrayList(getNbBins() + getNbItems());
+				binsMLB = new TIntArrayList(getNbBins());
+				binsCLB = new TIntArrayList(getNbBins());
+				remainingSpace = new int[getNbBins()];
+			}
+
+
+			public void reset() {
+				Arrays.fill(remainingSpace, 0);
+				itemsMLB.resetQuick();
+				capacityMLB=0;
+				binsMLB.resetQuick();
+				totalSizeCLB = 0;
+				binsCLB.resetQuick();
+				nbEmpty=0;
+				nbSome = 0;
+				nbFull=0;
+				nbNewCLB = 0;
+			}
+
+			/**
+			 * add unpacked items (MLB) compute their total size (CLB).
+			 */
+			private void handleItems() {
+				final int n = getNbItems();
+				for (int i = 0; i < n; i++) {
+					final int size = sizes[i].getVal();
+					if(bins[i].isInstantiated()) {
+						remainingSpace[bins[i].getVal()] -= size;
+					}else {
+						totalSizeCLB += size;
+						itemsMLB.add(size);
+					}
+				}
+				sizeIMLB = itemsMLB.size();
+			}
+
+
+			/**
+			 * compute the remaining space in each bin and the cardinality of sets (empty, partially filled, full)
+			 */
+			private void handleBins() {
+				final int n = getNbBins();
+				//compute the number of empty, partially filled and closed bins
+				//also compute the remaining space in each open bins
+				for (int b = 0; b < n; b++) {
+					if(svars[b].isInstantiated()) {
+						//we ignore closed bins
+						if(loads[b].isInstantiatedTo(0)) nbEmpty++;
+						else nbFull++;
+					}else {
+						//the bins is used by the modified lower bound
+						binsMLB.add(b);
+						remainingSpace[b] += loads[b].getSup();
+						capacityMLB = Math.max(capacityMLB, remainingSpace[b]);
+						if(svars[b].getKernelDomainSize()>0) {
+							//partially filled
+							nbSome++;
+							totalSizeCLB -= remainingSpace[b]; //fill partially filled bin before empty ones
+						} else {
+							//still empty
+							binsCLB.add(remainingSpace[b]); //record empty bins to fill them later
+						}
 					}
 				}
 			}
-		}
 
-		/**
-		 * compute fake top-items which fills the bin until the current capacity.
-		 */
-		private void createFakeItems() {
-			final int n = binsMLB.size();
-			for (int i = 0; i < n; i++) {
-				final int size = capacityMLB - remainingSpace[ binsMLB.getQuick(i)];
-				if( size > 0) itemsMLB.add(size);
+			/**
+			 * compute fake top-items which fills the bin until the current capacity.
+			 */
+			private void createFakeItems() {
+				final int n = binsMLB.size();
+				for (int i = 0; i < n; i++) {
+					final int size = capacityMLB - remainingSpace[ binsMLB.getQuick(i)];
+					if( size > 0) itemsMLB.add(size);
+				}
+			}
+
+			private void computeMinimumNumberOfNewBins() {
+				binsCLB.sort();
+				binsCLB.forEachDescending(minimumNumberOfNewBins);
+			}
+
+			/**
+			 * 
+			 * @param useDDFF do we use advanced and costly bounding procedure for a feaasibility test.
+			 * @return <code>false</code>  if the current state is infeasible.
+			 */
+			public boolean computeBounds(boolean useDDFF) {
+				reset();
+				//the order of the following calls is important
+				handleItems();
+				handleBins();
+				if( ! itemsMLB.isEmpty() ) {
+					//if( sizeMLB < maximumNumberOfNewBins.get() ) maximumNumberOfNewBins.set(sizeMLB); 
+					//there is unpacked items
+					//handleBins();
+					if( totalSizeCLB > 0) {
+						//compute an estimation of the minimal number of additional bins.
+						if( binsCLB.isEmpty()) return false;  //no more available bins for remaining unpacked items
+						computeMinimumNumberOfNewBins();
+					}
+					if( getMinimumNumberOfBins() > ivars[ivars.length - 1].getSup()) return false; //the continous bound prove infeasibility
+					if( useDDFF) {	
+						createFakeItems(); 
+						return LowerBoundFactory.consistencyTestLDFF(itemsMLB, capacityMLB, binsMLB.size());
+						//					int[] items = getItems();
+						//					final int ub=new BestFit1BP(items,capacityMLB,AbstractHeurisic1BP.SORT).computeUB();
+						//					if( ub > binsMLB.size()) {
+						//						//the heuristics solution is infeasible
+						//						//so, the lower bound could also be infeasible
+						//						final int lb = LowerBoundFactory.computeL_DFF_1BP(items, capacityMLB ,ub);
+						//						if( lb > binsMLB.size()) return false;
+						//					}//otherwise, the modified instance is feasible with best fit heuristics
+					}
+				}
+				return true;
+			}
+
+			public int getMaximumNumberOfBins() {
+				return Math.min(getNbBins() -nbEmpty, nbFull + nbSome + sizeIMLB);
+			}
+
+			public int getMinimumNumberOfBins() {
+				return nbFull + nbSome + nbNewCLB;
 			}
 		}
 
-		private void computeMinimumNumberOfNewBins() {
-			binsCLB.sort();
-			binsCLB.forEachDescending(minimumNumberOfNewBins);
-		}
 
-		/**
-		 * 
-		 * @param useDDFF do we use advanced and costly bounding procedure for a feaasibility test.
-		 * @return <code>false</code>  if the current state is infeasible.
-		 */
-		public boolean computeBounds(boolean useDDFF) {
-			reset();
-			//the order of the following calls is important
-			handleItems();
-			handleBins();
-			if( ! itemsMLB.isEmpty() ) {
-				//if( sizeMLB < maximumNumberOfNewBins.get() ) maximumNumberOfNewBins.set(sizeMLB); 
-				//there is unpacked items
-				//handleBins();
-				if( totalSizeCLB > 0) {
-					//compute an estimation of the minimal number of additional bins.
-					if( binsCLB.isEmpty()) return false;  //no more available bins for remaining unpacked items
-					computeMinimumNumberOfNewBins();
-				}
-				if( getMinimumNumberOfBins() > ivars[ivars.length - 1].getSup()) return false; //the continous bound prove infeasibility
-				if( useDDFF) {	
-					createFakeItems(); 
-					return LowerBoundFactory.consistencyTestLDFF(itemsMLB, capacityMLB, binsMLB.size());
-//					int[] items = getItems();
-//					final int ub=new BestFit1BP(items,capacityMLB,AbstractHeurisic1BP.SORT).computeUB();
-//					if( ub > binsMLB.size()) {
-//						//the heuristics solution is infeasible
-//						//so, the lower bound could also be infeasible
-//						final int lb = LowerBoundFactory.computeL_DFF_1BP(items, capacityMLB ,ub);
-//						if( lb > binsMLB.size()) return false;
-//					}//otherwise, the modified instance is feasible with best fit heuristics
-				}
-			}
-			return true;
-		}
-
-		public int getMaximumNumberOfBins() {
-			return Math.min(getNbBins() -nbEmpty, nbFull + nbSome + sizeIMLB);
-		}
-
-		public int getMinimumNumberOfBins() {
-			return nbFull + nbSome + nbNewCLB;
-		}
 	}
-
-
-}

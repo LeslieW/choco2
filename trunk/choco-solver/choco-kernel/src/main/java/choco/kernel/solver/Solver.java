@@ -72,7 +72,7 @@ import java.util.logging.Logger;
  * Time: 16:43:08
  * Interface for Solver class, declare main expected methods.
  */
-public interface Solver extends IMeasures, IPretty, IOptions{
+public interface Solver extends IMeasures, IPretty {
 	
 	public static final SolutionCheckerEngine DEFAULT_SOLUTION_CHECKER = new SolutionCheckerEngine();
 	
@@ -117,28 +117,30 @@ public interface Solver extends IMeasures, IPretty, IOptions{
 	 *
 	 * @return the number of solutions to the model that were encountered during the search
 	 */
+	
 	public int getNbSolutions();
 
     /**
      * Monitor the time limit (default to true)
      * @param b indicates wether the search stategy monitor the time limit
      */
+	@Deprecated
     public void monitorTimeLimit(boolean b);
 
     /**
      * Monitor the node limit (default to true)
      * @param b indicates wether the search stategy monitor the node limit
      */
+    @Deprecated
     public void monitorNodeLimit(boolean b);
 
     /**
      * Monitor the backtrack limit (default to false)
      * @param b indicates wether the search stategy monitor the backtrack limit
      */
+    @Deprecated
     public void monitorBackTrackLimit(boolean b);
 
-    
-    public FailMeasure getFailMeasure();
     /**
      * Monitor the fail limit (default to false)
      * @param b indicates wether the search stategy monitor the fail limit
@@ -254,6 +256,7 @@ public interface Solver extends IMeasures, IPretty, IOptions{
 	 *
 	 * @param restart
 	 */
+	@Deprecated
 	public void setRestart(boolean restart);
 
 	/**

@@ -1,12 +1,20 @@
 package choco.kernel.common.util.tools;
 
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.solver.Configuration;
 
 import java.io.*;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * see {@link Configuration}.
+ * @author Arnaud Malapert</br> 
+ * @since 29 avr. 2010 version 2.1.1</br>
+ * @version 2.1.1</br>
+ */
+@Deprecated
 public final class PropertyUtils {
 
 	private final static Logger LOGGER= ChocoLogging.getMainLogger();

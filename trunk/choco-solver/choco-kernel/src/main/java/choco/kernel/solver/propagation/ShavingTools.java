@@ -1,9 +1,8 @@
 package choco.kernel.solver.propagation;
 
-import choco.Options;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.VariableUtils;
-import choco.kernel.solver.Configuration;
+
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
@@ -20,11 +19,13 @@ public class ShavingTools {
 	public final IntDomainVar[] vars;
 
 	public boolean backwardPropagation = false;
-	
+
+	public boolean shaveLowerBound = false;
+
+	public boolean detectLuckySolution = false;
+
 	private int nbRemovals;
 
-    private final Configuration configuration;
-	
 	/**
 	 * 
 	 * @param solver
@@ -33,8 +34,7 @@ public class ShavingTools {
 	public ShavingTools(Solver solver, IntDomainVar[] vars) {
 		super();
 		this.solver = solver;
-		this.configuration = solver.getConfiguration();
-        this.vars = vars;
+		this.vars = vars;
 	}
 
 	public ShavingTools(Solver solver) {
@@ -44,15 +44,25 @@ public class ShavingTools {
 	public final boolean isBackwardPropagation() {
 		return backwardPropagation;
 	}
-	
+
 	public final void setBackwardPropagation(boolean backwardPropagation) {
 		this.backwardPropagation = backwardPropagation;
 	}
-	
-	
 
 	public final boolean isShavingLowerBound() {
-		return solver.containsOption(Options.S_DLB_SHAVING);
+		return shaveLowerBound;
+	}
+
+	public final void setShavingLowerBound(boolean b) {
+		shaveLowerBound = b;
+	}
+
+	public final boolean isDetectingLuckySolution() {
+		return detectLuckySolution;
+	}
+
+	public final void setDetectLuckySolution(boolean detectLuckySolution) {
+		this.detectLuckySolution = detectLuckySolution;
 	}
 
 	private static int findObjective(Solver s) {
@@ -141,7 +151,7 @@ public class ShavingTools {
 		try {
 			var.instantiate(val, null, true);
 			solver.propagate();
-			detectLuckySolution();	
+			if( detectLuckySolution ) detectLuckySolution();	
 			solver.worldPop();
 		} catch (ContradictionException e) {
 			solver.worldPop();
@@ -153,6 +163,8 @@ public class ShavingTools {
 
 
 	public final void destructiveLowerBound(final IObjectiveManager objM) throws ContradictionException {
+		boolean mem = detectLuckySolution;
+		detectLuckySolution = true;
 		objM.initBounds();
 		try {
 			while(shaveObjective(objM)) {
@@ -168,6 +180,7 @@ public class ShavingTools {
 				solver.propagate();
 			}
 		} catch (LuckySolutionException e) {}
+		detectLuckySolution = mem;
 	}
 
 
@@ -210,18 +223,16 @@ public class ShavingTools {
 
 	//TODO optimize by keeping trace of the last not instantiated variables
 	protected final void detectLuckySolution() throws LuckySolutionException {
-		if( configuration.readBoolean(Configuration.STOP_AT_FIRST_SOLUTION)) {
-			int n = solver.getNbIntVars();
-			for (int i = 0; i < n; i++) {
-				if( ! solver.getIntVarQuick(i).isInstantiated()) return;
-			}
-			n = solver.getNbSetVars();
-			for (int i = 0; i < n; i++) {
-				if( ! solver.getSetVarQuick(i).isInstantiated()) return;
-			}
-			if(solver.getNbRealVars() > 0) return; //FIXME what about real
-			throw LuckySolutionException.SINGLOTON;
+		int n = solver.getNbIntVars();
+		for (int i = 0; i < n; i++) {
+			if( ! solver.getIntVarQuick(i).isInstantiated()) return;
 		}
+		n = solver.getNbSetVars();
+		for (int i = 0; i < n; i++) {
+			if( ! solver.getSetVarQuick(i).isInstantiated()) return;
+		}
+		if(solver.getNbRealVars() > 0) return; //FIXME what about real
+		throw LuckySolutionException.SINGLOTON;
 	}
 
 	final static class LuckySolutionException extends Exception {

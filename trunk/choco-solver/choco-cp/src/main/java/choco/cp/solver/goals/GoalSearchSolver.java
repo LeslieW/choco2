@@ -64,8 +64,8 @@ public class GoalSearchSolver extends AbstractGlobalSearchStrategy {
   protected boolean globalContradiction = false;
 
 
-  public GoalSearchSolver(Solver s, Goal mainGoal, final Configuration configuration) {
-    super(s, configuration);
+  public GoalSearchSolver(Solver s, Goal mainGoal) {
+    super(s);
     this.mainGoal = mainGoal;
   }
 

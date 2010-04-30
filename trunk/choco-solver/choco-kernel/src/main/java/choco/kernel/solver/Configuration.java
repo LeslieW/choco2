@@ -22,13 +22,13 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver;
 
-import choco.kernel.common.logging.ChocoLogging;
-
 import java.lang.annotation.Retention;
 import java.lang.reflect.Field;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import choco.kernel.common.logging.ChocoLogging;
 
 /**
  * User : cprudhom<br/>
@@ -39,15 +39,16 @@ import java.util.logging.Logger;
 public class Configuration extends Properties {
 
     private final static Logger LOGGER = ChocoLogging.getMainLogger();
-
-    //////////////////////////////////////// ANNOTATION ////////////////////////////////////////////////////////////////
+   
+     //////////////////////////////////////// ANNOTATION ////////////////////////////////////////////////////////////////
 
     /**
      * Annotation to define a default value for a field.
      */
     @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
     public @interface Default {
-        String value();
+    	
+    	String value();
     }
 
     //////////////////////////////////////// DEFAULT KEYS //////////////////////////////////////////////////////////////
@@ -66,14 +67,14 @@ public class Configuration extends Properties {
      * <br/><b>Default value</b>: false
      */
     @Default(value = "false")
-    public static final String OPTIMIZE = "cp.optimize";
+    public static final String MINIMIZE = "cp.minimize";
 
     /**
      * <br/><b>Goal</b>: When optimization is declared, set to true for maximization, set to false for minimization
      * <br/><b>Type</b>: boolean
      * <br/><b>Default value</b>: true
      */
-    @Default(value = "true")
+    @Default(value = "false")
     public static final String MAXIMIZE = "cp.maximize";
 
     /**
@@ -109,14 +110,6 @@ public class Configuration extends Properties {
     public static final String RESTART_BASE = "cp.restart.base";
 
     /**
-     * <br/><b>Goal</b>: initial number of fails limiting the first search.
-     * <br/><b>Type</b>: int
-     * <br/><b>Default value</b>: 200
-     */
-    @Default(value = "200")
-    public static final String RESTART_MAX_NB = "cp.restart.number";
-
-    /**
      * <br/><b>Goal</b>: geometrical factor for restart strategy
      * <br/><b>Type</b>: int
      * <br/><b>Default value</b>: 2
@@ -133,8 +126,18 @@ public class Configuration extends Properties {
     public static final String RESTART_GEOM_GROW = "cp.restart.geometrical.grow";
 
     /**
+     * <br/><b>Goal</b>: Restart Policy limit type. If the limit bound defined by the policy (Luby, Geom) is reached, the search is restarted.
+     * <br/><b>Type</b>: Limit
+     * <br/><b>Default value</b>: BACKTRACK
+     */
+    @Default(value = "BACKTRACK")
+    public static final String RESTART_POLICY_LIMIT = "cp.restart.policy.limit.type";
+    
+    /**
      * <br/><b>Goal</b>: Enable nogood recording from restart.
      * <br/><b>Type</b>: boolean
+     * <br/> @see Nogood Recording from Restarts. Lecoutre, C.; Sais, L.; Tabary, S. & Vidal, <br>
+	 * IJCAI 2007 Proceedings of the 20th International Joint Conference on Artificial Intelligence, Hyderabad, India, January 6-12, 2007, 2007, 131-136
      * <br/><b>Default value</b>: false
      */
     @Default(value = "false")
@@ -162,17 +165,17 @@ public class Configuration extends Properties {
     /**
      * <br/><b>Goal</b>: Initial seed to generate streams of pseudorandom numbers
      * <br/><b>Type</b>: int
-     * <br/><b>Default value</b>: 29091981
+     * <br/><b>Default value</b>: 0
      */
-    @Default(value = "29091981")
+    @Default(value = "0")
     public static final String RANDOM_SEED = "cp.random.seed";
 
     /**
      * <br/><b>Goal</b>: Search limit type. If the search has not ended in the define limit bound, it is automatically stopped.
      * <br/><b>Type</b>: Limit
-     * <br/><b>Default value</b>: UNDEFINED
+     * <br/><b>Default value</b>: UNDEF
      */
-    @Default(value = "UNDEFINED")
+    @Default(value = "UNDEF")
     public static final String SEARCH_LIMIT = "cp.search.limit.type";
 
     /**
@@ -185,15 +188,15 @@ public class Configuration extends Properties {
     public static final String SEARCH_LIMIT_BOUND = "cp.search.limit.value";
 
     /**
-     * <br/><b>Goal</b>: Restart limit type. If the limit bound is reached, the search is restarted.
+     * <br/><b>Goal</b>: Restart limit type. If the limit bound is reached, the search stops restarting.
      * <br/><b>Type</b>: Limit
-     * <br/><b>Default value</b>: BACKTRACK
+     * <br/><b>Default value</b>: UNDEF
      */
-    @Default(value = "BACKTRACK")
+    @Default(value = "UNDEF")
     public static final String RESTART_LIMIT = "cp.restart.limit.type";
 
     /**
-     * <br/><b>Goal</b>: Restart limit bound. If the limit bound is reached, the search is restarted.
+     * <br/><b>Goal</b>: Restart limit bound. If the limit bound is reached, the search stops restarting.
      * it is automatically stopped.
      * <br/><b>Type</b>: int
      * <br/><b>Default value</b>: 2147483647 ({@link Integer.MAX_VALUE})
@@ -208,7 +211,7 @@ public class Configuration extends Properties {
      * <br/><b>Default value</b>: false
      */
     @Default(value = "false")
-    public static final String ROOT_SHAVING = "cp.shaving.root";
+    public static final String INIT_SHAVING = "cp.init.propagation.shaving";
 
     /**
      * <br/><b>Goal</b>: Compute a destructive lower bound before starting the search (optimization).
@@ -216,7 +219,7 @@ public class Configuration extends Properties {
      * <br/><b>Default value</b>: false
      */
     @Default(value = "false")
-    public static final String DESTRUCTIVE_LOWER_BOUND = "cp.destructive_lb";
+    public static final String INIT_DESTRUCTIVE_LOWER_BOUND = "cp.init.propagation.dLB";
 
     /**
      * <br/><b>Goal</b>: Apply shaving while computing the destructive lower bound.
@@ -225,7 +228,7 @@ public class Configuration extends Properties {
      * <br/><b>Default value</b>: false
      */
     @Default(value = "false")
-    public static final String DLB_SHAVING = "cp.shaving.destructive_lb";
+    public static final String INIT_DLB_SHAVING = INIT_DESTRUCTIVE_LOWER_BOUND+".shaving";
 
     /**
      * <br/><b>Goal</b>: Apply a bottom-up search algorithm (optimization).
@@ -304,6 +307,7 @@ public class Configuration extends Properties {
         this.clear();
         load();
     }
+    
 
     /**
      * Load the default value of keys defined in @Default annotation
@@ -339,10 +343,10 @@ public class Configuration extends Properties {
                     return ann.value();
                 }
             } catch (IllegalAccessException e) {
-                logOnFailure("key");
+                logOnFailure(key);
             }
         }
-        throw new NullPointerException();
+        throw new NullPointerException("cant find ");
     }
 
     /**
@@ -569,6 +573,14 @@ public class Configuration extends Properties {
      */
     public void putDouble(String key, double value) {
         this.put(key, Double.toString(value));
+    }
+    
+    public void putTrue(String key) {
+    	putBoolean(key, true);
+    }
+    
+    public void putFalse(String key) {
+    	putBoolean(key, false);
     }
 
     /**

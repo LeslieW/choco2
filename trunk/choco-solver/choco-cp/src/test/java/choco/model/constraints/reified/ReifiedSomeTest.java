@@ -34,6 +34,7 @@ import choco.cp.solver.search.integer.branching.ImpactBasedBranching;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.ComponentConstraint;
@@ -704,7 +705,8 @@ public class ReifiedSomeTest {
 
     @Test
     public void testBugNormalized() {
-        for (int seed = 0; seed < 10; seed++) {
+    	//ChocoLogging.setVerbosity(Verbosity.VERBOSE);
+    	for (int seed = 0; seed < 10; seed++) {
             LOGGER.info("seed:" + seed);
             CPModel m = new CPModel();
             m.setDefaultExpressionDecomposition(true);
@@ -773,7 +775,6 @@ public class ReifiedSomeTest {
             s.setValIntSelector(new RandomIntValSelector(seed));
             s.setGeometricRestart(30, 1.1);
             s.solve();
-            LOGGER.info(format("{0}", s.getNodeCount()));
             Assert.assertTrue("Solution incorrecte", s.checkSolution(false));
         }
     }

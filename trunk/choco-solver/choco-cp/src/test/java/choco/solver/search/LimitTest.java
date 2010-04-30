@@ -27,10 +27,13 @@ import static choco.Choco.makeIntVarArray;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.configure.LimitFactory;
 import choco.cp.solver.search.SearchLimitManager;
 import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.varselector.MinDomain;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.search.limit.Limit;
 import static junit.framework.Assert.assertEquals;
@@ -131,7 +134,7 @@ public class LimitTest {
 	@Test
 	public void testRestartLimit3() {
 		solver.setTimeLimit(SIZE*20);
-		( (CPSolver) solver).getLimitConfig().setRestartLimit(Limit.NODE, 2);
+		LimitFactory.setRestartLimit(solver, Limit.NODE, 2);
 		solver.setLubyRestart(1, 2);
 		solver.setLubyRestart(1, 3);
 		check(Limit.TIME);

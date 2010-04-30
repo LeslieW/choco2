@@ -615,8 +615,8 @@ public class TestCumulative {
         // Build model
 		Model model = new CPModel();
 		// Build a solver
-		CPSolver s = new CPSolver(Options.S_MULTIPLE_READINGS);
-
+		CPSolver s = new CPSolver();
+		s.setUniqueReading(true);
 		// init DATA
 
 		int maxL = 2401;
