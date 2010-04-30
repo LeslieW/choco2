@@ -20,13 +20,14 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package samples.multicostregular.planner;
+package planner;
 
-import choco.kernel.model.constraints.Constraint;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.model.constraints.Constraint;
 
-import static choco.Choco.*;
+import static choco.Choco.eq;
+import static choco.Choco.makeIntVar;
 
 /**
  * Created by IntelliJ IDEA.

@@ -20,14 +20,13 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package samples.multicostregular.planner;
+package planner;
 
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.global.automata.costregular.CostRegular;
-import choco.cp.solver.constraints.global.automata.costregular.CostRegularValSelector;
+import choco.cp.solver.constraints.global.automata.fast_costregular.FCostRegularValSelector;
+import choco.cp.solver.constraints.global.automata.fast_costregular.FastCostRegular;
 import choco.cp.solver.constraints.global.automata.fast_multicostregular.FastMultiCostRegular;
 import choco.cp.solver.constraints.global.automata.fast_multicostregular.valselector.MCRValSelector;
 import choco.cp.solver.search.integer.varselector.MinDomain;
@@ -41,6 +40,8 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import static choco.Choco.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -183,6 +184,24 @@ for (int i = 3 ; i < nbAct+3 ; i++)
 
     }
 
+private static int[][][] make3dim(int[][] cost, int dim)
+   {
+       int[][][] out = new int[cost.length][][];
+       for (int i = 0 ; i < out.length ; i++)
+       {
+           out[i] = new int[cost[i].length][];
+           for (int j = 0 ;j < out[i].length ;j++)
+           {
+               out[i][j] = new int[dim];
+               for (int q = 0 ; q < dim ; q++)
+               {
+                   out[i][j][q] = cost[i][j];
+               }
+           }
+       }
+       return out;
+   }
+
     private void makeModelWithCostReg(boolean old) {
 
         modelType = "COST-REGULAR+GCC";
@@ -216,8 +235,8 @@ for (int i = 3 ; i < nbAct+3 ; i++)
 
 
 
-        main = costRegular(shifts,z,auto,csts);
-        //for (int i = 0 ; i < 96  ;i++)
+main = costRegular(shifts,z,auto,make3dim(csts,auto.getNbStates()));
+                //for (int i = 0 ; i < 96  ;i++)
         //if (i < 44 || i > 56) m.addConstraint(neq(shifts[i],InstanceMaker.L));
 
         m.addConstraint(main);
@@ -318,7 +337,7 @@ for (int i = 3 ; i < nbAct+3 ; i++)
         if (type == COSTREG && valheur)
         {
             s.setVarIntSelector(new MinDomain(s,s.getVar(shifts)));
-             s.setValIntSelector(new CostRegularValSelector((CostRegular)s.getCstr(main),false));
+             s.setValIntSelector(new FCostRegularValSelector((FastCostRegular)s.getCstr(main),false));
         }
       //    CPSolver.setVerbosity(CPSolver.SEARCH);
       //  s.setLoggingMaxDepth(100);

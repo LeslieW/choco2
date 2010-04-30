@@ -30,6 +30,7 @@ import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.*;
 import choco.kernel.model.constraints.automaton.DFA;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
+import choco.kernel.model.constraints.automaton.penalty.PenaltyFunction;
 import choco.kernel.model.constraints.geost.GeostOptions;
 import choco.kernel.model.constraints.geost.externalConstraints.DistGeqModel;
 import choco.kernel.model.constraints.geost.externalConstraints.DistLeqModel;
@@ -59,10 +60,11 @@ import choco.kernel.solver.constraints.integer.extension.*;
 import gnu.trove.TIntArrayList;
 import org.jgrapht.graph.DirectedMultigraph;
 
-import static java.lang.System.arraycopy;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static java.lang.System.arraycopy;
 
 /**
  * Created by IntelliJ IDEA.
@@ -3616,6 +3618,12 @@ public class Choco {
                 int[][][][] copy = ArrayUtils.swallowCopy(costs);
 		return new ComponentConstraint(ConstraintType.MULTICOSTREGULAR, new Object[]{vars.length,auto,copy},
 				ArrayUtils.append(vars, cvar));
+	}
+
+
+	public static Constraint softMultiCostRegular(IntegerVariable[] vars, IntegerVariable[] counters, IntegerVariable[] penaltyVars, IntegerVariable globalPenalty, PenaltyFunction[] pfunction ,FiniteAutomaton auto, int[][][][] costs){
+                int[][][][] copy = ArrayUtils.swallowCopy(costs);
+		return new ComponentConstraint(ConstraintType.SOFTMULTICOSTREGULAR, new Object[]{vars.length,counters.length,pfunction,auto,copy}, ArrayUtils.append(vars,counters,penaltyVars,new IntegerVariable[]{globalPenalty}));
 	}
 
 

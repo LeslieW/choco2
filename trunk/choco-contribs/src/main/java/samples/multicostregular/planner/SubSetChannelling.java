@@ -20,7 +20,7 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package samples.multicostregular.planner;
+package planner;
 
 import choco.cp.model.managers.IntConstraintManager;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -68,6 +68,10 @@ public class SubSetChannelling extends AbstractLargeIntSConstraint {
 
 
     }
+public boolean isSatisfied(int[] sol)
+{
+        return true; 
+}
 
     public void awakeOnRem(int idx, int val) throws ContradictionException {
         if (idx < n)
