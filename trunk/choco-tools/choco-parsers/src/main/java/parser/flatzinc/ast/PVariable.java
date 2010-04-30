@@ -161,8 +161,7 @@ public final class PVariable extends ParVar{
         switch (what.typeOf) {
             case INT1:
                 LOGGER.severe("PVariable#buildWithSet INT1: unknown constructor for " + name);
-                System.exit(-1);
-                break;
+                throw new UnsupportedOperationException();
             case INT2:
                 DInt2 bounds = (DInt2) what;
                 sv = Choco.makeSetVar(name, bounds.getLow(), bounds.getUpp());

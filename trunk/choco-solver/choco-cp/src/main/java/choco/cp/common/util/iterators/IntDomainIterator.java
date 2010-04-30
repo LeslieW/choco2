@@ -23,7 +23,11 @@
 package choco.cp.common.util.iterators;
 
 import choco.cp.solver.variables.integer.AbstractIntDomain;
+import choco.kernel.common.util.disposable.Disposable;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+
+import java.util.NoSuchElementException;
+import java.util.Queue;
 
 /**
  * User : cprudhom<br/>
@@ -31,7 +35,7 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
  * Date : 1 mars 2010<br/>
  * Since : Choco 2.1.1<br/>
  */
-public class IntDomainIterator extends DisposableIntIterator {
+public final class IntDomainIterator extends DisposableIntIterator {
 
     /**
      * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
@@ -43,11 +47,7 @@ public class IntDomainIterator extends DisposableIntIterator {
         private Holder() {
         }
 
-        private static IntDomainIterator instance = IntDomainIterator.build();
-
-        private static void set(final IntDomainIterator iterator) {
-            instance = iterator;
-        }
+        private static final Queue<IntDomainIterator> container = Disposable.createContainer();
     }
 
     private AbstractIntDomain domain;
@@ -63,8 +63,10 @@ public class IntDomainIterator extends DisposableIntIterator {
 
     @SuppressWarnings({"unchecked"})
     public synchronized static IntDomainIterator getIterator(final AbstractIntDomain aDomain) {
-        IntDomainIterator it = Holder.instance;
-        if (!it.isReusable()) {
+        IntDomainIterator it;
+        try{
+            it = Holder.container.remove();
+        }catch (NoSuchElementException e){
             it = build();
         }
         it.init(aDomain);
@@ -75,7 +77,7 @@ public class IntDomainIterator extends DisposableIntIterator {
      * Freeze the iterator, cannot be reused.
      */
     public void init(final AbstractIntDomain dom) {
-        super.init();
+        init();
         domain = dom;
         if (domain.getSize() >= 1) {
             nextValue = domain.getInf();
@@ -115,13 +117,13 @@ public class IntDomainIterator extends DisposableIntIterator {
 
 
     /**
-     * This method allows to declare that the iterator is not used anymoure. It
-     * can be reused by another object.
+     * Get the containerof disposable objects where free ones are available
+     *
+     * @return a {@link java.util.Deque}
      */
     @Override
-    public void dispose() {
-        super.dispose();
-        Holder.set(this);
+    public Queue getContainer() {
+        return Holder.container;
     }
 
 }

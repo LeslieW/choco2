@@ -154,7 +154,7 @@ public final class Parameter extends ParVar{
                 break;
             case ARRAY:
                 LOGGER.severe("Parameter#buildArray ARRAY: unexpected type for " + name);
-                System.exit(-1);
+                throw new UnsupportedOperationException();
         }
     }
 

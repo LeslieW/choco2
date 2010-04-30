@@ -23,6 +23,7 @@
 package choco.kernel.common.util.tools;
 
 import choco.kernel.common.IIndex;
+import choco.kernel.common.util.disposable.Disposable;
 import gnu.trove.TIntArrayList;
 import gnu.trove.TLongHashSet;
 
@@ -36,11 +37,6 @@ import java.util.*;
  * Update : Choco 2.1.0
  */
 public final class ArrayUtils {
-
-    private static DLongHashSet HASHSET = new DLongHashSet();
-
-    private static DArrayList LIST = new DArrayList();
-
 
     private ArrayUtils() {
         super();
@@ -63,13 +59,13 @@ public final class ArrayUtils {
     }
 
     public static int[] linspace(int begin, int end) {
-        if(end > begin) {
-            int[] r = new int[end-begin];
+        if (end > begin) {
+            int[] r = new int[end - begin];
             for (int i = begin; i < end; i++) {
-                r[ i -begin] = i;
+                r[i - begin] = i;
             }
             return r;
-        }else return null;
+        } else return null;
     }
 
     @SuppressWarnings("unchecked")
@@ -93,13 +89,13 @@ public final class ArrayUtils {
         return length;
     }
 
-	public static <T> boolean contains(T[] array,T obj) {
-		for (T elem : array) {
-			if(elem.equals(obj)) return true;
-		}
-		return false;
-	}
-	
+    public static <T> boolean contains(T[] array, T obj) {
+        for (T elem : array) {
+            if (elem.equals(obj)) return true;
+        }
+        return false;
+    }
+
     public static <T> T get(int index, final T[]... arrays) {
         int shift = index;
         for (T[] tab : arrays) {
@@ -168,7 +164,7 @@ public final class ArrayUtils {
 
     public static <T> void reverse(T[] tab) {
         T tmp;
-        final int n = tab.length-1;
+        final int n = tab.length - 1;
         for (int i = 0; i < n / 2; i++) {
             tmp = tab[i];
             tab[i] = tab[n - i];
@@ -228,11 +224,10 @@ public final class ArrayUtils {
         return ret;
     }
 
-    public static <T> T[] flattenSubMatrix(int iMin, int iLength, int jMin, int jLength, T[][] matrix)
-    {
-        T[] ret = (T[]) java.lang.reflect.Array.newInstance(matrix[0].getClass().getComponentType(), iLength*jLength);
-        for (int i = 0, k=0; i < iLength; i++, k += jLength)
-            System.arraycopy(matrix[iMin+i], jMin, ret, k, jLength);
+    public static <T> T[] flattenSubMatrix(int iMin, int iLength, int jMin, int jLength, T[][] matrix) {
+        T[] ret = (T[]) java.lang.reflect.Array.newInstance(matrix[0].getClass().getComponentType(), iLength * jLength);
+        for (int i = 0, k = 0; i < iLength; i++, k += jLength)
+            System.arraycopy(matrix[iMin + i], jMin, ret, k, jLength);
         return ret;
     }
 
@@ -282,8 +277,8 @@ public final class ArrayUtils {
 
     @SuppressWarnings({"unchecked"})
     public static <V extends IIndex> V[] getNonRedundantObjects(V[] all) {
-        final DLongHashSet hashSet = getHashSet();
-        final DArrayList list = getArrayList();
+        final DLongHashSet hashSet = DLongHashSet.getHashSet();
+        final DArrayList list = DArrayList.getArrayList();
         final TLongHashSet thashset = hashSet.get();
         final ArrayList alist = list.get();
         try {
@@ -307,11 +302,11 @@ public final class ArrayUtils {
 
     @SuppressWarnings({"unchecked"})
     public static <V extends IIndex> V[] getNonRedundantObjects(Class classe, V[] all) {
-        final DLongHashSet hashSet = getHashSet();
-        final DArrayList list = getArrayList();
+        final DLongHashSet hashSet = DLongHashSet.getHashSet();
+        final DArrayList list = DArrayList.getArrayList();
         final TLongHashSet thashset = hashSet.get();
         final ArrayList alist = list.get();
-        try{
+        try {
             for (V v : all) {
                 if (!thashset.contains(v.getIndex())) {
                     alist.add(v);
@@ -324,7 +319,7 @@ public final class ArrayUtils {
                 return a;
             }
             return all;
-        }finally {
+        } finally {
             hashSet.dispose();
             list.dispose();
         }
@@ -343,74 +338,71 @@ public final class ArrayUtils {
         }
     }
 
-public static int[][][][] swallowCopy(int[][][][] arr)
-{
-	int s0 = arr.length;
-	int[][][][] copy = new int[s0][][][];
-	for (int i = s0 -1 ; i >= 0 ; i--)
-	{
-		int s1 = arr[i].length;
-		copy[i] = new int[s1][][];
-		for (int j = s1-1 ; j >= 0 ; j--)
-		{
-			int s2 = arr[i][j].length;
-			copy[i][j] = new int[s2][];
-			for (int k = s2-1 ; k >=0 ; k--)
-			{
-				int s3 = arr[i][j][k].length;
-				copy[i][j][k] = new int[s3];
-				System.arraycopy(arr[i][j][k],0,copy[i][j][k],0,s3);
-			}
-		}
-	}
-	return copy;
-
-}
-
-public static int[][][] swallowCopy(int[][][] arr)
-{
-	int s0 = arr.length;
-	int[][][] copy = new int[s0][][];
-	for (int i = s0 -1 ; i >= 0 ; i--)
-	{
-		int s1 = arr[i].length;
-		copy[i] = new int[s1][];
-		for (int j = s1-1 ; j >= 0 ; j--)
-		{
-			int s2 = arr[i][j].length;
-			copy[i][j] = new int[s2];
-
-		       System.arraycopy(arr[i][j],0,copy[i][j],0,s2);
-		}
-	}
-	return copy;
-
-}
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    private synchronized static DLongHashSet getHashSet(){
-        if(!HASHSET.isReusable()){
-            HASHSET = new DLongHashSet();
+    public static int[][][][] swallowCopy(int[][][][] arr) {
+        int s0 = arr.length;
+        int[][][][] copy = new int[s0][][][];
+        for (int i = s0 - 1; i >= 0; i--) {
+            int s1 = arr[i].length;
+            copy[i] = new int[s1][][];
+            for (int j = s1 - 1; j >= 0; j--) {
+                int s2 = arr[i][j].length;
+                copy[i][j] = new int[s2][];
+                for (int k = s2 - 1; k >= 0; k--) {
+                    int s3 = arr[i][j][k].length;
+                    copy[i][j][k] = new int[s3];
+                    System.arraycopy(arr[i][j][k], 0, copy[i][j][k], 0, s3);
+                }
+            }
         }
-        HASHSET.init();
-        return HASHSET;
+        return copy;
 
     }
 
-    private synchronized static DArrayList getArrayList(){
-        if(!LIST.isReusable()){
-            LIST = new DArrayList();
+    public static int[][][] swallowCopy(int[][][] arr) {
+        int s0 = arr.length;
+        int[][][] copy = new int[s0][][];
+        for (int i = s0 - 1; i >= 0; i--) {
+            int s1 = arr[i].length;
+            copy[i] = new int[s1][];
+            for (int j = s1 - 1; j >= 0; j--) {
+                int s2 = arr[i][j].length;
+                copy[i][j] = new int[s2];
+
+                System.arraycopy(arr[i][j], 0, copy[i][j], 0, s2);
+            }
         }
-        LIST.init();
-        return LIST;
+        return copy;
 
     }
 
-    private static final class DLongHashSet extends DisposableObject<TLongHashSet>{
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    private static final class DLongHashSet extends Disposable {
+        private static class Holder {
+            private Holder() {
+            }
+
+            private static final Queue<DLongHashSet> container = Disposable.createContainer();
+        }
+
         private final TLongHashSet hashset;
+
+        public synchronized static DLongHashSet getHashSet() {
+            DLongHashSet hs;
+            try {
+                hs = Holder.container.remove();
+            } catch (NoSuchElementException e) {
+                hs = build();
+            }
+            hs.init();
+            return hs;
+        }
+
+        private static DLongHashSet build() {
+            return new DLongHashSet();
+        }
 
         private DLongHashSet() {
             super();
@@ -426,14 +418,41 @@ public static int[][][] swallowCopy(int[][][] arr)
         public TLongHashSet get() {
             return hashset;
         }
+
+        @Override
+        public Queue getContainer() {
+            return Holder.container;
+        }
     }
 
-    private static final class DArrayList extends DisposableObject<ArrayList<Object>>{
+    private static final class DArrayList extends Disposable {
+        private static class Holder {
+            private Holder() {
+            }
+
+            private static final Queue<DArrayList> container = Disposable.createContainer();
+        }
+
         private final ArrayList<Object> arrayList;
+
+        public synchronized static DArrayList getArrayList() {
+            DArrayList al;
+            try {
+                al = Holder.container.remove();
+            } catch (NoSuchElementException e) {
+                al = build();
+            }
+            al.init();
+            return al;
+        }
+
+        private static DArrayList build() {
+            return new DArrayList();
+        }
 
         private DArrayList() {
             super();
-            arrayList = new ArrayList<Object>();
+            arrayList = new ArrayList<Object>(16);
         }
 
         @Override
@@ -444,6 +463,11 @@ public static int[][][] swallowCopy(int[][][] arr)
 
         public ArrayList<Object> get() {
             return arrayList;
+        }
+
+        @Override
+        public Queue getContainer() {
+            return Holder.container;
         }
     }
 }

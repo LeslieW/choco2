@@ -22,7 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.common.util.iterators;
 
+import choco.kernel.common.util.disposable.Disposable;
+
 import java.util.NoSuchElementException;
+import java.util.Queue;
 
 /**
  * User : cprudhom
@@ -39,24 +42,28 @@ public final class EmptyIterator extends DisposableIterator<Object> {
      * see http://en.wikipedia.org/wiki/Singleton_pattern
      */
     private static final class Holder {
-        private Holder() {}
+        private Holder() {
+        }
 
-        private final static EmptyIterator instance = EmptyIterator.build();
+        private static final Queue<EmptyIterator> container = Disposable.createContainer();
     }
 
     @SuppressWarnings({"unchecked"})
-    public static <T> DisposableIterator <T> getIterator() {
-        EmptyIterator it = Holder.instance;
-        if (!it.isReusable()) {
+    public static <T> DisposableIterator<T> getIterator() {
+        EmptyIterator it;
+        try{
+            it = Holder.container.remove();
+        }catch (NoSuchElementException e){
             it = build();
         }
         it.init();
-        return (DisposableIterator<T>)it;
+        return (DisposableIterator<T>) it;
     }
 
-    private EmptyIterator() {}
+    private EmptyIterator() {
+    }
 
-    private static EmptyIterator build(){
+    private static EmptyIterator build() {
         return new EmptyIterator();
     }
 
@@ -82,5 +89,15 @@ public final class EmptyIterator extends DisposableIterator<Object> {
     @Override
     public Object next() {
         throw new NoSuchElementException();
+    }
+
+    /**
+     * Get the containerof disposable objects where free ones are available
+     *
+     * @return a {@link java.util.Deque}
+     */
+    @Override
+    public Queue getContainer() {
+        return Holder.container;
     }
 }

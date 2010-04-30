@@ -60,7 +60,7 @@ public abstract class Expression {
     static final void exit(){
         LOGGER.severe("Expression  unexpected call");
         new Exception().printStackTrace();
-        System.exit(-1);
+        throw new UnsupportedOperationException();
     }
 
     /**

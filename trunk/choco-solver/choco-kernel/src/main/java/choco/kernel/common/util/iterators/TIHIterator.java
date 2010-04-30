@@ -23,8 +23,12 @@
 package choco.kernel.common.util.iterators;
 
 import choco.kernel.common.IIndex;
+import choco.kernel.common.util.disposable.Disposable;
 import choco.kernel.common.util.objects.DeterministicIndicedList;
 import gnu.trove.TIntHashSet;
+
+import java.util.NoSuchElementException;
+import java.util.Queue;
 
 /**
  * User : cprudhom<br/>
@@ -44,11 +48,7 @@ public final class TIHIterator<E extends IIndex> extends DisposableIterator<E> {
         private Holder() {
         }
 
-        private static TIHIterator instance = TIHIterator.build();
-
-        private static void set(final TIHIterator iterator) {
-            instance = iterator;
-        }
+        private static final Queue<TIHIterator> container = Disposable.createContainer();
     }
 
     private int current;
@@ -63,10 +63,12 @@ public final class TIHIterator<E extends IIndex> extends DisposableIterator<E> {
     }
 
     @SuppressWarnings({"unchecked"})
-    public static synchronized <E extends IIndex> TIHIterator <E> getIterator(final TIntHashSet indices,
-                                                               final DeterministicIndicedList<E> elements) {
-        TIHIterator it = Holder.instance;
-        if (!it.isReusable()) {
+    public static synchronized <E extends IIndex> TIHIterator<E> getIterator(final TIntHashSet indices,
+                                                                             final DeterministicIndicedList<E> elements) {
+        TIHIterator it;
+        try{
+            it = Holder.container.remove();
+        }catch (NoSuchElementException e){
             it = build();
         }
         it.init(indices, elements);
@@ -77,7 +79,7 @@ public final class TIHIterator<E extends IIndex> extends DisposableIterator<E> {
      * Freeze the iterator, cannot be reused.
      */
     public void init(final TIntHashSet theIndices, final DeterministicIndicedList<E> theElements) {
-        super.init();
+        init();
         current = 0;
         indices = theIndices.toArray();
         elements = theElements;
@@ -109,12 +111,12 @@ public final class TIHIterator<E extends IIndex> extends DisposableIterator<E> {
 
 
     /**
-     * This method allows to declare that the iterator is not used anymoure. It
-     * can be reused by another object.
+     * Get the containerof disposable objects where free ones are available
+     *
+     * @return a {@link java.util.Deque}
      */
     @Override
-    public void dispose() {
-        super.dispose();
-        Holder.set(this);
+    public Queue getContainer() {
+        return Holder.container;
     }
 }

@@ -22,8 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.memory.structure.iterators;
 
+import choco.kernel.common.util.disposable.Disposable;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateInt;
+
+import java.util.NoSuchElementException;
+import java.util.Queue;
 
 /**
  * User : cprudhom<br/>
@@ -43,11 +47,7 @@ public final class BipartiteListIterator extends DisposableIntIterator {
         private Holder() {
         }
 
-        private static BipartiteListIterator instance = BipartiteListIterator.build();
-
-        private static void set(final BipartiteListIterator iterator) {
-            instance = iterator;
-        }
+        private static final Queue<BipartiteListIterator> container = Disposable.createContainer();
     }
 
     private int[] list;
@@ -67,8 +67,10 @@ public final class BipartiteListIterator extends DisposableIntIterator {
 
     @SuppressWarnings({"unchecked"})
     public static synchronized BipartiteListIterator getIterator(final int[] aList, final IStateInt aLast) {
-        BipartiteListIterator it = Holder.instance;
-        if (!it.isReusable()) {
+        BipartiteListIterator it;
+        try{
+            it = Holder.container.remove();
+        }catch (NoSuchElementException e){
             it = build();
         }
         it.init(aList, aLast);
@@ -79,7 +81,7 @@ public final class BipartiteListIterator extends DisposableIntIterator {
      * Freeze the iterator, cannot be reused.
      */
     public void init(final int[] aList, final IStateInt aLast) {
-        super.init();
+        init();
         this.list = aList;
         this.last = aLast;
         this.nlast = aLast.get();
@@ -135,12 +137,12 @@ public final class BipartiteListIterator extends DisposableIntIterator {
     }
 
     /**
-     * This method allows to declare that the iterator is not used anymoure. It
-     * can be reused by another object.
+     * Get the containerof disposable objects where free ones are available
+     *
+     * @return a {@link java.util.Deque}
      */
     @Override
-    public void dispose() {
-        super.dispose();
-        Holder.set(this);
+    public Queue getContainer() {
+        return Holder.container;
     }
 }

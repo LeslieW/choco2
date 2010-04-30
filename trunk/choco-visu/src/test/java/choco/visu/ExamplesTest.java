@@ -682,7 +682,7 @@ public class ExamplesTest {
 
         Picross p = new Picross(rows, cols, s);
 
-        Visu v = Visu.createFullVisu();
+        Visu v = Visu.createVisu();
         Variable[] vars = ArrayUtils.append(p.myvars);
         v.addPanel(new VarChocoPanel("Picross", vars, PicrossPApplet.class, new int[]{rows.length, cols.length}));
         s.setFirstSolution(true);

@@ -22,7 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.set;
 
+import choco.kernel.common.util.disposable.Disposable;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+
+import java.util.NoSuchElementException;
+import java.util.Queue;
 
 /**
  * User : cprudhom<br/>
@@ -42,11 +46,7 @@ public final class SetDomainIterator extends DisposableIntIterator {
         private Holder() {
         }
 
-        private static SetDomainIterator instance = SetDomainIterator.build();
-
-        private static void set(final SetDomainIterator iterator) {
-            instance = iterator;
-        }
+        private static final Queue<SetDomainIterator> container = Disposable.createContainer();
     }
 
     private int currentValue;
@@ -62,8 +62,10 @@ public final class SetDomainIterator extends DisposableIntIterator {
 
     @SuppressWarnings({"unchecked"})
     public static synchronized SetDomainIterator getIterator(final BitSetEnumeratedDomain aDomain) {
-        SetDomainIterator it = Holder.instance;
-        if (!it.isReusable()) {
+        SetDomainIterator it;
+        try{
+            it = Holder.container.remove();
+        }catch (NoSuchElementException e){
             it = build();
         }
         it.init(aDomain);
@@ -74,7 +76,7 @@ public final class SetDomainIterator extends DisposableIntIterator {
      * Freeze the iterator, cannot be reused.
      */
     public void init(final BitSetEnumeratedDomain aDomain) {
-        super.init();
+        init();
         domain = aDomain;
         currentValue = Integer.MIN_VALUE;
     }
@@ -101,17 +103,16 @@ public final class SetDomainIterator extends DisposableIntIterator {
     @Override
     public int next() {
         currentValue = (Integer.MIN_VALUE == currentValue) ? domain.getFirstVal() : domain.getNextValue(currentValue);
-      return currentValue;
+        return currentValue;
     }
 
-
     /**
-     * This method allows to declare that the iterator is not used anymoure. It
-     * can be reused by another object.
+     * Get the containerof disposable objects where free ones are available
+     *
+     * @return a {@link java.util.Deque}
      */
     @Override
-    public void dispose() {
-        super.dispose();
-        Holder.set(this);
+    public Queue getContainer() {
+        return Holder.container;
     }
 }

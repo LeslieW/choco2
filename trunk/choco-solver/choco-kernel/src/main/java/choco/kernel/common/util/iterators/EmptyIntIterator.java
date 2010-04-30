@@ -22,7 +22,10 @@
  **************************************************/
 package choco.kernel.common.util.iterators;
 
+import choco.kernel.common.util.disposable.Disposable;
+
 import java.util.NoSuchElementException;
+import java.util.Queue;
 
 /*
 * User : charles
@@ -43,11 +46,7 @@ public final class EmptyIntIterator extends DisposableIntIterator {
         private Holder() {
         }
 
-        private static EmptyIntIterator instance = EmptyIntIterator.build();
-
-        private static void set(final EmptyIntIterator iterator) {
-            instance = iterator;
-        }
+        private static final Queue<EmptyIntIterator> container = Disposable.createContainer();
     }
 
     private EmptyIntIterator() {
@@ -59,8 +58,10 @@ public final class EmptyIntIterator extends DisposableIntIterator {
 
     @SuppressWarnings({"unchecked"})
     public static synchronized EmptyIntIterator getIterator() {
-        EmptyIntIterator it = Holder.instance;
-        if (!it.isReusable()) {
+        EmptyIntIterator it;
+        try{
+            it = Holder.container.remove();
+        }catch (NoSuchElementException e){
             it = build();
         }
         it.init();
@@ -91,14 +92,13 @@ public final class EmptyIntIterator extends DisposableIntIterator {
         throw new NoSuchElementException();
     }
 
-
     /**
-     * This method allows to declare that the iterator is not used anymoure. It
-     * can be reused by another object.
+     * Get the containerof disposable objects where free ones are available
+     *
+     * @return a {@link java.util.Deque}
      */
     @Override
-    public void dispose() {
-        super.dispose();
-        Holder.set(this);
+    public Queue getContainer() {
+        return Holder.container;
     }
   }

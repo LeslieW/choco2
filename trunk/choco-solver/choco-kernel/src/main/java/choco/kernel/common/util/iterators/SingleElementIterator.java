@@ -22,6 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.common.util.iterators;
 
+import choco.kernel.common.util.disposable.Disposable;
+
+import java.util.NoSuchElementException;
+import java.util.Queue;
+
 public final class SingleElementIterator<E> extends DisposableIterator<E> {
 
     /**
@@ -33,11 +38,7 @@ public final class SingleElementIterator<E> extends DisposableIterator<E> {
     private static final class Holder {
         private Holder() {}
 
-        private static SingleElementIterator instance = SingleElementIterator.build();
-
-        private static void set(final SingleElementIterator iterator){
-            instance = iterator;
-        }
+        private static final Queue<SingleElementIterator> container = Disposable.createContainer();
     }
 
 
@@ -53,8 +54,10 @@ public final class SingleElementIterator<E> extends DisposableIterator<E> {
 
     @SuppressWarnings({"unchecked"})
     public synchronized static <E> SingleElementIterator getIterator(final E element) {
-        SingleElementIterator<E> it = Holder.instance;
-        if (!it.isReusable()) {
+        SingleElementIterator<E> it;
+        try{
+            it = Holder.container.remove();
+        }catch (NoSuchElementException e){
             it = build();
         }
         it.init(element);
@@ -65,7 +68,7 @@ public final class SingleElementIterator<E> extends DisposableIterator<E> {
      * Freeze the iterator, cannot be reused.
      */
     public void init(final E anElement) {
-        super.init();
+        init();
         this.elem = anElement;
         hnext=true;
     }
@@ -82,16 +85,14 @@ public final class SingleElementIterator<E> extends DisposableIterator<E> {
 	}
 
     /**
-     * This method allows to declare that the iterator is not used anymoure. It
-     * can be reused by another object.
+     * Get the containerof disposable objects where free ones are available
+     *
+     * @return a {@link java.util.Deque}
      */
     @Override
-    public void dispose() {
-        super.dispose();
-        Holder.set(this);
+    public Queue getContainer() {
+        return Holder.container;
     }
-
-
 }
 
 

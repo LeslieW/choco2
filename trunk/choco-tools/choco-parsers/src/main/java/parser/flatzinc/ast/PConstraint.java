@@ -168,7 +168,7 @@ public final class PConstraint {
             }
         }
         LOGGER.severe("buildCstr::ERROR:: unknown type :" + name);
-        System.exit(-1);
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -263,7 +263,7 @@ public final class PConstraint {
             return;
         }
         LOGGER.severe("buildInt::ERROR:: unknown type :" + name);
-        System.exit(-1);
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -275,7 +275,7 @@ public final class PConstraint {
     private static void buildFloat(String name, List<Expression> exps, Model model) {
         //TODO: to complete
         LOGGER.severe("buildFloat::ERROR:: unknown type :" + name);
-        System.exit(-1);
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -360,7 +360,7 @@ public final class PConstraint {
             return;
         }
         LOGGER.severe("buildBool::ERROR:: unknown type :" + name);
-        System.exit(-1);
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -373,7 +373,7 @@ public final class PConstraint {
         Constraint c = null;
         if(name.endsWith(_reif)){
             LOGGER.severe("buildSet::ERROR:: unexepected reified call :" + name);
-            System.exit(-1);
+            throw new UnsupportedOperationException();
         }
         if (name.endsWith(_in)) {
             IntegerVariable iv = exps.get(0).intVarValue();
@@ -426,7 +426,7 @@ public final class PConstraint {
             return;
         }
         LOGGER.severe("buildSet::ERROR:: unknown type :" + name);
-        System.exit(-1);
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -555,7 +555,7 @@ public final class PConstraint {
             return;
         }
         LOGGER.severe("buildGlob::ERROR:: unknown type :" + name);
-        System.exit(-1);
+        throw new UnsupportedOperationException();
     }
 
 }

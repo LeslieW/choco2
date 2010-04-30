@@ -37,6 +37,8 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  */
 public class Constant {
 
+    private Constant() {}
+
     /**
      * Initial capacity for array containinc static elements.
      */
@@ -56,7 +58,7 @@ public class Constant {
      * Initial capacity of bipartite set
      */
     public static final int SET_INITIAL_CAPACITY = 8;
-
+    
     /**
      * A constant denoting the true constraint (always satisfied)
      */
@@ -96,5 +98,5 @@ public class Constant {
      * Defines the smallest used double for multicostregular
      */
     public static final double MCR_DECIMAL_PREC = Math.pow(10.0,-MCR_PRECISION);
-    
+
 }

@@ -24,7 +24,6 @@ package choco.model.variables.delta;
 
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.variables.delta.BitSetDeltaDomain;
-import choco.cp.solver.variables.delta.ChainDeltaDomain;
 import choco.cp.solver.variables.integer.AbstractIntDomain;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
@@ -35,7 +34,6 @@ import gnu.trove.TIntArrayList;
 import gnu.trove.TIntHashSet;
 import org.junit.Assert;
 import static org.junit.Assert.*;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Random;
@@ -67,7 +65,7 @@ public class DeltaDomainTest {
         while(dit.hasNext()){
             values.add(dit.next());
         }
-
+        dit.dispose();
         Assert.assertEquals(5, values.size());
         values.sort();
         Assert.assertArrayEquals(rem_values, values.toNativeArray());
@@ -78,33 +76,6 @@ public class DeltaDomainTest {
         Assert.assertTrue(dom.isReleased());
     }
 
-    @Test
-    @Ignore
-    public void test02(){
-        final Solver s = new CPSolver();
-        final IntDomainVar v = s.createEnumIntVar("v", 1, 10);
-        final IDeltaDomain dom = new ChainDeltaDomain(10, 1);
-        final int[] rem_values = new int[]{1,2,8,9,10};
-        for(final int i : rem_values){
-            dom.remove(i);
-        }
-
-        dom.freeze();
-        final TIntArrayList values = new TIntArrayList();
-        final DisposableIntIterator dit = dom.iterator();
-        while(dit.hasNext()){
-            values.add(dit.next());
-        }
-
-        Assert.assertEquals(5, values.size());
-        values.sort();
-        Assert.assertArrayEquals(rem_values, values.toNativeArray());
-
-        dom.remove(4);
-        Assert.assertFalse(dom.isReleased());
-        dom.clear();
-        Assert.assertTrue(dom.isReleased());
-    }
 
     @Test
     public void test1() {

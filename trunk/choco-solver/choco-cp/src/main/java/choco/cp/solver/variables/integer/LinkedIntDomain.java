@@ -48,7 +48,7 @@ public class LinkedIntDomain extends AbstractIntDomain {
      * A random generator for random value from the domain
      */
 
-    protected static Random random = new Random(System.currentTimeMillis());
+    protected static final Random random = new Random(System.currentTimeMillis());
 
     /**
      * A vector containing the index of the next value in the domain. The value is -1 if the
@@ -118,7 +118,6 @@ public class LinkedIntDomain extends AbstractIntDomain {
         nextIndex = environment.makeIntVector(nextIndices);
         prevIndex = environment.makeIntVector(prevIndices);
 
-        //deltaDom = new ChainDeltaDomain(size, offset);
         deltaDom = new StackDeltaDomain();
 
     }
@@ -143,7 +142,6 @@ public class LinkedIntDomain extends AbstractIntDomain {
         nextIndex = environment.makeIntVector(nextIndices);
         prevIndex = environment.makeIntVector(prevIndices);
 
-//    deltaDom = new ChainDeltaDomain(size, offset);
         deltaDom = new StackDeltaDomain();
 
     }
@@ -425,11 +423,11 @@ public class LinkedIntDomain extends AbstractIntDomain {
     }
 
     public String toString() {
-        return "{" + getInf() + "..." + getSup() + "}";
+        return "{" + getInf() + "..." + getSup() + '}';
     }
 
     public String pretty() {
-        StringBuffer buf = new StringBuffer("{");
+        StringBuilder buf = new StringBuilder("{");
         int maxDisplay = 15;
         int count = 0;
         DisposableIntIterator it = this.getIterator();
@@ -444,7 +442,7 @@ public class LinkedIntDomain extends AbstractIntDomain {
             buf.append("..., ");
             buf.append(this.getSup());
         }
-        buf.append("}");
+        buf.append('}');
         return buf.toString();
     }
 

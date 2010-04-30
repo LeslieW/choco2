@@ -23,8 +23,12 @@
 package choco.kernel.memory.structure.iterators;
 
 import static choco.kernel.common.Constant.STORED_OFFSET;
+import choco.kernel.common.util.disposable.Disposable;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateInt;
+
+import java.util.NoSuchElementException;
+import java.util.Queue;
 
 /**
  * User : cprudhom<br/>
@@ -44,11 +48,7 @@ public final class PSIVIterator extends DisposableIntIterator {
         private Holder() {
         }
 
-        private static PSIVIterator instance = PSIVIterator.build();
-
-        private static void set(final PSIVIterator iterator) {
-            instance = iterator;
-        }
+        private static final Queue<PSIVIterator> container = Disposable.createContainer();
     }
 
     private int nStaticInts;
@@ -70,8 +70,10 @@ public final class PSIVIterator extends DisposableIntIterator {
 
     @SuppressWarnings({"unchecked"})
     public static synchronized PSIVIterator getIterator(final int theNStaticInts, final IStateInt theNStoredInts) {
-        PSIVIterator it = Holder.instance;
-        if (!it.isReusable()) {
+        PSIVIterator it;
+        try{
+            it = Holder.container.remove();
+        }catch (NoSuchElementException e){
             it = build();
         }
         it.init(theNStaticInts, theNStoredInts);
@@ -82,7 +84,7 @@ public final class PSIVIterator extends DisposableIntIterator {
      * Freeze the iterator, cannot be reused.
      */
     public void init(final int theNStaticInts, final IStateInt theNStoredInts) {
-        super.init();
+        init();
         this.nStaticInts = theNStaticInts;
         this.nStoredInts = theNStoredInts.get();
         stats = (nStaticInts> 0);
@@ -126,12 +128,12 @@ public final class PSIVIterator extends DisposableIntIterator {
 
 
     /**
-     * This method allows to declare that the iterator is not used anymoure. It
-     * can be reused by another object.
+     * Get the containerof disposable objects where free ones are available
+     *
+     * @return a {@link java.util.Deque}
      */
     @Override
-    public void dispose() {
-        super.dispose();
-        Holder.set(this);
+    public Queue getContainer() {
+        return Holder.container;
     }
 }

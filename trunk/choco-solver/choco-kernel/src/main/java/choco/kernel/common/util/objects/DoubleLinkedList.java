@@ -23,9 +23,11 @@
 package choco.kernel.common.util.objects;
 
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.util.disposable.Disposable;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 
 import java.util.Arrays;
+import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,6 +37,18 @@ import java.util.logging.Logger;
  * time but very poor for memory.
  */
 public class DoubleLinkedList extends DisposableIntIterator {
+
+    /**
+     * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
+     * than the moment that getInstance() is called.
+     * Thus, this solution is thread-safe without requiring special language constructs.
+     * see http://en.wikipedia.org/wiki/Singleton_pattern
+     */
+    private static final class Holder {
+        private Holder() {}
+
+        private static final Queue<DoubleLinkedList> container = Disposable.createContainer();
+    }
 
 	protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
@@ -52,12 +66,12 @@ public class DoubleLinkedList extends DisposableIntIterator {
 	/**
 	 *  Current number of elements
 	 */
-	protected int size = 0;
+	protected int size;
 
 	/**
 	 * util for iteration
 	 */
-	protected int currentT = 0;
+	protected int currentT;
 
 	/**
 	 * maximum size of the list
@@ -178,6 +192,16 @@ public class DoubleLinkedList extends DisposableIntIterator {
 		return currentT;
 	}
 
+    /**
+     * Get the containerof disposable objects where free ones are available
+     *
+     * @return a {@link java.util.Deque}
+     */
+    @Override
+    public Queue getContainer() {
+        return Holder.container;
+    }
+
 	/**
 	 * return the current iterated element
 	 */
@@ -207,7 +231,7 @@ public class DoubleLinkedList extends DisposableIntIterator {
 	}
 
 	public final int[] toArray() {
-		int[] tab = new int[getSize()];
+		int[] tab = new int[size];
 		int cpt = 0;
 		restart();
 		while(hasNext()) {
@@ -233,7 +257,7 @@ public class DoubleLinkedList extends DisposableIntIterator {
 	// Display the table
 	public void AfficheTab() {
 		if(LOGGER.isLoggable(Level.INFO)) {
-			StringBuilder b = new StringBuilder();
+			StringBuilder b = new StringBuilder(16);
 			for (int i = 0; i < nextT.length; i++) {
 				b.append(nextT[i]).append(" | ");
 				b.append(prevT[i]).append('\n');
@@ -250,11 +274,11 @@ public class DoubleLinkedList extends DisposableIntIterator {
 		StringBuilder n = new StringBuilder("next    :");
 		StringBuilder p = new StringBuilder("suivant :");
 		for (int i = 0; i < nextT.length; i++) {
-			n.append(nextT[i]).append(" ");
-			p.append(prevT[i]).append(" ");
+			n.append(nextT[i]).append(' ');
+			p.append(prevT[i]).append(' ');
 		}
 
-		return ("first :" + nextT[listSize] + "| " + "last :" + prevT[listSize] + "| " + n.toString() + "| " + p.toString());
+		return ("first :" + nextT[listSize] + "| " + "last :" + prevT[listSize] + "| " + n + "| " + p);
 	}
 
 }
