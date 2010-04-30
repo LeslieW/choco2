@@ -117,11 +117,11 @@ public class ConfigurationTest {
     @Test
     public void testEnum() {
         configuration.putEnum(USER_KEY, Limit.TIME);
-        Enum value = configuration.readEnum(USER_KEY, Limit.class);
+        Limit value = configuration.readEnum(USER_KEY, Limit.class);
         Assert.assertEquals(Limit.TIME, value);
-        configuration.putEnum(USER_KEY, Limit.UNDEFINED);
-        value = configuration.readEnum(USER_KEY, Limit.class);
-        Assert.assertEquals(Limit.UNDEFINED, value);
+        configuration.putEnum(USER_KEY, Limit.UNDEF);
+        value= configuration.readEnum(USER_KEY, Limit.class);
+        Assert.assertEquals(Limit.UNDEF, value);
     }
 
     public void test2() {

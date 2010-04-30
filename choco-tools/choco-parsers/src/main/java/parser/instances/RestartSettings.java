@@ -1,6 +1,7 @@
 package parser.instances;
 
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.configure.RestartFactory;
 import static choco.kernel.common.util.tools.PropertyUtils.*;
 import choco.kernel.solver.SolverException;
 
@@ -45,30 +46,15 @@ public class RestartSettings extends BasicSettings {
         this.nogoodRecording = set.nogoodRecording;
 	}
 
-	public final RestartPolicy getRestartPolicy() {
-		return restartPolicy;
-	}
-
 	public final void setRestartPolicy(RestartPolicy restartPolicy) {
 		this.restartPolicy = restartPolicy;
-	}
-
-	public final double getScaleFactor() {
-		return scaleFactor;
 	}
 
 	public final void setScaleFactor(int scaleFactor) {
 		if(scaleFactor > 0) this.scaleFactor = scaleFactor;
 	}
 
-	public final int getLubyGeometricalFactor() {
-		return lubyGeometricalFactor;
-	}
-
-	public final double getWalshGeometricalFactor() {
-		return walshGeometricalFactor;
-	}
-
+	
 	public final void setWalshGeometricalFactor(double geometricalFactor) {
 		if( walshGeometricalFactor >= 1) this.walshGeometricalFactor = geometricalFactor;
 	}
@@ -77,9 +63,6 @@ public class RestartSettings extends BasicSettings {
 		if( lubyGeometricalFactor > 0) this.lubyGeometricalFactor = geometricalFactor;
 	}
 
-	public final boolean isNogoodRecording() {
-		return nogoodRecording;
-	}
 
 	public final void setNogoodRecording(boolean nogoodRecording) {
 		this.nogoodRecording = nogoodRecording;
@@ -87,7 +70,7 @@ public class RestartSettings extends BasicSettings {
 	
 	public final void applyRestartPolicy(CPSolver s) {
 		switch (restartPolicy) {
-		case OFF: s.getRestartConfiguration().cancelRestarts();break;
+		case OFF: RestartFactory.cancelRestarts(s);break;
 		case FIXED: s.setGeometricRestart(scaleFactor,1);break;
 		case GEOM: s.setGeometricRestart(scaleFactor, walshGeometricalFactor);break;
 		case LUBY: s.setLubyRestart(scaleFactor, lubyGeometricalFactor);break;

@@ -10,12 +10,12 @@ import java.util.Locale;
 public class ReportFormatter {
 
 	public final static NumberFormat DFORMAT = DecimalFormat.getNumberInstance(Locale.ENGLISH);
-	
+
 	static {
 		DFORMAT.setGroupingUsed(false);
 		DFORMAT.setMaximumFractionDigits(2);
 	}
-	
+
 	private final StringBuilder b = new StringBuilder();
 
 	private final List<String> dbInformations = new LinkedList<String>();
@@ -84,8 +84,10 @@ public class ReportFormatter {
 	}
 
 	public final void storeConfiguration(String value) {
-		appendConfiguration(value);
-		dbInformations.add(value);
+		if(value != null && ! value.equals("")) {
+			appendConfiguration(value);
+			dbInformations.add(value);
+		}
 	}
 
 

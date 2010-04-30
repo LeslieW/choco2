@@ -22,7 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.solver.search;
 
-import static choco.Choco.makeIntVar;
 import static choco.Choco.minus;
 import static choco.Choco.neq;
 import static choco.Choco.plus;
@@ -31,13 +30,15 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import choco.Choco;
-import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.Configuration;
 import choco.kernel.solver.Solver;
 
 /**
@@ -70,7 +71,10 @@ public class RandomSearchTest {
 	}
 	
 	public void testNQueens(int n, String...options) {
-		Solver s = new CPSolver(options);
+		Solver s = new CPSolver();
+		for (String string : options) {
+			s.getConfiguration().putTrue(string);
+		}
 		s.read( nQueen(n));
 		s.setVarIntSelector(new RandomIntVarSelector(s));
 		s.setValIntSelector(new RandomIntValSelector());
@@ -92,20 +96,24 @@ public class RandomSearchTest {
 	
 	@Test
 	public void testNQueens2() {
-		//FIXME waiting for Options use
-		testNQueens(4, Options.S_ROOT_SHAVING);
+		testNQueens(4, Configuration.INIT_SHAVING);
 	}
 	
 	@Test
 	public void testNQueens3() {
-		testNQueens(8, Options.S_ROOT_SHAVING);
+		testNQueens(8, Configuration.INIT_SHAVING);
 	}
 	
 	@Test
 	public void testNQueens4() {
-		Solver s = new CPSolver(Options.S_ROOT_SHAVING);
+		//ChocoLogging.setVerbosity(Verbosity.SEARCH);
+		Solver s = new CPSolver();
+		s.getConfiguration().putTrue(Configuration.INIT_SHAVING);
 		s.read( nQueen(4));
-		assertEquals(Boolean.TRUE, s.solve());
+		s.generateSearchStrategy();
+		s.getSearchStrategy().getShavingTools().setDetectLuckySolution(true);
+		s.launch();
+		assertEquals(Boolean.TRUE, s.isFeasible());
 		assertEquals(1, s.getNodeCount());
 	}
 }

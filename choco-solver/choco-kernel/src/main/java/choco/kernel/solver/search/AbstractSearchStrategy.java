@@ -45,7 +45,7 @@ public abstract class AbstractSearchStrategy implements ISolutionMeasures {
 	 * The (optimization or decision) model to which the entity belongs.
 	 */
 
-	public Solver solver;
+	public final Solver solver;
 
 
 	protected ISolutionPool solutionPool;
@@ -56,8 +56,9 @@ public abstract class AbstractSearchStrategy implements ISolutionMeasures {
 	protected int nbSolutions = 0;
 
 
-	public AbstractSearchStrategy() {
+	public AbstractSearchStrategy(Solver solver) {
 		super();
+		this.solver = solver;
 	}
 
 	/**
@@ -66,10 +67,6 @@ public abstract class AbstractSearchStrategy implements ISolutionMeasures {
 
 	public Solver getSolver() {
 		return solver;
-	}
-
-	public void setSolver(Solver solver) {
-		this.solver = solver;
 	}
 
 	@Override

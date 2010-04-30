@@ -28,10 +28,12 @@
 //**************************************************
 package choco.kernel.solver.search;
 
-import choco.Options;
-import choco.kernel.common.logging.ChocoLogging;
 import static choco.kernel.common.util.tools.StringUtils.pretty;
 import static choco.kernel.common.util.tools.StringUtils.prettyOnePerLine;
+
+import java.util.logging.Level;
+
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.Configuration;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solution;
@@ -43,15 +45,11 @@ import choco.kernel.solver.propagation.ShavingTools;
 import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.measure.ISearchMeasures;
 
-import java.util.logging.Level;
-
 /**
  * An abstract class for controlling tree search in various ways
  * version 2.0.3 : change the value of search constant to use bit masks.
  */
 public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrategy implements ISearchMeasures {
-
-    protected final Configuration configuration;
 
 	/**
 	 * constants for driving the incremental search algorithm
@@ -110,12 +108,11 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 
 	public AbstractSearchLoop searchLoop;
 
-	protected AbstractGlobalSearchStrategy(Solver solver, final Configuration configuration) {
-		this.solver = solver;
-        this.configuration = configuration;
+	protected AbstractGlobalSearchStrategy(Solver solver) {
+		super(solver);
 		traceStack = new IntBranchingTrace[solver.getNbIntVars() + solver.getNbSetVars()];
 		nextMove = INIT_SEARCH;
-        stopAtFirstSol = configuration.readBoolean(Configuration.STOP_AT_FIRST_SOLUTION);
+        stopAtFirstSol = solver.getConfiguration().readBoolean(Configuration.STOP_AT_FIRST_SOLUTION);
 	}
 
 
@@ -203,6 +200,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 			newTreeSearch();
 			//initializeDegreeOfVariables();
 			solver.propagate();
+			//System.out.println(solver.pretty());
 			advancedInitialPropagation();
 			newFeasibleRootState();
 		} catch (ContradictionException e) {
@@ -212,7 +210,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 
 
 	protected void advancedInitialPropagation() throws ContradictionException {
-		if( solver.containsOption(Options.S_ROOT_SHAVING) ) shavingTools.shaving();
+		if( solver.getConfiguration().readBoolean(Configuration.INIT_SHAVING) ) shavingTools.shaving();
 	}
 
 
@@ -266,13 +264,6 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 		endTreeSearch();
 	}
 
-
-
-	public static boolean isUsingShavingTools(Solver solver) {
-		return solver.containsOption(Options.S_ROOT_SHAVING) ||
-		solver.containsOption(Options.S_DESTRUCTIVE_LOWER_BOUND) ||
-		solver.containsOption(Options.S_BOTTOM_UP);
-	}
 	
 	/**
 	 * called before a new search tree is explored
@@ -283,11 +274,10 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 		LOGGER.info(ChocoLogging.START_MESSAGE);
 		baseWorld = solver.getWorldIndex();
 		resetSolutions();
-		if( isUsingShavingTools(solver) && shavingTools == null) shavingTools = new ShavingTools(solver); 
 		initialTrace.setBranching(this.mainGoal);
+		solver.getPropagationEngine().getFailMeasure().safeReset();
 		limitManager.initialize();
 		searchLoop.initialize();
-		solver.getFailMeasure().safeReset();
 	}
 
 	/**
@@ -494,7 +484,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 */
 	@Override
 	public int getFailCount() {
-		return solver.getFailMeasure().getFailCount();
+		return solver.getPropagationEngine().getFailMeasure().getFailCount();
 	}
 
 	/**

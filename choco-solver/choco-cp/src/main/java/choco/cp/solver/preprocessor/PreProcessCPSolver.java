@@ -23,6 +23,7 @@
 package choco.cp.solver.preprocessor;
 
 import choco.Options;
+import choco.cp.common.util.preprocessor.AbstractDetector;
 import choco.cp.model.CPModel;
 import choco.cp.model.preprocessor.ModelDetectorFactory;
 import choco.cp.solver.CPSolver;
@@ -40,6 +41,10 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
+import gnu.trove.THashMap;
+import gnu.trove.THashSet;
+
+import java.util.Arrays;
 import java.util.Iterator;
 
 /*
@@ -85,15 +90,19 @@ public class PreProcessCPSolver extends CPSolver {
      */
     public boolean restartMode = false;
 
+    @Deprecated
+	private THashSet<String> optionsSet = new THashSet<String>();
+
     public PreProcessCPSolver(String... options) {
         this(new EnvironmentTrailing(), options);
     }
 
     public PreProcessCPSolver(final IEnvironment env, String ... options) {
-        super(env, options);
+        super(env);
         this.cleverRel = new RelationDetector();
         this.mod2sol = new PPModelToCPSolver(this);
         this.ppsearch = new PPSearch();
+        optionsSet.addAll(Arrays.asList(options));
     }
 
 
@@ -102,7 +111,7 @@ public class PreProcessCPSolver extends CPSolver {
     }
 
     void setAllProcessing() {
-       optionsSet.add("bb:exp");
+       optionsSet .add("bb:exp");
        optionsSet.add("bb:cliques");
        optionsSet.add("bb:exttoint");
        optionsSet.add("bb:disjunctive");
@@ -154,7 +163,7 @@ public class PreProcessCPSolver extends CPSolver {
         mod2sol.readVariables(model);
 
         getMod2Sol().readBBDecisionVariables();
-        getMod2Sol().readConstraints(model, ! optionsSet.contains(Options.S_MULTIPLE_READINGS));
+        getMod2Sol().readConstraints(model );
     }
 
     /**

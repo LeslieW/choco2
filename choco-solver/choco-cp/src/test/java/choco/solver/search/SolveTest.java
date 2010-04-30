@@ -71,6 +71,7 @@ import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.Configuration;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -747,7 +748,8 @@ public class SolveTest {
          }
          IntegerVariable nbNodes = Choco.makeIntVar("nbNodes", 3, 3, Options.V_OBJECTIVE);
          m.addConstraint(Choco.atMostNValue(pos,nbNodes));
-         Solver s = new CPSolver(Options.S_ROOT_SHAVING);
+         Solver s = new CPSolver();
+         s.getConfiguration().putTrue(Configuration.INIT_SHAVING);
          s.read(m);
         //ChocoLogging.setVerbosity(Verbosity.SOLUTION);
          s.minimize(s.getVar(nbNodes), false);

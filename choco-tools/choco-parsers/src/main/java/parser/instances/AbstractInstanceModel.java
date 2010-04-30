@@ -23,7 +23,8 @@
 package parser.instances;
 
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.configure.RestartConfiguration;
+import choco.cp.solver.configure.MessageFactory;
+import choco.cp.solver.configure.RestartFactory;
 import choco.cp.solver.constraints.integer.bool.sat.ClauseStore;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
@@ -433,12 +434,7 @@ public abstract class AbstractInstanceModel {
 	protected void logOnConfiguration() {
 		logMsg.appendConfiguration( createInstanceConfiguration() );
 		logMsg.storeConfiguration( createTimeConfiguration() );
-		if (solver != null && solver instanceof CPSolver) {
-			final String str = ( (CPSolver) solver).getRestartConfiguration().pretty();
-			if( str != RestartConfiguration.NO_RESTART) { 
-				logMsg.storeConfiguration(str);
-			}
-		}
+		if (solver != null) logMsg.storeConfiguration( MessageFactory.getRestartMsg(solver));
 	}
 
 

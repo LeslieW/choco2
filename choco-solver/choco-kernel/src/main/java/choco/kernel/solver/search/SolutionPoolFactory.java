@@ -41,8 +41,6 @@ public final class SolutionPoolFactory {
 		return new FifoSolutionPool(strategy, capacity);
 	}
 
-
-
 	/**
 	 * record all solution (not resizable).
 	 */
@@ -53,7 +51,7 @@ public final class SolutionPoolFactory {
 	public static ISolutionPool makeDefaultSolutionPool(AbstractGlobalSearchStrategy strategy, int capacity) {
 		if(capacity == 1) return makeOneSolutionPool(strategy);
 		else if(capacity == Integer.MAX_VALUE) return makeInfiniteSolutionPool(strategy);
-		if( capacity < 1) return makeNoSolutionPool();
+		else if( capacity < 1) return makeNoSolutionPool();
 		else return makeFifoSolutionPool(strategy, capacity);
 	}
 

@@ -27,6 +27,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.listener.PropagationEngineListener;
 import choco.kernel.solver.propagation.queue.EventQueue;
+import choco.kernel.solver.search.measure.FailMeasure;
 import choco.kernel.solver.variables.Var;
 
 import java.util.LinkedList;
@@ -37,8 +38,11 @@ import java.util.List;
  */
 public abstract class AbstractPropagationEngine implements PropagationEngine {
 
-	public Solver solver;
-
+	public final Solver solver;
+	
+	private final FailMeasure failMeasure;
+	
+	
 	/**
 	 * List of all listeners of events occuring in this engine.
 	 */
@@ -51,19 +55,18 @@ public abstract class AbstractPropagationEngine implements PropagationEngine {
 	protected final ContradictionException reuseException;
 	
 
+	public AbstractPropagationEngine(Solver solver) {
+		this.solver = solver;
+        reuseException = ContradictionException.build();
+        failMeasure = new FailMeasure(this);
+	}
+
 	public final Solver getSolver(){
 		return solver;
 	}
 
-
-	public void setSolver(Solver solver){
-		this.solver = solver;
-	}
-
-
-	public AbstractPropagationEngine(Solver solver) {
-		this.solver = solver;
-        reuseException = ContradictionException.build();
+	public final FailMeasure getFailMeasure() {
+		return failMeasure;
 	}
 
 	/**

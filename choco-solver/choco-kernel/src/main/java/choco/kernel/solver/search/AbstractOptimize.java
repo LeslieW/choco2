@@ -22,9 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.search;
 
-import static choco.Options.S_BOTTOM_UP;
-import static choco.Options.S_DESTRUCTIVE_LOWER_BOUND;
-import choco.kernel.solver.*;
+import choco.kernel.solver.Configuration;
+import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solution;
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.Var;
 
 
@@ -52,8 +54,8 @@ public abstract class AbstractOptimize extends AbstractGlobalSearchStrategy {
      * @param maximize maximization or minimization ?
      * @param configuration
      */
-	protected AbstractOptimize(Solver solver, IObjectiveManager bounds, boolean maximize, final Configuration configuration) {
-		super(solver, configuration);
+	protected AbstractOptimize(Solver solver, IObjectiveManager bounds, boolean maximize) {
+		super(solver);
 		this.objManager = bounds;
 		objective = bounds.getObjective();
 		doMaximize = maximize;
@@ -98,8 +100,8 @@ public abstract class AbstractOptimize extends AbstractGlobalSearchStrategy {
 
 	@Override
 	protected void advancedInitialPropagation() throws ContradictionException {
-		if(solver.containsOption(S_DESTRUCTIVE_LOWER_BOUND) 
-				|| solver.containsOption(S_BOTTOM_UP) ) {
+		if(solver.getConfiguration().readBoolean(Configuration.INIT_DESTRUCTIVE_LOWER_BOUND) 
+				|| solver.getConfiguration().readBoolean(Configuration.BOTTOM_UP) ) {
 			shavingTools.destructiveLowerBound(objManager);
 		}
 		super.advancedInitialPropagation();
@@ -136,7 +138,7 @@ public abstract class AbstractOptimize extends AbstractGlobalSearchStrategy {
 		initialPropagation();
 		if(isFeasibleRootState()) {
 			assert(solver.getWorldIndex() > baseWorld);
-			if( solver.containsOption(S_BOTTOM_UP) ) bottomUpSearch();
+			if( solver.getConfiguration().readBoolean(Configuration.BOTTOM_UP) ) bottomUpSearch();
 			else topDownSearch();
 		}
 		endTreeSearch();

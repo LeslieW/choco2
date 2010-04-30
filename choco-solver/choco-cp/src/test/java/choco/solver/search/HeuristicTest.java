@@ -32,6 +32,7 @@ import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.Configuration;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.limit.Limit;
 import static org.junit.Assert.assertTrue;
@@ -86,7 +87,7 @@ public class HeuristicTest {
     
     if (domWdeg == 3) {
             ( (CPSolver) s).setGeometricRestart(14, 1.5);
-            ( (CPSolver) s).getLimitConfig().setRestartStrategyLimitType(Limit.NODE);
+            ( (CPSolver) s).getConfiguration().putEnum(Configuration.RESTART_POLICY_LIMIT, Limit.NODE);
 //            
 //    		s.getSearchStrategy().setSearchLoop(new SearchLoopWithRestart(s.getSearchStrategy(),
 //          new RestartStrategy() {
