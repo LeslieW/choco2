@@ -40,7 +40,6 @@ import samples.tutorials.PatternExample;
 import samples.tutorials.Queen;
 import shaker.tools.search.IntBranchingFactory;
 
-import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
 
@@ -107,9 +106,9 @@ public class StrategyTest {
             s = new CPSolver();
             s.read(pe._m);
             IntBranchingFactory bf = new IntBranchingFactory();
-            List<IntDomainVar> vars = s.getIntDecisionVars();
+            IntDomainVar[] vars = s.getIntDecisionVars();
 
-            s.attachGoal(bf.make(random, s, vars.toArray(new IntDomainVar[vars.size()])));
+            s.attachGoal(bf.make(random, s, vars));
             checker();
         }
 
@@ -125,9 +124,9 @@ public class StrategyTest {
             s = new CPSolver();
             s.read(pe._m);
             IntBranchingFactory bf = new IntBranchingFactory();
-            List<IntDomainVar> vars = s.getIntDecisionVars();
+            IntDomainVar[] vars = s.getIntDecisionVars();
 
-            s.attachGoal(bf.make(random, s, vars.toArray(new IntDomainVar[vars.size()])));
+            s.attachGoal(bf.make(random, s, vars));
             checker();
         }
 
@@ -143,9 +142,9 @@ public class StrategyTest {
             s = new CPSolver();
             s.read(pe._m);
             IntBranchingFactory bf = new IntBranchingFactory();
-            List<IntDomainVar> vars = s.getIntDecisionVars();
+            IntDomainVar[] vars = s.getIntDecisionVars();
 
-            s.attachGoal(bf.make(random, s, vars.toArray(new IntDomainVar[vars.size()])));
+            s.attachGoal(bf.make(random, s, vars));
             checker();
         }
 

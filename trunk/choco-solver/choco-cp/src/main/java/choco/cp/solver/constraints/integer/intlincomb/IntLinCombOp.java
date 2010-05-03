@@ -169,7 +169,7 @@ public abstract class IntLinCombOp {
 			} else {
 				lastRuleEffective = filterOnImprovedUpperBound();
 			}
-			nextRuleIsLB = !nextRuleIsLB;
+			nextRuleIsLB ^= true; //!nextRuleIsLB;
 			nbr++;
 		}
 		//////////////////////////////////////////////////////////////////////////////////
@@ -309,11 +309,11 @@ public abstract class IntLinCombOp {
 	 * @return a strring representation of the constraint
 	 */
 	public String pretty() {
-		StringBuilder linComb = new StringBuilder();
+		StringBuilder linComb = new StringBuilder(16);
 		for (int i = 0; i < coeffs.length - 1; i++) {
-            linComb.append(coeffs[i]).append("*").append(vars[i]).append(" + ");
+            linComb.append(coeffs[i]).append('*').append(vars[i]).append(" + ");
 		}
-        linComb.append(coeffs[coeffs.length - 1]).append("*").append(vars[coeffs.length - 1]);
+        linComb.append(coeffs[coeffs.length - 1]).append('*').append(vars[coeffs.length - 1]);
         linComb.append(getOperator());
         linComb.append(-cste);
 		return linComb.toString();

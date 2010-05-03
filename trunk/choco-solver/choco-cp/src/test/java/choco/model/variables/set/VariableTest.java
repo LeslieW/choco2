@@ -57,7 +57,7 @@ public class VariableTest {
 		DisposableIntIterator it = x.getDomain().getOpenDomainIterator();
 		while (it.hasNext()) {
 			int val = it.next();
-			LOGGER.info("" + val);
+			LOGGER.info(String.valueOf(val));
 			assertTrue(val != 2);
 			assertTrue(val != 4);
 		}
@@ -68,7 +68,7 @@ public class VariableTest {
 		CPSolver s = new CPSolver();
 		SetVar set = s.createBoundSetVar("X", 1, 5);
 		boolean bool = true;
-		LOGGER.info("" + set.pretty());
+		LOGGER.info(set.pretty());
 		for (DisposableIntIterator it0 = set.getDomain().getEnveloppeIterator();
 		     it0.hasNext();) {
 			int x = it0.next();
@@ -81,7 +81,7 @@ public class VariableTest {
 
 			}
 		}
-		LOGGER.info("" + set.pretty());
+		LOGGER.info(set.pretty());
 		assertTrue(!set.isInDomainKernel(2));
 		assertTrue(!set.isInDomainKernel(4));
 	}
@@ -162,65 +162,7 @@ public class VariableTest {
 
         so1.read(m1);
         so1.solveAll();
-    }
-
-    @Test
-    public void testDESSORT() {
-        Model m = new CPModel();
-        Solver s = new CPSolver();
-        int n = 20;
-        int nMatch = (n * (n - 1)) / 2;
-
-        IntegerVariable[] r = new IntegerVariable[nMatch];
-        IntegerVariable[] i = new IntegerVariable[nMatch];
-        IntegerVariable[] occR = new IntegerVariable[n];
-        IntegerVariable[] occI = new IntegerVariable[n];
-        SetVariable[] match = new SetVariable[nMatch];
-
-        for (int k = 0; k < nMatch; k++) {
-            r[k] = makeIntVar("r" + k, 1, n, "cp:enum");
-            i[k] = makeIntVar("i" + k, 1, n, "cp:enum");
-            match[k] = makeSetVar("match" + k, 1, n);
-        }
-        for (int k = 0; k < n; k++) {
-            occR[k] = makeIntVar("occR" + k, (n - 1) / 2, n / 2, "cp:bound");
-            occI[k] = makeIntVar("occI" + k, (n - 1) / 2, n / 2, "cp:bound");
-        }
-
-        for (int k = 0; k < nMatch; k++) {
-            m.addConstraint(neq(r[k], i[k]));
-            m.addConstraint(eqCard(match[k], 2));
-            m.addConstraint(member(r[k], match[k]));
-            m.addConstraint(member(i[k], match[k]));
-        }
-        for (int k1 = 0; k1 < nMatch - 1; k1++) {
-            for (int k2 = k1 + 1; k2 < nMatch; k2++) {
-                m.addConstraint(isNotIncluded(match[k1], match[k2]));
-            }
-        }
-
-        for (int j = 0; j < n; j++) {
-            m.addConstraint(occurrence(j+1, occR[j], r));
-            m.addConstraint(occurrence(j+1, occI[j], i));
-            m.addConstraint(eq(sum(occR[j], occI[j]), n - 1));
-        }
-        s.read(m);
-//        CPSolver.setVerbosity(CPSolver.SOLUTION);
-//        ChocoLogging.setVerbosity(Verbosity.VERBOSE);
-        s.solve();
-//        CPSolver.flushLogs();
-        System.out.println(s.isFeasible());
-        for (int k = 0; k < nMatch; k++) {
-            System.out.println(s.getVar(match[k]));
-        }
-        for (int k = 0; k < nMatch; k++) {
-            System.out.println(s.getVar(r[k]).toString() + "-" + s.getVar(i[k]).toString());
-        }
-
-
-    }
-
-    
+    }    
 
 }
 

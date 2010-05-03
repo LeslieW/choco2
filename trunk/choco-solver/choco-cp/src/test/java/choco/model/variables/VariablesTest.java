@@ -47,7 +47,6 @@ import org.junit.Test;
 
 import static java.text.MessageFormat.format;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -61,14 +60,14 @@ public class VariablesTest {
 	private CPModel model;
 
 	private void test(Variable toRemove,int nbVars) {
-		LOGGER.info(model.pretty()+"\n");
+		LOGGER.info(model.pretty()+ '\n');
 		model.removeVariable(toRemove);
 		test(0, nbVars);
 		
 	}
 	
 	private void test(Constraint toRemove, int nbConstraints, int nbConstants, int nbVars) {
-		LOGGER.info(model.pretty()+"\n");
+		LOGGER.info(model.pretty()+ '\n');
 		model.removeConstraint(toRemove);
 		test(nbConstraints, nbVars);
 		assertEquals("nb constants",nbConstants, model.getNbConstantVars());
@@ -76,7 +75,7 @@ public class VariablesTest {
 	}
 	
 	private void test(int nbConstraints, int nbVars) {
-		LOGGER.info(model.pretty()+"\n");
+		LOGGER.info(model.pretty()+ '\n');
 		assertEquals("nb remaining constraints",nbConstraints, model.getNbConstraints());
 		assertEquals("nb remaining variables ",nbVars, model.getNbTotVars());
 	}
@@ -166,17 +165,21 @@ public class VariablesTest {
 		m.addVariables(s1, s2,constant(2), constant(1));
 		CPSolver solver = new CPSolver();
 		solver.read(m);
-		List<IntDomainVar> l =solver.getIntDecisionVars();
+		IntDomainVar[] l =solver.getIntDecisionVars();
 		LOGGER.info(format("{0}", l));
-		assertEquals("only one int decision var",1,l.size());
+		assertEquals("only one int decision var",1,l.length);
 		assertEquals("number of integer constants",2,solver.getNbIntConstants());
-		assertTrue("check decision var",l.contains(solver.getVar(s2.getCard())));
+        boolean contains = false;
+        for(int i = 0; i < l.length; i++){
+            contains |= l[i].equals(solver.getVar(s2.getCard()));
+        }
+		assertTrue("check decision var",contains);
 	}
 	
-	private void checkOptions(Set<String> options, int nb, int length) {
+	private static void checkOptions(Set<String> options, int nb, int length) {
 		assertEquals("Nb Options", nb, options.size());
 		for (String str : options) {
-			assertEquals("Option lenght: |"+str+"|", length, str.length());
+			assertEquals("Option lenght: |"+str+ '|', length, str.length());
 		}
 	}
 	
@@ -336,5 +339,22 @@ public class VariablesTest {
         solver.generateSearchStrategy();
         AbstractIntBranchingStrategy branching = solver.getSearchStrategy().mainGoal;
         Assert.assertNotNull(branching);
+    }
+
+    @Test
+    public void testDecisionVars(){
+        CPModel model = new CPModel();
+        IntegerVariable x = Choco.makeIntVar("x", 1,10);
+        IntegerVariable y = Choco.makeIntVar("y", 1,10);
+        IntegerVariable z = Choco.makeIntVar("z", 1,10, Options.V_NO_DECISION);
+
+        model.addVariables(x,y,z);
+
+        CPSolver solver = new CPSolver();
+        solver.read(model);
+        IntDomainVar[] vars = solver.getIntDecisionVars();
+        Assert.assertEquals(2, vars.length);
+        Assert.assertEquals(solver.getVar(x), vars[0]);
+        Assert.assertEquals(solver.getVar(y), vars[1]);
     }
 }

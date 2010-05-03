@@ -90,7 +90,7 @@ public class SolutionCheckerEngine extends AbstractSolutionCheckerEngine {
 			}
 			return true;
 		}else if(LOGGER.isLoggable(Level.INFO)) {
-			LOGGER.log(Level.INFO, "  FAILURE {0}: {1}", new Object[]{reuseLabel, c.pretty()});
+			LOGGER.log(Level.INFO, "  FAILURE {0}: {1}({2})", new Object[]{reuseLabel, c.pretty(), c.getClass().getSimpleName()});
 		}
 		return false;
 	}

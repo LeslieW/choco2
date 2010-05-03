@@ -119,7 +119,9 @@ public final class IntLinCombFactory {
                                                   int[] sortedCoeffs, int nbPositiveCoeffs, int c, int linOperator, final CPSolver solver) {
         //should be useless because the original array (user) are always copied in the IntTerm !
         //Furthermore, we sort the array before calling this function and we still copy the variable in the constraint.
-        if (isBoolLinComb(sortedVars, linOperator)) {
+        //TODO: BoolIntLinComb do not deal with NEQ!!
+        if (isBoolLinComb(sortedVars)
+                && linOperator!= IntLinComb.NEQ) {
             return createBoolLinComb(sortedVars, sortedCoeffs, c, linOperator, solver);
         } else {
             return new
@@ -132,8 +134,7 @@ public final class IntLinCombFactory {
      * Check if the combination is made of a single integer variable and only
      * boolean variables
      */
-    public static boolean isBoolLinComb(IntDomainVar[] lvars,
-                                        int linOperator) {
+    public static boolean isBoolLinComb(IntDomainVar[] lvars) {
         /*if (linOperator == IntLinComb.NEQ) {
             return false;
         }*/

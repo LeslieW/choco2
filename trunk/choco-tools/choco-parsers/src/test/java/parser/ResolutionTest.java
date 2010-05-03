@@ -25,7 +25,6 @@ package parser;
 import choco.kernel.common.logging.ChocoLogging;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import parser.absconparseur.tools.SolutionChecker;
 import parser.chocogen.XmlModel;
@@ -35,7 +34,6 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.security.Permission;
 import java.util.Properties;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /*
@@ -84,43 +82,124 @@ public class ResolutionTest {
     }
 
 
-    @Test
-    public void mainTest() {
-
-        String directory = args[1]; 
-        int nbpb=Integer.parseInt((String) properties.get("pb.nbpb"));
-        for(int i = 1; i < nbpb+1; i++){
-            args[1] = String.format("%s/%s.xml", directory,
-                    properties.get(String.format("pb.%d.name", i)));
-            XmlModel xm = new XmlModel();
-            try {
-                xm.generate(args);
-            } catch (Exception e) {
-                LOGGER.severe(e.toString());
-                Assert.fail();
-            }
-            System.setSecurityManager(new NoExitSecurityManager());
-            try{
-                if(xm.isFeasible()==Boolean.TRUE)
-                    SolutionChecker.main(xm.getValues());
-            }catch (ExitException e){
-                LOGGER.severe(e.toString());
-                Assert.fail();
-            }finally {
-                System.setSecurityManager(null);
-            }
-            int time = Integer.valueOf((String) properties.get(String.format("pb.%d.buildtime", i)));
-            LOGGER.info(String.format("%d > %d? for pb.%d", xm.getBuildTime(), time, i));
-            Assert.assertTrue(String.format("%s: too much time spending in reading problem... (excepted : < %d)",
-                    properties.get(String.format("pb.%d.name", i)), time), xm.getBuildTime() < time);
-
-            time = Integer.valueOf((String) properties.get(String.format("pb.%d.conftime", i)));
-            LOGGER.info(String.format("%d > %d? for pb.%d", xm.getConfTime(), time, i));
-            Assert.assertTrue(String.format("%s: too much time spending in preprocessing problem...(excepted : < %d)",
-                    properties.get(String.format("pb.%d.name", i)), time), xm.getConfTime() < time);
+    public void run(int i) {
+        String directory = args[1];
+        String name = (String)properties.get(String.format("pb.%d.name", i));
+        LOGGER.info("Solve "+name);
+        args[1] = String.format("%s/%s.xml", directory,name);
+        XmlModel xm = new XmlModel();
+        try {
+            xm.generate(args);
+        } catch (Exception e) {
+            LOGGER.severe(e.toString());
+            Assert.fail();
         }
+        System.setSecurityManager(new NoExitSecurityManager());
+        try {
+            if (xm.isFeasible() == Boolean.TRUE)
+                SolutionChecker.main(XmlModel.getValues());
+        } catch (ExitException e) {
+            LOGGER.severe(e.toString());
+            Assert.fail();
+        } finally {
+            System.setSecurityManager(null);
+        }
+        int time = Integer.valueOf((String) properties.get(String.format("pb.%d.buildtime", i)));
+        LOGGER.info(String.format("%d > %d? for pb.%d", XmlModel.getBuildTime(), time, i));
+        Assert.assertTrue(String.format("%s: too much time spending in reading problem... (excepted: %dms, actual: %dms)",
+                properties.get(String.format("pb.%d.name", i)), time, XmlModel.getBuildTime()), XmlModel.getBuildTime() < time);
+
+        time = Integer.valueOf((String) properties.get(String.format("pb.%d.conftime", i)));
+        LOGGER.info(String.format("%d > %d? for pb.%d", XmlModel.getConfTime(), time, i));
+        Assert.assertTrue(String.format("%s: too much time spending in preprocessing problem...(excepted :%dms, actual : %dms)",
+                properties.get(String.format("pb.%d.name", i)), time, XmlModel.getConfTime()), XmlModel.getConfTime() < time);
     }
 
+    @Test
+    public void test1() {
+        run(1);
+    }
+
+    @Test
+    public void test2() {
+        run(2);
+    }
+    @Test
+    public void test3() {
+        run(3);
+    }
+    @Test
+    public void test4() {
+        run(4);
+    }
+    @Test
+    public void test5() {
+        run(5);
+    }
+    @Test
+    public void test6() {
+        run(6);
+    }
+    @Test
+    public void test7() {
+        run(7);
+    }
+    @Test
+    public void test8() {
+        run(8);
+    }
+    @Test
+    public void test9() {
+        run(9);
+    }
+    @Test
+    public void test10() {
+        run(10);
+    }
+    @Test
+    public void test11() {
+        run(11);
+    }
+    @Test
+    public void test12() {
+        run(12);
+    }
+    @Test
+    public void test13() {
+        run(13);
+    }
+    @Test
+    public void test14() {
+        run(14);
+    }
+    @Test
+    public void test15() {
+        run(15);
+    }
+    @Test
+    public void test16() {
+        run(16);
+    }
+    @Test
+    public void test17() {
+        run(17);
+    }
+    @Test
+    public void test18() {
+        run(18);
+    }
+    @Test
+    public void test19() {
+        run(19);
+    }
+    @Test
+    public void test20() {
+        run(20);
+    }
+    @Test
+    public void test21() {
+        run(21);
+    }
 
     @Test
     public void bibdTest() {
@@ -128,7 +207,7 @@ public class ResolutionTest {
         args[1] = args[1] + "/bibd-8-14-7-4-3_glb.xml";
         int nbNodes = -1;
         for (int i = 0; i < 5; i++) {
-        	try {
+            try {
                 xm.generate(args);
             } catch (Exception e) {
                 LOGGER.severe(e.toString());
@@ -143,23 +222,9 @@ public class ResolutionTest {
     }
 
     @Test
-    @Ignore
-    public void taskTest() {
-    	 XmlModel xm = new XmlModel();
-         args[1] = args[1] + "/tasks.xml";
-         try {
-			xm.generate(args);
-         } catch (Exception e) {
-        	 LOGGER.log(Level.SEVERE, "unexpected exceptions", e);
-             Assert.fail();
-		}
-    }
-
-    @Test
-    @Ignore
     public void aTest() {
         XmlModel xm = new XmlModel();
-        args[1] = args[1] + "/protein.xml";
+        args[1] = args[1] + "/normalized-ssa-0432-003_ext.xml";
 //        ChocoLogging.setVerbosity(Verbosity.VERBOSE);
         try {
             xm.generate(args);
@@ -167,7 +232,7 @@ public class ResolutionTest {
             LOGGER.severe(e.toString());
             Assert.fail();
         }
-            }
+    }
 
     @Test
     public void gccTest() {
@@ -179,7 +244,7 @@ public class ResolutionTest {
             LOGGER.severe(e.toString());
             Assert.fail();
         }
-            }
+    }
 
     @Test
     public void patatTest() {
@@ -191,71 +256,73 @@ public class ResolutionTest {
             LOGGER.severe(e.toString());
             Assert.fail();
         }
-            }
+    }
 
 
     //***************************************************************************************
 /**
-	 * An exception thrown when an System.exit() occurred.
-	 * @author Fabien Hermenier
-	 *
-	 */
-    private static class ExitException extends SecurityException {
+ * An exception thrown when an System.exit() occurred.
+ *
+ * @author Fabien Hermenier
+ */
+static class ExitException extends SecurityException {
 
-		/**
-		 * The exit status.
-		 */
-		private final int status;
+        /**
+         * The exit status.
+         */
+        private final int status;
 
-		/**
-		 * A new exception.
-		 * @param st the exit status
-		 */
-		public ExitException(int st) {
-			super("There is no escape");
-			this.status = st;
-		}
+        /**
+         * A new exception.
+         *
+         * @param st the exit status
+         */
+        public ExitException(int st) {
+            super("There is no escape");
+            this.status = st;
+        }
 
-		/**
-		 * Return the error message.
-		 * @return a String!
-		 */
-		public String getMessage() {
-			return "Application execute a 'System.exit(" + this.status + ")'";
-		}
-	}
+        /**
+         * Return the error message.
+         *
+         * @return a String!
+         */
+        public String getMessage() {
+            return "Application execute a 'System.exit(" + this.status + ")'";
+        }
+    }
 
-	/**
-	 * A Mock security manager to "transform" a System.exit() into
-	 * a ExitException.
-	 * @author Fabien Hermenier
-	 *
-	 */
-    private static class NoExitSecurityManager extends SecurityManager {
+    /**
+     * A Mock security manager to "transform" a System.exit() into
+     * a ExitException.
+     *
+     * @author Fabien Hermenier
+     */
+    static class NoExitSecurityManager extends SecurityManager {
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void checkPermission(Permission perm, Object ctx) {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void checkPermission(Permission perm, Object ctx) {
 
-		}
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void checkPermission(Permission perm) {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void checkPermission(Permission perm) {
 
-		}
+        }
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void checkExit(int st) {
-			super.checkExit(st);
-			throw new ExitException(st);
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void checkExit(int st) {
+            super.checkExit(st);
+            throw new ExitException(st);
 		}
 	}
     

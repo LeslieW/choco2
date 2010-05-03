@@ -28,29 +28,6 @@
  *************************************************/
 package choco.cp.solver;
 
-import static choco.cp.solver.search.BranchingFactory.incDomWDeg;
-import static choco.cp.solver.search.BranchingFactory.incDomWDegBin;
-import static choco.kernel.common.Constant.FALSE;
-import static choco.kernel.common.Constant.TRUE;
-import static choco.kernel.common.util.tools.StringUtils.prettyOnePerLine;
-import static choco.kernel.solver.search.SolutionPoolFactory.makeDefaultSolutionPool;
-import gnu.trove.THashSet;
-import gnu.trove.TLongObjectHashMap;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.logging.Level;
-
 import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.configure.LimitFactory;
@@ -60,59 +37,24 @@ import choco.cp.solver.constraints.global.Occurrence;
 import choco.cp.solver.constraints.global.scheduling.precedence.PrecedenceDisjoint;
 import choco.cp.solver.constraints.global.scheduling.precedence.PrecedenceVDisjoint;
 import choco.cp.solver.constraints.global.scheduling.precedence.PrecedenceVSDisjoint;
-import choco.cp.solver.constraints.integer.EqualXC;
-import choco.cp.solver.constraints.integer.EqualXYC;
-import choco.cp.solver.constraints.integer.EqualXY_C;
-import choco.cp.solver.constraints.integer.GreaterOrEqualXC;
-import choco.cp.solver.constraints.integer.GreaterOrEqualXYC;
-import choco.cp.solver.constraints.integer.GreaterOrEqualXY_C;
-import choco.cp.solver.constraints.integer.IntLinComb;
-import choco.cp.solver.constraints.integer.LessOrEqualXC;
-import choco.cp.solver.constraints.integer.LessOrEqualXY_C;
-import choco.cp.solver.constraints.integer.MaxOfAList;
-import choco.cp.solver.constraints.integer.NotEqualXC;
-import choco.cp.solver.constraints.integer.NotEqualXYC;
-import choco.cp.solver.constraints.integer.NotEqualXY_C;
+import choco.cp.solver.constraints.integer.*;
 import choco.cp.solver.constraints.integer.bool.sat.ClauseStore;
 import choco.cp.solver.constraints.integer.channeling.ReifiedIntSConstraint;
-import choco.cp.solver.constraints.integer.extension.AC2001BinSConstraint;
-import choco.cp.solver.constraints.integer.extension.AC3BinSConstraint;
-import choco.cp.solver.constraints.integer.extension.AC3rmBinSConstraint;
-import choco.cp.solver.constraints.integer.extension.AC3rmBitBinSConstraint;
-import choco.cp.solver.constraints.integer.extension.CspLargeSConstraint;
-import choco.cp.solver.constraints.integer.extension.GAC2001LargeSConstraint;
-import choco.cp.solver.constraints.integer.extension.GAC2001PositiveLargeConstraint;
-import choco.cp.solver.constraints.integer.extension.GAC3rmLargeConstraint;
-import choco.cp.solver.constraints.integer.extension.GAC3rmPositiveLargeConstraint;
-import choco.cp.solver.constraints.integer.extension.GACstrPositiveLargeSConstraint;
+import choco.cp.solver.constraints.integer.extension.*;
 import choco.cp.solver.constraints.integer.intlincomb.IntLinCombFactory;
 import choco.cp.solver.constraints.real.Equation;
 import choco.cp.solver.constraints.real.MixedEqXY;
-import choco.cp.solver.constraints.real.exp.RealCos;
-import choco.cp.solver.constraints.real.exp.RealIntegerPower;
-import choco.cp.solver.constraints.real.exp.RealMinus;
-import choco.cp.solver.constraints.real.exp.RealMult;
-import choco.cp.solver.constraints.real.exp.RealPlus;
-import choco.cp.solver.constraints.real.exp.RealSin;
+import choco.cp.solver.constraints.real.exp.*;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
 import choco.cp.solver.constraints.set.Disjoint;
-import choco.cp.solver.constraints.set.IsIncluded;
-import choco.cp.solver.constraints.set.MemberXY;
-import choco.cp.solver.constraints.set.SetCard;
-import choco.cp.solver.constraints.set.SetEq;
-import choco.cp.solver.constraints.set.SetIntersection;
-import choco.cp.solver.constraints.set.SetNotEq;
-import choco.cp.solver.constraints.set.SetUnion;
+import choco.cp.solver.constraints.set.*;
 import choco.cp.solver.goals.GoalSearchSolver;
 import choco.cp.solver.propagation.ChocEngine;
 import choco.cp.solver.propagation.EventQueueFactory;
-import choco.cp.solver.search.AbstractSearchLoopWithRestart;
-import choco.cp.solver.search.BranchAndBound;
+import static choco.cp.solver.search.BranchingFactory.incDomWDeg;
+import static choco.cp.solver.search.BranchingFactory.incDomWDegBin;
 import choco.cp.solver.search.GlobalSearchStrategy;
 import choco.cp.solver.search.GoalSearchLoop;
-import choco.cp.solver.search.SearchLimitManager;
-import choco.cp.solver.search.SearchLoop;
-import choco.cp.solver.search.SearchLoopWithRecomputation;
 import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.branching.ImpactBasedBranching;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
@@ -120,27 +62,22 @@ import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.cp.solver.search.real.AssignInterval;
 import choco.cp.solver.search.real.CyclicRealVarSelector;
-import choco.cp.solver.search.real.RealBranchAndBound;
 import choco.cp.solver.search.real.RealIncreasingDomain;
-import choco.cp.solver.search.restart.BasicKickRestart;
-import choco.cp.solver.search.restart.IKickRestart;
-import choco.cp.solver.search.restart.NogoodKickRestart;
-import choco.cp.solver.search.set.AssignSetVar;
-import choco.cp.solver.search.set.MinDomSet;
-import choco.cp.solver.search.set.MinEnv;
-import choco.cp.solver.search.set.RandomSetValSelector;
-import choco.cp.solver.search.set.RandomSetVarSelector;
+import choco.cp.solver.search.set.*;
 import choco.cp.solver.variables.integer.BooleanVarImpl;
 import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.cp.solver.variables.integer.IntTerm;
 import choco.cp.solver.variables.real.RealVarImpl;
 import choco.cp.solver.variables.set.SetVarImpl;
+import static choco.kernel.common.Constant.FALSE;
+import static choco.kernel.common.Constant.TRUE;
 import choco.kernel.common.IndexFactory;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.common.util.tools.StringUtils;
+import static choco.kernel.common.util.tools.StringUtils.prettyOnePerLine;
 import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
@@ -154,11 +91,7 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.real.RealVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.model.variables.set.SetVariable;
-import choco.kernel.solver.Configuration;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.Solution;
-import choco.kernel.solver.Solver;
-import choco.kernel.solver.SolverException;
+import choco.kernel.solver.*;
 import choco.kernel.solver.branch.AbstractIntBranchingStrategy;
 import choco.kernel.solver.branch.BranchingWithLoggingStatements;
 import choco.kernel.solver.branch.VarSelector;
@@ -167,15 +100,7 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.global.MetaSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.constraints.integer.IntExp;
-import choco.kernel.solver.constraints.integer.extension.BinRelation;
-import choco.kernel.solver.constraints.integer.extension.CouplesBitSetTable;
-import choco.kernel.solver.constraints.integer.extension.CouplesTable;
-import choco.kernel.solver.constraints.integer.extension.ExtensionalBinRelation;
-import choco.kernel.solver.constraints.integer.extension.IterLargeRelation;
-import choco.kernel.solver.constraints.integer.extension.IterTuplesTable;
-import choco.kernel.solver.constraints.integer.extension.LargeRelation;
-import choco.kernel.solver.constraints.integer.extension.TuplesList;
-import choco.kernel.solver.constraints.integer.extension.TuplesTable;
+import choco.kernel.solver.constraints.integer.extension.*;
 import choco.kernel.solver.constraints.real.RealExp;
 import choco.kernel.solver.goals.Goal;
 import choco.kernel.solver.propagation.AbstractPropagationEngine;
@@ -188,16 +113,10 @@ import choco.kernel.solver.propagation.queue.AbstractConstraintEventQueue;
 import choco.kernel.solver.propagation.queue.ConstraintEventQueue;
 import choco.kernel.solver.propagation.queue.EventQueue;
 import choco.kernel.solver.propagation.queue.VarEventQueue;
-import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import choco.kernel.solver.search.AbstractSearchLoop;
-import choco.kernel.solver.search.AbstractSearchStrategy;
-import choco.kernel.solver.search.ISolutionPool;
-import choco.kernel.solver.search.ValIterator;
-import choco.kernel.solver.search.ValSelector;
+import choco.kernel.solver.search.*;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.limit.Limit;
-import choco.kernel.solver.search.measure.FailMeasure;
 import choco.kernel.solver.search.set.AbstractSetVarSelector;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.Var;
@@ -209,6 +128,11 @@ import choco.kernel.solver.variables.real.RealVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 import choco.kernel.solver.variables.set.SetVar;
 import choco.kernel.visu.IVisu;
+import gnu.trove.TLongObjectHashMap;
+
+import java.lang.reflect.Array;
+import java.util.*;
+import java.util.logging.Level;
 
 
 /**
@@ -226,7 +150,7 @@ public class CPSolver implements Solver {
     /**
 	 * The environment managing the backtrackable data.
 	 */
-	private IEnvironment environment;
+	private final IEnvironment environment;
 	/**
 	 * The propagation engine to propagate during solving.
 	 */
@@ -241,7 +165,7 @@ public class CPSolver implements Solver {
 	 * an index useful for re-propagating cuts (static constraints) upon
 	 * backtracking
 	 */
-	private IStateInt indexOfLastInitializedStaticConstraint;
+	private final IStateInt indexOfLastInitializedStaticConstraint;
 
 	/**
 	 * <br/><b>Goal</b>: specify that a solver read a model only once.
@@ -1391,7 +1315,7 @@ public class CPSolver implements Solver {
 	 */
 	@Deprecated
 	public void setRestart(boolean restart) {
-		configuration.readBoolean(Configuration.RESTART_AFTER_SOLUTION);
+        configuration.putBoolean(Configuration.RESTART_AFTER_SOLUTION, restart);
 	}
 
 
@@ -1543,18 +1467,13 @@ public class CPSolver implements Solver {
 		return propagationEngine;
 	}
 
-	protected final <E> List<E> getDecisionList(List<E> decisions, List<E> all) {
-		return Collections.unmodifiableList(decisions.isEmpty() ? all
-				: decisions);
-	}
-
-	/**
+    /**
 	 * get the list of decision integer variables.
 	 *
 	 * @return an unmodifiable list
 	 */
-	public final List<IntDomainVar> getIntDecisionVars() {
-		return getDecisionList(intDecisionVars, intVars.toList());
+	public final IntDomainVar[] getIntDecisionVars() {
+		return VariableUtils.getDecisionList(intDecisionVars, intVars.toList(), IntDomainVar.class);
 	}
 
 	/**
@@ -1562,8 +1481,8 @@ public class CPSolver implements Solver {
 	 *
 	 * @return an unmodifiable list
 	 */
-	public final List<SetVar> getSetDecisionVars() {
-		return getDecisionList(setDecisionVars, setVars.toList());
+	public final SetVar[] getSetDecisionVars() {
+		return VariableUtils.getDecisionList(setDecisionVars, setVars.toList(), SetVar.class);
 
 	}
 
@@ -1572,8 +1491,8 @@ public class CPSolver implements Solver {
 	 *
 	 * @return an unmodifiable list
 	 */
-	public final List<RealVar> getRealDecisionVars() {
-		return getDecisionList(floatDecisionVars, floatVars.toList());
+	public final RealVar[] getRealDecisionVars() {
+		return VariableUtils.getDecisionList(floatDecisionVars, floatVars.toList(), RealVar.class);
 	}
 
 	/**
@@ -1581,8 +1500,8 @@ public class CPSolver implements Solver {
 	 *
 	 * @return an unmodifiable list
 	 */
-	public final List<TaskVar> getTaskDecisionVars() {
-		return getDecisionList(taskDecisionVars, taskVars.toList());
+	public final TaskVar[] getTaskDecisionVars() {
+		return VariableUtils.getDecisionList(taskDecisionVars, taskVars.toList(), TaskVar.class);
 	}
 
 	/**
@@ -2037,7 +1956,7 @@ public class CPSolver implements Solver {
 	 * @return the boolean variables of the problem
 	 */
 	public IntDomainVar[] getBooleanVariables() {
-		ArrayList<IntDomainVar> bvs = new ArrayList<IntDomainVar>();
+		ArrayList<IntDomainVar> bvs = new ArrayList<IntDomainVar>(16);
 		for (int i = 0; i < getNbIntVars(); i++) {
 			IntDomainVar v = getIntVar(i);
 			if (v.hasBooleanDomain()){
@@ -2489,21 +2408,22 @@ public class CPSolver implements Solver {
 	 * use {@link ChocoLogging#setVerbosity(Verbosity)}
 	 * @param verbosity logger verbosity
 	 */
-	@Deprecated
+	@SuppressWarnings({"deprecation"})
+    @Deprecated
 	public static void setVerbosity(int verbosity) {
 		switch (verbosity) {
-		case SOLUTION:
-			ChocoLogging.setVerbosity(Verbosity.SOLUTION);break;
-		case SEARCH:
-			ChocoLogging.setVerbosity(Verbosity.SEARCH);break;
-		case PROPAGATION:
-			ChocoLogging.setVerbosity(Verbosity.FINEST);break;
-		case FINEST:
-			ChocoLogging.setVerbosity(Verbosity.FINEST);break;
-		case SILENT:
-			ChocoLogging.setVerbosity(Verbosity.SILENT);break;
-		default:
-			ChocoLogging.setVerbosity(Verbosity.SILENT);break;
+            case SOLUTION:
+                ChocoLogging.setVerbosity(Verbosity.SOLUTION);break;
+            case SEARCH:
+                ChocoLogging.setVerbosity(Verbosity.SEARCH);break;
+            case PROPAGATION:
+                ChocoLogging.setVerbosity(Verbosity.FINEST);break;
+            case FINEST:
+                ChocoLogging.setVerbosity(Verbosity.FINEST);break;
+            case SILENT:
+                ChocoLogging.setVerbosity(Verbosity.SILENT);break;
+            default:
+                ChocoLogging.setVerbosity(Verbosity.SILENT);break;
 		}
 	}
 
@@ -2684,15 +2604,15 @@ public class CPSolver implements Solver {
 	// ************************************************************************
 
 
-	private SConstraint eq(int cste) {
+	private static SConstraint eq(int cste) {
 		return cste == 0 ? TRUE : FALSE;
 	}
 
-	private SConstraint geq(int cste) {
+	private static SConstraint geq(int cste) {
 		return cste <= 0 ? TRUE : FALSE;
 	}
 
-	private SConstraint neq(int cste) {
+	private static SConstraint neq(int cste) {
 		return cste != 0 ? TRUE : FALSE;
 	}
 
@@ -2712,7 +2632,7 @@ public class CPSolver implements Solver {
 	}
 
 	/** always succeeds to build the constraint */
-	protected SConstraint eq(int c0, IntDomainVar v0, int cste) {
+	protected static SConstraint eq(int c0, IntDomainVar v0, int cste) {
 		if( c0 == 0) {
             return eq(cste);
         }
@@ -2725,7 +2645,7 @@ public class CPSolver implements Solver {
 	}
 
 	/** could fail to build a binary constraint and give the hand to IntLinComb */
-	protected SConstraint eq(int c0, IntDomainVar v0, int c1, IntDomainVar v1, int cste) {
+	protected static SConstraint eq(int c0, IntDomainVar v0, int c1, IntDomainVar v1, int cste) {
 		assert(c0 != 0 && c1 != 0);
 		if( c0 == -c1  && cste % c0 == 0) {
 			return new EqualXYC(v0, v1, cste/c0);
@@ -2797,7 +2717,7 @@ public class CPSolver implements Solver {
 	}
 
 	/** could fail to build a binary constraint and give the hand to IntLinComb */
-	protected SConstraint geq(int c0, IntDomainVar v0, int c1, IntDomainVar v1, int cste) {
+	protected static SConstraint geq(int c0, IntDomainVar v0, int c1, IntDomainVar v1, int cste) {
 		if(  c0 == -c1 && cste % c0 == 0) {
 			if( c0 > 0) {
                 return new GreaterOrEqualXYC( v0, v1, cste/c0);
@@ -2815,7 +2735,7 @@ public class CPSolver implements Solver {
 	}
 
 	/** always succeeds to build the constraint */
-	protected SConstraint geq(int c0, IntDomainVar v0, int cste) {
+	protected static SConstraint geq(int c0, IntDomainVar v0, int cste) {
 		if(c0 > 0) {
 			return new GreaterOrEqualXC( v0, MathUtils.divCeil(cste, c0));
 		}else if( c0 < 0){
@@ -2941,7 +2861,7 @@ public class CPSolver implements Solver {
 	 *            second term
 	 * @return the term (a fresh one)
 	 */
-	public IntExp minus(IntExp v1, IntExp v2) {
+	public static IntExp minus(IntExp v1, IntExp v2) {
 		if (v1 == IntTerm.ZERO){
             return mult(-1, v2);
         }
@@ -2979,7 +2899,7 @@ public class CPSolver implements Solver {
 		}
 	}
 
-	public IntExp minus(IntExp t, int c) {
+	public static IntExp minus(IntExp t, int c) {
 		if (t == IntTerm.ZERO) {
 			IntTerm t2 = new IntTerm(0);
 			t2.setConstant(-c);
@@ -2999,7 +2919,7 @@ public class CPSolver implements Solver {
 		}
 	}
 
-	public IntExp minus(int c, IntExp t) {
+	public static IntExp minus(int c, IntExp t) {
 		if (t instanceof IntTerm) {
 			IntTerm t1 = (IntTerm) t;
 			int n = t1.getSize();
@@ -3135,7 +3055,7 @@ public class CPSolver implements Solver {
 	 *            the variable
 	 * @return the term
 	 */
-	public IntExp mult(int a, IntExp x) {
+	public static IntExp mult(int a, IntExp x) {
 		if (a != 0 && x != IntTerm.ZERO) {
 			IntTerm t = new IntTerm(1);
 			t.setCoefficient(0, a);
@@ -3148,7 +3068,7 @@ public class CPSolver implements Solver {
 
 
 	/** could fail to build a binary constraint and give the hand to IntLinComb */
-	protected SConstraint neq(int c0, IntDomainVar v0, int c1, IntDomainVar v1, int cste) {
+	protected static SConstraint neq(int c0, IntDomainVar v0, int c1, IntDomainVar v1, int cste) {
 		assert( c0 != 0 && c1 != 0);
 		if( c0 == -c1 && cste % c0 == 0) {
 			return new NotEqualXYC( v0, v1, cste/ c0);
@@ -3159,7 +3079,7 @@ public class CPSolver implements Solver {
 	}
 
 	/** always succeeds to build the constraint */
-	protected SConstraint neq(int c0, IntDomainVar v0, int cste) {
+	protected static SConstraint neq(int c0, IntDomainVar v0, int cste) {
 		if( c0 == 0) {
             return neq(cste);
         }
@@ -3230,11 +3150,11 @@ public class CPSolver implements Solver {
 		}
 	}
 
-	public SConstraint eq(SetVar s1, SetVar s2) {
+	public static SConstraint eq(SetVar s1, SetVar s2) {
 		return new SetEq(s1, s2);
 	}
 
-	public SConstraint neq(SetVar s1, SetVar s2) {
+	public static SConstraint neq(SetVar s1, SetVar s2) {
 		return new SetNotEq(s1, s2);
 	}
 
@@ -3263,7 +3183,7 @@ public class CPSolver implements Solver {
 		if( direction == null) {
 			direction = VariableUtils.createDirectionVar(this, t1, t2);
 		}else if( ! direction.hasBooleanDomain()) {
-			throw new SolverException("The direction variable "+direction.pretty()+"is not a boolean variable for the precedence ("+t1+","+t2+")");
+			throw new SolverException("The direction variable "+direction.pretty()+"is not a boolean variable for the precedence ("+t1+ ',' +t2+ ')');
 		}
 		if(direction.isInstantiatedTo(1)) {
 			//forward precedence
@@ -3305,7 +3225,7 @@ public class CPSolver implements Solver {
 	 */
 	public SConstraint makeEquation(RealExp exp, RealIntervalConstant cst) {
 		// Collect the variables
-		Set<RealVar> collectedVars = new HashSet<RealVar>();
+		Set<RealVar> collectedVars = new HashSet<RealVar>(16);
 		exp.collectVars(collectedVars);
 		RealVar[] tmpVars = new RealVar[0];
 		tmpVars = collectedVars.toArray(tmpVars);
@@ -3549,7 +3469,7 @@ public class CPSolver implements Solver {
 	 *            the array of integer variables
 	 * @return the term
 	 */
-	public IntExp sum(IntVar... lv) {
+	public static IntExp sum(IntVar... lv) {
 		return new IntTerm(lv);
 	}
 
@@ -3677,7 +3597,7 @@ public class CPSolver implements Solver {
 	 *            specify if the relation is defined in feasibility or not
 	 * @return
 	 */
-	public BinRelation makeBinRelation(IntDomainVar v1, IntDomainVar v2,
+	public static BinRelation makeBinRelation(IntDomainVar v1, IntDomainVar v2,
 			boolean[][] mat, boolean feas, boolean bitset) {
         int n1 = v1.getSup() - v1.getInf() + 1;
 		int n2 = v2.getSup() - v2.getInf() + 1;
@@ -3699,11 +3619,11 @@ public class CPSolver implements Solver {
 			throw new SolverException(
 					"Wrong dimension for the matrix of consistency : "
 					+ mat.length + " X " + mat[0].length
-					+ " instead of " + n1 + "X" + n2);
+					+ " instead of " + n1 + 'X' + n2);
 		}
 	}
 
-	public BinRelation makeBinRelation(IntDomainVar v1, IntDomainVar v2,
+	public static BinRelation makeBinRelation(IntDomainVar v1, IntDomainVar v2,
 			boolean[][] mat, boolean feas) {
 		return makeBinRelation(v1, v2, mat, feas, false);
 	}
@@ -3918,16 +3838,14 @@ public class CPSolver implements Solver {
 			relation = new IterTuplesTable(tuples, offsets, sizes);
 		} else if (scheme == 1) {
 			relation = new TuplesTable(feas, offsets, sizes);
-			Iterator<int[]> it = tuples.iterator();
-			while (it.hasNext()) {
-				int[] tuple = it.next();
-				if (tuple.length != n) {
-					throw new SolverException("Wrong dimension : "
-							+ tuple.length + " for a tuple (should be " + n
-							+ ")");
-				}
-				((TuplesTable) relation).setTuple(tuple);
-			}
+            for (final int[] tuple1 : tuples) {
+                if (tuple1.length != n) {
+                    throw new SolverException("Wrong dimension : "
+                            + tuple1.length + " for a tuple (should be " + n
+                            + ')');
+                }
+                ((TuplesTable) relation).setTuple(tuple1);
+            }
 		} else {
 			relation = new TuplesList(tuples);
 		}
@@ -3935,7 +3853,7 @@ public class CPSolver implements Solver {
 		return relation;
 	}
 
-	public SConstraint makeTupleFC(IntDomainVar[] vs, List<int[]> tuples,
+	public static SConstraint makeTupleFC(IntDomainVar[] vs, List<int[]> tuples,
 			boolean feas) {
 		int n = vs.length;
 		int[] offsets = new int[n];
@@ -3946,15 +3864,13 @@ public class CPSolver implements Solver {
 			offsets[i] = vi.getInf();
 		}
 		TuplesTable relation = new TuplesTable(feas, offsets, sizes);
-		Iterator<int[]> it = tuples.iterator();
-		while (it.hasNext()) {
-			int[] tuple = it.next();
-			if (tuple.length != n) {
-				throw new SolverException("Wrong dimension : " + tuple.length
-						+ " for a tuple (should be " + n + ")");
-			}
-			relation.setTuple(tuple);
-		}
+        for (final int[] tuple1 : tuples) {
+            if (tuple1.length != n) {
+                throw new SolverException("Wrong dimension : " + tuple1.length
+                        + " for a tuple (should be " + n + ')');
+            }
+            relation.setTuple(tuple1);
+        }
 		return createFCLargeConstraint(vs, relation);
 	}
 
@@ -3966,7 +3882,7 @@ public class CPSolver implements Solver {
 	 * @param tuples
 	 *            : a list of int[] corresponding to feasible tuples
 	 */
-	public SConstraint feasibleTupleFC(IntDomainVar[] vars, TuplesTable tuples) {
+	public static SConstraint feasibleTupleFC(IntDomainVar[] vars, TuplesTable tuples) {
 		return new CspLargeSConstraint(vars, tuples);
 	}
 
@@ -3978,7 +3894,7 @@ public class CPSolver implements Solver {
 	 * @param tuples
 	 *            : a list of int[] corresponding to infeasible tuples
 	 */
-	public SConstraint infeasibleTupleFC(IntDomainVar[] vars, TuplesTable tuples) {
+	public static SConstraint infeasibleTupleFC(IntDomainVar[] vars, TuplesTable tuples) {
 		return new CspLargeSConstraint(vars, tuples);
 	}
 
@@ -3990,7 +3906,7 @@ public class CPSolver implements Solver {
 	 * @param tuples
 	 *            : a list of int[] corresponding to infeasible tuples
 	 */
-	public SConstraint infeasTupleFC(IntDomainVar[] vars, List<int[]> tuples) {
+	public static SConstraint infeasTupleFC(IntDomainVar[] vars, List<int[]> tuples) {
 		return makeTupleFC(vars, tuples, false);
 	}
 
@@ -4002,7 +3918,7 @@ public class CPSolver implements Solver {
 	 * @param tuples
 	 *            : a list of int[] corresponding to feasible tuples
 	 */
-	public SConstraint feasTupleFC(IntDomainVar[] vars, List<int[]> tuples) {
+	public static SConstraint feasTupleFC(IntDomainVar[] vars, List<int[]> tuples) {
 		return makeTupleFC(vars, tuples, true);
 	}
 
@@ -4037,11 +3953,11 @@ public class CPSolver implements Solver {
 	 * @param vs
 	 * @param rela
 	 */
-	public SConstraint relationTupleFC(IntDomainVar[] vs, LargeRelation rela) {
+	public static SConstraint relationTupleFC(IntDomainVar[] vs, LargeRelation rela) {
 		return createFCLargeConstraint(vs, rela);
 	}
 
-	protected SConstraint createFCLargeConstraint(IntDomainVar[] vars,
+	protected static SConstraint createFCLargeConstraint(IntDomainVar[] vars,
 			LargeRelation relation) {
 		IntDomainVar[] tmpVars = new IntDomainVar[vars.length];
 		System.arraycopy(vars, 0, tmpVars, 0, vars.length);

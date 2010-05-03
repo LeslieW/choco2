@@ -20,26 +20,26 @@ import java.util.logging.Level;
 public final class ClauseStore extends AbstractLargeIntSConstraint {
 
 
-    public static boolean nonincprop = false;
+    public static final boolean nonincprop = false;
 
     //a flag to allow quick entailment tests
     public boolean efficient_entailment_test = false;
 
     // a data structure for managing all variable/value pairs
-    protected Lits voc;
+    protected final Lits voc;
 
-    protected ArrayList<WLClause> listclause;
+    protected final ArrayList<WLClause> listclause;
 
-    protected LinkedList<WLClause> listToPropagate;
+    protected final LinkedList<WLClause> listToPropagate;
 
     // if we get clause of size one, we instantiate them directly
     // to the correct value
-    protected LinkedList<IntDomainVar> instToOne;
-    protected LinkedList<IntDomainVar> instToZero;
+    protected final LinkedList<IntDomainVar> instToOne;
+    protected final LinkedList<IntDomainVar> instToZero;
 
     private final TLongIntHashMap indexes;
 
-    protected int[] fineDegree;
+    protected final int[] fineDegree;
 
     protected int nbNonBinaryClauses;
 
@@ -57,7 +57,7 @@ public final class ClauseStore extends AbstractLargeIntSConstraint {
      * @param environment
      */
     public ClauseStore(IntDomainVar[] vars, IEnvironment environment) {
-        this(vars, new ArrayList<WLClause>(), new Lits(), environment);
+        this(vars, new ArrayList<WLClause>(12), new Lits(), environment);
         voc.init(vars);
     }
 
@@ -153,8 +153,8 @@ public final class ClauseStore extends AbstractLargeIntSConstraint {
         listclause.add(new WLClause(lits, voc));
     }
 
-    public IntDomainVar[] removeRedundantVars(IntDomainVar[] vs) {
-        HashSet<IntDomainVar> filteredVars = new HashSet<IntDomainVar>();
+    public static IntDomainVar[] removeRedundantVars(IntDomainVar[] vs) {
+        HashSet<IntDomainVar> filteredVars = new HashSet<IntDomainVar>(12);
         for (int i = 0; i < vs.length; i++) {
             if (!filteredVars.contains(vs[i]))
                 filteredVars.add(vs[i]);
@@ -222,7 +222,7 @@ public final class ClauseStore extends AbstractLargeIntSConstraint {
         return indexes.get(v.getIndex()) + 1;
     }
 
-    public DynWLClause addNoGood(IntDomainVar[] positivelits, IntDomainVar[] negativelits) {
+    public void addNoGood(IntDomainVar[] positivelits, IntDomainVar[] negativelits) {
         IntDomainVar[] plit = removeRedundantVars(positivelits);
         IntDomainVar[] nlit = removeRedundantVars(negativelits);
 
@@ -234,14 +234,12 @@ public final class ClauseStore extends AbstractLargeIntSConstraint {
             } else {
                 instToZero.add(vars[-lits[0] - 1]);
             }
-            return null;
         } else {
             DynWLClause clause = new DynWLClause(lits, voc);
             clause.setIdx(listclause.size());
             listclause.add(clause);
             listToPropagate.addLast(clause);
             if (lits.length > 2) nbNonBinaryClauses++;
-            return clause;
         }
     }
 
@@ -448,7 +446,7 @@ public final class ClauseStore extends AbstractLargeIntSConstraint {
 
     public final void printClauses() {
         if (LOGGER.isLoggable(Level.INFO)) {
-            StringBuilder b = new StringBuilder();
+            StringBuilder b = new StringBuilder(32);
             for (WLClause wlClause : listclause) {
                 b.append(wlClause);
             }

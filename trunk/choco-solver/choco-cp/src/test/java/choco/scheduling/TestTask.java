@@ -50,7 +50,7 @@ public class TestTask {
 	private List<SimpleTask> tasksL;
 
 	public static List<SimpleTask> getExample() {
-		List<SimpleTask> tasksL=new ArrayList<SimpleTask>();
+		List<SimpleTask> tasksL=new ArrayList<SimpleTask>(5);
 		tasksL.add(new SimpleTask(0,23,5));
 		tasksL.add(new SimpleTask(4,26,6));
 		tasksL.add(new SimpleTask(2,16,4));
@@ -64,7 +64,7 @@ public class TestTask {
 		this.tasksL=getExample();
 	}
 
-	private final void testSort(int[] order) {
+	private void testSort(int[] order) {
 		for (int i = 0; i < order.length; i++) {
 			assertEquals("sort : ",order[i],tasksL.get(i).getID());
 		}
@@ -72,7 +72,7 @@ public class TestTask {
 
 	@Test
 	public void testTasksComparator() {
-		LOGGER.info(""+tasksL);
+		LOGGER.info(String.valueOf(tasksL));
 		Collections.sort(tasksL,TaskComparators.makeEarliestStartingTimeCmp());
 		testSort(new int[] {0,2,3,1,4});
 		Collections.sort(tasksL, TaskComparators.makeEarliestCompletionTimeCmp());
@@ -95,9 +95,9 @@ public class TestTask {
 		CPSolver solver =new CPSolver();
 		solver.read(m);
 		LOGGER.info(solver.pretty());
-		assertEquals(4, solver.getIntDecisionVars().size());
+		assertEquals(4, solver.getIntDecisionVars().length);
 		assertEquals(3, solver.getNbTaskVars());
-		assertEquals(2, solver.getTaskDecisionVars().size());
+		assertEquals(2, solver.getTaskDecisionVars().length);
 		assertTrue(solver.getVar(t3).start().getDomain().isEnumerated());
 	}
 	

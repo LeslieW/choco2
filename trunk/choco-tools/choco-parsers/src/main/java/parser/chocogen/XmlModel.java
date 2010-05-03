@@ -113,7 +113,7 @@ public class XmlModel {
 	 */
 	public void generate(String[] args) throws Exception {
 		//ChocoLogging.setVerbosity(Verbosity.SEARCH);
-		HashMap<String, String> options = new HashMap<String, String>();
+		HashMap<String, String> options = new HashMap<String, String>(16);
 		for (int i = 0; i < args.length; i++) {
 			String arg = args[i++];
 			String val = args[i];
@@ -163,10 +163,10 @@ public class XmlModel {
 			seed = Integer.parseInt(options.get("-seed"));
 		}
 		if (options.containsKey("-randval")) {
-			randvalh = Boolean.parseBoolean(options.get("-randval"));;
+			randvalh = Boolean.parseBoolean(options.get("-randval"));
 		}
 		if (options.containsKey("-ngfres")) {
-			ngFromRestart = Boolean.parseBoolean(options.get("-ngfres"));;
+			ngFromRestart = Boolean.parseBoolean(options.get("-ngfres"));
 		}
 		try {
 			if (dossier.isFile()) {
@@ -232,7 +232,7 @@ public class XmlModel {
 	 * @throws Exception
 	 * @throws Error
 	 */
-	public InstanceParser load(File fichier) throws Exception, Error {
+	public static InstanceParser load(File fichier) throws Exception, Error {
 		try {
 			if (verb > 0) {
 				LOGGER.log(Level.INFO, "========================================================\nTraitement de :{0}", fichier.getName());
@@ -283,7 +283,7 @@ public class XmlModel {
 	 * @throws Exception
 	 * @throws Error
 	 */
-	public PreProcessCPSolver solve(CPModel model) throws Exception, Error {
+	public PreProcessCPSolver solve(CPModel model) throws  Error {
 
 		PreProcessCPSolver s = new PreProcessCPSolver();
 		s.read(model);
@@ -367,7 +367,7 @@ public class XmlModel {
 	 * @throws Exception
 	 * @throws Error
 	 */
-	public void postAnalyze(File fichier, InstanceParser parser, PreProcessCPSolver s) throws Exception, Error {
+	public void postAnalyze(File fichier, InstanceParser parser, PreProcessCPSolver s) throws  Error {
 		//CPSolver.flushLogs();
 		time[4] = System.currentTimeMillis();
 		//LOGGER.info("" + isFeasible);
@@ -393,29 +393,29 @@ public class XmlModel {
 			//            } else {
 			res.append("SAT");
 			LOGGER.info("s SATISFIABLE");
-			String sol = "v ";
+			StringBuilder sol = new StringBuilder("v ");
 			values[0] = fichier.getPath();
 			for (int i = 0; i < parser.getVariables().length; i++) {
 				try {
-					values[i + 1] = "" + s.getVar(parser.getVariables()[i].getChocovar()).getVal();
+					values[i + 1] = String.valueOf(s.getVar(parser.getVariables()[i].getChocovar()).getVal());
 				} catch (NullPointerException e) {
-					values[i + 1] = "" + parser.getVariables()[i].getChocovar().getLowB();
+					values[i + 1] = String.valueOf(parser.getVariables()[i].getChocovar().getLowB());
 				}
-				sol += values[i + 1] + " ";
+                sol.append(values[i + 1]).append(' ');
 			}
-			LOGGER.info(sol);
+			LOGGER.info(sol.toString());
 			//}
 		}
 		double rtime = (double) (time[4] - time[0]) / 1000D;
-		res.append(" ").append(rtime).append(" TIME     ");
-		res.append(" ").append(nbnode).append(" NDS   ");
-		res.append(" ").append(time[1] - time[0]).append(" PARSTIME     ");
-		res.append(" ").append(time[2] - time[1]).append(" BUILDPB      ");
-		res.append(" ").append(time[3] - time[2]).append(" CONFIG       ");
-		res.append(" ").append(time[4] - time[3]).append(" RES      ");
-		res.append(" ").append(s.restartMode).append(" RESTART      ");
-		res.append(" ").append(cheuri).append(" HEURISTIC      ");
-		res.append(" ").append(randvalh).append(" RANDVAL      ");
+		res.append(' ').append(rtime).append(" TIME     ");
+		res.append(' ').append(nbnode).append(" NDS   ");
+		res.append(' ').append(time[1] - time[0]).append(" PARSTIME     ");
+		res.append(' ').append(time[2] - time[1]).append(" BUILDPB      ");
+		res.append(' ').append(time[3] - time[2]).append(" CONFIG       ");
+		res.append(' ').append(time[4] - time[3]).append(" RES      ");
+		res.append(' ').append(s.restartMode).append(" RESTART      ");
+		res.append(' ').append(cheuri).append(" HEURISTIC      ");
+		res.append(' ').append(randvalh).append(" RANDVAL      ");
 		LOGGER.info("d AC " + ObjectFactory.algorithmAC);
 		LOGGER.info("d RUNTIME " + rtime);
 		LOGGER.info("d NODES " + nbnode);
@@ -427,7 +427,7 @@ public class XmlModel {
 
 		ValidityChecker.nbCheck = 0;
 
-		LOGGER.info("" + res);
+		LOGGER.info(String.valueOf(res));
 		if (verb > 0) {
 			if (isFeasible == Boolean.TRUE) {
 				SolutionChecker.main(values);
@@ -436,23 +436,23 @@ public class XmlModel {
 		ChocoLogging.flushLogs();
 	}
 
-	public long getParseTime() {
+	public static long getParseTime() {
 		return (time[1] - time[0]);
 	}
 
-	public long getBuildTime() {
+	public static long getBuildTime() {
 		return (time[2] - time[1]);
 	}
 
-	public long getConfTime() {
+	public static long getConfTime() {
 		return (time[3] - time[2]);
 	}
 
-	public long getResTime() {
+	public static long getResTime() {
 		return (time[4] - time[3]);
 	}
 
-	public long getFullTime() {
+	public static long getFullTime() {
 		return (time[4] - time[0]);
 	}
 
@@ -464,11 +464,11 @@ public class XmlModel {
 		return isFeasible;
 	}
 
-	public String[] getValues() {
+	public static String[] getValues() {
 		return values;
 	}
 
-	public boolean checkEverythingIsInstantiated(InstanceParser parser, Solver s) {
+	public static boolean checkEverythingIsInstantiated(InstanceParser parser, Solver s) {
 		for (int i = 0; i < parser.getVariables().length; i++) {
 			try {
 				if (!s.getVar(parser.getVariables()[i].getChocovar()).isInstantiated()) {
@@ -490,7 +490,7 @@ public class XmlModel {
 		XmlModel xs = new XmlModel();
 
 		try {
-			InstanceParser parser = xs.load(instance);
+			InstanceParser parser = load(instance);
 			CPModel model = xs.buildModel(parser);
 
 			//use the blackbox solver and blackbox search
