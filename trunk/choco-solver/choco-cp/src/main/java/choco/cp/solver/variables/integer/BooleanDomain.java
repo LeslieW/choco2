@@ -79,8 +79,7 @@ public final class BooleanDomain extends AbstractIntDomain {
      */
 
     public BooleanDomain(final IntDomainVarImpl v, final IEnvironment environment, final PropagationEngine propagationEngine) {
-        super(propagationEngine);
-        variable = v;
+        super(v, propagationEngine);
         notInstanciated = (StoredIndexedBipartiteSet) environment.getSharedBipartiteSetForBooleanVars();
         this.offset = environment.getNextOffset();
         value = 0;

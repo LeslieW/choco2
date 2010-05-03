@@ -39,44 +39,44 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
      * A random generator for random value from the domain
      */
 
-    protected final static Random random = new Random();
+    private final static Random random = new Random();
 
     /**
      * The offset, that is the minimal value of the domain (stored at index 0).
      * Thus the entry at index i corresponds to x=i+offset).
      */
 
-    protected final int offset;
+    private final int offset;
 
 
     /**
      * Number of present values.
      */
-    protected IStateInt size;
+    private final IStateInt size;
 
     /**
      * The backtrackable minimal value of the variable.
      */
 
-    protected IStateInt inf;
+    private final IStateInt inf;
 
     /**
      * The backtrackable maximal value of the variable.
      */
 
-    protected IStateInt sup;
+    private final IStateInt sup;
 
 
     /**
      * A bit set indicating for each value whether it is present or not
      */
 
-    protected IStateBitSet contents;
+    private final IStateBitSet contents;
 
     /**
      * the initial size of the domain (never increases)
      */
-    protected int capacity;
+    private final int capacity;
 
     /**
      * Constructs a new domain for the specified variable and bounds.
@@ -89,8 +89,7 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
      */
 
     public BitSetIntDomain(final IntDomainVarImpl v, final int a, final int b, final IEnvironment environment, final PropagationEngine propagationEngine) {
-        super(propagationEngine);
-        variable = v;
+        super(v, propagationEngine);
         capacity = b - a + 1;           // number of entries
         this.offset = a;
         size = environment.makeInt(capacity);
@@ -102,10 +101,9 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
     }
 
     public BitSetIntDomain(final IntDomainVarImpl v, final int[] sortedValues, final IEnvironment environment, final PropagationEngine propagationEngine) {
-        super(propagationEngine);
+        super(v, propagationEngine);
         final int a = sortedValues[0];
         final int b = sortedValues[sortedValues.length - 1];
-        variable = v;
         capacity = b - a + 1;           // number of entries
         this.offset = a;
         size = environment.makeInt(sortedValues.length);

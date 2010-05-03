@@ -40,23 +40,22 @@ public class IntervalIntDomain extends AbstractIntDomain {
      * A random generator for random value from the domain
      */
 
-    protected static Random random = new Random(System.currentTimeMillis());
+    private static Random random = new Random(System.currentTimeMillis());
 
     /**
      * The backtrackable minimal value of the variable.
      */
 
-    protected final IStateInt inf;
+    private final IStateInt inf;
 
     /**
      * The backtrackable maximal value of the variable.
      */
 
-    protected final IStateInt sup;
+    private final IStateInt sup;
 
     public IntervalIntDomain(final IntDomainVarImpl v, final int a, final int b, final IEnvironment environment, final PropagationEngine propagationEngine) {
-        super(propagationEngine);
-        variable = v;
+        super(v, propagationEngine);
         inf = environment.makeInt(a);
         sup = environment.makeInt(b);
         deltaDom = new IntervalDeltaDomain(this, a,b);
@@ -173,7 +172,7 @@ public class IntervalIntDomain extends AbstractIntDomain {
     }
 
     public String pretty() {
-        final StringBuilder ret = new StringBuilder();
+        final StringBuilder ret = new StringBuilder(32);
         ret.append('[').append(this.getInf()).append(" .. ").append(this.getSup()).append(']');
         ret.append(deltaDom.pretty());
         return ret.toString();

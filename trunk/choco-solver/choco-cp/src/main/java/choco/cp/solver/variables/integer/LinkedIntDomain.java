@@ -48,44 +48,44 @@ public class LinkedIntDomain extends AbstractIntDomain {
      * A random generator for random value from the domain
      */
 
-    protected static final Random random = new Random(System.currentTimeMillis());
+    private static final Random random = new Random(System.currentTimeMillis());
 
     /**
      * A vector containing the index of the next value in the domain. The value is -1 if the
      * value in not in the domain anymore.
      */
-    protected final IStateIntVector nextIndex;
+    private final IStateIntVector nextIndex;
 
     /**
      * A vector containing the index of the previous value in the domain. The value is -1 if the
      * value in not in the domain anymore.
      */
-    protected final IStateIntVector prevIndex;
+    private final IStateIntVector prevIndex;
 
     /**
      * The (dynamic) lower bound of the domain.
      */
-    protected final IStateInt lowerBound;
+    private final IStateInt lowerBound;
 
     /**
      * The (dynamic) upper bound of the domain.
      */
-    protected final IStateInt upperBound;
+    private final IStateInt upperBound;
 
     /**
      * The (dynamic) size of the domain.
      */
-    protected final IStateInt size;
+    private final IStateInt size;
 
     /**
      * The value of the original lower bound of the domain.
      */
-    protected final int offset;
+    private final int offset;
 
 
-    protected final int[] sortedValues;
+    private final int[] sortedValues;
 
-    protected final TIntIntHashMap val2ind;
+    private final TIntIntHashMap val2ind;
 
     /**
      * Constructs a new domain for the specified variable and bounds.
@@ -98,8 +98,7 @@ public class LinkedIntDomain extends AbstractIntDomain {
      */
 
     public LinkedIntDomain(IntDomainVarImpl v, int a, int b, IEnvironment environment, PropagationEngine propagationEngine) {
-        super(propagationEngine);
-        variable = v;
+        super(v, propagationEngine);
         this.offset = a;
         lowerBound = environment.makeInt(a);
         upperBound = environment.makeInt(b);
@@ -123,8 +122,7 @@ public class LinkedIntDomain extends AbstractIntDomain {
     }
 
     public LinkedIntDomain(IntDomainVarImpl v, int[] sortedValues, IEnvironment environment, PropagationEngine propagationEngine) {
-        super(propagationEngine);
-        variable = v;
+        super(v, propagationEngine);
         this.offset = sortedValues[0];
         lowerBound = environment.makeInt(sortedValues[0]);
         upperBound = environment.makeInt(sortedValues[sortedValues.length - 1]);
@@ -152,7 +150,7 @@ public class LinkedIntDomain extends AbstractIntDomain {
      * @param index the index of the value.
      * @return the designed value in the domain.
      */
-    protected int indexToValue(int index) {
+    int indexToValue(int index) {
 //    return index + offset;
         return sortedValues[index];
     }
@@ -163,7 +161,7 @@ public class LinkedIntDomain extends AbstractIntDomain {
      * @param value the value of the domain (It Should be checked before calling!!)
      * @return the index of this value.
      */
-    protected int valueToIndex(int value) {
+    int valueToIndex(int value) {
 //    return value - offset;
         if (val2ind.containsKey(value)) {
             return val2ind.get(value);
@@ -177,7 +175,7 @@ public class LinkedIntDomain extends AbstractIntDomain {
      *
      * @param indexToRemove should be a valid index of value in the domain.
      */
-    protected void removeIndex(int indexToRemove) {
+    void removeIndex(int indexToRemove) {
         nextIndex.set(indexToRemove, -1);
         prevIndex.set(indexToRemove, -1);
         deltaDom.remove(indexToRemove + offset);

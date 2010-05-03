@@ -57,38 +57,38 @@ public class BipartiteIntDomain extends AbstractIntDomain {
      * A random generator for random value from the domain
      */
 
-    protected final static Random random = new Random();
+    private final static Random random = new Random();
 
 
     /**
      * The values (not ordered) contained in the domain.
      */
-    protected int[] values;
+    private int[] values;
 
     /**
      * The number of values currently in the domain.
      */
-    protected IStateInt valuesInDomainNumber;
+    private IStateInt valuesInDomainNumber;
 
     /**
      * lower bound of the domain.
      */
-    protected IStateInt inf;
+    private IStateInt inf;
 
     /**
      * lower bound of the domain.
      */
-    protected IStateInt sup;
+    private IStateInt sup;
 
     /**
      * The indices for each values (+ the minimalValue).
      */
-    protected int[] indices;
+    private int[] indices;
 
     /**
      * The minimum from all values.
      */
-    protected int offset;
+    private int offset;
 
     /**
      * Constructs a new domain for the specified variable and bounds.
@@ -99,10 +99,10 @@ public class BipartiteIntDomain extends AbstractIntDomain {
      * @param propagationEngine
      */
     public BipartiteIntDomain(final IntDomainVarImpl v, final int[] sortedValues, final IEnvironment environment, final PropagationEngine propagationEngine) {
-        super(propagationEngine);
+        super(v, propagationEngine);
         assert(v!=null);
         assert(sortedValues!=null);
-        init(v, sortedValues, environment);
+        init(sortedValues, environment);
     }
 
     /**
@@ -115,7 +115,7 @@ public class BipartiteIntDomain extends AbstractIntDomain {
      * @param propagationEngine
      */
     public BipartiteIntDomain(final IntDomainVarImpl v, final int low, final int up, final IEnvironment environment, final PropagationEngine propagationEngine) {
-        super(propagationEngine);
+        super(v, propagationEngine);
         // Pre-condition
         assert(v!=null);
         assert(low <= up);
@@ -123,12 +123,11 @@ public class BipartiteIntDomain extends AbstractIntDomain {
         for (int i = 0; i < sortedValues.length; i++) {
             sortedValues[i] = low + i;
         }
-        init(v, sortedValues, environment);
+        init(sortedValues, environment);
     }
 
-    public void init(final IntDomainVarImpl v, final int[] sortedValues, final IEnvironment environment) {
+    void init(final int[] sortedValues, final IEnvironment environment) {
         // Constructor
-        variable = v;
         final int low = sortedValues[0];
         final int up = sortedValues[sortedValues.length - 1];
         final int size = sortedValues.length;

@@ -39,13 +39,13 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  */
 public abstract class AbstractIntDomain implements IntDomain {
 
-    public final PropagationEngine propagationEngine;
+    final PropagationEngine propagationEngine;
 
 
 	/**
 	 * The involved variable.
 	 */
-	protected IntDomainVar variable;
+	final IntDomainVar variable;
 
 	/**
 	 * for the delta domain: current value of the inf (domain lower bound) when the bound started beeing propagated
@@ -62,8 +62,10 @@ public abstract class AbstractIntDomain implements IntDomain {
 
     IDeltaDomain deltaDom;
 
-    protected AbstractIntDomain(final PropagationEngine propagationEngine) {
+    protected AbstractIntDomain(final IntDomainVar aVariable,final PropagationEngine propagationEngine) {
         this.propagationEngine = propagationEngine;
+        this.variable = aVariable;
+
     }
 
     /**
@@ -236,7 +238,7 @@ public abstract class AbstractIntDomain implements IntDomain {
 	 * @throws ContradictionException contradiction exception
 	 */
 
-	protected boolean _instantiate(final int x, final SConstraint cause) throws ContradictionException {
+	boolean _instantiate(final int x, final SConstraint cause) throws ContradictionException {
 		if (variable.isInstantiated()) {
 			if (variable.getVal() != x) {
 				propagationEngine.raiseContradiction(cause);
@@ -266,7 +268,7 @@ public abstract class AbstractIntDomain implements IntDomain {
 	 */
 
 	// note: one could have thrown an OutOfDomainException in case (x > IStateInt.MAXINT)
-	protected boolean _updateInf(final int x, final SConstraint cause) throws ContradictionException {
+	boolean _updateInf(final int x, final SConstraint cause) throws ContradictionException {
 		if (x > getInf()) {
 			if (x > getSup()) {
 				propagationEngine.raiseContradiction(cause);
@@ -289,7 +291,7 @@ public abstract class AbstractIntDomain implements IntDomain {
      * @return wether the update has been done
 	 * @throws ContradictionException contradiction exception
 	 */
-	protected boolean _updateSup(final int x, final SConstraint cause) throws ContradictionException {
+	boolean _updateSup(final int x, final SConstraint cause) throws ContradictionException {
 		if (x < getSup()) {
 			if (x < getInf()) {
 				propagationEngine.raiseContradiction(cause);
@@ -311,7 +313,7 @@ public abstract class AbstractIntDomain implements IntDomain {
      * @return wether the removal has been done
 	 * @throws ContradictionException contradiction excpetion
 	 */
-	protected boolean _removeVal(final int x, final SConstraint cause) throws ContradictionException {
+	boolean _removeVal(final int x, final SConstraint cause) throws ContradictionException {
 		final int infv = getInf();
         final int supv = getSup();
         if (infv <= x && x <= supv) {
