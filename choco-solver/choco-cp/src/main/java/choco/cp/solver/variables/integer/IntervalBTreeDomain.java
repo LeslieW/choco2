@@ -44,22 +44,22 @@ public final class IntervalBTreeDomain extends AbstractIntDomain {
     /**
      * static instance of Random to get random number
      */
-    private static Random random = new Random(System.currentTimeMillis());
+    private static final Random random = new Random(System.currentTimeMillis());
 
     /**
      * The binary tree representing the domain
      */
-    private IStateBinaryTree btree;
+    private final IStateBinaryTree btree;
 
     /**
      * Backtrackable int to avoid recalculating the number of value in the domain
      */
-    private IStateInt size;
+    private final IStateInt size;
 
     /**
      * the initial size of the domain (never increases)
      */
-    private int capacity;
+    private final int capacity;
 
     /**
      * Construct a new domain represented by a Binary Tree of Interval
@@ -71,8 +71,7 @@ public final class IntervalBTreeDomain extends AbstractIntDomain {
      */
     public IntervalBTreeDomain(IntDomainVarImpl v, int a, int b, IEnvironment environment, PropagationEngine propagationEngine)
     {
-        super(propagationEngine);
-        variable = v;
+        super(v, propagationEngine);
         btree= environment.makeBinaryTree(a,b);
         capacity = b - a + 1;
         size = environment.makeInt(capacity);
@@ -88,8 +87,7 @@ public final class IntervalBTreeDomain extends AbstractIntDomain {
      */
     public IntervalBTreeDomain(IntDomainVarImpl v, int[] sortedValues, IEnvironment environment, PropagationEngine propagationEngine)
     {
-        super(propagationEngine);
-        variable = v;
+        super(v, propagationEngine);
         int a = sortedValues[0];
         btree= environment.makeBinaryTree(a,a);
         capacity = sortedValues.length;
@@ -278,7 +276,7 @@ public final class IntervalBTreeDomain extends AbstractIntDomain {
      */
     public int getRandomValue()
     {
-        ArrayList<IStateBinaryTree.Node> tmp = new ArrayList<IStateBinaryTree.Node>();
+        ArrayList<IStateBinaryTree.Node> tmp = new ArrayList<IStateBinaryTree.Node>(16);
         IStateBinaryTree.Node  current = btree.getRoot();
         while (current != null)
         {

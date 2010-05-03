@@ -94,7 +94,7 @@ public class IntDomainVarImpl<C extends AbstractSConstraint & IntPropagator> ext
                 domain = new BooleanDomain(this, solver.getEnvironment(), propagationEngine);
                 break;
             case IntDomainVar.ONE_VALUE:
-                domain = new OneValueIntDomain(a, propagationEngine);
+                domain = new OneValueIntDomain(this, a, propagationEngine);
                 break;
             default:
                 domain = new IntervalIntDomain(this, a, b, solver.getEnvironment(), propagationEngine);
@@ -118,7 +118,7 @@ public class IntDomainVarImpl<C extends AbstractSConstraint & IntPropagator> ext
                 domain = new BipartiteIntDomain(this, distinctSortedValues, solver.getEnvironment(), propagationEngine);
                 break;
             case IntDomainVar.ONE_VALUE:
-                domain = new OneValueIntDomain(distinctSortedValues[0], propagationEngine);
+                domain = new OneValueIntDomain(this, distinctSortedValues[0], propagationEngine);
                 break;
             default:
                 domain = new BitSetIntDomain(this, distinctSortedValues, solver.getEnvironment(), propagationEngine);

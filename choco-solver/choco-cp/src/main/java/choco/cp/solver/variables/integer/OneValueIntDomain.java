@@ -23,6 +23,7 @@
 package choco.cp.solver.variables.integer;
 
 import choco.kernel.solver.propagation.PropagationEngine;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
  * User : cprudhom<br/>
@@ -30,14 +31,14 @@ import choco.kernel.solver.propagation.PropagationEngine;
  * Date : 31 mars 2010br/>
  * Since : Choco 2.1.1<br/>
  */
-public final class OneValueIntDomain extends AbstractIntDomain{
+final class OneValueIntDomain extends AbstractIntDomain{
 
     private final int value;
 
     private final boolean isBoolean;
     
-    protected OneValueIntDomain(final int theValue, final PropagationEngine propagationEngine) {
-        super(propagationEngine);
+    OneValueIntDomain(final IntDomainVar aVariable, final int theValue, final PropagationEngine propagationEngine) {
+        super(aVariable, propagationEngine);
         value  = theValue;
         isBoolean = (value == 0 || value == 1);
     }
