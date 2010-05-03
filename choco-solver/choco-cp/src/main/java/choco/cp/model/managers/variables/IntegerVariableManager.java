@@ -28,7 +28,6 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.reified.leaves.ConstantLeaf;
 import choco.cp.solver.constraints.reified.leaves.VariableLeaf;
 import choco.cp.solver.variables.integer.BooleanVarImpl;
-import choco.cp.solver.variables.integer.IntDomainCst;
 import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.kernel.model.Model;
 import choco.kernel.model.ModelException;
@@ -54,11 +53,16 @@ import java.util.Iterator;
 public final class IntegerVariableManager implements VariableManager<IntegerVariable> {
 
 
-	protected  IntDomainVar makeConstant(CPSolver solver,IntegerVariable iv) {
+	protected static IntDomainVar makeConstant(CPSolver solver,IntegerVariable iv) {
 		int value = iv.getLowB();
         IntDomainVar v = (IntDomainVar)solver.getIntConstant(value);
         if(v == null){
-            v = new IntDomainCst(solver, iv.getName(), value);
+            if(iv.isBoolean()){
+                v = new BooleanVarImpl(solver, iv.getName());
+                v.getDomain().restrict(value);
+            }else{
+                v = new IntDomainVarImpl(solver, iv.getName(), IntDomainVar.ONE_VALUE, value, value);
+            }
             solver.addIntConstant(value, v);
         }
          return v;
@@ -144,7 +148,7 @@ public final class IntegerVariableManager implements VariableManager<IntegerVari
      * @param v unknown domain type variable
      * @return a domain type
      */
-    public int getIntelligentDomain(Model model,IntegerVariable v) {
+    public static int getIntelligentDomain(Model model,IntegerVariable v) {
         // specific case, deal with unbounded domain
         if(v.getLowB()<= Choco.MIN_LOWER_BOUND && v.getUppB() >= Choco.MAX_UPPER_BOUND){
             return IntDomainVar.BOUNDS;
@@ -172,7 +176,7 @@ public final class IntegerVariableManager implements VariableManager<IntegerVari
             Constraint cc = it.next();
             int[] prefereddoms = cc.getFavoriteDomains();
             if (prefereddoms.length > 0) {
-                BitSet posCdom = new BitSet();
+                BitSet posCdom = new BitSet(5);
                 for (int i = 0; i < prefereddoms.length; i++) {
                     scoreForDomain[prefereddoms[i]] += (i + 1);
                     posCdom.set(prefereddoms[i]);
@@ -190,7 +194,7 @@ public final class IntegerVariableManager implements VariableManager<IntegerVari
     }
 
 
-    public int possibleArgMin(int[] tab, BitSet posDom) {
+    public static int possibleArgMin(int[] tab, BitSet posDom) {
        int bestDom = -1;
         int minScore = Integer.MAX_VALUE;
         for (int i = 0; i < tab.length; i++) {

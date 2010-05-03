@@ -23,6 +23,7 @@ public final class Lits {
 
 
     
+    @SuppressWarnings({"unchecked"})
     public void init(IntDomainVar[] vars) {
         boolvars = new BooleanVarImpl[vars.length+1];
         for (int i = 1; i < vars.length+1; i++) {
@@ -73,7 +74,7 @@ public final class Lits {
         }
     }
 
-    public boolean isSatisfied(int lit, int val) {
+    public static boolean isSatisfied(int lit, int val) {
         if (lit < 0) {
             return val == 0;
         } else {
@@ -81,7 +82,7 @@ public final class Lits {
         }
     }
 
-    public boolean isPositive(int lit) {
+    public static boolean isPositive(int lit) {
         return lit > 0;
     }
 

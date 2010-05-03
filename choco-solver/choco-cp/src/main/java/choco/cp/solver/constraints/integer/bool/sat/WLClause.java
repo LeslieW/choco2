@@ -143,11 +143,11 @@ public class WLClause {
      * @return
      * @throws ContradictionException
      */
-    public boolean simplePropagation(ClauseStore propagator) throws ContradictionException {
+    public void simplePropagation(ClauseStore propagator) throws ContradictionException {
         int ivalid = -1;
         for (int i = 0; i < lits.length; i++) {
             if (!voc.isFalsified(lits[i])) {
-                if (ivalid != -1) return false;
+                if (ivalid != -1) return;
                 ivalid = i;
             }
         }
@@ -159,7 +159,6 @@ public class WLClause {
             lits[ivalid] = litzero;
             updateDomain();
         }
-        return true;
     }
 
     /**
@@ -219,7 +218,7 @@ public class WLClause {
 
     public boolean isSatisfied(int[] tuple) {
         for (int i = 0; i < lits.length; i++) {
-            if (voc.isSatisfied(lits[i], tuple[i])) return true;
+            if (Lits.isSatisfied(lits[i], tuple[i])) return true;
         }
         return false;
     }
@@ -233,11 +232,11 @@ public class WLClause {
     }
 
     public String toString() {
-        StringBuilder clname = new StringBuilder();
+        StringBuilder clname = new StringBuilder(32);
         for (int i = 0; i < lits.length; i++) {
             if (lits[i] > 0) {
                 clname.append(voc.boolvars[lits[i]]);
-            } else clname.append("!" + voc.boolvars[-lits[i]]);
+            } else clname.append('!').append(voc.boolvars[-lits[i]]);
             if (i < lits.length - 1)
             clname.append(" v ");
         }

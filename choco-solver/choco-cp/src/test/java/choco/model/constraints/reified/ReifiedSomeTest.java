@@ -34,7 +34,6 @@ import choco.cp.solver.search.integer.branching.ImpactBasedBranching;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.ComponentConstraint;
@@ -267,7 +266,7 @@ public class ReifiedSomeTest {
         LOGGER.info("i1 = " + s.getVar(i1).pretty());
         LOGGER.info("i2 = " + s.getVar(i2).pretty());
         LOGGER.info("i3 = " + s.getVar(V3).pretty());
-        LOGGER.info(""+s.isFeasible());
+        LOGGER.info(String.valueOf(s.isFeasible()));
         assertTrue("Solution found : unexpected", s.isFeasible());
 
     }
@@ -301,7 +300,7 @@ public class ReifiedSomeTest {
         LOGGER.info("i1 = " + s.getVar(i1).pretty());
         LOGGER.info("i2 = " + s.getVar(i2).pretty());
         LOGGER.info("i3 = " + s.getVar(V3).pretty());
-        LOGGER.info(""+s.isFeasible());
+        LOGGER.info(String.valueOf(s.isFeasible()));
         assertTrue("Solution found : unexpected", s.isFeasible());
 
     }
@@ -384,7 +383,7 @@ public class ReifiedSomeTest {
             int nbSolution = 0;
             do {
                 nbSolution++;
-                StringBuffer st = new StringBuffer();
+                StringBuilder st = new StringBuilder(16);
                 st.append(format("S = {0}   \t", s.getVar(S).getVal()));
                 for (IntegerVariable intVar : y) {
                     st.append(format("{0} = {1}   ", intVar, s.getVar(intVar).getVal()));
@@ -425,7 +424,7 @@ public class ReifiedSomeTest {
             int nbSolution = 0;
             do {
                 nbSolution++;
-                StringBuffer st = new StringBuffer();
+                StringBuilder st = new StringBuilder(16);
                 st.append(format("S = {0}   \t", s.getVar(S).getVal()));
                 for (IntegerVariable intVar : y) {
                     st.append(format("{0} = {1}   ", intVar, s.getVar(intVar).getVal()));
@@ -464,7 +463,7 @@ public class ReifiedSomeTest {
             int nbSolution = 0;
             do {
                 nbSolution++;
-                StringBuffer st = new StringBuffer();
+                StringBuilder st = new StringBuilder(16);
                 st.append(format("S = {0}   \t", s.getVar(S).getVal()));
                 for (IntegerVariable intVar : y) {
                     st.append(format("{0} = {1}   ", intVar, s.getVar(intVar).getVal()));
@@ -504,7 +503,7 @@ public class ReifiedSomeTest {
             int nbSolution = 0;
             do {
                 nbSolution++;
-                StringBuffer st = new StringBuffer();
+                StringBuilder st = new StringBuilder(16);
                 st.append(format("S = {0}   \t", s.getVar(S).getVal()));
                 for (IntegerVariable intVar : y) {
                     st.append(format("{0} = {1}   ", intVar, s.getVar(intVar).getVal()));
@@ -540,7 +539,7 @@ public class ReifiedSomeTest {
             int nbSolution = 0;
             do {
                 nbSolution++;
-                StringBuffer st = new StringBuffer();
+                StringBuilder st = new StringBuilder(16);
                 st.append(format("S = {0}   \t", s.getVar(S).getVal()));
                 for (IntegerVariable intVar : y) {
                     st.append(format("{0} = {1}   ", intVar, s.getVar(intVar).getVal()));
@@ -577,7 +576,7 @@ public class ReifiedSomeTest {
             int nbSolution = 0;
             do {
                 nbSolution++;
-                StringBuffer st = new StringBuffer();
+                StringBuilder st = new StringBuilder(16);
                 st.append(format("S = {0}   \t", s.getVar(S).getVal()));
                 for (IntegerVariable intVar : y) {
                     st.append(format("{0} = {1}   ", intVar, s.getVar(intVar).getVal()));
@@ -639,7 +638,7 @@ public class ReifiedSomeTest {
         IntegerConstantVariable copd = constant(1);
         IntegerConstantVariable verapamil = constant(0);
 
-        HashMap<Constraint, String> cardioConstraints = new HashMap<Constraint, String>();
+        HashMap<Constraint, String> cardioConstraints = new HashMap<Constraint, String>(16);
 
         /*ArrayList infeasTuple = new ArrayList();
                   infeasTuple.add(new int[]{1, 1});
@@ -697,7 +696,7 @@ public class ReifiedSomeTest {
             s.setValIntSelector(new RandomIntValSelector(seed + 1));
 
             s.solveAll();
-            LOGGER.info("" + s.getNbSolutions());
+            LOGGER.info(String.valueOf(s.getNbSolutions()));
             assertTrue(s.getNbSolutions() == 1024);
         }
 
@@ -705,8 +704,8 @@ public class ReifiedSomeTest {
 
     @Test
     public void testBugNormalized() {
-    	//ChocoLogging.setVerbosity(Verbosity.VERBOSE);
-    	for (int seed = 0; seed < 10; seed++) {
+        //ChocoLogging.setVerbosity(Verbosity.VERBOSE);
+        for (int seed = 0; seed < 10; seed++) {
             LOGGER.info("seed:" + seed);
             CPModel m = new CPModel();
             m.setDefaultExpressionDecomposition(true);
@@ -780,12 +779,12 @@ public class ReifiedSomeTest {
     }
 
 
-    private Constraint predicat1(IntegerVariable v1, IntegerVariable v2, int v3, int v4, IntegerVariable v5) {
+    private static Constraint predicat1(IntegerVariable v1, IntegerVariable v2, int v3, int v4, IntegerVariable v5) {
         //e.setDecomposeExp(true);
         return leq(plus(v1, ifThenElse(eq((v2), (0)), constant(v3), constant(v4))), v5);
     }
 
-    private Constraint predicat2(IntegerVariable v0, IntegerVariable v1, IntegerVariable v2, int v3, int v4, IntegerVariable v5, IntegerVariable v6, IntegerVariable v7, int v8, int v9) {
+    private static Constraint predicat2(IntegerVariable v0, IntegerVariable v1, IntegerVariable v2, int v3, int v4, IntegerVariable v5, IntegerVariable v6, IntegerVariable v7, int v8, int v9) {
         //e.setDecomposeExp(true);
         return or(or(leq(plus((v0),
                 ifThenElse(eq((v2), (0)), constant(v3), constant(v4))), (v5)), leq(plus((v5), ifThenElse(eq((v7), (0)), constant(v8), constant(v9))), (v0))), or(leq(plus((v1), ifThenElse(eq((v2), constant(0)), constant(v4), constant(v3))), (v6)), leq(plus((v6), ifThenElse(eq((v7), (0)), constant(v9), constant(v8))), (v1))));
@@ -851,7 +850,7 @@ public class ReifiedSomeTest {
         }
     }
 
-    private Constraint predicat3(IntegerVariable v0, int v1, IntegerVariable v2) {
+    private static Constraint predicat3(IntegerVariable v0, int v1, IntegerVariable v2) {
         return leq(plus((v0), (v1)), (v2));
     }
 
@@ -895,7 +894,7 @@ public class ReifiedSomeTest {
         double dist2 = Math.sqrt((xb - xa) * (xb - xa) + (yb - ya) * (yb - ya));
         int roundDist2 = (int) Math.round(dist2);
         LOGGER.info("Choco: " + s.getVar(dist).getVal());
-        LOGGER.info("Math: " + roundDist2 + " (" + dist2 + ")");
+        LOGGER.info("Math: " + roundDist2 + " (" + dist2 + ')');
         assertEquals("square value", s.getVar(dist).getVal(), roundDist2);
         assertEquals("square nb sol", s.getNbSolutions(), 1);
     }
@@ -1176,7 +1175,7 @@ public class ReifiedSomeTest {
             solver_.solveAll();
             Assert.assertEquals(solver.getNbSolutions(), 1166);
             Assert.assertEquals(solver_.getNbSolutions(), 1166);
-            LOGGER.info(" " + solver.getNbSolutions() + " " + solver.getTimeCount() + " " + solver.getNodeCount());
+            LOGGER.info(" " + solver.getNbSolutions() + ' ' + solver.getTimeCount() + ' ' + solver.getNodeCount());
         }
     }
 
@@ -1206,7 +1205,7 @@ public class ReifiedSomeTest {
             LOGGER.info("solve nbv: " + solver.getNbIntVars() + " nbc: " + solver.getNbIntConstraints());
             solver.solveAll();
             Assert.assertEquals(solver.getNbSolutions(), 57513);
-            LOGGER.info(" " + solver.getNbSolutions() + " " + solver.getTimeCount());
+            LOGGER.info(" " + solver.getNbSolutions() + ' ' + solver.getTimeCount());
         }
     }
 
@@ -1244,7 +1243,7 @@ public class ReifiedSomeTest {
 
             solver.solveAll();
             Assert.assertEquals(solver.getNbSolutions(), 29018);
-            LOGGER.info(" " + solver.getNbSolutions() + " " + solver.getTimeCount());
+            LOGGER.info(" " + solver.getNbSolutions() + ' ' + solver.getTimeCount());
         }
     }
 
@@ -1396,7 +1395,7 @@ public class ReifiedSomeTest {
 
     }
 
-     @Test
+    @Test
     public void testIsEntailedMax() {
         for (int seed = 0; seed < 5; seed++) {
 
@@ -1405,10 +1404,10 @@ public class ReifiedSomeTest {
             m.setDefaultExpressionDecomposition(true);
             CPSolver s = new CPSolver();
             IntegerVariable h = makeIntVar("x", 0, 3);
-            IntegerVariable[] tab = makeIntVarArray("x",n, 0, 3);
+            IntegerVariable[] tab = makeIntVarArray("x", n, 0, 3);
             IntegerVariable max = makeIntVar("max", -5, 5);
 
-            m.addConstraint(ifThenElse(geq(h, 2), Choco.max(tab,max), Choco.TRUE));
+            m.addConstraint(ifThenElse(geq(h, 2), Choco.max(tab, max), Choco.TRUE));
             s.read(m);
             s.setVarIntSelector(new RandomIntVarSelector(s, seed));
             s.setValIntSelector(new RandomIntValSelector());
@@ -1422,7 +1421,7 @@ public class ReifiedSomeTest {
 
     }
 
-     @Test
+    @Test
     public void testIsEntailedMin() {
         for (int seed = 0; seed < 5; seed++) {
 
@@ -1431,23 +1430,23 @@ public class ReifiedSomeTest {
             m.setDefaultExpressionDecomposition(true);
             CPSolver s = new CPSolver();
             IntegerVariable h = makeIntVar("x", 0, 3);
-            IntegerVariable[] tab = makeIntVarArray("x",n, 0, 3);
+            IntegerVariable[] tab = makeIntVarArray("x", n, 0, 3);
             IntegerVariable max = makeIntVar("max", -5, 5);
 
-            m.addConstraint(ifThenElse(geq(h, 2), Choco.min(tab,max), Choco.TRUE));
+            m.addConstraint(ifThenElse(geq(h, 2), Choco.min(tab, max), Choco.TRUE));
             s.read(m);
             s.setVarIntSelector(new RandomIntVarSelector(s, seed));
             s.setValIntSelector(new RandomIntValSelector());
 
             s.solveAll();
             LOGGER.info(s.getNbSolutions() + " " + s.getNodeCount());
-            
+
             Assert.assertEquals("nb de solutions", 6144, s.getNbSolutions());
         }
 
     }
 
-        @Test
+    @Test
     public void testIsEntailedOccuMin() {
         for (int seed = 0; seed < 5; seed++) {
 
@@ -1456,10 +1455,10 @@ public class ReifiedSomeTest {
             m.setDefaultExpressionDecomposition(true);
             CPSolver s = new CPSolver();
             IntegerVariable h = makeIntVar("x", 0, 3);
-            IntegerVariable[] tab = makeIntVarArray("x",n, 0, 3);
+            IntegerVariable[] tab = makeIntVarArray("x", n, 0, 3);
             IntegerVariable max = makeIntVar("max", -5, 5);
 
-            m.addConstraint(ifThenElse(geq(h, 2), Choco.occurrenceMin(2,max,tab), Choco.TRUE));
+            m.addConstraint(ifThenElse(geq(h, 2), Choco.occurrenceMin(2, max, tab), Choco.TRUE));
             s.read(m);
             s.setVarIntSelector(new RandomIntVarSelector(s, seed));
             s.setValIntSelector(new RandomIntValSelector());
@@ -1472,7 +1471,7 @@ public class ReifiedSomeTest {
 
     }
 
-         @Test
+    @Test
     public void testIsEntailedOccuEq() {
         for (int seed = 0; seed < 5; seed++) {
 
@@ -1481,10 +1480,10 @@ public class ReifiedSomeTest {
             m.setDefaultExpressionDecomposition(true);
             CPSolver s = new CPSolver();
             IntegerVariable h = makeIntVar("x", 0, 3);
-            IntegerVariable[] tab = makeIntVarArray("x",n, 0, 3);
+            IntegerVariable[] tab = makeIntVarArray("x", n, 0, 3);
             IntegerVariable max = makeIntVar("max", -5, 5);
 
-            m.addConstraint(ifThenElse(geq(h, 2), Choco.occurrence(3,max,tab), Choco.TRUE));
+            m.addConstraint(ifThenElse(geq(h, 2), Choco.occurrence(3, max, tab), Choco.TRUE));
             s.read(m);
             s.setVarIntSelector(new RandomIntVarSelector(s, seed));
             s.setValIntSelector(new RandomIntValSelector());
@@ -1497,7 +1496,7 @@ public class ReifiedSomeTest {
 
     }
 
-         @Test
+    @Test
     public void testIsEntailedSameSignOp() {
         for (int seed = 0; seed < 5; seed++) {
 
@@ -1509,7 +1508,7 @@ public class ReifiedSomeTest {
             IntegerVariable h2 = makeIntVar("x", -1, 1);
 
 
-            m.addConstraint(ifThenElse(geq(c1, 2), Choco.sameSign(h1,h2), Choco.TRUE));
+            m.addConstraint(ifThenElse(geq(c1, 2), Choco.sameSign(h1, h2), Choco.TRUE));
             s.read(m);
             s.setVarIntSelector(new RandomIntVarSelector(s, seed));
             s.setValIntSelector(new RandomIntValSelector());
@@ -1522,7 +1521,7 @@ public class ReifiedSomeTest {
 
     }
 
-        @Test
+    @Test
     public void testIsEntailedSignOp() {
         for (int seed = 0; seed < 5; seed++) {
 
@@ -1534,7 +1533,7 @@ public class ReifiedSomeTest {
             IntegerVariable h2 = makeIntVar("x", -1, 1);
 
 
-            m.addConstraint(ifThenElse(geq(c1, 2), Choco.oppositeSign(h1,h2), Choco.TRUE));
+            m.addConstraint(ifThenElse(geq(c1, 2), Choco.oppositeSign(h1, h2), Choco.TRUE));
             s.read(m);
             s.setVarIntSelector(new RandomIntVarSelector(s, seed));
             s.setValIntSelector(new RandomIntValSelector());
@@ -1549,174 +1548,174 @@ public class ReifiedSomeTest {
 
 
     @Test
-   public void testCEDRIC() {
-      CPModel m = new CPModel();
-      m.setDefaultExpressionDecomposition(true);
-      IntegerVariable x = makeIntVar("x", 0, 1);
-      IntegerVariable y = makeIntVar("y", 0, 1);
-      IntegerVariable z = makeIntVar("z", 0, 1);
-      IntegerVariable t = makeIntVar("t", 0, 1);
-      m.addConstraint(reifiedConstraint(t, eq(x,0), eq(y,0)));
-      m.addConstraint(reifiedConstraint(t,eq(z,1)));
-      m.addConstraint(eq(x,0));
- 
-      CPSolver s = new CPSolver();
-      s.read(m);
-      s.solveAll();
-        LOGGER.info("" + s.getNbSolutions());
-      Assert.assertEquals("nb de solutions", 2, s.getNbSolutions());
-  }
+    public void testCEDRIC() {
+        CPModel m = new CPModel();
+        m.setDefaultExpressionDecomposition(true);
+        IntegerVariable x = makeIntVar("x", 0, 1);
+        IntegerVariable y = makeIntVar("y", 0, 1);
+        IntegerVariable z = makeIntVar("z", 0, 1);
+        IntegerVariable t = makeIntVar("t", 0, 1);
+        m.addConstraint(reifiedConstraint(t, eq(x, 0), eq(y, 0)));
+        m.addConstraint(reifiedConstraint(t, eq(z, 1)));
+        m.addConstraint(eq(x, 0));
 
-     @Test
-   public void testCEDRIC2() {
-      CPModel m = new CPModel();
-      m.setDefaultExpressionDecomposition(true);
-      IntegerVariable x = makeIntVar("x", 0, 1);
-      IntegerVariable y = makeIntVar("y", 0, 1);
-      IntegerVariable t = makeIntVar("t", 0, 1);
-      m.addConstraint(ifThenElse(eq(x,1),eq(y,0),eq(t,0)));
-      CPSolver s = new CPSolver();
-      s.read(m);
-      Assert.assertEquals("nb de vars", s.getNbIntVars(), 3);
-  }
+        CPSolver s = new CPSolver();
+        s.read(m);
+        s.solveAll();
+        LOGGER.info(String.valueOf(s.getNbSolutions()));
+        Assert.assertEquals("nb de solutions", 2, s.getNbSolutions());
+    }
 
     @Test
-   public void testCEDRIC3() {
-      CPModel m = new CPModel();
-      m.setDefaultExpressionDecomposition(true);
-      IntegerVariable x = makeIntVar("x", 0, 1);
-      IntegerVariable y = makeIntVar("y", 0, 1);
-      IntegerVariable t = makeIntVar("t", 0, 1);
-      m.addConstraint(ifThenElse(eq(1,x),eq(y,0),eq(t,0)));
-      CPSolver s = new CPSolver();
-      s.read(m);
-      Assert.assertEquals("nb de vars", s.getNbIntVars(), 3);
-  }
-
-   @Test
-   public void testCEDRIC4() {
-      CPModel m = new CPModel();
-      m.setDefaultExpressionDecomposition(true);
-      IntegerVariable x = makeIntVar("x", 0, 1);
-      IntegerVariable y = makeIntVar("y", 0, 1);
-      IntegerVariable t = makeIntVar("t", 0, 1);
-      m.addConstraint(ifThenElse(eq(0,x),eq(y,0),eq(t,0)));
-      CPSolver s = new CPSolver();
-      s.read(m);
-      Assert.assertEquals("nb de solutions", s.getNbIntVars(), 4);
-  }
+    public void testCEDRIC2() {
+        CPModel m = new CPModel();
+        m.setDefaultExpressionDecomposition(true);
+        IntegerVariable x = makeIntVar("x", 0, 1);
+        IntegerVariable y = makeIntVar("y", 0, 1);
+        IntegerVariable t = makeIntVar("t", 0, 1);
+        m.addConstraint(ifThenElse(eq(x, 1), eq(y, 0), eq(t, 0)));
+        CPSolver s = new CPSolver();
+        s.read(m);
+        Assert.assertEquals("nb de vars", s.getNbIntVars(), 3);
+    }
 
     @Test
-   public void testCEDRIC5() {
-      CPModel m = new CPModel();
-      m.setDefaultExpressionDecomposition(true);
-      IntegerVariable x = makeIntVar("x", 0, 1);
-      IntegerVariable y = makeIntVar("y", 0, 1);
-      IntegerVariable t = makeIntVar("t", 0, 1);
-      Constraint sc = ifThenElse(eq(0,x),eq(y,0),eq(t,0));
-
-      m.addConstraint("cp:ac",sc);
-      CPSolver s = new CPSolver();
-      s.read(m);
-      Assert.assertEquals("nb de solutions", s.getNbIntVars(), 4);
-  }
+    public void testCEDRIC3() {
+        CPModel m = new CPModel();
+        m.setDefaultExpressionDecomposition(true);
+        IntegerVariable x = makeIntVar("x", 0, 1);
+        IntegerVariable y = makeIntVar("y", 0, 1);
+        IntegerVariable t = makeIntVar("t", 0, 1);
+        m.addConstraint(ifThenElse(eq(1, x), eq(y, 0), eq(t, 0)));
+        CPSolver s = new CPSolver();
+        s.read(m);
+        Assert.assertEquals("nb de vars", s.getNbIntVars(), 3);
+    }
 
     @Test
-   public void testCEDRIC6() {
-         for (int seed = 0; seed < 5; seed++) {
-             CPModel m = new CPModel();
-             m.setDefaultExpressionDecomposition(true);
-             IntegerVariable x = makeIntVar("x", 0, 1);
-             IntegerVariable y = makeIntVar("y", 0, 4);
-             IntegerVariable z = makeIntVar("z", 0, 3);
-             m.addConstraint(ifThenElse(eq(x, 1), nth(y, new int[]{1, 1, 2, 4}, z), Choco.TRUE));
+    public void testCEDRIC4() {
+        CPModel m = new CPModel();
+        m.setDefaultExpressionDecomposition(true);
+        IntegerVariable x = makeIntVar("x", 0, 1);
+        IntegerVariable y = makeIntVar("y", 0, 1);
+        IntegerVariable t = makeIntVar("t", 0, 1);
+        m.addConstraint(ifThenElse(eq(0, x), eq(y, 0), eq(t, 0)));
+        CPSolver s = new CPSolver();
+        s.read(m);
+        Assert.assertEquals("nb de solutions", s.getNbIntVars(), 4);
+    }
 
-             CPSolver s = new CPSolver();
-             s.read(m);
-             s.setVarIntSelector(new RandomIntVarSelector(s, seed));
-             s.setValIntSelector(new RandomIntValSelector());
+    @Test
+    public void testCEDRIC5() {
+        CPModel m = new CPModel();
+        m.setDefaultExpressionDecomposition(true);
+        IntegerVariable x = makeIntVar("x", 0, 1);
+        IntegerVariable y = makeIntVar("y", 0, 1);
+        IntegerVariable t = makeIntVar("t", 0, 1);
+        Constraint sc = ifThenElse(eq(0, x), eq(y, 0), eq(t, 0));
 
-             s.solveAll();
-             LOGGER.info("" + s.getNbSolutions());
-             Assert.assertEquals("nb de solutions", 23, s.getNbSolutions()); 
-         }
-     }
+        m.addConstraint("cp:ac", sc);
+        CPSolver s = new CPSolver();
+        s.read(m);
+        Assert.assertEquals("nb de solutions", s.getNbIntVars(), 4);
+    }
+
+    @Test
+    public void testCEDRIC6() {
+        for (int seed = 0; seed < 5; seed++) {
+            CPModel m = new CPModel();
+            m.setDefaultExpressionDecomposition(true);
+            IntegerVariable x = makeIntVar("x", 0, 1);
+            IntegerVariable y = makeIntVar("y", 0, 4);
+            IntegerVariable z = makeIntVar("z", 0, 3);
+            m.addConstraint(ifThenElse(eq(x, 1), nth(y, new int[]{1, 1, 2, 4}, z), Choco.TRUE));
+
+            CPSolver s = new CPSolver();
+            s.read(m);
+            s.setVarIntSelector(new RandomIntVarSelector(s, seed));
+            s.setValIntSelector(new RandomIntValSelector());
+
+            s.solveAll();
+            LOGGER.info(String.valueOf(s.getNbSolutions()));
+            Assert.assertEquals("nb de solutions", 23, s.getNbSolutions());
+        }
+    }
 
     @Test
     public void testRichard() {
         for (int seed = 0; seed < 5; seed++) {
-             CPModel m = new CPModel();
-             m.setDefaultExpressionDecomposition(true);
-             IntegerVariable r1 = makeIntVar("x", 0, 1);
-             IntegerVariable r2 = makeIntVar("y", 0, 4);
-             IntegerVariable e1 = makeIntVar("z", 0, 3);
-             IntegerVariable e2 = makeIntVar("z", 0, 3);
-             IntegerVariable s1 = makeIntVar("z", 0, 3);
-             IntegerVariable s2 = makeIntVar("z", 0, 3);
+            CPModel m = new CPModel();
+            m.setDefaultExpressionDecomposition(true);
+            IntegerVariable r1 = makeIntVar("x", 0, 1);
+            IntegerVariable r2 = makeIntVar("y", 0, 4);
+            IntegerVariable e1 = makeIntVar("z", 0, 3);
+            IntegerVariable e2 = makeIntVar("z", 0, 3);
+            IntegerVariable s1 = makeIntVar("z", 0, 3);
+            IntegerVariable s2 = makeIntVar("z", 0, 3);
 
-             m.addConstraint(implies(eq(r1, r2), or(gt(s1, e2), gt(s2, e1))));
-             CPSolver s = new CPSolver();
-             s.read(m);
-             s.setVarIntSelector(new RandomIntVarSelector(s, seed));
-             s.setValIntSelector(new RandomIntValSelector(seed));
-             s.solveAll();
-             //System.out.println(""+ s.getNbSolutions());
-             LOGGER.info("" + s.getNbSolutions());
-             Assert.assertEquals("nb de solutions", 2360, s.getNbSolutions()); 
+            m.addConstraint(implies(eq(r1, r2), or(gt(s1, e2), gt(s2, e1))));
+            CPSolver s = new CPSolver();
+            s.read(m);
+            s.setVarIntSelector(new RandomIntVarSelector(s, seed));
+            s.setValIntSelector(new RandomIntValSelector(seed));
+            s.solveAll();
+            //System.out.println(""+ s.getNbSolutions());
+            LOGGER.info(String.valueOf(s.getNbSolutions()));
+            Assert.assertEquals("nb de solutions", 2360, s.getNbSolutions());
         }
     }
 
     @Test
     public void testRichard2() {
         for (int seed = 0; seed < 5; seed++) {
-             CPModel m = new CPModel();
-             m.setDefaultExpressionDecomposition(true);
-             IntegerVariable r1 = makeIntVar("x", 0, 1);
-             IntegerVariable r2 = makeIntVar("y", 0, 4);
-             IntegerVariable e1 = makeIntVar("z", 0, 3);
-             IntegerVariable e2 = makeIntVar("z", 0, 3);
-             IntegerVariable s1 = makeIntVar("z", 0, 3);
-             IntegerVariable s2 = makeIntVar("z", 0, 3);
+            CPModel m = new CPModel();
+            m.setDefaultExpressionDecomposition(true);
+            IntegerVariable r1 = makeIntVar("x", 0, 1);
+            IntegerVariable r2 = makeIntVar("y", 0, 4);
+            IntegerVariable e1 = makeIntVar("z", 0, 3);
+            IntegerVariable e2 = makeIntVar("z", 0, 3);
+            IntegerVariable s1 = makeIntVar("z", 0, 3);
+            IntegerVariable s2 = makeIntVar("z", 0, 3);
 
-             m.addConstraint(implies(eq(r1, 3), and(geq(s1, e2), leq(s2, e1))));
-             CPSolver s = new CPSolver();
-             s.read(m);
-             s.setVarIntSelector(new RandomIntVarSelector(s, seed));
-             s.setValIntSelector(new RandomIntValSelector(seed));
-             s.solveAll();
-             LOGGER.info("" + s.getNbSolutions());
-             Assert.assertEquals("nb de solutions", 512, s.getNbSolutions());
+            m.addConstraint(implies(eq(r1, 3), and(geq(s1, e2), leq(s2, e1))));
+            CPSolver s = new CPSolver();
+            s.read(m);
+            s.setVarIntSelector(new RandomIntVarSelector(s, seed));
+            s.setValIntSelector(new RandomIntValSelector(seed));
+            s.solveAll();
+            LOGGER.info(String.valueOf(s.getNbSolutions()));
+            Assert.assertEquals("nb de solutions", 512, s.getNbSolutions());
         }
     }
 
     @Test
     public void testRichard3() {
         for (int seed = 0; seed < 5; seed++) {
-             CPModel m = new CPModel();
-             m.setDefaultExpressionDecomposition(true);
-             IntegerVariable r1 = makeIntVar("x", 0, 1);
-             IntegerVariable r2 = makeIntVar("y", 0, 1);
-             IntegerVariable s1 = makeIntVar("z", 0, 1);
-             IntegerVariable s2 = makeIntVar("z", 0, 1);
-             List<int[]> tuples = new LinkedList<int[]>();
-             tuples.add(new int[]{0,0});
-             tuples.add(new int[]{1,1});
+            CPModel m = new CPModel();
+            m.setDefaultExpressionDecomposition(true);
+            IntegerVariable r1 = makeIntVar("x", 0, 1);
+            IntegerVariable r2 = makeIntVar("y", 0, 1);
+            IntegerVariable s1 = makeIntVar("z", 0, 1);
+            IntegerVariable s2 = makeIntVar("z", 0, 1);
+            List<int[]> tuples = new LinkedList<int[]>();
+            tuples.add(new int[]{0, 0});
+            tuples.add(new int[]{1, 1});
 
-             m.addConstraint(implies(feasTupleAC(tuples, r1, r2), gt(s1, s2)));
+            m.addConstraint(implies(feasTupleAC(tuples, r1, r2), gt(s1, s2)));
 
-             //m.addConstraint(implies(eq(r1, 3), and(geq(s1, e2), leq(s2, e1))));
-             CPSolver s = new CPSolver();
-             s.read(m);
-             s.setVarIntSelector(new RandomIntVarSelector(s, seed));
-             s.setValIntSelector(new RandomIntValSelector(seed));
-             s.solveAll();
-             LOGGER.info("" + s.getNbSolutions());
-             Assert.assertEquals("nb de solutions", 10, s.getNbSolutions());
+            //m.addConstraint(implies(eq(r1, 3), and(geq(s1, e2), leq(s2, e1))));
+            CPSolver s = new CPSolver();
+            s.read(m);
+            s.setVarIntSelector(new RandomIntVarSelector(s, seed));
+            s.setValIntSelector(new RandomIntValSelector(seed));
+            s.solveAll();
+            LOGGER.info(String.valueOf(s.getNbSolutions()));
+            Assert.assertEquals("nb de solutions", 10, s.getNbSolutions());
         }
     }
 
     @Test
-    public void testSyzygy1(){
+    public void testSyzygy1() {
         Model model = new CPModel();
         IntegerVariable a = makeBooleanVar("a");
         IntegerVariable i = makeIntVar("i", 0, 3, "");
@@ -1724,32 +1723,32 @@ public class ReifiedSomeTest {
         IntegerVariable b2 = makeBooleanVar("b2");
         IntegerVariable b3 = makeBooleanVar("b3");
 
-        model.addConstraint (
-            ifThenElse (
-                or (eq (b1, 1), eq (b2, 1), eq (b3, 1)),
-                eq (a, 1),
-                eq (a, 0)
-            )
+        model.addConstraint(
+                ifThenElse(
+                        or(eq(b1, 1), eq(b2, 1), eq(b3, 1)),
+                        eq(a, 1),
+                        eq(a, 0)
+                )
         );
-        model.addConstraint (ifThenElse (eq (i, 0), eq (b1, 1), eq (b1, 0)));
-        model.addConstraint (ifThenElse (eq (i, 1), eq (b2, 1), eq (b2, 0)));
-        model.addConstraint (ifThenElse (eq (i, 2), eq (b3, 1), eq (b3, 0)));
-        model.addConstraint (eq (a, 0));
+        model.addConstraint(ifThenElse(eq(i, 0), eq(b1, 1), eq(b1, 0)));
+        model.addConstraint(ifThenElse(eq(i, 1), eq(b2, 1), eq(b2, 0)));
+        model.addConstraint(ifThenElse(eq(i, 2), eq(b3, 1), eq(b3, 0)));
+        model.addConstraint(eq(a, 0));
 
         Solver s1 = new CPSolver();
-        s1.read (model);
+        s1.read(model);
         s1.solveAll();
 
         Solver s2 = new CPSolver();
         model.setDefaultExpressionDecomposition(true);
-        s2.read (model);
+        s2.read(model);
         s2.solveAll();
         Assert.assertEquals("nb sol", s1.getSolutionCount(), s2.getSolutionCount());
 
     }
 
     @Test
-    public void test_stoklin1(){
+    public void test_stoklin1() {
         int NV = 6525;
 
         Model m = new CPModel();
@@ -1765,12 +1764,12 @@ public class ReifiedSomeTest {
         long t = -System.currentTimeMillis();
         s.read(m);
         t += System.currentTimeMillis();
-        LOGGER.info("t:"+t);
+        LOGGER.info("t:" + t);
         Assert.assertTrue("time!!", t < 6000);
     }
 
     @Test
-    public void test_stoklin2(){
+    public void test_stoklin2() {
         int NV = 1999;
 
         Model m = new CPModel();
@@ -1781,7 +1780,7 @@ public class ReifiedSomeTest {
         int[] coeff = new int[NV];
         Arrays.fill(coeff, 150);
         IntegerExpressionVariable exp = Choco.constant(0);
-        for(int i = 0; i < NV; i++){
+        for (int i = 0; i < NV; i++) {
             exp = Choco.plus(exp, mult(coeff[i], vars[i]));
         }
         m.addConstraint(eq(exp, result));
@@ -1789,12 +1788,12 @@ public class ReifiedSomeTest {
         long t = -System.currentTimeMillis();
         s.read(m);
         t += System.currentTimeMillis();
-        LOGGER.info("t:"+t);
+        LOGGER.info("t:" + t);
         Assert.assertTrue("time!!", t < 6000);
     }
 
     @Test
-    public void test_stoklin3(){
+    public void test_stoklin3() {
         int NV = 12;
 
         Model m = new CPModel();
@@ -1816,7 +1815,7 @@ public class ReifiedSomeTest {
     }
 
     @Test
-    public void test_stoklin4(){
+    public void test_stoklin4() {
         int NV = 12;
 
         Model m = new CPModel();
@@ -1824,7 +1823,7 @@ public class ReifiedSomeTest {
 
         IntegerVariable[] vars = new IntegerVariable[NV];
         vars[0] = Choco.makeIntVar("v", 0, 9999);
-        for(int i = 1; i< NV; i++){
+        for (int i = 1; i < NV; i++) {
             vars[i] = Choco.makeIntVar("v", 0, 1);
         }
         IntegerVariable result = Choco.makeIntVar("result", 0, 1);
@@ -1839,6 +1838,27 @@ public class ReifiedSomeTest {
         SConstraint sscal = s.getCstr(scal);
         Assert.assertTrue(BoolIntLinComb.class.isInstance(sscal));
 
+    }
+
+
+    @Test
+    public void test_syndaegy1() {
+        int NV = 3;
+
+        Model m = new CPModel();
+        Solver s = new CPSolver();
+
+        IntegerVariable[] vars = new IntegerVariable[NV];
+        vars[0] = Choco.makeIntVar("v", 0, 1);
+        for (int i = 1; i < NV; i++) {
+            vars[i] = Choco.makeIntVar("v", 0, 10);
+        }
+
+        m.addConstraint(Choco.reifiedConstraint(vars[0], and(eq(vars[1], 1),
+                eq(vars[2], 2)), or(neq(vars[1], 1), neq(vars[2], 2))));
+
+        s.read(m);
+        s.solveAll();
     }
 
 }

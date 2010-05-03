@@ -22,13 +22,13 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver;
 
+import choco.kernel.common.logging.ChocoLogging;
+
 import java.lang.annotation.Retention;
 import java.lang.reflect.Field;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import choco.kernel.common.logging.ChocoLogging;
 
 /**
  * User : cprudhom<br/>
@@ -40,6 +40,9 @@ public class Configuration extends Properties {
 
     private final static Logger LOGGER = ChocoLogging.getMainLogger();
    
+    private static final String VALUE_TRUE = "true";
+    private static final String VALUE_FALSE = "false";
+    
      //////////////////////////////////////// ANNOTATION ////////////////////////////////////////////////////////////////
 
     /**
@@ -58,7 +61,7 @@ public class Configuration extends Properties {
      * <br/><b>Type</b>: boolean
      * <br/><b>Default value</b>: true
      */
-    @Default(value = "true")
+    @Default(value = VALUE_TRUE)
     public static final String STOP_AT_FIRST_SOLUTION = "cp.solve.stop_at_first_solution";
 
     /**
@@ -66,7 +69,7 @@ public class Configuration extends Properties {
      * <br/><b>Type</b>: boolean
      * <br/><b>Default value</b>: false
      */
-    @Default(value = "false")
+    @Default(value = VALUE_FALSE)
     public static final String MINIMIZE = "cp.minimize";
 
     /**
@@ -74,7 +77,7 @@ public class Configuration extends Properties {
      * <br/><b>Type</b>: boolean
      * <br/><b>Default value</b>: true
      */
-    @Default(value = "false")
+    @Default(value = VALUE_FALSE)
     public static final String MAXIMIZE = "cp.maximize";
 
     /**
@@ -82,7 +85,7 @@ public class Configuration extends Properties {
      * <br/><b>Type</b>: boolean
      * <br/><b>Default value</b>: false
      */
-    @Default(value = "false")
+    @Default(value = VALUE_FALSE)
     public static final String RESTART_AFTER_SOLUTION = "cp.restart.after_solution";
 
     /**
@@ -90,7 +93,7 @@ public class Configuration extends Properties {
      * <br/><b>Type</b>: boolean
      * <br/><b>Default value</b>: false
      */
-    @Default(value = "false")
+    @Default(value = VALUE_FALSE)
     public static final String RESTART_LUBY = "cp.restart.luby";
 
     /**
@@ -98,7 +101,7 @@ public class Configuration extends Properties {
      * <br/><b>Type</b>: boolean
      * <br/><b>Default value</b>: false
      */
-    @Default(value = "false")
+    @Default(value = VALUE_FALSE)
     public static final String RESTART_GEOMETRICAL = "cp.restart.geometrical";
 
     /**
@@ -140,7 +143,7 @@ public class Configuration extends Properties {
 	 * IJCAI 2007 Proceedings of the 20th International Joint Conference on Artificial Intelligence, Hyderabad, India, January 6-12, 2007, 2007, 131-136
      * <br/><b>Default value</b>: false
      */
-    @Default(value = "false")
+    @Default(value = VALUE_FALSE)
     public static final String NOGOOD_RECORDING_FROM_RESTART = "cp.nogood_from_restart";
 
     /**
@@ -159,7 +162,7 @@ public class Configuration extends Properties {
      * <br/><b>Type</b>: boolean
      * <br/><b>Default value</b>: true
      */
-    @Default(value = "true")
+    @Default(value = VALUE_TRUE)
     public static final String CARD_REASONNING = "cp.cardinality_reasonning";
 
     /**
@@ -210,7 +213,7 @@ public class Configuration extends Properties {
      * <br/><b>Type</b>: boolean
      * <br/><b>Default value</b>: false
      */
-    @Default(value = "false")
+    @Default(value = VALUE_FALSE)
     public static final String INIT_SHAVING = "cp.init.propagation.shaving";
 
     /**
@@ -218,7 +221,7 @@ public class Configuration extends Properties {
      * <br/><b>Type</b>: boolean
      * <br/><b>Default value</b>: false
      */
-    @Default(value = "false")
+    @Default(value = VALUE_FALSE)
     public static final String INIT_DESTRUCTIVE_LOWER_BOUND = "cp.init.propagation.dLB";
 
     /**
@@ -227,7 +230,7 @@ public class Configuration extends Properties {
      * <br/><b>Type</b>: boolean
      * <br/><b>Default value</b>: false
      */
-    @Default(value = "false")
+    @Default(value = VALUE_FALSE)
     public static final String INIT_DLB_SHAVING = INIT_DESTRUCTIVE_LOWER_BOUND+".shaving";
 
     /**
@@ -238,7 +241,7 @@ public class Configuration extends Properties {
      * <br/><b>Type</b>: boolean
      * <br/><b>Default value</b>: false
      */
-    @Default(value = "false")
+    @Default(value = VALUE_FALSE)
     public static final String BOTTOM_UP = "cp.search.bottom_up";
 
     /**
@@ -262,7 +265,7 @@ public class Configuration extends Properties {
      * <br/><b>Type</b>: boolean
      * <br/><b>Default value</b>: true
      */
-    @Default(value = "true")
+    @Default(value = VALUE_TRUE)
     public static final String RESTORE_BEST_SOLUTION = "cp.restore_best_solution";
 
     /**

@@ -16,7 +16,6 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import samples.tutorials.PatternExample;
 
-import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 
@@ -126,8 +125,8 @@ public class Transportation extends PatternExample {
 		//System.out.println(_s.pretty());
 		//Naive Search Strategy: sort the variables shipping_ij accroding to their increasing costs
 		//Select shipping with minimal cost and assign its maximal value
-		final List<IntDomainVar> dvars = solver.getIntDecisionVars();
-		final IntDomainVar[] sdvars = new IntDomainVar[dvars.size()];
+		final IntDomainVar[] dvars = solver.getIntDecisionVars();
+		final IntDomainVar[] sdvars = new IntDomainVar[dvars.length];
 		final IPermutation permutation = PermutationUtils.getSortingPermuation( ArrayUtils.flatten(costs));
 		permutation.applyPermutation(dvars, sdvars);
 		_s.setVarIntSelector(new StaticVarOrder(_s, sdvars));
@@ -137,7 +136,7 @@ public class Transportation extends PatternExample {
 	@Override
 	public void prettyOut() {
 		if(LOGGER.isLoggable(Level.INFO)) {
-			StringBuilder b = new StringBuilder();
+			StringBuilder b = new StringBuilder(32);
 			for (int i = 0; i < shipping.length; i++) {
 				for (int j = 0; j < shipping[i].length; j++) {
 					final int v = _s.getVar(shipping[i][j]).getVal();

@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.model.constraints.integer;
 
+import choco.Choco;
 import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
@@ -32,18 +33,22 @@ import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.common.util.tools.ArrayUtils;
+import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.Propagator;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.integer.IntVar;
+import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Random;
 import java.util.logging.Logger;
 
@@ -179,6 +184,37 @@ public class BoolLinCombTest {
 	}
 
 
+    @Test
+    public void testBMC_IBM(){
+        int n = 3;
+        IntegerVariable[] bools = Choco.makeBooleanVarArray("b", n);
+        int[] coeffs = new int[n];
+        Arrays.fill(coeffs, -1);
+        coeffs[0] = 1;
+        Model m = new CPModel();
+        Constraint c = Choco.neq(Choco.scalar(coeffs, bools), 1);
+        m.addConstraint(c);
+
+        Solver s = new CPSolver();
+        s.read(m);
+        try{
+            s.propagate();
+            for(int i = 1; i < n; i++){
+                s.getVar(bools[i]).instantiate(0, null, true);
+                s.propagate();
+            }
+        }catch (ContradictionException ex){
+            Assert.fail();
+        }
+        try{
+            s.getVar(bools[0]).instantiate(1, null, true);
+            s.propagate();
+            Assert.fail("There should be an exception!");
+        }catch (ContradictionException ignE){}
+
+    }
+
+
     private void testBothLinCombVer(int n, int op, int seed) {
         testLinComb(n, op, false, seed);
         int nbSol1 = nbSol;
@@ -299,7 +335,7 @@ public class BoolLinCombTest {
     /**
      * Copy of api to state the old non optimized linear constraint for comparison
      */
-    private SConstraint makeIntLinComb(IntVar[] lvars, int[] lcoeffs, int c, int linOperator) {
+    private static SConstraint makeIntLinComb(IntVar[] lvars, int[] lcoeffs, int c, int linOperator) {
         int nbNonNullCoeffs = countNonNullCoeffs(lcoeffs);
         int nbPositiveCoeffs = 0;
         int[] sortedCoeffs = new int[nbNonNullCoeffs];
