@@ -20,7 +20,7 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package planner;
+package samples.multicostregular.planner;
 
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.Solver;

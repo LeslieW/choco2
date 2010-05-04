@@ -99,7 +99,10 @@ public final class ProfileSelector implements VarValPairSelector {
 				return new IntVarValPair(prec.getBoolVar(), precSelector.getBestVal(prec));
 			}
 		}
-        assert(!precStore.containsReifiedPrecedence());
+		if(!precStore.containsReifiedPrecedence()) {
+			System.out.println();
+		}
+        //assert(!precStore.containsReifiedPrecedence());
 		return null;
 	}
 

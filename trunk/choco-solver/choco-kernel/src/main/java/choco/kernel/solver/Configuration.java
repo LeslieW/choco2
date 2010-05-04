@@ -21,14 +21,17 @@
  *                  N. Jussien    1999-2010      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver;
+import static choco.kernel.common.util.tools.PropertyUtils.logOnAbsence;
+import static choco.kernel.common.util.tools.PropertyUtils.logOnFailure;
+import static choco.kernel.common.util.tools.PropertyUtils.logOnSuccess;
 
-import choco.kernel.common.logging.ChocoLogging;
-
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.lang.annotation.Retention;
 import java.lang.reflect.Field;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * User : cprudhom<br/>
@@ -38,14 +41,16 @@ import java.util.logging.Logger;
  */
 public class Configuration extends Properties {
 
-    private final static Logger LOGGER = ChocoLogging.getMainLogger();
-   
-    private static final String VALUE_TRUE = "true";
-    private static final String VALUE_FALSE = "false";
+
+	private static final long serialVersionUID = 683407604054548550L;
+	
+	protected static final String VALUE_TRUE = "true";
+    protected static final String VALUE_FALSE = "false";
+    protected static final String VALUE_OFF = "OFF";
     
      //////////////////////////////////////// ANNOTATION ////////////////////////////////////////////////////////////////
 
-    /**
+	/**
      * Annotation to define a default value for a field.
      */
     @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
@@ -107,9 +112,9 @@ public class Configuration extends Properties {
     /**
      * <br/><b>Goal</b>: initial number of fails limiting the first search.
      * <br/><b>Type</b>: int
-     * <br/><b>Default value</b>: 200
+     * <br/><b>Default value</b>: 512
      */
-    @Default(value = "200")
+    @Default(value = "512")
     public static final String RESTART_BASE = "cp.restart.base";
 
     /**
@@ -144,7 +149,7 @@ public class Configuration extends Properties {
      * <br/><b>Default value</b>: false
      */
     @Default(value = VALUE_FALSE)
-    public static final String NOGOOD_RECORDING_FROM_RESTART = "cp.nogood_from_restart";
+    public static final String NOGOOD_RECORDING_FROM_RESTART = "cp.restart.nogood_recording";
 
     /**
      * <br/><b>Goal</b>: Tells the strategy wether or not use recomputation.
@@ -163,7 +168,7 @@ public class Configuration extends Properties {
      * <br/><b>Default value</b>: true
      */
     @Default(value = VALUE_TRUE)
-    public static final String CARD_REASONNING = "cp.cardinality_reasonning";
+    public static final String CARD_REASONNING = "cp.propagation.cardinality_reasonning";
 
     /**
      * <br/><b>Goal</b>: Initial seed to generate streams of pseudorandom numbers
@@ -231,8 +236,17 @@ public class Configuration extends Properties {
      * <br/><b>Default value</b>: false
      */
     @Default(value = VALUE_FALSE)
-    public static final String INIT_DLB_SHAVING = INIT_DESTRUCTIVE_LOWER_BOUND+".shaving";
+    public static final String INIT_DLB_SHAVING = "cp.init.propagation.shaving.dLB";
 
+
+    /**
+     * <br/><b>Goal</b>: perform shaving only on decision vars.
+     * <br/><b>Type</b>: boolean
+     * <br/><b>Default value</b>: true
+     */
+    @Default(value = VALUE_TRUE)
+    public static final String INIT_SHAVE_ONLY_DECISIONS = "cp.init.propagation.shaving.only_decision_vars";
+    
     /**
      * <br/><b>Goal</b>: Apply a bottom-up search algorithm (optimization).
      * <br/><i> The top-down strategy (default) starts with a upper bound and tries to improve it.</i>
@@ -250,7 +264,7 @@ public class Configuration extends Properties {
      * <br/><b>Default value</b>: 21474836 ({@link choco.Choco.MAX_UPPER_BOUND})
      */
     @Default(value = "21474836")
-    public static final String HORIZON_UPPER_BOUND = "cp.horizon.upper_bound";
+    public static final String HORIZON_UPPER_BOUND = "cp.scheduling.horizon";
 
     /**
      * <br/><b>Goal</b>: Solution pool capacity, number of solutions to store within the solutions' pool.
@@ -258,7 +272,7 @@ public class Configuration extends Properties {
      * <br/><b>Default value</b>: 1
      */
     @Default(value = "1")
-    public static final String SOLUTION_POOL_CAPACITY = "cp.solutionpool.capacity";
+    public static final String SOLUTION_POOL_CAPACITY = "cp.solution.pool_capacity";
 
     /**
      * <br/><b>Goal</b>:
@@ -266,7 +280,7 @@ public class Configuration extends Properties {
      * <br/><b>Default value</b>: true
      */
     @Default(value = VALUE_TRUE)
-    public static final String RESTORE_BEST_SOLUTION = "cp.restore_best_solution";
+    public static final String RESTORE_BEST_SOLUTION = "cp.solution.restore";
 
     /**
      * <br/><b>Goal</b>: Precision of the search for problem involving real variables
@@ -286,10 +300,11 @@ public class Configuration extends Properties {
 
 
     /**
-     * Creates an empty property list with no default values.
+     * Creates an empty property list with loaded default values.
      */
     public Configuration() {
-        setDefault();
+    	super(new Properties());
+    	load(defaults);
     }
 
 
@@ -299,7 +314,7 @@ public class Configuration extends Properties {
      * @param defaults the defaults.
      */
     public Configuration(final Properties defaults) {
-        this.putAll(defaults);
+    	super(defaults);
     }
 
     /**
@@ -308,7 +323,7 @@ public class Configuration extends Properties {
      */
     public void setDefault() {
         this.clear();
-        load();
+        load(this);
     }
     
 
@@ -318,12 +333,12 @@ public class Configuration extends Properties {
      * @throws IllegalAccessException if the specified object is not an
      *                                instance of the class or interface declaring the underlying
      */
-    private void load() {
-        Field[] fields = Configuration.class.getFields();
+    private void load(Properties properties) {
+    	Field[] fields = this.getClass().getFields();
         for (Field f : fields) {
             Default annotation = f.getAnnotation(Default.class);
             try {
-                this.put(f.get(this), annotation.value());
+                properties.put(f.get(this), annotation.value());
             } catch (IllegalAccessException e) {
                 logOnFailure(f.getName());
             }
@@ -337,7 +352,7 @@ public class Configuration extends Properties {
      * @throws IllegalAccessException if the specified object is not an
      *                                instance of the class or interface declaring the underlying
      */
-    private String loadDefault(String key){
+    public String loadDefault(String key){
         Field[] fields = Configuration.class.getFields();
         for (Field f : fields) {
             try {
@@ -404,7 +419,7 @@ public class Configuration extends Properties {
         String value = this.getProperty(key);
         if (value == null) {
             logOnAbsence(key);
-            value = loadDefault(key);
+            throw new NullPointerException("cant find ");
         }
         return Integer.valueOf(value);
     }
@@ -429,6 +444,81 @@ public class Configuration extends Properties {
             return Integer.parseInt(b);
         }
     }
+    
+    /**
+     * Returns the value to which the specified key is mapped.
+     *
+     * @param key the key whose associated value is to be returned
+     * @return the value to which the specified key is mapped
+     * @throws NullPointerException  if the specified key is null
+     */
+    public File readFile(String key) {
+        final String value = this.getProperty(key);
+        if (value == null) {
+            logOnAbsence(key);
+            throw new NullPointerException("cant find ");
+        }
+        return new File(value);
+    }
+
+    /**
+     * Returns the value to which the specified key is mapped, if exists.
+     * Otherwise, return default value.
+     *
+     * @param key          the key whose associated value is to be returned
+     * @param defaultValue value to return the key does not exist in the configuration
+     * @return the value to which the specified key is mapped
+     * @throws NullPointerException  if the specified key is null
+     * 
+     */
+    public File readFile(final String key, File defaultValue) {
+        final String b = this.getProperty(key);
+        if (b == null) {
+            logOnAbsence(key);
+            return defaultValue;
+        } else{
+            return new File(b);
+        }
+    }
+    
+    /**
+     * Returns the value to which the specified key is mapped.
+     *
+     * @param key the key whose associated value is to be returned
+     * @return the value to which the specified key is mapped
+     * @throws NullPointerException  if the specified key is null
+     * @throws NumberFormatException if the value cannot be parsed
+     *                               as a long.
+     */
+    public long readLong(String key) {
+        String value = this.getProperty(key);
+        if (value == null) {
+            logOnAbsence(key);
+            throw new NullPointerException("cant find ");
+        }
+        return Long.parseLong(value);
+    }
+
+    /**
+     * Returns the value to which the specified key is mapped, if exists.
+     * Otherwise, return default value.
+     *
+     * @param key          the key whose associated value is to be returned
+     * @param defaultValue value to return the key does not exist in the configuration
+     * @return the value to which the specified key is mapped
+     * @throws NullPointerException  if the specified key is null
+     * @throws NumberFormatException if the value cannot be parsed
+     *                               as a long.
+     */
+    public long readLong(final String key, long defaultValue) {
+        final String b = this.getProperty(key);
+        if (b == null) {
+            logOnAbsence(key);
+            return defaultValue;
+        } else{
+            return Long.parseLong(b);
+        }
+    }
 
     /**
      * Returns the value to which the specified key is mapped.
@@ -443,7 +533,7 @@ public class Configuration extends Properties {
         String value = this.getProperty(key);
         if (value == null) {
             logOnAbsence(key);
-            value = loadDefault(key);
+            throw new NullPointerException("cant find ");
         }
         return Double.valueOf(value);
     }
@@ -482,7 +572,7 @@ public class Configuration extends Properties {
         String value = this.getProperty(key);
         if (value == null) {
             logOnAbsence(key);
-            value = loadDefault(key);
+            throw new NullPointerException("cant find ");
         }
         return value;
     }
@@ -522,7 +612,7 @@ public class Configuration extends Properties {
         String value = this.getProperty(key);
         if (value == null) {
             logOnAbsence(key);
-            value = loadDefault(key);
+            throw new NullPointerException("cant find ");
         }
         return (T) Enum.valueOf(clazz, value);
     }
@@ -562,7 +652,21 @@ public class Configuration extends Properties {
     public void putInt(String key, int value) {
         this.put(key, Integer.toString(value));
     }
-
+    
+    /**
+     * Maps the specified <code>key</code> to the specified
+     * <code>value</code> in this hashtable. Neither the key nor the
+     * value can be <code>null</code>. <p>
+     * *
+     *
+     * @param key   the hashtable key
+     * @param value the value
+     * @throws NullPointerException if the key or value is
+     *                              <code>null</code>
+     */
+    public void putLong(String key, long value) {
+        this.put(key, Long.toString(value));
+    }
     /**
      * Maps the specified <code>key</code> to the specified
      * <code>value</code> in this hashtable. Neither the key nor the
@@ -615,17 +719,26 @@ public class Configuration extends Properties {
     public void putEnum(String key, Enum value) {
         this.put(key, value.name());
     }
-
-    private static void logOnAbsence(String key) {
-        LOGGER.log(Level.CONFIG, "properties...[read-property-from-key:{0}][FAIL]", key);
+    
+    /**
+     * Maps the specified <code>key</code> to the specified
+     * <code>value</code> in this hashtable. Neither the key nor the
+     * value can be <code>null</code>. <p>
+     * *
+     *
+     * @param key   the hashtable key
+     * @param value the value
+     * @throws NullPointerException if the key or value is
+     *                              <code>null</code>
+     */
+    public void putFile(String key, File value) {
+        this.put(key, value.getAbsolutePath());
     }
 
-    private static void logOnFailure(String resource) {
-        System.err.println("properties...[load-properties:" + resource + "][FAIL]");
-    }
 
-    private static void logOnSuccess(String resource) {
-        LOGGER.log(Level.CONFIG, "properties...[load-properties:{0}]", resource);
-    }
-
+	public void storeDefault(File file, String comments) throws IOException {
+		if(defaults != null) defaults.store(new FileWriter(file), comments);
+	}
+    
+     
 }

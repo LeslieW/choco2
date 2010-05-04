@@ -51,9 +51,14 @@ public final class LimitFactory {
 		super();
 	}
 
+
+	public final static void setSearchLimit(Configuration conf, Limit type, int limitBound) {
+		conf.putEnum(SEARCH_LIMIT, type);
+		conf.putInt(SEARCH_LIMIT_BOUND, limitBound);
+	}
+
 	public final static void setSearchLimit(Solver solver, Limit type, int limitBound) {
-		solver.getConfiguration().putEnum(SEARCH_LIMIT, type);
-		solver.getConfiguration().putInt(SEARCH_LIMIT_BOUND, limitBound);
+		setSearchLimit(solver.getConfiguration(), type, limitBound);
 	}
 
 	public final static AbstractGlobalSearchLimit makeSearchLimit(AbstractGlobalSearchStrategy strategy) {
@@ -62,9 +67,13 @@ public final class LimitFactory {
 		return makeLimit(strategy, lim, conf.readInt(SEARCH_LIMIT_BOUND));
 	}
 
+	public final static void setRestartLimit(Configuration conf, Limit type, int limitBound) {
+		conf.putEnum(RESTART_LIMIT, type);
+		conf.putInt(RESTART_LIMIT_BOUND, limitBound);
+	}
+	
 	public final static void setRestartLimit(Solver solver, Limit type, int limitBound) {
-		solver.getConfiguration().putEnum(RESTART_LIMIT, type);
-		solver.getConfiguration().putInt(RESTART_LIMIT_BOUND, limitBound);
+		setRestartLimit(solver.getConfiguration(), type, limitBound);
 	}
 
 	public final static AbstractGlobalSearchLimit makeRestartLimit(AbstractGlobalSearchStrategy strategy) {

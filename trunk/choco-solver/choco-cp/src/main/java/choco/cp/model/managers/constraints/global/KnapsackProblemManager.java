@@ -33,7 +33,7 @@ public final class KnapsackProblemManager extends IntConstraintManager {
                 int[] p1 = (int[]) param[0];
                 int[] p2 = (int[]) param[1];
 
-                return new FastCostKnapSack(solver.getVar(vars),solver.getVar(bVar),solver.getVar(cVar),p1,p2, solver.getEnvironment());
+                return new FastCostKnapSack(solver.getVar(vars),solver.getVar(bVar),solver.getVar(cVar),p1,p2, solver);
                 //return CostKnapsack.make(solver.getVar(vars),solver.getVar(bVar),solver.getVar(cVar),p1,p2);
             }
         }

@@ -22,18 +22,21 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.solver;
 
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.solver.Configuration;
-import choco.kernel.solver.search.limit.Limit;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import static choco.kernel.solver.Configuration.STOP_AT_FIRST_SOLUTION;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.solver.Configuration;
+import choco.kernel.solver.search.limit.Limit;
 
 /**
  * User : cprudhom<br/>
@@ -59,7 +62,7 @@ public class ConfigurationTest {
         configuration.putBoolean(USER_KEY, true);
         Boolean mykey = configuration.readBoolean(USER_KEY);
         Assert.assertTrue(mykey);
-        Boolean safs = configuration.readBoolean(Configuration.STOP_AT_FIRST_SOLUTION);
+        Boolean safs = configuration.readBoolean(STOP_AT_FIRST_SOLUTION);
         Assert.assertTrue(safs);
     }
 
@@ -129,7 +132,7 @@ public class ConfigurationTest {
         configuration.putBoolean(USER_KEY, true);
         Boolean mykey = configuration.readBoolean(USER_KEY);
         Assert.assertTrue(mykey);
-        Boolean safs = configuration.readBoolean(Configuration.STOP_AT_FIRST_SOLUTION);
+        Boolean safs = configuration.readBoolean(STOP_AT_FIRST_SOLUTION);
         Assert.assertTrue(safs);
     }
 
@@ -140,7 +143,7 @@ public class ConfigurationTest {
     }
 
     @Test
-    public void test4() throws IOException {
+    public void test4() {
         Properties properties = new Properties();
         try {
             final InputStream is = getClass().getResourceAsStream("/conf1.properties");
@@ -157,14 +160,28 @@ public class ConfigurationTest {
     }
 
     @Test
-    public void test5() throws IOException {
+    public void test5() {
         Properties empty = new Properties();
         configuration = new Configuration(empty);
         configuration.putBoolean(USER_KEY, true);
         Boolean mykey = configuration.readBoolean(USER_KEY);
         Assert.assertTrue(mykey);
-        Boolean safs = configuration.readBoolean(Configuration.STOP_AT_FIRST_SOLUTION);
+        Boolean safs = configuration.readBoolean(STOP_AT_FIRST_SOLUTION);
         Assert.assertTrue(safs);
+    }
+
+    @Test
+    public void test6() {
+    	configuration = new Configuration(configuration);
+    	Assert.assertTrue(configuration.readBoolean(STOP_AT_FIRST_SOLUTION));
+    	configuration.putFalse(STOP_AT_FIRST_SOLUTION);
+    	Assert.assertFalse(configuration.readBoolean(STOP_AT_FIRST_SOLUTION));
+    	configuration.remove(STOP_AT_FIRST_SOLUTION);
+    	Assert.assertTrue(configuration.readBoolean(STOP_AT_FIRST_SOLUTION));
+//        Boolean mykey = configuration.readBoolean(USER_KEY);
+//        Assert.assertTrue(mykey);
+//        Boolean safs = configuration.readBoolean(Configuration.STOP_AT_FIRST_SOLUTION);
+//        Assert.assertTrue(safs);
     }
 
 }

@@ -91,9 +91,6 @@ class ParserWrapper implements InstanceFileParser {
  */
 public class XcspModel extends AbstractInstanceModel {
 
-	public final XcspSettings settings;
-
-
 	//temporary data
 	private int cheuri;
 	private String[] values;
@@ -104,11 +101,13 @@ public class XcspModel extends AbstractInstanceModel {
 
 
 	public XcspModel(XcspSettings settings) {
-		super(new ParserWrapper());
-		this.settings = settings;
+		super(new ParserWrapper(), settings);
 	}
 
-
+	public final XcspSettings getXcspSettings() {
+		return (XcspSettings) defaultConf;
+	}
+	
 	@Override
 	public void initialize() {
 		super.initialize();
@@ -136,9 +135,8 @@ public class XcspModel extends AbstractInstanceModel {
 
 	@Override
 	public Solver buildSolver() {
-		PreProcessCPSolver s = new PreProcessCPSolver();
+		PreProcessCPSolver s = new PreProcessCPSolver(defaultConf);
 		s.read(model);
-		settings.applyTimeLimit(s);
 		return s;
 	}
 
@@ -167,38 +165,37 @@ public class XcspModel extends AbstractInstanceModel {
 	public Boolean solve() {
 		PreProcessCPSolver s = (PreProcessCPSolver) solver;
 		Boolean isFeasible = Boolean.TRUE;
+		final int timeLimitPP = defaultConf.readInt(BasicSettings.TIME_LIMIT_PREPROCESSING);
 		//do the initial propagation to decide to do restarts or not
 		if (!s.initialPropagation()) {
 			return Boolean.FALSE;
 		} else {
-			if (settings.isRandomValue() ) s.setRandomValueOrdering( (int) getSeed());
-			cheuri = settings.getHeuristic();
+			if (defaultConf.readBoolean(BasicSettings.RANDOM_VALUE) ) s.setRandomValueOrdering( (int) getSeed());
+			cheuri = getXcspSettings().getHeuristic();
 			//set the search
 			switch (cheuri) {
 			case VERSATILE:
-				isFeasible = s.setVersatile(s, settings.getTimeLimitPP());
+				isFeasible = s.setVersatile(s, timeLimitPP);
 				cheuri = s.getBBSearch().determineHeuristic(s);
 				break;
 			case DOMOVERDEG:
 				isFeasible = s.setDomOverDeg(s); break;
 			case DOMOVERWDEG:
-				isFeasible = s.setDomOverWeg(s, settings.getTimeLimitPP());
+				isFeasible = s.setDomOverWeg(s, timeLimitPP);
 				//((DomOverWDegBranching) s.tempGoal).setRandomVarTies(seed);
 				break;
 			case IMPACT:
-				isFeasible = s.setImpact(s, settings.getTimeLimitPP());
+				isFeasible = s.setImpact(s, timeLimitPP);
 				//((ImpactBasedBranching) s.tempGoal).setRandomVarTies(seed);
 				break;
 			case SIMPLE:
 				s.setVarIntSelector(new MinDomain(s));
-				if (settings.isRandomValue()) s.setValIntSelector(new RandomIntValSelector(getSeed()));
+				if ( defaultConf.readBoolean(BasicSettings.RANDOM_VALUE) ) s.setValIntSelector(new RandomIntValSelector(getSeed()));
 				else s.setValIntIterator(new IncreasingDomain());
 			default:
 				break;
 			}
 		}
-		//TODO Hadrien, Charles check this code samples, it is important that I did not break it
-		settings.applyRestartPolicy(s);
 		//		if (forcerestart != null) {
 		//			if (forcerestart) {
 		//				s.setGeometricRestart(base, growth);
@@ -214,7 +211,7 @@ public class XcspModel extends AbstractInstanceModel {
 		//			}
 		//		}
 		//ChocoLogging.setVerbosity(Verbosity.SEARCH);
-		if (isFeasible && (cheuri == IMPACT || s.rootNodeSingleton(settings.doSingletonConsistency(), settings.getTimeLimitPP()))) {
+		if (isFeasible && (cheuri == IMPACT || s.rootNodeSingleton(getXcspSettings().doSingletonConsistency(), timeLimitPP))) {
 			//			if (ngFromRestart && (s.restartMode || forcerestart)) {
 			//				s.setRecordNogoodFromRestart(true);
 			//				s.generateSearchStrategy();
@@ -257,7 +254,7 @@ public class XcspModel extends AbstractInstanceModel {
 			}
 		}
 		ValidityChecker.nbCheck = 0;
-		if (settings.doExternalCheck()) SolutionChecker.main(values);
+		if (getXcspSettings().doExternalCheck()) SolutionChecker.main(values);
 	}
 
 
@@ -274,7 +271,7 @@ public class XcspModel extends AbstractInstanceModel {
 	protected void logOnConfiguration() {
 		super.logOnConfiguration();
 		PreProcessCPSolver psolver = (PreProcessCPSolver) solver;
-		logMsg.storeConfiguration(psolver.restartMode+" RESTART    "+cheuri+" HEURISTIC    "+settings.isRandomValue()+" RANDVAL");
+		logMsg.storeConfiguration(psolver.restartMode+" RESTART    "+cheuri+" HEURISTIC    "+defaultConf.readBoolean(BasicSettings.RANDOM_VALUE)+" RANDVAL");
 	}
 
 

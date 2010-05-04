@@ -69,11 +69,7 @@ public final class VarSelectorFactory {
 	public static RandMinRatioSelector maxPreserved(Solver solver, IPrecedence[] precedences, long seed) {
 		return new RandMinRatioSelector(solver, createMinPreservedRatio(precedences), seed);
 	}
-	
-	public static VarValPairSelector maxPreserved(Solver solver, IPrecedence[] precedences, OrderingValSelector valSel) {
-		return null;
-	}
-	
+		
 	
  
 }

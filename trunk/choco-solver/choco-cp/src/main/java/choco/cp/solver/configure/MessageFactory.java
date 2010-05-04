@@ -12,12 +12,11 @@ public final class MessageFactory {
 		super();
 	}
 	public String getGeneralMsg(Solver solver) {
-		return getGeneralMsg(solver, "");
+		return getGeneralMsg(solver.getConfiguration(), "");
 	}
 
-	public static String getGeneralMsg(Solver solver, String name) {
+	public static String getGeneralMsg(Configuration conf, String name) {
 		final StringBuilder b = new StringBuilder();
-		final Configuration conf = solver.getConfiguration();
 		if( conf.readBoolean(MAXIMIZE) ) b.append("MAXIMIZE    ");	
 		else if( conf.readBoolean(MINIMIZE) ) b.append("MINIMIZE    ");
 		else b.append("CSP    ");

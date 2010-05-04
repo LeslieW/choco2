@@ -44,11 +44,11 @@ public interface IEnvironment {
 
     int getWorldIndex();
 
-    /**
-     * Returns the time stamp of the world (only change during worldPush.
-     * @return
-     */
-    long getWorldTimeStamp();
+//    /**
+//     * Returns the time stamp of the world (only change during worldPush.
+//     * @return
+//     */
+//    long getWorldTimeStamp();
 
     /**
      * Starts a new branch in the search tree.

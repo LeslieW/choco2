@@ -14,26 +14,25 @@ import java.util.logging.Logger;
  * @since 29 avr. 2010 version 2.1.1</br>
  * @version 2.1.1</br>
  */
-@Deprecated
 public final class PropertyUtils {
 
 	private final static Logger LOGGER= ChocoLogging.getMainLogger();
 
-	public static final String TOOLS_PREFIX = "chocotools.";
+	public static final String TOOLS_PREFIX = "tools.";
 
 	private PropertyUtils() {
 		super();
 	}
 
-	private static void logOnAbsence(String key) {
+	public static void logOnAbsence(String key) {
 		LOGGER.log(Level.CONFIG, "properties...[read-property-from-key:{0}][FAIL]", key);
 	}
 
-	private static void logOnFailure(String resource) {
+	public static void logOnFailure(String resource) {
 		System.err.println("properties...[load-properties:"+resource+"][FAIL]");
 	}
 
-	private static void logOnSuccess(String resource) {
+	public static void logOnSuccess(String resource) {
 		LOGGER.log(Level.CONFIG, "properties...[load-properties:{0}]", resource);
 	}
 
@@ -53,12 +52,12 @@ public final class PropertyUtils {
 
 	public static void loadProperties(Properties properties, String... resources) {
 		for (String resource : resources) {
-		try {
-			properties.load(new InputStreamReader(properties.getClass().getResourceAsStream(resource), "ISO-8859-1"));
-			logOnSuccess(resource);
-		} catch (IOException e) {
-			logOnFailure(resource);
-		}
+			try {
+				properties.load(new InputStreamReader(properties.getClass().getResourceAsStream(resource), "ISO-8859-1"));
+				logOnSuccess(resource);
+			} catch (IOException e) {
+				logOnFailure(resource);
+			}
 		}
 	}
 
@@ -102,8 +101,4 @@ public final class PropertyUtils {
 			return defaultValue;
 		} else return (T) Enum.valueOf(defaultValue.getClass(), b);
 	}
-
-
-
-
-        }
+}

@@ -35,6 +35,7 @@ import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintType;
 import choco.kernel.model.variables.Variable;
+import choco.kernel.solver.Configuration;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.SConstraint;
@@ -93,16 +94,20 @@ public class PreProcessCPSolver extends CPSolver {
     @Deprecated
 	private THashSet<String> optionsSet = new THashSet<String>();
 
-    public PreProcessCPSolver(String... options) {
-        this(new EnvironmentTrailing(), options);
+    
+    public PreProcessCPSolver() {
+    	this(new Configuration());
+    }
+    public PreProcessCPSolver(Configuration configuration) {
+        this(new EnvironmentTrailing(), configuration);
     }
 
-    public PreProcessCPSolver(final IEnvironment env, String ... options) {
+    public PreProcessCPSolver(final IEnvironment env, Configuration configuration) {
         super(env);
         this.cleverRel = new RelationDetector();
         this.mod2sol = new PPModelToCPSolver(this);
         this.ppsearch = new PPSearch();
-        optionsSet.addAll(Arrays.asList(options));
+        //optionsSet.addAll(Arrays.asList(options));
     }
 
 

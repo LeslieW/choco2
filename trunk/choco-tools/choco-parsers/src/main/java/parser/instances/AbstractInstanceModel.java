@@ -22,22 +22,13 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package parser.instances;
 
-import choco.cp.solver.CPSolver;
-import choco.cp.solver.configure.MessageFactory;
-import choco.cp.solver.configure.RestartFactory;
-import choco.cp.solver.constraints.integer.bool.sat.ClauseStore;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.model.Model;
-import choco.kernel.solver.Solution;
-import choco.kernel.solver.Solver;
-import choco.kernel.solver.search.checker.SolutionCheckerException;
-import choco.kernel.solver.search.measure.IMeasures;
-import db.DbManager;
-import db.DbTables;
-import parser.absconparseur.tools.UnsupportedConstraintException;
-import static parser.instances.ResolutionStatus.*;
-import parser.instances.checker.IStatusChecker;
-import parser.instances.checker.SCheckFactory;
+import static parser.instances.ResolutionStatus.ERROR;
+import static parser.instances.ResolutionStatus.OPTIMUM;
+import static parser.instances.ResolutionStatus.SAT;
+import static parser.instances.ResolutionStatus.TIMEOUT;
+import static parser.instances.ResolutionStatus.UNKNOWN;
+import static parser.instances.ResolutionStatus.UNSAT;
+import static parser.instances.ResolutionStatus.UNSUPPORTED;
 
 import java.io.File;
 import java.sql.Timestamp;
@@ -46,17 +37,29 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import parser.absconparseur.tools.UnsupportedConstraintException;
+import parser.instances.checker.IStatusChecker;
+import parser.instances.checker.SCheckFactory;
+import choco.cp.solver.CPSolver;
+import choco.cp.solver.configure.MessageFactory;
+import choco.cp.solver.configure.StrategyFactory;
+import choco.cp.solver.constraints.integer.bool.sat.ClauseStore;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.model.Model;
+import choco.kernel.solver.Configuration;
+import choco.kernel.solver.Solution;
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.search.checker.SolutionCheckerException;
+import choco.kernel.solver.search.measure.IMeasures;
+import db.DbManager;
+import db.DbTables;
+
 /**
  * A class to provide facilities for loading and solving instance described by a file (txt, xml, ...). </br>
  */
 public abstract class AbstractInstanceModel {
 
 	public final static Logger LOGGER = ChocoLogging.getMainLogger();
-
-	//configuration
-	private long seed;
-
-	protected Boolean doMaximize;
 
 	//computed fields
 	private final long[] time = new long[6];
@@ -77,17 +80,21 @@ public abstract class AbstractInstanceModel {
 	protected Solver solver;
 
 	//logs and reporting	
-
-	protected File outputDirectory;
-
 	protected DbManager dbManager;
+
+	protected final Configuration defaultConf;
 
 	protected final ReportFormatter logMsg = new ReportFormatter();
 
-	public AbstractInstanceModel(InstanceFileParser parser) {
+	public AbstractInstanceModel(InstanceFileParser parser, Configuration defaultConfiguration) {
 		super();
 		this.parser = parser;
+		this.defaultConf = defaultConfiguration;
 
+	}
+
+	public final Configuration getConfiguration() {
+		return defaultConf;
 	}
 
 	public String getInstanceName() {
@@ -132,29 +139,13 @@ public abstract class AbstractInstanceModel {
 	}
 
 	public final File getOutputDirectory() {
-		return outputDirectory;
+		return BasicSettings.getOutputDirectory(defaultConf);
 	}
 
-	public final void setOutputDirectory(File outputDirectory) {
-		this.outputDirectory = outputDirectory;
-	}
-
-	public final Boolean getDoMaximise() {
-		return doMaximize;
-	}
-
-	public final void setDoMaximise(Boolean doMaximise) {
-		this.doMaximize = doMaximise;
-	}
 
 	public final long getSeed() {
-		return seed;
+		return defaultConf.readLong(Configuration.RANDOM_SEED);
 	}
-
-	public final void setSeed(long seed) {
-		this.seed = seed;
-	}
-
 
 	public final boolean isDatabaseReporting() {
 		return dbManager != null;
@@ -223,7 +214,7 @@ public abstract class AbstractInstanceModel {
 
 	private final void logOnPP() {
 		if(LOGGER.isLoggable(Level.CONFIG)) {
-			if( isFeasible == Boolean.TRUE && doMaximize != null) {
+			if( isFeasible == Boolean.TRUE && StrategyFactory.isOptimize(defaultConf) ) {
 				LOGGER.log(Level.CONFIG, "preprocessing...[status:{0}][obj:{1}]", new Object[]{status, objective});
 			}else {
 				LOGGER.log(Level.CONFIG, "preprocessing...[status:{0}]", status);
@@ -270,7 +261,7 @@ public abstract class AbstractInstanceModel {
 				initialObjective = objective; 
 				logOnPP();
 				time[2] = System.currentTimeMillis();
-				if( needCP() ) {
+				if( applyCP() ) {
 					//try to solve the problem using CP.
 					model = buildModel();
 					logOnModel();
@@ -349,9 +340,8 @@ public abstract class AbstractInstanceModel {
 	protected final void checkStatus() throws SolutionCheckerException {
 		//Request status checker from factory
 		final IStatusChecker scheck = SCheckFactory.makeStatusChecker(this);
-		if( scheck != null) scheck.checkStatus(doMaximize, status, objective);
+		if( scheck != null) scheck.checkStatus(StrategyFactory.doMaximize(defaultConf), status, objective);
 	}
-
 
 	/**
 	 * The method checks the validity of the solution. 
@@ -374,8 +364,12 @@ public abstract class AbstractInstanceModel {
 		else return UNKNOWN;
 	}
 
-	public boolean needCP() {
-		return status == UNKNOWN || ( doMaximize != null && status == SAT);
+	public boolean applyCP() {
+		return ! defaultConf.readBoolean(BasicSettings.CANCEL_CP_SOLVE) &&
+		( 
+				status == UNKNOWN || 
+				( StrategyFactory.isOptimize(defaultConf) && status == SAT) 
+		);
 	}
 	/**
 	 * compute the resolution status after the cp search (solver is not null).
@@ -386,7 +380,7 @@ public abstract class AbstractInstanceModel {
 				if( solver.existsSolution()) {
 					//cp find new solution(s)
 					objective = solver.getObjectiveValue(); //update objective value
-					return solver.getFirstSolution() || solver.isEncounteredLimit() ? SAT : OPTIMUM;
+					return solver.getSearchStrategy().stopAtFirstSol || solver.isEncounteredLimit() ? SAT : OPTIMUM;
 				}else {
 					//cp did not find any solution
 					return solver.isEncounteredLimit() ? SAT : OPTIMUM;
@@ -432,8 +426,9 @@ public abstract class AbstractInstanceModel {
 	}
 
 	protected void logOnConfiguration() {
-		logMsg.appendConfiguration( createInstanceConfiguration() );
+		logMsg.appendConfiguration( MessageFactory.getGeneralMsg(defaultConf, getInstanceName()));
 		logMsg.storeConfiguration( createTimeConfiguration() );
+		logMsg.storeConfiguration( BasicSettings.getInstModelMsg(defaultConf) );
 		if (solver != null) logMsg.storeConfiguration( MessageFactory.getRestartMsg(solver));
 	}
 
@@ -470,7 +465,7 @@ public abstract class AbstractInstanceModel {
 		//insert solver
 		Integer solverID = dbManager.insertEntryAndRetrieveGPK(DbTables.T_SOLVERS, 
 				new Object[]{ getInstanceName(), status.getName(), getFullSecTime(), "", //getValuesMessage(),
-				dbManager.getModelID(solver), dbManager.getEnvironmentID(), seed, new Timestamp(System.currentTimeMillis())}
+				dbManager.getModelID(solver), dbManager.getEnvironmentID(), getSeed(), new Timestamp(System.currentTimeMillis())}
 		);
 		//TODO remettre getModelID en protected quand dans choco
 		Integer measuresID;
@@ -506,16 +501,16 @@ public abstract class AbstractInstanceModel {
 		else return "";
 	}
 
-	protected String createInstanceConfiguration() {
-		final StringBuilder b = new StringBuilder();
-		if( doMaximize == Boolean.TRUE) b.append("MAXIMIZE    ");	
-		else if( doMaximize == Boolean.FALSE) b.append("MINIMIZE    ");
-		else b.append("CSP    ");
-
-		b.append(parser.getInstanceFile().getName()).append("    ");
-		b.append(seed).append(" SEED");
-		return b.toString();
-	}
+	//	protected String createInstanceConfiguration() {
+	//		final StringBuilder b = new StringBuilder();
+	//		if( doMaximize == Boolean.TRUE) b.append("MAXIMIZE    ");	
+	//		else if( doMaximize == Boolean.FALSE) b.append("MINIMIZE    ");
+	//		else b.append("CSP    ");
+	//
+	//		b.append(parser.getInstanceFile().getName()).append("    ");
+	//		b.append(getSeed()).append(" SEED");
+	//		return b.toString();
+	//	}
 
 
 
@@ -563,5 +558,9 @@ public abstract class AbstractInstanceModel {
 		return getFullTime() / 1000D;
 	}
 
+	@Override
+	public String toString() {
+		return getInstanceName();
+	}
 
 }
