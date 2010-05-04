@@ -1,16 +1,10 @@
 package parser.instances.xcsp;
 
-import static choco.kernel.common.util.tools.PropertyUtils.TOOLS_PREFIX;
-import static choco.kernel.common.util.tools.PropertyUtils.readBoolean;
-import static choco.kernel.common.util.tools.PropertyUtils.readInteger;
+import parser.instances.BasicSettings;
 
-import java.util.Properties;
-
-import parser.chocogen.ObjectFactory;
-import parser.instances.RestartSettings;
-
-public class XcspSettings extends RestartSettings {
+public class XcspSettings extends BasicSettings {
 	
+	private static final long serialVersionUID = -6142621495638857916L;
 	
 	//heuristics
 	public static final int DOMOVERDEG = 0;
@@ -31,15 +25,6 @@ public class XcspSettings extends RestartSettings {
 	public XcspSettings() {
 		super();
 	}
-
-	
-	public XcspSettings(XcspSettings set) {
-		super(set);
-		this.heuristic = set.heuristic;
-		this.singletonConsistency = set.singletonConsistency;
-		this.externalCheck = set.externalCheck;
-	}
-
 	
 	public final int getHeuristic() {
 		return heuristic;
@@ -56,8 +41,6 @@ public class XcspSettings extends RestartSettings {
 		return singletonConsistency;
 	}
 
-
-
 	public final void setDoSingletonConsistency(boolean singletonConsistency) {
 		this.singletonConsistency = singletonConsistency;
 	}
@@ -68,18 +51,15 @@ public class XcspSettings extends RestartSettings {
 	}
 
 
-	public final void setExternalCheck(boolean externalCheck) {
-		this.externalCheck = externalCheck;
-	}
-
-	@Override
-	public void configure(Properties properties) {
-		super.configure(properties);
-		heuristic = readInteger(properties, TOOLS_PREFIX+"xcsp.heuristic", heuristic);
-		ObjectFactory.algorithmAC = readInteger(properties, TOOLS_PREFIX+"xcsp.ac", ObjectFactory.algorithmAC);
-		singletonConsistency = readBoolean(properties, TOOLS_PREFIX+"xcsp.singloton", singletonConsistency);
-		externalCheck = readBoolean(properties, TOOLS_PREFIX+"xcsp.externalcheck", externalCheck);
-	}
+	//FIXME 
+//	@Override
+//	public void configure() {
+//		super.configure();
+//		heuristic = readInt(TOOLS_PREFIX+"xcsp.heuristic", heuristic);
+//		ObjectFactory.algorithmAC = readInt(TOOLS_PREFIX+"xcsp.ac", ObjectFactory.algorithmAC);
+//		singletonConsistency = readBoolean(TOOLS_PREFIX+"xcsp.singloton", singletonConsistency);
+//		externalCheck = readBoolean(TOOLS_PREFIX+"xcsp.externalcheck", externalCheck);
+//	}
 
 	
 }

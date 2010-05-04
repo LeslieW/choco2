@@ -23,21 +23,33 @@
 
 package choco.kernel.model.constraints.pack;
 
-import static choco.Choco.*;
+import static choco.Choco.allDifferent;
+import static choco.Choco.constantArray;
+import static choco.Choco.eq;
+import static choco.Choco.geq;
+import static choco.Choco.implies;
+import static choco.Choco.leq;
+import static choco.Choco.makeIntVar;
+import static choco.Choco.makeIntVarArray;
+import static choco.Choco.makeSetVarArray;
+import static choco.Choco.occurrence;
+import static choco.Choco.plus;
+import static choco.Options.V_BOUND;
+import static choco.Options.V_ENUM;
+import static choco.Options.V_NO_DECISION;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 import choco.kernel.common.util.comparator.IPermutation;
-import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.PermutationUtils;
-import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * @author Arnaud Malapert</br>
@@ -82,7 +94,7 @@ public final class PackModeler {
 		this.itemSets = itemSets;
 		this.loads = loads;
 		this.nbNonEmpty = nbNonEmpty;
-		this.nbEmpty = makeIntVar("nbEmpty"+nextID(),0, this.nbBins, "cp:bound");
+		this.nbEmpty = makeIntVar("nbEmpty"+nextID(),0, this.nbBins, V_BOUND,V_NO_DECISION);
 		this.maxCapacity = capacity;
 		permutation = PermutationUtils.getIdentity();
 	}
@@ -99,13 +111,13 @@ public final class PackModeler {
 		this.maxCapacity=capacity;
 		this.nbItems = sizes.length;
 		this.nbBins = nbBins;
-		this.bins = makeIntVarArray("B"+name, nbItems, 0, this.nbBins-1, "cp:enum");
+		this.bins = makeIntVarArray("B"+name, nbItems, 0, this.nbBins-1,V_ENUM);
 		//this.bins = makeIntVarArray("bin"+name, nbItems, 0, this.nbBins-1, "cp:bound");
-		this.itemSets = makeSetVarArray("S"+name, this.nbBins, 0, this.nbItems-1,"cp:bound");
-		this.loads = makeIntVarArray("L"+name, this.nbBins, 0,this.maxCapacity, "cp:bound");
-		this.nbNonEmpty = makeIntVar("NbNE"+name,0, this.nbBins, "cp:bound");
+		this.itemSets = makeSetVarArray("S"+name, this.nbBins, 0, this.nbItems-1, V_BOUND,V_NO_DECISION);
+		this.loads = makeIntVarArray("L"+name, this.nbBins, 0,this.maxCapacity,V_BOUND,V_NO_DECISION);
+		this.nbNonEmpty = makeIntVar("NbNE"+name,0, this.nbBins,V_BOUND);
 		//handle permutation
-		this.nbEmpty = makeIntVar("NbE"+name,0, this.nbBins, "cp:bound");
+		this.nbEmpty = makeIntVar("NbE"+name,0, this.nbBins,V_BOUND,V_NO_DECISION);
 		IPermutation tmp = PermutationUtils.getSortingPermuation(sizes,true);
 		permutation = tmp.isIdentity() ? PermutationUtils.getIdentity() : tmp;
 		this.sizes= PermutationUtils.applyPermutation(permutation,sizes);

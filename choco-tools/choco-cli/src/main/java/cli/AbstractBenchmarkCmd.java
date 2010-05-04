@@ -3,7 +3,6 @@
 package cli;
 
 import java.io.File;
-import java.util.Properties;
 import java.util.Random;
 import java.util.logging.Level;
 
@@ -12,10 +11,12 @@ import org.kohsuke.args4j.Option;
 
 import parser.instances.AbstractInstanceModel;
 import parser.instances.BasicSettings;
-import parser.instances.checker.SCheckFactory;
+import choco.cp.solver.configure.LimitFactory;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.tools.PropertyUtils;
+import choco.kernel.solver.Configuration;
+import choco.kernel.solver.search.limit.Limit;
 import cli.explorer.FileExplorer;
 import cli.explorer.FileProcedure;
 import db.DbManager;
@@ -60,24 +61,17 @@ public abstract class AbstractBenchmarkCmd extends AbstractCmdLine implements Fi
 		ChocoLogging.setVerbosity(verbosity);
 	}
 
-	protected BasicSettings settings;
+	protected final Configuration settings;
 	
 	protected Random seeder;
-
-	public final Properties properties;
 
 	private IDbConnector dbConnector;
 
 	protected AbstractInstanceModel instance;
 
-	public AbstractBenchmarkCmd(String... defaultPropertiesResources) {
+	public AbstractBenchmarkCmd(Configuration settings) {
 		super(true);
-		Properties tmp =new Properties();
-		PropertyUtils.loadProperties(tmp, "/default.properties");
-		properties = new Properties(tmp);
-		if( defaultPropertiesResources != null) {
-			PropertyUtils.loadProperties(properties, defaultPropertiesResources);
-		}
+		this.settings = settings;
 	}
 
 	private void makeDbConnector() throws CmdLineException {
@@ -90,13 +84,6 @@ public abstract class AbstractBenchmarkCmd extends AbstractCmdLine implements Fi
 		}
 	}
 
-	private void initializeProperties() {
-		if( propertyFile != null) {
-			PropertyUtils.loadProperties(properties, propertyFile);
-		}
-		if(properties.isEmpty()) LOGGER.config("cmd...[empty_properties]");
-	}
-	
 
 	@Override
 	protected void checkData() throws CmdLineException {
@@ -106,22 +93,23 @@ public abstract class AbstractBenchmarkCmd extends AbstractCmdLine implements Fi
 		if( outputDirectory != null && ! outputDirectory.isDirectory()) {
 			throw new CmdLineException(outputDirectory+" is not a directory");
 		}
-		initializeProperties();
-		makeDbConnector();
-		if( settings != null) {
-			if(properties != null) settings.configure(properties);
-			if( timeLimit != null) settings.setTimeLimit(timeLimit);
+		if( propertyFile != null) {
+			PropertyUtils.loadProperties(settings, propertyFile);
 		}
-		LOGGER.log(Level.CONFIG, "cmd...[seed:{1}][db:{2}][output:{3}]", new Object[]{seed, dbConnector, outputDirectory});
+		makeDbConnector();
+		if( timeLimit != null) {
+			LimitFactory.setSearchLimit(settings, Limit.TIME, timeLimit * 1000);
+		}
+		LOGGER.log(Level.CONFIG, "cmd...[seed:{0}][db:{1}][output:{2}]", new Object[]{seed, dbConnector, outputDirectory});
 	}
 
 
 	protected abstract AbstractInstanceModel createInstance();
 
 	protected void configureInstance() {
-		instance.setOutputDirectory(outputDirectory);
+		if(outputDirectory != null) instance.getConfiguration().putFile(BasicSettings.OUTPUT_DIRECTORY, outputDirectory);
 		instance.setDatabaseManager(dbConnector.getDatabaseManager());
-		instance.setSeed(seed);
+		instance.getConfiguration().putLong(Configuration.RANDOM_SEED, seed);
 	}
 
 	@Override

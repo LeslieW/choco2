@@ -50,9 +50,9 @@ public final class FastCostRegularManager extends IntConstraintManager {
                 }
             }
             if (auto != null)
-                return new FastCostRegular(vars,auto,csts, solver.getEnvironment());
+                return new FastCostRegular(vars,auto,csts, solver);
             else
-                return new FastCostRegular(vars,graph,source, solver.getEnvironment());
+                return new FastCostRegular(vars,graph,source, solver);
         }
         return null;
 

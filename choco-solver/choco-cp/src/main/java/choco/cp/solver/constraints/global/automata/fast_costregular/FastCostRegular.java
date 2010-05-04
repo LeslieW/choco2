@@ -1,5 +1,19 @@
 package choco.cp.solver.constraints.global.automata.fast_costregular;
 
+import gnu.trove.TIntArrayList;
+import gnu.trove.TIntHashSet;
+import gnu.trove.TIntIterator;
+import gnu.trove.TIntStack;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.HashSet;
+import java.util.Queue;
+import java.util.Set;
+
+import org.jgrapht.graph.DirectedMultigraph;
+
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
@@ -7,18 +21,13 @@ import choco.kernel.memory.IStateBool;
 import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.Arc;
 import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.Node;
 import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.StoredValuedDirectedMultiGraph;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import gnu.trove.TIntArrayList;
-import gnu.trove.TIntHashSet;
-import gnu.trove.TIntIterator;
-import gnu.trove.TIntStack;
-import org.jgrapht.graph.DirectedMultigraph;
-
-import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -36,7 +45,7 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
     IStateBool boundChange;
     int lastWorld = -1;
     long lastWorldStamp = -1;
-    protected final IEnvironment environment;
+    protected final Solver solver;
 
 
     int[][][] costs;
@@ -44,27 +53,26 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
     DirectedMultigraph<Node, Arc> originalGraph;
     Node source;
 
-    public FastCostRegular(IntDomainVar[] vars, FiniteAutomaton pi, int[][][] costs, IEnvironment environment) {
+    public FastCostRegular(IntDomainVar[] vars, FiniteAutomaton pi, int[][][] costs, Solver solver) {
         super(vars);
-        this.environment = environment;
+        this.solver = solver;
         this.vs = new IntDomainVar[vars.length-1];
         System.arraycopy(vars, 0, vs, 0, vs.length);
         this.z = vars[vars.length-1];
         this.toRemove = new TIntStack();
-        this.boundChange = environment.makeBool(false);
+        this.boundChange = solver.getEnvironment().makeBool(false);
         this.costs = costs;
         this.pi = pi;
     }
-    public FastCostRegular(IntDomainVar[] vars, DirectedMultigraph<Node, Arc> graph, Node source, IEnvironment environment)
+    public FastCostRegular(IntDomainVar[] vars, DirectedMultigraph<Node, Arc> graph, Node source,  Solver solver)
     {
         super(vars);
-        this.environment = environment;
+        this.solver= solver;
         this.vs = new IntDomainVar[vars.length-1];
         System.arraycopy(vars, 0, vs, 0, vs.length);
         this.z = vars[vars.length-1];
         this.toRemove = new TIntStack();
-        this.boundChange = environment.makeBool(false);
-
+        this.boundChange = solver.getEnvironment().makeBool(false);
         this.originalGraph =graph;
         this.source = source;
 
@@ -120,7 +128,7 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
         {
             lays[i] = layers[i].toNativeArray();
         }
-        this.graph = new StoredValuedDirectedMultiGraph(environment, this,graph,lays,starts,offsets,totalSizes);
+        this.graph = new StoredValuedDirectedMultiGraph(solver.getEnvironment(), this,graph,lays,starts,offsets,totalSizes);
 
 
 
@@ -332,7 +340,7 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
 
 
         if (intLayer[0].length > 0)
-            this.graph = new StoredValuedDirectedMultiGraph(environment, this,graph,intLayer,starts,offsets,totalSizes);
+            this.graph = new StoredValuedDirectedMultiGraph(solver.getEnvironment(), this,graph,intLayer,starts,offsets,totalSizes);
         else
             this.fail();
     }
@@ -435,8 +443,9 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
 
     protected void checkWorld()
     {
-        int current = environment.getWorldIndex();
-        long currentstamp = environment.getWorldTimeStamp();
+        int current = solver.getWorldIndex();
+        //nbN + nbB defines a valid time stamp (no need for additional field in env)
+        long currentstamp = solver.getSearchStrategy().getNodeCount() + solver.getSearchStrategy().getBackTrackCount();
         if (current < lastWorld || (current == lastWorld && currentstamp != lastWorldStamp))
         {
             this.toRemove.reset();

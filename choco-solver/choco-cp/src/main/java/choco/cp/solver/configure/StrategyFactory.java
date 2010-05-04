@@ -12,6 +12,7 @@ import choco.cp.solver.search.real.RealBranchAndBound;
 import choco.cp.solver.search.restart.BasicKickRestart;
 import choco.cp.solver.search.restart.IKickRestart;
 import choco.cp.solver.search.restart.NogoodKickRestart;
+import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.solver.Configuration;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
@@ -31,20 +32,23 @@ public final class StrategyFactory {
 		super();
 	}
 
+	public static boolean isOptimize(Configuration conf) {
+		return conf.readBoolean(MINIMIZE) || conf.readBoolean(MAXIMIZE);
+	}
+	
 	
 	public static void setDoOptimize(Solver solver, boolean maximize) {
-		if(maximize) setDoMaximize(solver);
-		else setDoMinimize(solver);
+		if(maximize) setDoMaximize(solver.getConfiguration());
+		else setDoMinimize(solver.getConfiguration());
     
 	}
-	public static void setDoMaximize(Solver solver) {
-		final Configuration conf = solver.getConfiguration();
+	
+	public static void setDoMaximize(Configuration conf) {
 		conf.putTrue(MAXIMIZE);
 		conf.putFalse(MINIMIZE);
 	}
 	
-	public static void setDoMinimize(Solver solver) {
-		final Configuration conf = solver.getConfiguration();
+	public static void setDoMinimize(Configuration conf) {
 		conf.putTrue(MINIMIZE);
 		conf.putFalse(MAXIMIZE);
 	}
@@ -57,14 +61,26 @@ public final class StrategyFactory {
 		else if(min) return false;
 		else throw new SolverException("minimize/maximize conflict");
 	}
+	
+	public static Boolean doMaximize(Configuration conf) {
+		final boolean max = conf.readBoolean(MAXIMIZE);
+		final boolean min = conf.readBoolean(MINIMIZE);
+		if(max) {
+			if(min) throw new SolverException("minimize/maximize conflict");
+			else return Boolean.TRUE;
+		} else if(min) return Boolean.FALSE;
+		else return null;
+	}
+	
+	
 
 	public static int getRecomputationGap(Solver solver) {
 		return solver.getConfiguration().readInt(RECOMPUTATION_GAP);
 	}
 
-	public static void checkIsCSP(Solver solver) {
+	public static void validateCSP(Solver solver) {
 		final Configuration conf = solver.getConfiguration();
-		if( conf.readBoolean(MAXIMIZE) || conf.readBoolean(MINIMIZE) || conf.readBoolean(BOTTOM_UP) ) {
+		if( isOptimize(conf) || conf.readBoolean(BOTTOM_UP) ) {
 			throw new SolverException("no_objective/optimize conflict");
 		}
 	}
@@ -112,8 +128,10 @@ public final class StrategyFactory {
 	
 	public static ShavingTools createShavingTools(Solver solver) {
 		if( isUsingShavingTools(solver) ) {
-			ShavingTools shavingTools = new ShavingTools(solver);
 			final Configuration conf = solver.getConfiguration();
+			ShavingTools shavingTools = new ShavingTools(solver, 
+					conf.readBoolean(INIT_SHAVE_ONLY_DECISIONS) ? 
+							solver.getIntDecisionVars() : VariableUtils.getIntVars(solver));
 			shavingTools.setShavingLowerBound( conf.readBoolean(INIT_DLB_SHAVING));
 			shavingTools.setDetectLuckySolution( conf.readBoolean(BOTTOM_UP) );
 			return shavingTools;

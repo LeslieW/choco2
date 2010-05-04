@@ -20,7 +20,7 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package planner;
+package samples.multicostregular.planner;
 
 import choco.Options;
 import choco.cp.model.CPModel;

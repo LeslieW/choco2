@@ -73,25 +73,25 @@ import java.util.logging.Logger;
  * Interface for Solver class, declare main expected methods.
  */
 public interface Solver extends IMeasures, IPretty {
-	
+
 	public static final SolutionCheckerEngine DEFAULT_SOLUTION_CHECKER = new SolutionCheckerEngine();
-	
+
 	/**
 	 * Reference to an object for logging trace statements related to Abtract
 	 * Solver (using the java.util.logging package)
 	 */
 	public final static Logger LOGGER = ChocoLogging.getEngineLogger();
-	
-	
+
+
 	/**
-     * Removes all of the elements from this solver (optional operation).
-     * The solver will be 'empty' after this call returns.
-     */
-    public void clear();
+	 * Removes all of the elements from this solver (optional operation).
+	 * The solver will be 'empty' after this call returns.
+	 */
+	public void clear();
 
-    public IndexFactory getIndexfactory();
+	public IndexFactory getIndexfactory();
 
-    public Model getModel();
+	public Model getModel();
 
 	public void setModel(Model model);
 
@@ -102,12 +102,12 @@ public interface Solver extends IMeasures, IPretty {
 	public void addGoal(AbstractIntBranchingStrategy branching);
 
 
-    /**
-     * Check wether every decisions variables are instantiated
-     * @return true if all variables are instantiated
-     */
-    public boolean checkDecisionVariables();
-    /**
+	/**
+	 * Check wether every decisions variables are instantiated
+	 * @return true if all variables are instantiated
+	 */
+	public boolean checkDecisionVariables();
+	/**
 	 * commands the strategy to start
 	 */
 	public void launch();
@@ -117,37 +117,37 @@ public interface Solver extends IMeasures, IPretty {
 	 *
 	 * @return the number of solutions to the model that were encountered during the search
 	 */
-	
+
 	public int getNbSolutions();
 
-    /**
-     * Monitor the time limit (default to true)
-     * @param b indicates wether the search stategy monitor the time limit
-     */
+	/**
+	 * Monitor the time limit (default to true)
+	 * @param b indicates wether the search stategy monitor the time limit
+	 */
 	@Deprecated
-    public void monitorTimeLimit(boolean b);
+	public void monitorTimeLimit(boolean b);
 
-    /**
-     * Monitor the node limit (default to true)
-     * @param b indicates wether the search stategy monitor the node limit
-     */
-    @Deprecated
-    public void monitorNodeLimit(boolean b);
+	/**
+	 * Monitor the node limit (default to true)
+	 * @param b indicates wether the search stategy monitor the node limit
+	 */
+	@Deprecated
+	public void monitorNodeLimit(boolean b);
 
-    /**
-     * Monitor the backtrack limit (default to false)
-     * @param b indicates wether the search stategy monitor the backtrack limit
-     */
-    @Deprecated
-    public void monitorBackTrackLimit(boolean b);
+	/**
+	 * Monitor the backtrack limit (default to false)
+	 * @param b indicates wether the search stategy monitor the backtrack limit
+	 */
+	@Deprecated
+	public void monitorBackTrackLimit(boolean b);
 
-    /**
-     * Monitor the fail limit (default to false)
-     * @param b indicates wether the search stategy monitor the fail limit
-     */
-    public void monitorFailLimit(boolean b);
+	/**
+	 * Monitor the fail limit (default to false)
+	 * @param b indicates wether the search stategy monitor the fail limit
+	 */
+	public void monitorFailLimit(boolean b);
 
-    /**
+	/**
 	 * Sets the time limit i.e. the maximal time before stopping the search algorithm
 	 */
 	public void setTimeLimit(int timeLimit);
@@ -157,7 +157,7 @@ public interface Solver extends IMeasures, IPretty {
 	 */
 	public void setNodeLimit(int nodeLimit);
 
-    /**
+	/**
 	 * Sets the backtrack limit i.e. the maximal number of backtracks before stopping the search algorithm
 	 */
 	public void setBackTrackLimit(int backtracklimit);
@@ -166,22 +166,22 @@ public interface Solver extends IMeasures, IPretty {
 	 * Sets the fail limit i.e. the maximal numnber of fails before stopping the search algorithm
 	 */
 	public void setFailLimit(int failLimit);
-	
+
 	/**
 	 * Sets the restart limit i.e. the maximal number of restart performed during the search algorithm.
 	 * The limit does not stop the search only the restart process.
 	 */
 	public void setRestartLimit(int restartLimit);
-	
-    /**
+
+	/**
 	 * @return true if only the first solution must be found
-     * @deprecated
+	 * @deprecated
 	 */
 	public boolean getFirstSolution();
 
 	/**
 	 * Sets wether only the first solution must be found
-     * @deprecated
+	 * @deprecated
 	 */
 	public void setFirstSolution(boolean firstSolution);
 
@@ -230,26 +230,26 @@ public interface Solver extends IMeasures, IPretty {
 	 */
 	public void setValSetSelector(ValSelector<SetVar> setValIntSelector);
 
-    /**
-     * @deprecated
-     */
-    @Deprecated
+	/**
+	 * @deprecated
+	 */
+	@Deprecated
 	public DisposableIterator<SConstraint> getIntConstraintIterator();
 
-    public DisposableIterator<SConstraint> getConstraintIterator();
-	
+	public DisposableIterator<SConstraint> getConstraintIterator();
+
 	public DisposableIterator<IntDomainVar> getIntVarIterator();
-	
+
 	public DisposableIterator<SetVar> getSetVarIterator();
 
 	public DisposableIterator<RealVar> getRealVarIterator();
-	
+
 	/**
 	 * Returns the propagation engine associated to the model
 	 */
 
 	public PropagationEngine getPropagationEngine();
-		
+
 	/**
 	 * set the optimization strategy:
 	 * - restart or not after each solution found
@@ -263,9 +263,9 @@ public interface Solver extends IMeasures, IPretty {
 	 * a boolean indicating if the strategy minize or maximize the objective function
 	 *
 	 * @param doMaximize
-     * @deprecated
+	 * @deprecated
 	 */
-    @Deprecated
+	@Deprecated
 	public void setDoMaximize(boolean doMaximize);
 
 	/**
@@ -274,48 +274,48 @@ public interface Solver extends IMeasures, IPretty {
 	 * @param objective variable to optimize
 	 */
 	public void setObjective(Var objective);
-	
+
 	public Var getObjective();
-	
+
 	public boolean isOptimizationSolver();
 
 	public Number getOptimumValue();
-	
+
 	/**
 	 * set the scheduling horizon.
-     * @param horizon scheduling horizon
-     * @deprecated
-     */
+	 * @param horizon scheduling horizon
+	 * @deprecated
+	 */
 	void setHorizon(int horizon);
-	
+
 	/**
 	 * get the scheduling horizon.
-     * @deprecated
+	 * @deprecated
 	 */
 	int getHorizon();
-	
+
 	/**
 	 * Get the makespan variable if any
-     * @return makespan variable
-     */
+	 * @return makespan variable
+	 */
 	IntDomainVar getMakespan();
 
 	/**
 	 * get the makespan value or +inf.
-     * @return makespan value
-     */
+	 * @return makespan value
+	 */
 	int getMakespanValue();
-	
+
 	/**
 	 * Checks if a limit has been encountered
-     * @return a boolean
-     */
+	 * @return a boolean
+	 */
 	public boolean isEncounteredLimit();
 
 	/**
 	 * If a limit has been encountered, return the involved limit
-     * @return the limit encountered
-     */
+	 * @return the limit encountered
+	 */
 	public AbstractGlobalSearchLimit getEncounteredLimit();
 
 	public AbstractGlobalSearchStrategy getSearchStrategy();
@@ -332,11 +332,11 @@ public interface Solver extends IMeasures, IPretty {
 	 * the model are numbered in sequence from 0 on)
 	 *
 	 * @param i index of the variable in the model
-     * @return number of integer variables
+	 * @return number of integer variables
 	 */
 
 	public IntDomainVar getIntVar(int i);
-	
+
 	IntDomainVar getIntVarQuick(int i);
 
 	public int getIntVarIndex(IntVar c);
@@ -363,7 +363,7 @@ public interface Solver extends IMeasures, IPretty {
 	 */
 	public Var getIntConstant(int i);
 
-    /**
+	/**
 	 * Returns the constant corresponding to the real i.
 	 *
 	 * @param i object (value) of the constant represented as an instantiated "variable"
@@ -371,32 +371,32 @@ public interface Solver extends IMeasures, IPretty {
 	 */
 	public Var getRealConstant(double i);
 
-    /**
-     * Returns the collection of integer constant values
-     * @return the set of values
-     */
-    public Collection<Integer> getIntConstantSet();
+	/**
+	 * Returns the collection of integer constant values
+	 * @return the set of values
+	 */
+	public Collection<Integer> getIntConstantSet();
 
-    /**
-     * Returns the collection of real constant values
-     * @return the set of values
-     */
-    public Collection<Double> getRealConstantSet();
+	/**
+	 * Returns the collection of real constant values
+	 * @return the set of values
+	 */
+	public Collection<Double> getRealConstantSet();
 
-    /**
+	/**
 	 * Returns a real variable.
 	 *
 	 * @param i index of the variable
 	 * @return the i-th real variable
 	 */
 	public RealVar getRealVar(int i);
-	
+
 	RealVar getRealVarQuick(int i);
 
 	/**
 	 * Returns the number of variables modelling real numbers.
-     * @return number of real variables
-     */
+	 * @return number of real variables
+	 */
 	public int getNbRealVars();
 
 	/**
@@ -406,13 +406,13 @@ public interface Solver extends IMeasures, IPretty {
 	 * @return the i-th real variable
 	 */
 	public SetVar getSetVar(int i);
-	
+
 	SetVar getSetVarQuick(int i);
 
 	/**
 	 * Returns the number of variables modelling real numbers.
-     * @return number of set variables
-     */
+	 * @return number of set variables
+	 */
 	public int getNbSetVars();
 
 
@@ -423,13 +423,13 @@ public interface Solver extends IMeasures, IPretty {
 	 * @return the i-th task variable
 	 */
 	public TaskVar getTaskVar(int i);
-	
+
 	TaskVar getTaskVarQuick(int i);
 
 	/**
 	 * Returns the number of variables modelling tasks.
-     * @return actual number of task vars
-     */
+	 * @return actual number of task vars
+	 */
 	public int getNbTaskVars();
 
 	/**
@@ -437,37 +437,66 @@ public interface Solver extends IMeasures, IPretty {
 	 * @return the number of boolean variables.
 	 */
 	public int getNbBooleanVars();
-	
-    /**
-     * Set the precision of the search for a real model.
-     * @param precision the new precision
-     * @deprecated
-     */
-    @Deprecated
-    public void setPrecision(double precision);
-    /**
-     * Get the precision of the search for a real model.
-     * @return the actual precision
-     * @deprecated
-     */
-    @Deprecated
-    public double getPrecision();
 
-    /**
-     * Set the minimal width reduction between two propagations.
-     * @param reduction new width reduction
-     * @deprecated
-     */
-    @Deprecated
-    public void setReduction(double reduction);
+	/**
+	 * get the list of decision integer variables.
+	 *
+	 * @return an unmodifiable list
+	 */
 
-    /**
-     * Get the minimal width reduction between two propagations.
-     * @return width reduction
-     * @deprecated
-     */
-    @Deprecated
-    public double getReduction();
+	IntDomainVar[] getIntDecisionVars();
+
+	/**
+	 * get the list of decision set variables.
+	 *
+	 * @return an unmodifiable list
+	 */
+	SetVar[] getSetDecisionVars();
+
+	/**
+	 * get the list of decision real variables.
+	 *
+	 * @return an unmodifiable list
+	 */
+	RealVar[] getRealDecisionVars();
+
+	/**
+	 * get the list of decision task variables.
+	 *
+	 * @return an unmodifiable list
+	 */
+	TaskVar[] getTaskDecisionVars();
+
+	/**
+	 * Set the precision of the search for a real model.
+	 * @param precision the new precision
+	 * @deprecated
+	 */
+	@Deprecated
+	public void setPrecision(double precision);
+	/**
+	 * Get the precision of the search for a real model.
+	 * @return the actual precision
+	 * @deprecated
+	 */
+	@Deprecated
+	public double getPrecision();
+
+	/**
+	 * Set the minimal width reduction between two propagations.
+	 * @param reduction new width reduction
+	 * @deprecated
+	 */
+	@Deprecated
+	public void setReduction(double reduction);
+
+	/**
+	 * Get the minimal width reduction between two propagations.
+	 * @return width reduction
+	 * @deprecated
+	 */
+	@Deprecated
+	public double getReduction();
 
 
 	/**
@@ -485,30 +514,30 @@ public interface Solver extends IMeasures, IPretty {
 
 	public Boolean minimize(boolean restart);
 
-    public Boolean maximize(Var obj, boolean restart);
+	public Boolean maximize(Var obj, boolean restart);
 
-    public Boolean minimize(Var obj, boolean restart);
+	public Boolean minimize(Var obj, boolean restart);
 
-    @Deprecated
-    public void setSolutionPoolCapacity(int capacity);
+	@Deprecated
+	public void setSolutionPoolCapacity(int capacity);
 
-    public void printRuntimeStatistics();
+	public void printRuntimeStatistics();
 
-    public String runtimeStatistics();
-    /**
+	public String runtimeStatistics();
+	/**
 	 * set the maximal search depth for logging statements
 	 * @see ChocoLogging
 	 */
-    @Deprecated
-    public void setLoggingMaxDepth(int loggingMaxDepth);
+	@Deprecated
+	public void setLoggingMaxDepth(int loggingMaxDepth);
 
-    /**
+	/**
 	 * get the maximal search depth for logging statements
 	 * @see ChocoLogging
 	 */
-    @Deprecated
-    public int getLoggingMaxDepth();
-    
+	@Deprecated
+	public int getLoggingMaxDepth();
+
 	/**
 	 * pushing one world on the stack
 	 */
@@ -523,52 +552,52 @@ public interface Solver extends IMeasures, IPretty {
 
 	/**
 	 * Backtracks to a given level in the search tree.
-     * @param n number of world to pop
-     */
+	 * @param n number of world to pop
+	 */
 	public void worldPopUntil(int n);
 
-    /**
-     * pushing the world during propagation
-     */
-    public void worldPushDuringPropagation();
+	/**
+	 * pushing the world during propagation
+	 */
+	public void worldPushDuringPropagation();
 
-    /**
-     * poping the world during propagation
-     */
-    public void worldPopDuringPropagation();
-
-
-    /**
-     * Record a solution by getting every variables' value.
-     *
-     * @return the recorded solution
-     */
-    public Solution recordSolution();
-    
-
-    /**
-     * Restore a solution by setting value to every variable
-     * @param sol solution to restore
-     */
-    public void restoreSolution(Solution sol);
+	/**
+	 * poping the world during propagation
+	 */
+	public void worldPopDuringPropagation();
 
 
-    /**
-     * Override the default configuration
-     * @param configuration the configuration
-     */
-    public void setConfiguration(Configuration configuration);
+	/**
+	 * Record a solution by getting every variables' value.
+	 *
+	 * @return the recorded solution
+	 */
+	public Solution recordSolution();
 
-    /**
-     * Return the current configuration of the solver
-     * @return the configuration
-     */
-    public Configuration getConfiguration();
 
-    /**
+	/**
+	 * Restore a solution by setting value to every variable
+	 * @param sol solution to restore
+	 */
+	public void restoreSolution(Solution sol);
+
+
+	/**
+	 * Override the default configuration
+	 * @param configuration the configuration
+	 */
+	//public void setConfiguration(Configuration configuration);
+
+	/**
+	 * Return the current configuration of the solver
+	 * @return the configuration
+	 */
+	public Configuration getConfiguration();
+
+	/**
 	 * Returns the memory environment used by the model.
-     * @return memory environment
-     */
+	 * @return memory environment
+	 */
 
 	public IEnvironment getEnvironment();
 
@@ -576,8 +605,8 @@ public interface Solver extends IMeasures, IPretty {
 
 	/**
 	 * returning the index of the current worl
-     * @return current world index
-     */
+	 * @return current world index
+	 */
 	public int getWorldIndex();
 
 	public void eraseConstraint(SConstraint c);
@@ -595,7 +624,7 @@ public interface Solver extends IMeasures, IPretty {
 	 *
 	 * @param i index of the constraint in the model
 	 * @deprecated
-     * @return the ith constraint
+	 * @return the ith constraint
 	 */
 
 	@Deprecated
@@ -653,15 +682,15 @@ public interface Solver extends IMeasures, IPretty {
 
 	public void read(Model m);
 
-    public void visualize(IVisu visu);
+	public void visualize(IVisu visu);
 
-    /**
-     * Return the type of eventQueues.
-     * @return the type of event queue
-     */
-    public int getEventQueueType();
+	/**
+	 * Return the type of eventQueues.
+	 * @return the type of event queue
+	 */
+	public int getEventQueueType();
 
-    public Boolean solve(boolean all);
+	public Boolean solve(boolean all);
 
 	public Boolean solve();
 
@@ -669,24 +698,24 @@ public interface Solver extends IMeasures, IPretty {
 
 	public Boolean isFeasible();
 
-    /**
-     * Solution checker.
-     * Usefull for debug and development.
-     * @return a boolean indicating wether the solution is correct or not.
-     */
-    public Boolean checkSolution();
+	/**
+	 * Solution checker.
+	 * Usefull for debug and development.
+	 * @return a boolean indicating wether the solution is correct or not.
+	 */
+	public Boolean checkSolution();
 
-    public Boolean nextSolution();
+	public Boolean nextSolution();
 
-    public <MV extends Variable, SV extends Var> SV _to(MV mv, SV sv);
+	public <MV extends Variable, SV extends Var> SV _to(MV mv, SV sv);
 
-    public <MV extends Variable, SV extends Var> SV[] _to(MV[] mv, SV[] sv);
+	public <MV extends Variable, SV extends Var> SV[] _to(MV[] mv, SV[] sv);
 
-    public <MV extends Variable, SV extends Var> SV getVar(MV v);
+	public <MV extends Variable, SV extends Var> SV getVar(MV v);
 
-    public <MV extends Variable, SV extends Var> SV[] getVar(Class<SV> clazz, MV[] mv);
+	public <MV extends Variable, SV extends Var> SV[] getVar(Class<SV> clazz, MV[] mv);
 
-    public IntDomainVar getVar(IntegerVariable v);
+	public IntDomainVar getVar(IntegerVariable v);
 
 	public IntDomainVar[] getVar(IntegerVariable...v);
 
@@ -698,46 +727,46 @@ public interface Solver extends IMeasures, IPretty {
 
 	public SetVar[] getVar(SetVariable... v);
 
-    public TaskVar getVar(TaskVariable v);
+	public TaskVar getVar(TaskVariable v);
 
-    public TaskVar[] getVar(TaskVariable... v);
+	public TaskVar[] getVar(TaskVariable... v);
 
-    public SConstraint getCstr(Constraint ic);
+	public SConstraint getCstr(Constraint ic);
 
 	public void setIlogGoal(Goal ilogGoal);
 
 
 	public IntDomainVar createIntVar(String name, int domainType, int min, int max);
 
-    public IntDomainVar createBooleanVar(String name);
+	public IntDomainVar createBooleanVar(String name);
 
 	public IntDomainVar createEnumIntVar(String name, int min, int max);
 
 	public IntDomainVar createBoundIntVar(String name, int min, int max);
 
-    public IntDomainVar createBinTreeIntVar(String name, int min, int max);
+	public IntDomainVar createBinTreeIntVar(String name, int min, int max);
 
-    public IntDomainVar createEnumIntVar(String name, int[] sortedValues);
+	public IntDomainVar createEnumIntVar(String name, int[] sortedValues);
 
-    public IntDomainVar createBinTreeIntVar(String name, int[] sortedValues);
+	public IntDomainVar createBinTreeIntVar(String name, int[] sortedValues);
 
-    public RealVar createRealVal(String name, double min, double max);
+	public RealVar createRealVal(String name, double min, double max);
 
 	public RealConstant createRealIntervalConstant(double a, double b);
 
 	/**
 	 * Makes a constant interval from a double d ([d,d]).
-     * @param d double
-     * @return constant interval
-     */
+	 * @param d double
+	 * @return constant interval
+	 */
 	public RealConstant cst(double d);
 
 	/**
 	 * Makes a constant interval between two doubles [a,b].
-     * @param a lower bound
-     * @param b upper bound
-     * @return constant interval
-     */
+	 * @param a lower bound
+	 * @param b upper bound
+	 * @return constant interval
+	 */
 	public RealConstant cst(double a, double b);
 
 
@@ -753,7 +782,7 @@ public interface Solver extends IMeasures, IPretty {
 
 	public RealConstant createRealConstant(String name, double val);
 
-    @Deprecated
+	@Deprecated
 	public void setCardReasoning(boolean creas);
 
 	public LargeRelation makeLargeRelation(int[] min, int[] max, List<int[]> tuples, boolean feas);

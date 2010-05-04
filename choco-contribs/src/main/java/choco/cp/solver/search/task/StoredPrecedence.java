@@ -48,5 +48,12 @@ public final class StoredPrecedence implements IPrecedence {
 	public String toString() {
 		return "("+t1.getName()+","+t2.getName()+")";
 	}
+
+	@Override
+	public String pretty() {
+		return toString();
+	}
+	
+	
 	
 }

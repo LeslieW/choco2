@@ -34,11 +34,10 @@ public abstract class AbstractEnvironment implements IEnvironment {
     /**
      * The current world index.
      */
-    private static long TIMESTAMP = 0;//System.nanoTime();
 
     protected int currentWorld = 0;
 
-    protected long timestamp = TIMESTAMP++;
+  
 
     private static final int SIZE = 128;
 
@@ -55,16 +54,7 @@ public abstract class AbstractEnvironment implements IEnvironment {
         return currentWorld;
     }
 
-    /**
-     * Returns the time stamp of the world (only change during worldPush.
-     *
-     * @return
-     */
-    @Override
-    public long getWorldTimeStamp() {
-        return timestamp;
-    }
-
+ 
     public final void createSharedBipartiteSet(int size){
         currentBitSet = makeBipartiteSet(size);
         nextOffset = -1;

@@ -34,11 +34,7 @@ public class ShavingTools {
 	public ShavingTools(Solver solver, IntDomainVar[] vars) {
 		super();
 		this.solver = solver;
-		this.vars = vars;
-	}
-
-	public ShavingTools(Solver solver) {
-		this(solver, buildVars(solver));
+		this.vars = checkAbsentVar(vars, solver.getObjective() );
 	}
 
 	public final boolean isBackwardPropagation() {
@@ -65,31 +61,20 @@ public class ShavingTools {
 		this.detectLuckySolution = detectLuckySolution;
 	}
 
-	private static int findObjective(Solver s) {
-		final int n = s.getNbIntVars();
-		final Var obj = s.getObjective();
-		for (int i = 0; i < n; i++) {
-			if( s.getIntVarQuick(i) == obj) return i;
-		}
-		return -1;
-	}
-
-	private static IntDomainVar[] buildVars(Solver solver) {
-		if(solver.getObjective() != null && solver.getObjective() instanceof IntDomainVar) {
-			int idx = findObjective(solver);
+	private static IntDomainVar[] checkAbsentVar(IntDomainVar[] vars, Var var) {
+		if(var != null && var instanceof IntDomainVar) {
+			int idx = -1;
+			for (int i = 0; i < vars.length; i++) {
+				if(vars[i] == var) {idx = i; break;}
+			}
 			if(idx >= 0) {
-				final int n = solver.getNbIntVars();
-				final IntDomainVar[] vars = new IntDomainVar[n - 1];
-				for (int i = 0; i < idx; i++) {
-					vars[i] = solver.getIntVarQuick(i);
-				}
-				for (int i = idx + 1; i < n; i++) {
-					vars[i - 1] = solver.getIntVarQuick(i);
-				}
+				final IntDomainVar[] newVars = new IntDomainVar[vars.length - 1];
+				System.arraycopy(vars, 0, newVars, 0, idx);
+				System.arraycopy(vars, idx + 1, newVars, idx, vars.length - idx - 1);
 				return vars;
 			}
 		}
-		return VariableUtils.getIntVars(solver);
+		return vars;
 	}
 
 

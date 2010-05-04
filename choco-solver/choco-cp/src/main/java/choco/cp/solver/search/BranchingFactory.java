@@ -50,7 +50,7 @@ public final class BranchingFactory {
 	}
 
 	public static AssignVar minDomMinVal(Solver s) {
-		return minDomMinVal(s, getIntVars(s));
+		return minDomMinVal(s, s.getIntDecisionVars());
 	}
 
     //*************************************************************************//
@@ -60,7 +60,7 @@ public final class BranchingFactory {
 	}
 
 	public static AssignVar minDomIncDom(Solver s) {
-		return minDomMinVal(s, getIntVars(s));
+		return minDomMinVal(s, s.getIntDecisionVars());
 	}
 
 	//*************************************************************************//
@@ -76,7 +76,7 @@ public final class BranchingFactory {
 	//*************************************************************************//
 
 	public static AssignOrForbidIntVarVal randomIntBinSearch(Solver solver, long seed) {
-		return randomBinSearch(solver, getIntVars(solver), seed);
+		return randomBinSearch(solver, solver.getIntDecisionVars(), seed);
 	}
 
 	public static AssignOrForbidIntVarVal randomBinSearch(Solver solver, IntDomainVar[] vars, long seed) {
@@ -86,7 +86,7 @@ public final class BranchingFactory {
 	//*************************************************************************//
 
 	public static AssignVar randomIntSearch(Solver solver, long seed) {
-		return randomSearch(solver, getIntVars(solver), seed);
+		return randomSearch(solver, solver.getIntDecisionVars(), seed);
 	}
 
 	public static AssignVar randomSearch(Solver solver, IntDomainVar[] vars, long seed) {
@@ -96,7 +96,7 @@ public final class BranchingFactory {
 	//*************************************************************************//
 
 	public static AssignSetVar randomSetSearch(Solver solver, long seed) {
-		return randomSearch(solver, getSetVars(solver), seed);
+		return randomSearch(solver, solver.getSetDecisionVars(), seed);
 	}
 
 	public static AssignSetVar randomSearch(Solver solver, SetVar[] vars, long seed) {
@@ -111,7 +111,7 @@ public final class BranchingFactory {
 	}
 
 	public static AssignOrForbidIntVarVal domDegBin(Solver solver, ValSelector valSel) {
-		return domDegBin(solver, getIntVars(solver), valSel);
+		return domDegBin(solver, solver.getIntDecisionVars(), valSel);
 	}
 
 	public static AssignOrForbidIntVarVal domDegBin(Solver solver, IntDomainVar[] vars, ValSelector valSel) {
@@ -128,7 +128,7 @@ public final class BranchingFactory {
 	}
 
 	public static AssignVar domDeg(Solver solver, ValIterator valSel) {
-		return domDeg(solver,getIntVars(solver), valSel);
+		return domDeg(solver,solver.getIntDecisionVars(), valSel);
 	}
 
 	public static AssignVar domDeg(Solver solver, IntDomainVar[] vars, ValIterator valSel) {
@@ -143,7 +143,7 @@ public final class BranchingFactory {
 
 
 	public static AssignVar domDeg(Solver solver, ValSelector valSel) {
-		return domDeg(solver,getIntVars(solver), valSel);
+		return domDeg(solver,solver.getIntDecisionVars(), valSel);
 	}
 
 	public static AssignVar domDeg(Solver solver, IntDomainVar[] vars, ValSelector valSel) {
@@ -162,7 +162,7 @@ public final class BranchingFactory {
 	}
 
 	public static AssignOrForbidIntVarVal domDDegBin(Solver solver, ValSelector valSel) {
-		return domDDegBin(solver, getIntVars(solver), valSel);
+		return domDDegBin(solver, solver.getIntDecisionVars(), valSel);
 	}
 
 	public static AssignOrForbidIntVarVal domDDegBin(Solver solver, IntDomainVar[] vars, ValSelector valSel) {
@@ -179,7 +179,7 @@ public final class BranchingFactory {
 	}
 
 	public static AssignVar domDDeg(Solver solver, ValIterator valSel) {
-		return domDDeg(solver,getIntVars(solver), valSel);
+		return domDDeg(solver,solver.getIntDecisionVars(), valSel);
 	}
 
 	public static AssignVar domDDeg(Solver solver, IntDomainVar[] vars, ValIterator valSel) {
@@ -194,7 +194,7 @@ public final class BranchingFactory {
 
 
 	public static AssignVar domDDeg(Solver solver, ValSelector valSel) {
-		return domDDeg(solver,getIntVars(solver), valSel);
+		return domDDeg(solver,solver.getIntDecisionVars(), valSel);
 	}
 
 	public static AssignVar domDDeg(Solver solver, IntDomainVar[] vars, ValSelector valSel) {
@@ -215,7 +215,7 @@ public final class BranchingFactory {
 	}
 
 	public static AssignOrForbidIntVarVal domWDegBin(Solver solver, ValSelector valSel) {
-		return domWDegBin(solver, getIntVars(solver), valSel);
+		return domWDegBin(solver, solver.getIntDecisionVars(), valSel);
 	}
 
 	public static AssignOrForbidIntVarVal domWDegBin(Solver solver, IntDomainVar[] vars, ValSelector valSel) {
@@ -233,7 +233,7 @@ public final class BranchingFactory {
 	}
 
 	public static AssignVar domWDeg(Solver solver, ValIterator valSel) {
-		return domWDeg(solver, getIntVars(solver), valSel);
+		return domWDeg(solver, solver.getIntDecisionVars(), valSel);
 	}
 
 	public static AssignVar domWDeg(Solver solver, IntDomainVar[] vars, ValIterator valSel) {
@@ -246,7 +246,7 @@ public final class BranchingFactory {
 	//*************************************************************************//
 
 	public static AssignVar domWDeg(Solver solver, ValSelector valSel) {
-		return domWDeg(solver,getIntVars(solver) , valSel);
+		return domWDeg(solver,solver.getIntDecisionVars() , valSel);
 	}
 
 	public static AssignVar domWDeg(Solver solver, IntDomainVar[] vars, ValSelector valSel) {
@@ -263,11 +263,11 @@ public final class BranchingFactory {
 
 
 	public static DomOverWDegBinBranchingNew incDomWDegBin(Solver solver) {
-		return incDomWDegBin(solver, getIntVars(solver), new MinVal());
+		return incDomWDegBin(solver, solver.getIntDecisionVars(), new MinVal());
 	}
 
 	public static DomOverWDegBinBranchingNew incDomWDegBin(Solver solver, ValSelector valSel) {
-		return incDomWDegBin(solver, getIntVars(solver), valSel);
+		return incDomWDegBin(solver, solver.getIntDecisionVars(), valSel);
 	}
 
 	public static DomOverWDegBinBranchingNew incDomWDegBin(Solver solver, IntDomainVar[] vars, ValSelector valSel) {
@@ -285,7 +285,7 @@ public final class BranchingFactory {
 	}
 
 	public static DomOverWDegBranchingNew incDomWDeg(Solver solver, ValIterator valSel) {
-		return incDomWDeg(solver, getIntVars(solver), valSel);
+		return incDomWDeg(solver, solver.getIntDecisionVars(), valSel);
 	}
 
 	public static DomOverWDegBranchingNew incDomWDeg(Solver solver, IntDomainVar[] vars, ValIterator valSel) {

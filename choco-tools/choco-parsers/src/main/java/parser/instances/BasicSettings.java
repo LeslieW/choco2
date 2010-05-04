@@ -1,145 +1,110 @@
 package parser.instances;
 
-import static choco.kernel.common.util.tools.PropertyUtils.TOOLS_PREFIX;
-import static choco.kernel.common.util.tools.PropertyUtils.readBoolean;
-import static choco.kernel.common.util.tools.PropertyUtils.readInteger;
+import java.io.File;
 
-import java.util.Properties;
-import java.util.logging.Logger;
-
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.solver.Solver;
+import choco.kernel.solver.Configuration;
+import choco.kernel.solver.search.limit.Limit;
 
 
-public class BasicSettings {
+public class BasicSettings extends Configuration {
 
-	public final static Logger LOGGER= ChocoLogging.getMainLogger();
+	private static final long serialVersionUID = 7557235241412627008L;
 
 	/**
-	 * time limit of the solver in seconds
+	 * <br/><b>Goal</b>: time limit of a preprocessing step.
+	 * <br/><b>Type</b>: int
+	 * <br/><b>Default value</b>: 15
 	 */
-	private int timeLimit = 24*3600; //24h
+	@Default(value = "15")
+	public static final String TIME_LIMIT_PREPROCESSING = "tools.preprocessing.limit.time.value";
 
 	/**
-	 * time limit of the preprocessor in seconds
+	 * <br/><b>Goal</b>: indicates that the constraint model use light propagation algorithms (for example, it decomposes some global constraints).
+	 * <br/><b>Type</b>: boolean
+	 * <br/><b>Default value</b>: false
 	 */
-	private int timeLimitPP = 24*3600; //24h
+	@Default(value = VALUE_FALSE)
+	public static final String LIGHT_MODEL = "tools.cp.model.light";
+
+	/**
+	 * <br/><b>Goal</b>: indicates if selection is random in value-selection heuristics.
+	 * <br/><b>Type</b>: boolean
+	 * <br/><b>Default value</b>: false
+	 */
+	@Default(value = VALUE_FALSE)
+	public static final String RANDOM_VALUE = "tools.random.value";
+
+	/**
+	 * <br/><b>Goal</b>: indicates if the ties are broken randomly in variable-selection or value-selection heuristics.
+	 * <br/><b>Type</b>: boolean
+	 * <br/><b>Default value</b>: false
+	 */
+	@Default(value = VALUE_FALSE)
+	public static final String RANDOM_TIE_BREAKING = "tools.random.break_tie";
+
+	/**
+	 * <br/><b>Goal</b>: indicates that the constraint programming step is cancelled (only preprocessing step).
+	 * <br/><b>Type</b>: boolean
+	 * <br/><b>Default value</b>: false
+	 */
+	@Default(value = VALUE_FALSE)
+	public static final String CANCEL_CP_SOLVE= "tools.cp.cancel";
 
 
 	/**
-	 * indicates that the model use light propagation algorithms (for example, it decomposes some glabla constraints).
+	 * <br/><b>Goal</b>: indicates that the best solution is reported.
+	 * <br/><b>Type</b>: boolean
+	 * <br/><b>Default value</b>: false
 	 */
-	public boolean lightModel = false;
+	@Default(value = VALUE_FALSE)
+	public static final String SOLUTION_REPORT = "tools.solution.report";
 
 	/**
-	 * indicates if selection is random in value-selection heuristics.
+	 * <br/><b>Goal</b>: indicates that the best solution is exported.
+	 * <br/><b>Type</b>: boolean
+	 * <br/><b>Default value</b>: false
 	 */
-	public boolean randomValue = false;
+	@Default(value = VALUE_FALSE)
+	public static final String SOLUTION_EXPORT = "tools.solution.export";
 
+
+	private static final String TMPDIR_PROPPERTY = "java.io.tmpdir";
 	/**
-	 * indicates if the ties are broken randomly in variable-selection or value-selection heuristics.
+	 * <br/><b>Goal</b>: indicates that the best solution is exported.
+	 * <br/><b>Type</b>: File
+	 * <br/><b>Default value</b>: TMP (codename of property java.io.tmpdir"
 	 */
-	public boolean randomBreakTies = true;
-
+	@Default(value = TMPDIR_PROPPERTY)
+	public static final String OUTPUT_DIRECTORY = "tools.output.directory";
 
 
 	public BasicSettings() {
 		super();
 	}
 
-
-
-	protected BasicSettings(BasicSettings set) {
-		super();
-		this.timeLimit = set.timeLimit;
-		this.timeLimitPP = set.timeLimitPP;
-		this.randomValue = set.randomValue;
-		this.randomBreakTies = set.randomBreakTies;
-		this.lightModel = set.lightModel;
+	public static File getOutputDirectory(Configuration conf) {
+		final String path = conf.readString(OUTPUT_DIRECTORY);
+		return new File( path.equals(TMPDIR_PROPPERTY) ?
+				System.getProperty(TMPDIR_PROPPERTY) : path 
+		);
 	}
-
-
-
-
-	public final boolean isRandomValue() {
-		return randomValue;
+	public static void updateTimeLimit(Configuration conf, long delta) {
+		final Limit lim = conf.readEnum(Configuration.SEARCH_LIMIT, Limit.class);
+		if( Limit.TIME.equals(lim)) {
+			final int limVal = (int) (conf.readInt(SEARCH_LIMIT_BOUND) + delta);
+			if(limVal > 0) conf.putInt(SEARCH_LIMIT_BOUND, limVal);
+			else conf.putInt(SEARCH_LIMIT_BOUND, 0);
+		}
 	}
+	
 
-
-
-	public final void setRandomValue(boolean randomValue) {
-		this.randomValue = randomValue;
+	public static String getInstModelMsg(Configuration conf) {
+		final StringBuilder b = new StringBuilder();
+		if( conf.readBoolean(LIGHT_MODEL)) b.append("LIGHT_MODEL    ");
+		if( conf.readBoolean(RANDOM_VALUE)) b.append("RAND_VAL    ");
+		if( conf.readBoolean(RANDOM_TIE_BREAKING)) b.append("RAND_TIE_BREAKING");
+		return new String(b);
 	}
-
-
-
-	public final boolean isRandomBreakTies() {
-		return randomBreakTies;
-	}
-
-
-	public final void setRandomBreakTies(boolean randomBreakTies) {
-		this.randomBreakTies = randomBreakTies;
-	}
-
-
-	public final boolean isLightModel() {
-		return lightModel;
-	}
-
-	public final void setLightModel(boolean lightModel) {
-		this.lightModel = lightModel;
-	}
-
-	public final int getTimeLimit() {
-		return timeLimit;
-	}
-
-
-	/**
-	 * set a positive time limit for the heuristics.
-	 */
-	public final void setTimeLimit(int timeLimit) {
-		this.timeLimit = timeLimit;
-	}
-
-	public final int getTimeLimitPP() {
-		return timeLimitPP;
-	}
-
-
-	/**
-	 * set a positive time limit for the heuristics.
-	 */
-	public  final void setTimeLimitPP(int timeLimitPP) {
-		this.timeLimitPP = timeLimitPP;
-	}
-
-
-	@Override
-	public String toString() {
-		StringBuilder b = new StringBuilder();
-		if(timeLimit > 0) b.append(timeLimit).append(" TIMELIMIT");
-		if( lightModel) b.append("    LIGHT_MODEL");
-		return b.toString();
-	}
-
-
-
-	public final void applyTimeLimit(Solver s) {
-		if( timeLimit > 0) s.setTimeLimit(timeLimit * 1000);
-	}
-
-
-	public void configure(Properties properties) {
-		timeLimit = readInteger(properties, TOOLS_PREFIX+"timelimit.cp", timeLimit);
-		timeLimitPP = readInteger(properties, TOOLS_PREFIX+"timelimit.pp", timeLimit);
-		lightModel = readBoolean(properties, TOOLS_PREFIX+"lightmodel", lightModel);
-		randomValue = readBoolean(properties, TOOLS_PREFIX+"random.value", randomValue);
-		randomBreakTies= readBoolean(properties, TOOLS_PREFIX+"random.breaktie", randomBreakTies);
-	}
-
-
 
 
 }

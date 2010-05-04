@@ -1,15 +1,15 @@
 package parser.instances;
 
-import choco.cp.solver.preprocessor.PreProcessCPSolver;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.model.Model;
-import choco.kernel.solver.Solver;
+import java.io.File;
+
 import parser.absconparseur.tools.UnsupportedConstraintException;
 import parser.flatzinc.ast.SolveGoal;
 import parser.flatzinc.parser.FZNParser;
-import parser.instances.fcsp.FcspSettings;
-
-import java.io.File;
+import choco.cp.solver.preprocessor.PreProcessCPSolver;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.model.Model;
+import choco.kernel.solver.Configuration;
+import choco.kernel.solver.Solver;
 
 
 final class FznParserWrapper implements InstanceFileParser {
@@ -55,13 +55,10 @@ public final class FcspModel extends AbstractInstanceModel {
 
     private boolean searchSet;
 
-    private final FcspSettings settings;
-
     private SolveGoal solveGoal;
 
-    public FcspModel(FcspSettings settings) {
-        super(new FznParserWrapper());
-        this.settings = settings;
+    public FcspModel(Configuration settings) {
+        super(new FznParserWrapper(), settings);
     }
 
     /**
@@ -90,10 +87,9 @@ public final class FcspModel extends AbstractInstanceModel {
      */
     @Override
     public Solver buildSolver() {
-        PreProcessCPSolver s = new PreProcessCPSolver();
+        PreProcessCPSolver s = new PreProcessCPSolver(defaultConf);
 		s.read(model);
-        settings.applyTimeLimit(s);
-        searchSet = solveGoal.defineGoal(s);
+		searchSet = solveGoal.defineGoal(s);
 		return s;
     }
 

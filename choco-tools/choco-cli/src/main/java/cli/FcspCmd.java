@@ -1,34 +1,28 @@
 package cli;
 
-import org.kohsuke.args4j.CmdLineException;
-import parser.instances.AbstractInstanceModel;
-import parser.instances.FcspModel;
-import parser.instances.fcsp.FcspSettings;
-
 import java.io.File;
+
+import org.kohsuke.args4j.CmdLineException;
+
+import parser.instances.AbstractInstanceModel;
+import parser.instances.BasicSettings;
+import parser.instances.FcspModel;
 
 public class FcspCmd extends AbstractBenchmarkCmd {
 
 	public FcspCmd() {
-		super("/fcsp.properties");
-        settings = new FcspSettings();
+		super(new BasicSettings());
 	}
 
-	FcspSettings getFcspSettings() {
-		return (FcspSettings) settings;
-	}
-
+	
 	@Override
 	protected void checkData() throws CmdLineException {
 		super.checkData();
-		//overrides properties
-		final FcspSettings set = getFcspSettings();
 	}
-
 
 	@Override
 	protected AbstractInstanceModel createInstance() {
-		return new FcspModel( getFcspSettings());
+		return new FcspModel(settings);
 	}
 
 

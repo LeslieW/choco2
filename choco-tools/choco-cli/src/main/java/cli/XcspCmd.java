@@ -19,8 +19,7 @@ public class XcspCmd extends AbstractBenchmarkCmd {
 
 
 	public XcspCmd() {
-		super("/xcsp.properties");
-		settings = new XcspSettings();
+		super(new XcspSettings());
 	}
 
 	XcspSettings getXcspSettings() {
