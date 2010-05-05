@@ -2,14 +2,13 @@ package choco.cp.solver.constraints.global.automata.fast_multicostregular.exampl
 
 import choco.Options;
 import choco.cp.model.CPModel;
-import choco.cp.model.managers.constraints.global.SoftMultiCostRegularManager;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.tools.ArrayUtils;
-import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.constraints.automaton.penalty.IsoPenaltyFunction;
+import choco.kernel.model.constraints.automaton.penalty.LinearPenaltyFunction;
 import choco.kernel.model.constraints.automaton.penalty.PenaltyFunction;
 import choco.kernel.model.variables.integer.IntegerVariable;
 
@@ -97,7 +96,7 @@ public static void main2(String[] args)
 
 public static void main1(String[] args)
 {
-        int n  = 28;
+        int n  = 5;
         int c = 3;
         CPModel m = new CPModel();
         CPSolver s = new CPSolver();
@@ -105,16 +104,16 @@ public static void main1(String[] args)
 
 
         IntegerVariable[] x = makeIntVarArray("x",n,0,2);
-        IntegerVariable[] y = makeIntVarArray("y",c,13,13);
-        IntegerVariable[] z = makeIntVarArray("z",c,13,13,Options.V_NO_DECISION);
+        IntegerVariable[] y = makeIntVarArray("y",c,0,13);
+        IntegerVariable[] z = makeIntVarArray("z",c,0,n*10,Options.V_NO_DECISION);
 
-        IntegerVariable Z = makeIntVar("Z",39,39,"cp:bound",Options.V_NO_DECISION);
+        IntegerVariable Z = makeIntVar("Z",0,390,"cp:bound");
 
         PenaltyFunction[] f = new PenaltyFunction[z.length];
-        for (int i = 0; i < z.length ; i++)
-        {
-                f[i] = new IsoPenaltyFunction();
-        }
+        f[0] = new LinearPenaltyFunction(0,2,10,n,2,10);
+        f[1] = new LinearPenaltyFunction(0,2,10,n,2,10);
+        f[2] = new IsoPenaltyFunction(5);
+
 
         FiniteAutomaton fa = new FiniteAutomaton();
         int start = fa.addState();
@@ -136,7 +135,7 @@ public static void main1(String[] args)
                 cst[i][0][2][1] = cst[i][1][2][1] = 1;   // Apres une activitŽ => Žtat 1 => on paye 1.
         }
 
-        Constraint cons = new ComponentConstraint(SoftMultiCostRegularManager.class, new Object[]{x.length,y.length,f,fa,cst}, ArrayUtils.append(x,y,z,new IntegerVariable[]{Z}));
+        Constraint cons = softMultiCostRegular(x,y,z,Z,f,fa,cst);
 
         m.addConstraint(cons);
 
@@ -153,6 +152,7 @@ public static void main1(String[] args)
                         sol++;
                         System.out.println(s.isFeasible());
                         System.out.println(s.pretty());
+                        s.postCut(s.lt(s.getVar(Z),s.getVar(Z).getVal()));
 
                 } while(s.nextSolution());
         }

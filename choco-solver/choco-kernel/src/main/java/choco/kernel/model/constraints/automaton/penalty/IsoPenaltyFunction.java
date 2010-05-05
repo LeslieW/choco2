@@ -8,6 +8,19 @@ package choco.kernel.model.constraints.automaton.penalty;
  */
 public class IsoPenaltyFunction extends AbstractPenaltyFunction
 {
+int factor;
+
+
+public IsoPenaltyFunction()
+{
+        this(1);
+}
+
+public IsoPenaltyFunction(int factor)
+{
+        this.factor = factor;
+}
+
 @Override
 public final int getPenalty(int value)
 {
@@ -15,6 +28,11 @@ public final int getPenalty(int value)
                 return 0;
         else
                 return 10;  */
-        return value;
+        return value*factor;
+}
+
+public final int getFactor()
+{
+        return factor;
 }
 }
