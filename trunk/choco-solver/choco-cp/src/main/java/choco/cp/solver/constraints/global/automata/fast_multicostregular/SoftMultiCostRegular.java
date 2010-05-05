@@ -7,6 +7,8 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
+import choco.kernel.model.constraints.automaton.penalty.IsoPenaltyFunction;
+import choco.kernel.model.constraints.automaton.penalty.NullPenaltyFunction;
 import choco.kernel.model.constraints.automaton.penalty.PenaltyFunction;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.global.automata.fast_multicostregular.algo.SoftPathFinder;
@@ -19,6 +21,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.TIntHashSet;
 import gnu.trove.TIntIterator;
 import gnu.trove.TIntStack;
+import gnu.trove.TObjectIntHashMap;
 import org.jgrapht.graph.DirectedMultigraph;
 
 import java.util.ArrayList;
@@ -68,6 +71,26 @@ SoftStoredMultiValuedDirectedMultiGraph graph;
 /** Class used to compute path in layered graph */
 SoftPathFinder path;
 
+/**
+ * Map to retrieve rapidly the index of a given variable.
+ */
+public final TObjectIntHashMap<IntDomainVar> map;
+
+/**
+ * The last computed Shortest Path
+ */
+public int[] lastSp;
+public double lastSpValue;
+
+
+/**
+ * The last computed Longest Path
+ */
+public int[] lastLp;
+public double lastLpValue;
+
+
+
 final static int U0 = 10;
 int lastWorld = -1;
 int lastNbOfBacktracks = -1;
@@ -113,6 +136,11 @@ public SoftMultiCostRegular(IntDomainVar[] x, IntDomainVar[] y, IntDomainVar[] z
         this.yOff = x.length;
         this.zOff = yOff+y.length;
         this.Zidx = zOff+z.length;
+        this.map = new TObjectIntHashMap<IntDomainVar>();
+        for (int i = 0 ; i < x.length ; i++)
+        {
+                this.map.put(x[i],i);
+        }
 
 
 }
@@ -339,6 +367,7 @@ public boolean updateViolationLB() throws ContradictionException
         double step;
         int k=0;
         int[] sp;
+        double value;
         boolean modif;
 
 
@@ -350,8 +379,9 @@ public boolean updateViolationLB() throws ContradictionException
                 double ghat = ghatSP(lambda);
                 double gline = glineSP(lambda,ghat);
                 sp = path.getShortestPath();
+                value = ghat+gline;
 
-                modbound |= Z.updateInf((int) Math.ceil(Math.round((ghat+gline)*PRECISION)/PRECISION),this,true);
+                modbound |= Z.updateInf((int) Math.ceil(Math.round((value)*PRECISION)/PRECISION),this,true);
 
 
                 step = U0 *Math.pow(0.7,k) ;
@@ -373,13 +403,15 @@ public boolean updateViolationLB() throws ContradictionException
 
         } while (k++ < 10 && modif);
 
+        this.lastSp = sp;
+        this.lastSpValue = value;
         return modbound;
 
 }
 
 private double glineSP(double[] lambda, double constante) throws ContradictionException
 {
-       path.computeShortestPath(toRemove,Z.getSup()-constante,lambda);
+        path.computeShortestPath(toRemove,Z.getSup()-constante,lambda);
 
         return path.getShortestPathValue();
 }
@@ -403,7 +435,8 @@ public boolean updateViolationUB() throws ContradictionException
         //Arrays.fill(lambda,0);
         double step;
         int k=0;
-        int[] sp;
+        int[] lp;
+        double value;
         boolean modif;
 
 
@@ -415,10 +448,11 @@ public boolean updateViolationUB() throws ContradictionException
                 modif = false;
                 double ghat = ghatLP(lambda);
                 double gline = glineLP(lambda,ghat);
-                sp = path.getLongestPath();
+                value = ghat+gline;
+                lp = path.getLongestPath();
 
 
-                modBound |= Z.updateSup((int) Math.floor( Math.round((ghat+gline)*PRECISION)/PRECISION),this,true);
+                modBound |= Z.updateSup((int) Math.floor( Math.round((value)*PRECISION)/PRECISION),this,true);
 
                 step = U0 *Math.pow(0.7,k) ;
 
@@ -427,7 +461,7 @@ public boolean updateViolationUB() throws ContradictionException
                         double dimcost = 0.0;
                         for (int e = 0 ; e < x.length ; e++)
                         {
-                                dimcost+= graph.GArcs.originalCost[sp[e]][i];
+                                dimcost+= graph.GArcs.originalCost[lp[e]][i];
                         }
                         double move = step*(dimcost - y[i].getInf());
                         if (Math.abs(move) >= Constant.MCR_DECIMAL_PREC)
@@ -438,6 +472,8 @@ public boolean updateViolationUB() throws ContradictionException
                 }
 
         } while (k++ < 10 && modif);
+        this.lastLp = lp;
+        this.lastLpValue = value;
         return modBound;
 
 }
@@ -465,16 +501,36 @@ public void makeTableConstraints() throws ContradictionException
         tableConstraints  = new AbstractIntSConstraint[y.length];
         for (int i  = 0 ; i < tableConstraints.length ; i++)
         {
-                List<int[]> tuples = new ArrayList<int[]>();
-                DisposableIntIterator it = y[i].getDomain().getIterator();
-                while (it.hasNext())
+                AbstractIntSConstraint table;
+                if (y[i].getDomain().isEnumerated())
                 {
-                        int val = it.next();
-                        int other = f[i].getPenalty(val);
-                        tuples.add(new int[]{val,other});
+                        List<int[]> tuples = new ArrayList<int[]>();
+                        DisposableIntIterator it = y[i].getDomain().getIterator();
+                        while (it.hasNext())
+                        {
+                                int val = it.next();
+                                int other = f[i].getPenalty(val);
+                                if (z[i].canBeInstantiatedTo(other))
+                                        tuples.add(new int[]{val,other});
+                        }
+                        it.dispose();
+                        table = (AbstractIntSConstraint)solver.feasiblePairAC(y[i],z[i],tuples,32);
                 }
-                it.dispose();
-                AbstractIntSConstraint table = (AbstractIntSConstraint)solver.feasiblePairAC(y[i],z[i],tuples,32);
+                else if (f[i] instanceof IsoPenaltyFunction)
+                {
+                        int fact = ((IsoPenaltyFunction)f[i]).getFactor();
+                        table = (AbstractIntSConstraint) solver.eq(solver.mult(fact,y[i]),z[i]);
+                }
+                else if (f[i] instanceof NullPenaltyFunction)
+                {
+                        table = (AbstractIntSConstraint) solver.eq(z[i],z[i]);
+                }
+                else
+                {
+                        LOGGER.severe("Cannot create table constraint! domain is too big.");
+                        throw new UnsupportedOperationException();
+                }
+
                 table.awake();
                 tableConstraints[i] = table;
 
@@ -515,7 +571,7 @@ protected void checkWorld() throws ContradictionException
 public void awake() throws ContradictionException
 {
         makeTableConstraints();
-        makeRedondantSumConstraint();
+      //  makeRedondantSumConstraint();
         //  solver.post(solver.eq(x[0],0));
         //  solver.post(solver.eq(x[2],0));
 
@@ -760,7 +816,7 @@ public boolean check(int[] word)
                 }
                 else if (z[i].getVal() != f[i].getPenalty(gcost[i]))
                 {
-                        LOGGER.severe("penalty: "+f[i].getPenalty(gcost[i])+" != z:"+z[i].getVal());
+                        LOGGER.severe("penalty_"+i+": "+f[i].getPenalty(gcost[i])+" != z:"+z[i].getVal());
                         return false;
                 }
 
@@ -774,6 +830,22 @@ public boolean isSatisfied(int[] tuple)
         int[] tmp = new int[x.length];
         System.arraycopy(tuple,0,tmp,0,tmp.length);
         return check(tmp);
+}
+
+
+public final boolean needPropagation()
+{
+        int currentworld = solver.getEnvironment().getWorldIndex();
+        int currentbt = solver.getBackTrackCount();
+        int currentrestart = solver.getRestartCount();
+
+        return (currentworld < lastWorld || currentbt != lastNbOfBacktracks || currentrestart > lastNbOfRestarts);
+
+}
+
+public SoftStoredMultiValuedDirectedMultiGraph getGraph()
+{
+        return this.graph;
 }
 
 

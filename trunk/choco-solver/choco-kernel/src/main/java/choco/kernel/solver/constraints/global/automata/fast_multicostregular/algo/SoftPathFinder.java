@@ -108,7 +108,7 @@ public void computeLongestPath(TIntStack removed, double lb, double[] u) throws 
 
                         }
                 }
-                if (!update) this.graph.constraint.fail();
+                if (!update) graph.constraint.fail();
         }
         for (int i = nbLayer -1 ; i >= 0 ; i--)
         {
