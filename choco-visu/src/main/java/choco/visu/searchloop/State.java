@@ -31,6 +31,6 @@ package choco.visu.searchloop;
 
 public enum State {
 
-    SOLUTION, DOWN, UP, END, RESTART, NONE;
+    SOLUTION, DOWN, UP, END, RESTART, NONE
 
 }

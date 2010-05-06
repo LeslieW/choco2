@@ -55,10 +55,10 @@ public final class DotBrick extends AChocoBrick{
             State state = ossl.state;
             switch (state) {
                 case SOLUTION:
-                    ((DottyTreeSearchPApplet)chopapplet).updateNodes(this.var.getName()+":"+getValues(), true);
+                    ((DottyTreeSearchPApplet)chopapplet).updateNodes(this.var.getName()+ ':' +getValues(), true);
                     break;
                 case DOWN:
-                    ((DottyTreeSearchPApplet)chopapplet).updateNodes(this.var.getName()+":"+getValues(), false);
+                    ((DottyTreeSearchPApplet)chopapplet).updateNodes(this.var.getName()+ ':' +getValues(), false);
                     ((DottyTreeSearchPApplet)chopapplet).updateEdges(false);
                     break;
                 case UP:

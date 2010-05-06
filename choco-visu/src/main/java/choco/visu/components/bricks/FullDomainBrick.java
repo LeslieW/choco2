@@ -47,8 +47,6 @@ public final class FullDomainBrick extends AChocoBrick{
 
     private final BitSet values;
     private final int capacity;
-    private final int lb;
-    private final int up;
     private final int offset;
     private DisposableIntIterator it;
     private final int size;
@@ -57,10 +55,10 @@ public final class FullDomainBrick extends AChocoBrick{
     public FullDomainBrick(final AChocoPApplet chopapplet, final Var var, final int size) {
         super(chopapplet, var);
         this.size = size;
-        this.lb = getLowBound();
-        this.up = getUppBound();
+        final int lb = getLowBound();
+        final int up = getUppBound();
         this.capacity = up - lb;
-        this.offset = - lb;
+        this.offset = -lb;
         this.values = new BitSet(capacity);
         this.it = getDomainValues();
         while(it.hasNext()){

@@ -48,7 +48,7 @@ import java.util.logging.Logger;
 
 public abstract class AChocoPApplet extends PApplet {
 
-    protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
+    final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
     protected AChocoBrick[] bricks;
 
@@ -56,7 +56,7 @@ public abstract class AChocoPApplet extends PApplet {
 
     private final Object parameters;
 
-    public static TIntObjectHashMap<PFont> listFont;
+    private static final TIntObjectHashMap<PFont> listFont;
 
     static{
         listFont = new TIntObjectHashMap<PFont>();
@@ -178,7 +178,7 @@ public abstract class AChocoPApplet extends PApplet {
         return parameters;
     }
 
-    public PFont getFont(int size){
+    PFont getFont(int size){
         PFont font = listFont.get(size);
         if(font == null){
             font = createFont("Serif", size);

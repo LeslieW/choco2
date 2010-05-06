@@ -44,7 +44,7 @@ public final class VisuVariable implements IVisuVariable {
 
     public VisuVariable(Var var) {
         this.var = var;
-        brick = new ArrayList<IChocoBrick>();
+        brick = new ArrayList<IChocoBrick>(16);
     }
 
     /**

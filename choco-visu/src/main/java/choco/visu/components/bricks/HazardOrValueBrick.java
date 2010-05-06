@@ -49,7 +49,6 @@ public final class HazardOrValueBrick extends AChocoBrick{
     private int last;
     private int low;
     private int upp;
-    private DisposableIntIterator it;
 
     public HazardOrValueBrick(final AChocoPApplet chopapplet, final Var var, final int policy) {
         super(chopapplet, var);
@@ -69,15 +68,16 @@ public final class HazardOrValueBrick extends AChocoBrick{
      */
     public final void refresh(final Object arg) {
         if(var.isInstantiated()){
-            value = "";
-           it = getDomainValues();
+            StringBuilder st  = new StringBuilder(128);
+            final DisposableIntIterator it = getDomainValues();
             while(it.hasNext()){
-                if(value.length()>0){
-                    value +=" - ";
+                if(st.length()>0){
+                    st.append(" - ");
                 }
-                value+=it.next();
+                st.append(it.next());
             }
             it.dispose();
+            value = st.toString();
             this.inst = true;
         }else{
             low = getLowBound();

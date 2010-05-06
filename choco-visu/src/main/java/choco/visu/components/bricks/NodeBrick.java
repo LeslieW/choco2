@@ -129,13 +129,13 @@ public final class NodeBrick extends AChocoBrick {
             Particle q = ((TreeSearchPApplet) chopapplet).physics.getParticle(i);
             if (p.particle != q && p.particle != r.particle)
                 ((TreeSearchPApplet) chopapplet).physics.makeAttraction(p.particle, q,
-                        -((TreeSearchPApplet) chopapplet).SPACER_STRENGTH, 20);
+                        -TreeSearchPApplet.SPACER_STRENGTH, 20);
         }
     }
 
     private void makeEdgeBetween(final CParticle a, final CParticle b) {
-        ((TreeSearchPApplet) chopapplet).physics.makeSpring(a.particle, b.particle, ((TreeSearchPApplet) chopapplet).EDGE_STRENGTH,
-                ((TreeSearchPApplet) chopapplet).EDGE_STRENGTH, ((TreeSearchPApplet) chopapplet).EDGE_LENGTH);
+        ((TreeSearchPApplet) chopapplet).physics.makeSpring(a.particle, b.particle, TreeSearchPApplet.EDGE_STRENGTH,
+                TreeSearchPApplet.EDGE_STRENGTH, TreeSearchPApplet.EDGE_LENGTH);
     }
 
     public static CParticle createParticle(){

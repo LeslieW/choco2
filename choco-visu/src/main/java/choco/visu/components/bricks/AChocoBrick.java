@@ -187,7 +187,7 @@ public abstract class AChocoBrick implements IChocoBrick {
      * @return
      */
     protected final String getValues(){
-        StringBuffer values = new StringBuffer();
+        StringBuffer values = new StringBuffer(128);
         final DisposableIntIterator it = getDomainValues();
         while(it.hasNext()){
             int value = it.next();
