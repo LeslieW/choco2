@@ -62,6 +62,7 @@ public final class FileExplorer {
 		}
 		//explore child directories
 		File[] directories = dir.listFiles(DIRECTORY_FILTER);
+		Arrays.sort(directories, NameFileComparator.NAME_COMPARATOR);
 		for (File cdir : directories) {
 			if( ! exploreDirectory(proc, cdir, instFilter)) return false;
 		}

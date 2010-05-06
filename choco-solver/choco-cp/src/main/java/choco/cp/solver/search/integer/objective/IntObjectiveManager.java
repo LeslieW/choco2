@@ -92,4 +92,11 @@ public abstract class IntObjectiveManager implements IObjectiveManager {
 		sol.recordIntObjective(getFloorValue());		
 	}
 
+	@Override
+	public String toString() {
+		return objective.pretty();
+	}
+	
+	
+
 }

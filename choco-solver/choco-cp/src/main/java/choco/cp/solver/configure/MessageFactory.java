@@ -68,13 +68,13 @@ public final class MessageFactory {
 	public static String getShavingMsg(Solver solver) {
 		final StringBuilder b = new StringBuilder(128);
 		final Configuration conf = solver.getConfiguration();
+		if(conf.readBoolean(BOTTOM_UP)) {b.append("BOTTOM_UP    ");}
 		if(conf.readBoolean(INIT_SHAVING)) {b.append("SHAVING    ");}
 		if(conf.readBoolean(INIT_SHAVING)) {
 			b.append("DESTRUCTIVE_LOWER_BOUND");
 			if(conf.readBoolean(INIT_DLB_SHAVING)) {b.append("_WITH_SHAVING");}
 		}
-		if(b.length() > 0) b.insert(0,"INITIAL_PROPAGATION    ");
-		return "";
+		return new String(b);
 	}
 
 

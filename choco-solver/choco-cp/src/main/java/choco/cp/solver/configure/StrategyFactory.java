@@ -28,32 +28,24 @@ public final class StrategyFactory {
 
 	public static boolean isOptimize(Configuration conf) {
         final ResolutionPolicy policy = conf.readEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.class);
-        return !ResolutionPolicy.SATISFACTION.equals(policy);
+        return ! ResolutionPolicy.SATISFACTION.equals(policy);
 	}
 	
 	
 	public static void setDoOptimize(Solver solver, boolean maximize) {
-		if(maximize) setDoMaximize(solver.getConfiguration());
-		else setDoMinimize(solver.getConfiguration());
+		if(maximize) solver.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MAXIMIZE);
+		else solver.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
     
-	}
-	
-	public static void setDoMaximize(Configuration conf) {
-		conf.putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MAXIMIZE);
-	}
-	
-	public static void setDoMinimize(Configuration conf) {
-		conf.putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
 	}
 	
 	public static boolean doMaximize(Solver solver) {
 		final Configuration conf = solver.getConfiguration();
         final ResolutionPolicy policy = conf.readEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.class);
-		return ResolutionPolicy.MAXIMIZE.equals(policy);
+		return ! ResolutionPolicy.SATISFACTION.equals(policy) && ResolutionPolicy.MAXIMIZE.equals(policy);
 	}
 	
 	public static Boolean doMaximize(Configuration conf) {
-		ResolutionPolicy policy = conf.readEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.class);
+		final ResolutionPolicy policy = conf.readEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.class);
         switch (policy) {
             case MAXIMIZE:
                 return Boolean.TRUE;

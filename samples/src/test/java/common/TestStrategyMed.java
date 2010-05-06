@@ -3,90 +3,86 @@
  */
 package common;
 
-import choco.cp.solver.CPSolver;
-import choco.kernel.common.logging.ChocoLogging;
-import junit.framework.Assert;
+import static choco.kernel.solver.Configuration.BOTTOM_UP;
+import static choco.kernel.solver.Configuration.INIT_DESTRUCTIVE_LOWER_BOUND;
+import static choco.kernel.solver.Configuration.INIT_SHAVING;
+import static choco.kernel.solver.Configuration.NOGOOD_RECORDING_FROM_RESTART;
+import static choco.kernel.solver.Configuration.RESTART_AFTER_SOLUTION;
+import static choco.kernel.solver.Configuration.RESTART_BASE;
+import static choco.kernel.solver.Configuration.RESTART_LUBY;
+import static choco.kernel.solver.Configuration.STOP_AT_FIRST_SOLUTION;
 import static org.junit.Assert.assertEquals;
-import org.junit.Ignore;
-import org.junit.Test;
-import samples.tutorials.MinimumEdgeDeletion;
 
-import java.util.logging.Level;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
-@Ignore
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import samples.tutorials.MinimumEdgeDeletion;
+import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
+import choco.kernel.solver.Configuration;
+import choco.kernel.solver.ResolutionPolicy;
+
 public class TestStrategyMed {
 
 	protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
 	private final MinimumEdgeDeletion med = new MedShaker();
 
-	private boolean recomputation = false;
+	private Number objective = null; 
 
-	private boolean restartAfterSolution = false;
+	private final static Configuration CONFIG = new Configuration();
 
-	private boolean restartPolicy = false;
-
-	private boolean nogoodFromRestart = false;
-
-	private boolean randomSelectors = false;
-	
-	private boolean topDown = false;
-	
-	private boolean rootSinglotonConsistency = false;
-	
-	private boolean destructiveLowerBound = false;
-
-	/**
-	 * shake a little bit the optimization options.
-     * @param parametersMED parameters of the  minimum edge deletion
-     */
-	public void testMED(Object parametersMED) {
-		med.setUp(parametersMED);
-		med.buildModel();
-		//DFS
-		Number objective = null; 
-		do {
-			do {
-				do {
-					do {
-						//do {
-
-						med.buildSolver();
-						med.solve();
-						med.prettyOut();
-						assertEquals("Minimum Edge Deletion is Feasible", Boolean.TRUE, med._s.isFeasible());
-						if(objective == null) {objective = med._s.getOptimumValue();}
-						else {assertEquals("objective", objective, med._s.getOptimumValue());}
-						//also check that the nogood from restart reduce the number of nodes
-
-						restartAfterSolution = !restartAfterSolution;
-					}while( restartAfterSolution);
-					restartPolicy = !restartPolicy;
-				}while( restartPolicy);
-				nogoodFromRestart = ! nogoodFromRestart;
-			}while( nogoodFromRestart);
-			randomSelectors = ! randomSelectors;
-		}while( randomSelectors);
-		//			recomputation = ! recomputation;
-		//		}while( recomputation);
+	@BeforeClass
+	public static void setUp() {
+		ChocoLogging.setVerbosity(Verbosity.VERBOSE);
+		CONFIG.putFalse(STOP_AT_FIRST_SOLUTION);
+		CONFIG.putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
+		CONFIG.putInt(RESTART_BASE, 1);//many restarts, bad performance but good testing !
 	}
-
-	@Test
-	public void recomputationMedTest() {
-//		ChocoLogging.setVerbosity(Verbosity.VERBOSE);
-		recomputation = true;
-		restartAfterSolution = true;
-		restartPolicy = false;
-		nogoodFromRestart = false;
-		randomSelectors = false;
-		med.setUp(new Object[]{6,0.7,2});
-		med.buildModel();
+	private void solve(boolean randomSelectors) {
 		med.buildSolver();
+		if(randomSelectors) ((CPSolver) med._s).setRandomSelectors(0);
 		med.solve();
 		med.prettyOut();
-		//ChocoLogging.setVerbosity(Verbosity.SILENT);
-		Assert.assertEquals("nb deletion", 1, med._s.getObjectiveValue());
+		assertEquals("Minimum Edge Deletion is Feasible", Boolean.TRUE, med._s.isFeasible());
+		if(objective == null) {objective = med._s.getOptimumValue();}
+		else {assertEquals("objective", objective, med._s.getOptimumValue());}
+	}
+	private void recursiveTestMED(Object parametersMED, String...confBoolValues) {
+		if(confBoolValues != null && confBoolValues.length > 0) {
+			final int n = confBoolValues.length-1;
+			final String[] newConfboolValues = Arrays.copyOf(confBoolValues, n);
+			CONFIG.putFalse(confBoolValues[n]);
+			recursiveTestMED(parametersMED, newConfboolValues);
+			CONFIG.putTrue(confBoolValues[n]);
+			recursiveTestMED(parametersMED, newConfboolValues);
+		} else {
+			//configuration is set: solve instance
+			LOGGER.info(CONFIG.toString());
+			solve(false);
+			solve(true);
+		}
+
+	}
+	/**
+	 * shake a little bit the optimization options.
+	 * @param parametersMED parameters of the  minimum edge deletion
+	 */
+	public void testMED(Object parametersMED) {
+		//CONFIG.clear();
+		med.setUp(parametersMED);
+		med.buildModel();
+		objective = null;
+		recursiveTestMED(parametersMED, 
+				RESTART_LUBY, RESTART_AFTER_SOLUTION, NOGOOD_RECORDING_FROM_RESTART
+				,BOTTOM_UP
+				, INIT_SHAVING, INIT_DESTRUCTIVE_LOWER_BOUND
+		);
 	}
 
 	@Test
@@ -121,29 +117,9 @@ public class TestStrategyMed {
 
 		@Override
 		public void buildSolver() {
-			_s =  new CPSolver();
-			_s.monitorBackTrackLimit(true);
+			_s =  new CPSolver(CONFIG);
 			_s.monitorFailLimit(true);
 			_s.read(_m);
-			_s.setFirstSolution(false);
-			_s.setDoMaximize(false);
-			CPSolver s = (CPSolver) _s;
-			//_s.attachGoal(new AssignVar(new MinDomain(_s), new IncreasingDomain()));
-			s.setRecomputation(recomputation);
-			s.setRestart(restartAfterSolution);
-			if(restartPolicy) {s.setLubyRestart(1, 2);} //many restarts, bad performance but good testing !
-			s.setRecordNogoodFromRestart(nogoodFromRestart);
-			if(randomSelectors) {s.setRandomSelectors(0);}
-			if(LOGGER.isLoggable(Level.INFO)) {
-				StringBuilder b =new StringBuilder();
-				b.append("solver configuration: DFS ;");
-				if(restartAfterSolution) {b.append(" restartAfterSolution ;");}
-				if(restartPolicy) {b.append(" restartPolicy (LUBY) ;");}
-				if(nogoodFromRestart) {b.append(" nogoodFromRestart ;");}
-				if(randomSelectors) {b.append(" randomSelectors ;");}
-				if(recomputation) {b.append(" recomputation ;");}
-				LOGGER.info(new String(b));
-			}
 		}
 	}
 }
