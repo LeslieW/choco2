@@ -35,6 +35,8 @@ import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.Configuration;
+import choco.kernel.solver.ResolutionPolicy;
 import choco.kernel.solver.Solver;
 import choco.visu.components.panels.VarChocoPanel;
 import static choco.visu.components.papplets.ChocoPApplet.*;
@@ -158,7 +160,6 @@ public class ExamplesTest {
         v.addPanel(new VarChocoPanel("Grid", vars, SUDOKU, null));
         v.addPanel(new VarChocoPanel("Domain", vars, FULLDOMAIN, null));
 
-        s.setFirstSolution(true);
         s.generateSearchStrategy();
         s.visualize(v);
         s.launch();
@@ -177,7 +178,7 @@ public class ExamplesTest {
 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                var[i][j] = makeIntVar("var_" + i + "_" + j, 1, n * n);
+                var[i][j] = makeIntVar("var_" + i + '_' + j, 1, n * n);
                 // Associate the variable to the model.
                 m.addVariable(var[i][j]);
             }
@@ -238,14 +239,13 @@ public class ExamplesTest {
 //
 
         // Solve the model
-        s.setFirstSolution(true);
         s.generateSearchStrategy();
         s.visualize(v);
         s.launch();
         for (int i = 0; i < n; i++) {
-        StringBuffer st = new StringBuffer();
+            StringBuilder st = new StringBuilder(128);
             for (int j = 0; j < n; j++) {
-                st.append(s.getVar(var[i][j]).getVal()).append(" ");
+                st.append(s.getVar(var[i][j]).getVal()).append(' ');
             }
             LOGGER.info(st.toString());
         }
@@ -266,7 +266,6 @@ public class ExamplesTest {
         v.addPanel(new VarChocoPanel("Grid", vars, DonaldAndFriendsPApplet.class, null));
         v.addPanel(new VarChocoPanel("TreeSearch", vars, TREESEARCH, null));
 
-        s.setFirstSolution(true);
         s.generateSearchStrategy();
         s.visualize(v);
         s.launch();
@@ -516,7 +515,6 @@ public class ExamplesTest {
 
         Visu v = Visu.createVisu(1024, 1600);
         v.addPanel(new VarChocoPanel("Map", etats, ColoringPApplet.class, "./images/usa.svg"));
-        s.setFirstSolution(true);
         s.generateSearchStrategy();
         s.visualize(v);
         s.launch();
@@ -551,7 +549,7 @@ public class ExamplesTest {
         v.addPanel(new VarChocoPanel("TreeSearch", queens, TREESEARCH, null));
         v.addPanel(new VarChocoPanel("Domain", queens, FULLDOMAIN, null));
 
-        s.setFirstSolution(false);
+        s.getConfiguration().putBoolean(Configuration.STOP_AT_FIRST_SOLUTION, false);
         s.generateSearchStrategy();
         s.visualize(v);
         s.launch();
@@ -580,7 +578,7 @@ public class ExamplesTest {
         v.addPanel(new VarChocoPanel("Domain", vars, FULLDOMAIN, null));
         v.addPanel(new VarChocoPanel("TreeSearch", vars, TREESEARCH, null));
 
-        s.setFirstSolution(false);
+        s.getConfiguration().putBoolean(Configuration.STOP_AT_FIRST_SOLUTION, false);
         s.generateSearchStrategy();
         s.visualize(v);
         s.launch();
@@ -610,12 +608,14 @@ public class ExamplesTest {
         Solver s = new CPSolver();
         s.read(m);
 
-        Visu v = Visu.createVisu(200, 150);
+        Visu v = Visu.createVisu(500, 500);
 //        Visu v = Visu.createFullVisu(200, 150);
         v.addPanel(new VarChocoPanel("K", new IntegerVariable[]{obj1, obj2, obj3, c, capa}, KnapsackPApplet.class, "./images/knapsack.svg"));
         v.addPanel(new VarChocoPanel("FullDomain", new IntegerVariable[]{obj1, obj2, obj3, c, capa}, FULLDOMAIN, null));
         s.setFirstSolution(false);
         s.setDoMaximize(true);
+        s.getConfiguration().putBoolean(Configuration.STOP_AT_FIRST_SOLUTION, false);
+        s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MAXIMIZE);
 		s.setObjective(s.getVar(c));
         s.generateSearchStrategy();
         s.visualize(v);
@@ -685,7 +685,6 @@ public class ExamplesTest {
         Visu v = Visu.createVisu();
         Variable[] vars = ArrayUtils.append(p.myvars);
         v.addPanel(new VarChocoPanel("Picross", vars, PicrossPApplet.class, new int[]{rows.length, cols.length}));
-        s.setFirstSolution(true);
         s.generateSearchStrategy();
         s.visualize(v);
         s.launch();

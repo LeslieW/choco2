@@ -21,14 +21,12 @@
  *                  N. Jussien    1999-2010      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver;
-import static choco.kernel.common.util.tools.PropertyUtils.logOnAbsence;
-import static choco.kernel.common.util.tools.PropertyUtils.logOnFailure;
-import static choco.kernel.common.util.tools.PropertyUtils.logOnSuccess;
+
+import static choco.kernel.common.util.tools.PropertyUtils.*;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.lang.annotation.Retention;
 import java.lang.reflect.Field;
 import java.util.Properties;
@@ -67,23 +65,15 @@ public class Configuration extends Properties {
      * <br/><b>Default value</b>: true
      */
     @Default(value = VALUE_TRUE)
-    public static final String STOP_AT_FIRST_SOLUTION = "cp.solve.stop_at_first_solution";
+    public static final String STOP_AT_FIRST_SOLUTION = "cp.resolution.stop_at_first_solution";
 
     /**
-     * <br/><b>Goal</b>: Search for the optimization of a declared objective variable.
-     * <br/><b>Type</b>: boolean
-     * <br/><b>Default value</b>: false
+     * <br/><b>Goal</b>: Resolution policy: satisfaction or optimization (minimization or maximization).
+     * <br/><b>Type</b>: ResolutionPolicy
+     * <br/><b>Default value</b>: SATISFACTION
      */
-    @Default(value = VALUE_FALSE)
-    public static final String MINIMIZE = "cp.minimize";
-
-    /**
-     * <br/><b>Goal</b>: When optimization is declared, set to true for maximization, set to false for minimization
-     * <br/><b>Type</b>: boolean
-     * <br/><b>Default value</b>: true
-     */
-    @Default(value = VALUE_FALSE)
-    public static final String MAXIMIZE = "cp.maximize";
+    @Default(value = "SATISFACTION")
+    public static final String RESOLUTION_POLICY = "cp.resolution.policy";
 
     /**
      * <br/><b>Goal</b>: do restart from root node after each solution.

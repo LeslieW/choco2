@@ -1,8 +1,8 @@
 package choco.cp.solver.configure;
 
-import static choco.kernel.solver.Configuration.*;
-import static choco.kernel.solver.Configuration.MINIMIZE;
 import choco.kernel.solver.Configuration;
+import static choco.kernel.solver.Configuration.*;
+import choco.kernel.solver.ResolutionPolicy;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.limit.Limit;
 
@@ -11,15 +11,25 @@ public final class MessageFactory {
 	private MessageFactory() {
 		super();
 	}
-	public String getGeneralMsg(Solver solver) {
+	public static String getGeneralMsg(Solver solver) {
 		return getGeneralMsg(solver.getConfiguration(), "");
 	}
 
 	public static String getGeneralMsg(Configuration conf, String name) {
-		final StringBuilder b = new StringBuilder();
-		if( conf.readBoolean(MAXIMIZE) ) b.append("MAXIMIZE    ");	
-		else if( conf.readBoolean(MINIMIZE) ) b.append("MINIMIZE    ");
-		else b.append("CSP    ");
+		final StringBuilder b = new StringBuilder(128);
+        ResolutionPolicy policy = conf.readEnum(RESOLUTION_POLICY, ResolutionPolicy.class);
+        switch (policy) {
+            case MAXIMIZE:
+                b.append("MAXIMIZE    ");
+                break;
+            case MINIMIZE:
+                b.append("MINIMIZE    ");
+                break;
+            case SATISFACTION:
+            default:
+                b.append("CSP    ");
+                break;
+        }
 		if( conf.readBoolean(STOP_AT_FIRST_SOLUTION) ) b.append("FIRST_SOLUTION    ");
 		b.append(name).append("    ");
 		b.append(conf.readString(RANDOM_SEED)).append(" SEED");
@@ -29,7 +39,7 @@ public final class MessageFactory {
 	private static String getLimitMsg(Configuration conf, String name, String key, String boundKey) {
 		final Limit lim = conf.readEnum(key, Limit.class);
 		if( ! lim.equals(Limit.UNDEF) ) {
-			return name+ " "+ conf.readString(boundKey)+" "+lim.getUnit()+"    ";
+			return name+ ' ' + conf.readString(boundKey)+ ' ' +lim.getUnit()+"    ";
 		} else return "";
 	}
 	public static String getLimitMsg(Solver solver) {
@@ -43,7 +53,7 @@ public final class MessageFactory {
 	}
 
 	public static String getRestartMsg(Solver solver) {
-		final StringBuilder b = new StringBuilder();
+		final StringBuilder b = new StringBuilder(128);
 		final Configuration conf = solver.getConfiguration();
 		if( conf.readBoolean(RESTART_LUBY)) {
 			b.append(getPolicyMsg(conf, "LUBY", RESTART_LUBY_GROW));
@@ -56,7 +66,7 @@ public final class MessageFactory {
 	}
 
 	public static String getShavingMsg(Solver solver) {
-		final StringBuilder b = new StringBuilder();
+		final StringBuilder b = new StringBuilder(128);
 		final Configuration conf = solver.getConfiguration();
 		if(conf.readBoolean(INIT_SHAVING)) {b.append("SHAVING    ");}
 		if(conf.readBoolean(INIT_SHAVING)) {
