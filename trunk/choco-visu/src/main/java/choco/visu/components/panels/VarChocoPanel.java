@@ -49,7 +49,7 @@ public final class VarChocoPanel extends AVarChocoPanel {
         this(name, variables, chocopapplet.path, parameters);
     }
 
-    public VarChocoPanel(final String name, final Variable[] variables, final String path, Object parameters) {
+    private VarChocoPanel(final String name, final Variable[] variables, final String path, Object parameters) {
         super(name, variables);
         //We get it by reflection !
         AChocoPApplet tmp = null;

@@ -44,7 +44,6 @@ public final class NameOrValueBrick extends AChocoBrick{
 
     private final String name;
     private String value;
-    private DisposableIntIterator it;
 
     public NameOrValueBrick(final AChocoPApplet chopapplet, final Var var, final int namelength, final int policy) {
         super(chopapplet, var);
@@ -66,15 +65,16 @@ public final class NameOrValueBrick extends AChocoBrick{
      */
     public final void refresh(final Object arg) {
         if(var.isInstantiated()){
-            value = "";
-           it = getDomainValues();
+            StringBuilder st  = new StringBuilder(128);
+            final DisposableIntIterator it = getDomainValues();
             while(it.hasNext()){
-                if(value.length()>0){
-                    value +=" - ";
+                if(st.length()>0){
+                    st.append(" - ");
                 }
-                value+=it.next();
+                st.append(it.next());
             }
             it.dispose();
+            value = st.toString();
         }else{
             value = name;
         }
