@@ -26,11 +26,11 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 
 
 public class PVariable {
-	private int index;
+	private final int index;
 
-	private String name;
+	private final String name;
 
-	private PDomain domain;
+	private final PDomain domain;
 
 	private PVariable representative;
 

@@ -54,10 +54,10 @@ import java.util.LinkedList;
 
 public final class TreeSearchPApplet extends AChocoPApplet {
 
-    public final float NODE_SIZE = 10;
-    public final float EDGE_LENGTH = 10;
-    public final float EDGE_STRENGTH = (float) 0.2;
-    public final float SPACER_STRENGTH = 1000;
+    public static final float NODE_SIZE = 10;
+    public static final float EDGE_LENGTH = 10;
+    public static final float EDGE_STRENGTH = (float) 0.2;
+    public static final float SPACER_STRENGTH = 1000;
 
     public ParticleSystem physics;
     Smoother3D centroid;
@@ -65,7 +65,6 @@ public final class TreeSearchPApplet extends AChocoPApplet {
     public HashMap<Particle, Object[]> settings;
     public int tswidth = 0, tsdepth = 0;
     public float sval= (float)1.0;
-    public float nmx, nmy;
 
 
     public TreeSearchPApplet(final Object parameters) {
@@ -96,7 +95,7 @@ public final class TreeSearchPApplet extends AChocoPApplet {
             bricks[i] = new NodeBrick(this, var.getSolverVar());
             var.addBrick(bricks[i++]);
         }
-        settings = new HashMap<Particle, Object[]>();
+        settings = new HashMap<Particle, Object[]>(16);
         this.init();
     }
 

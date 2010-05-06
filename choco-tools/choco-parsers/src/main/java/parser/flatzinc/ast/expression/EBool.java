@@ -48,7 +48,7 @@ public final class EBool extends Expression{
 
     @Override
     public String toString() {
-        return ""+value;
+        return String.valueOf(value);
     }
 
     @Override

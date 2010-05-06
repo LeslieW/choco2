@@ -1,13 +1,11 @@
 package choco.visu.components.chart;
 
-import static org.jfree.chart.plot.DefaultDrawingSupplier.*;
-import java.awt.Color;
-import java.awt.Paint;
-import java.util.Arrays;
-
 import org.jfree.chart.ChartColor;
 import org.jfree.chart.plot.DefaultDrawingSupplier;
+import static org.jfree.chart.plot.DefaultDrawingSupplier.*;
 import org.jfree.chart.plot.DrawingSupplier;
+
+import java.awt.*;
 
 public final class ChocoColor {
 
@@ -63,7 +61,31 @@ public final class ChocoColor {
 				COLOR_124_3, 
 				//COLOR_124_4, //almost white
 				COLOR_124_5,
-				COLOR_124_6,				COLOR_211_1,				COLOR_211_2,				COLOR_211_3,				COLOR_211_4,				COLOR_211_5,				COLOR_211_6,				COLOR_142_1,				COLOR_142_2,				COLOR_142_3,				COLOR_142_4,				COLOR_142_5,				COLOR_142_6,				COLOR_274_1,				COLOR_274_2,				COLOR_274_3,				COLOR_274_4,				COLOR_274_5,				COLOR_274_6,				COLOR_148_1,				COLOR_148_2,				COLOR_148_3,				COLOR_148_4,				COLOR_148_5,				COLOR_148_6,
+				COLOR_124_6,
+				COLOR_211_1,
+				COLOR_211_2,
+				COLOR_211_3,
+				COLOR_211_4,
+				COLOR_211_5,
+				COLOR_211_6,
+				COLOR_142_1,
+				COLOR_142_2,
+				COLOR_142_3,
+				COLOR_142_4,
+				COLOR_142_5,
+				COLOR_142_6,
+				COLOR_274_1,
+				COLOR_274_2,
+				COLOR_274_3,
+				COLOR_274_4,
+				COLOR_274_5,
+				COLOR_274_6,
+				COLOR_148_1,
+				COLOR_148_2,
+				COLOR_148_3,
+				COLOR_148_4,
+				COLOR_148_5,
+				COLOR_148_6,
 		};
 	}
 	

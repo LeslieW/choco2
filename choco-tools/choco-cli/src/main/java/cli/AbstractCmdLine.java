@@ -54,7 +54,7 @@ public abstract class AbstractCmdLine {
 	 *  receives other command line parameters than options
 	 */
 	@Argument
-	public List<String> arguments = new ArrayList<String>();
+	public List<String> arguments = new ArrayList<String>(16);
 	
 	protected final boolean hasExtraArgument;
 

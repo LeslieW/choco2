@@ -95,7 +95,7 @@ public class ChocoFactory {
 		for (; maprel.hasNext();) {
 			PRelation prel = maprel.next();
 			if (relfactory.isSatDecomposable(prel)) {
-               relfactory.makeClausesEncoding(prel);
+               RelationFactory.makeClausesEncoding(prel);
             } else {
                 if (prel.getArity() == 2) {
                     BinRelation brel = relfactory.makeBinRelation(prel);
@@ -112,11 +112,11 @@ public class ChocoFactory {
 
     public void createConstraints(boolean forceExp){
         ExtConstraintFactory extFact = new ExtConstraintFactory(m, parser);
-        extFact.preAnalyse(relfactory);
+        extFact.preAnalyse();
 
         Map pcstr = parser.getMapOfConstraints();
 		Iterator it = pcstr.keySet().iterator();
-        cstrs = new ArrayList();
+        cstrs = new ArrayList(16);
         String options = (forceExp? Options.E_DECOMP:"");
         while (it.hasNext()) {
 			PConstraint pc = (PConstraint) pcstr.get(it.next());
@@ -131,12 +131,10 @@ public class ChocoFactory {
 			c = ExtConstraintFactory.makeExtConstraint((PExtensionConstraint) pc);
 		} else
 		if (pc instanceof PIntensionConstraint) {
-			ModelConstraintFactory mcf = new ModelConstraintFactory (m, parser);
-			c = mcf.makeIntensionConstraint((PIntensionConstraint) pc);
+            c = ModelConstraintFactory.makeIntensionConstraint((PIntensionConstraint) pc);
 		}else
 		if (pc instanceof PGlobalConstraint) {
-			GloConstraintFactory gf = new GloConstraintFactory(m, parser);
-			c = gf.makeGlobalConstraint((PGlobalConstraint) pc);
+            c = GloConstraintFactory.makeGlobalConstraint((PGlobalConstraint) pc);
 		}
         if (c != null)
             m.addConstraints(options, c);

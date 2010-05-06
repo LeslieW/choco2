@@ -7,17 +7,17 @@ import java.util.Arrays;
 
 public class PSoftRelation extends PRelation {
 
-	private int[] weights;
+	private final int[] weights;
 
 	/**
 	 * defaultCost = Integer.MAX_VALUE if defaultCost is infinity
 	 */
-	private int defaultCost;
+	private final int defaultCost;
 
 	/**
 	 * The max of all weights values and defaultCost.
 	 */
-	private int maximalCost;
+	private final int maximalCost;
 
 	public int[] getWeights() {
 		return weights;
@@ -35,10 +35,13 @@ public class PSoftRelation extends PRelation {
 		super(name, arity, nbTuples, semantics, tuples);
 		this.weights = weights;
 		this.defaultCost = defaultCost;
-		maximalCost = defaultCost;
-		for (int w : weights)
-			if (w > maximalCost)
-				maximalCost = w;
+		int _maximalCost = defaultCost;
+		for (int w : weights){
+			if (w > _maximalCost){
+				_maximalCost = w;
+            }
+        }
+        maximalCost = _maximalCost;
 	}
 
 	public int computeCostOf(int[] tuple) {
@@ -48,14 +51,17 @@ public class PSoftRelation extends PRelation {
 
 	public String toString() {
 		int displayLimit = 5;
-		String s = "  relation " + name + " with arity=" + arity + ", semantics=" + semantics + ", nbTuples=" + nbTuples + ", defaultCost=" + defaultCost + " : ";
+		StringBuilder s = new StringBuilder(256);
+        s.append("  relation ").append(name).append(" with arity=").append(arity).append(", semantics=")
+                .append(semantics).append(", nbTuples=").append(nbTuples).append(", defaultCost=")
+                .append(defaultCost).append(" : ");
 		for (int i = 0; i < Math.min(nbTuples, displayLimit); i++) {
-			s += "(";
+			s.append('(');
 			for (int j = 0; j < arity; j++)
-				s += (tuples[i][j] + (j < arity - 1 ? "," : ""));
-			s += ") ";
+				s.append(tuples[i][j]).append(j < arity - 1 ? "," : "");
+			s.append(") ");
 			if (weights != null)
-				s += " with cost=" + weights[i] + ", ";
+                s.append(" with cost=").append(weights[i]).append(", ");
 		}
 		return s + (nbTuples > displayLimit ? "..." : "");
 	}
@@ -72,14 +78,14 @@ public class PSoftRelation extends PRelation {
 	}
 
 	public String getStringListOfTuples() {
-		StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder(128);
 		int currentWeigth = -1;
 		for (int i = 0; i < tuples.length; i++) {
 			if (i != 0)
-				sb.append("|");
+				sb.append('|');
 			if (weights[i] != currentWeigth) {
 				currentWeigth = weights[i];
-				sb.append(currentWeigth + InstanceTokens.COST_SEPARATOR);
+                sb.append(currentWeigth).append(InstanceTokens.COST_SEPARATOR);
 			}
 			for (int j = 0; j < tuples[i].length; j++) {
 				sb.append(tuples[i][j]);

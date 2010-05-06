@@ -65,7 +65,7 @@ public final class Visu implements IVisu {
 
 	public final Tracer tracer;
 
-	private boolean[] visible = new boolean[]{false, false};
+	private final boolean[] visible = new boolean[]{false, false};
 
 
 	protected ArrayList<AVarChocoPanel> panelList;
@@ -296,8 +296,8 @@ public final class Visu implements IVisu {
 		 frame.setSize(width, heigth);
 	 }
 
-	 private IObservableStepSearchLoop chooseSearchLoop(final Solver s) {
-         AbstractSearchLoop ssl = (AbstractSearchLoop)s.getSearchStrategy().getSearchLoop();
+	 private static IObservableStepSearchLoop chooseSearchLoop(final Solver s) {
+         AbstractSearchLoop ssl = s.getSearchStrategy().getSearchLoop();
          if(ssl instanceof ObservableStepSearchLoop){
              return (ObservableStepSearchLoop)ssl;
          }

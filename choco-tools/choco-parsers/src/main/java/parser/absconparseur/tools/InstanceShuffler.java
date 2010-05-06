@@ -38,11 +38,11 @@ public class InstanceShuffler {
 
     protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
-	private File file;
+	private final File file;
 
-	private int mode;
+	private final int mode;
 
-	private int seed;
+	private final int seed;
 
 	public InstanceShuffler(File file, int seed, int mode) {
 		this.file = file;
@@ -64,14 +64,13 @@ public class InstanceShuffler {
 
 	public void treat() throws Exception {
 		Document document = XMLManager.load(new FileInputStream(file), null);
-		DocumentShuffler documentShuffler = new DocumentShuffler();
-		document = documentShuffler.shuffle(document, seed,mode);
+        document = DocumentShuffler.shuffle(document, seed,mode);
 		XMLManager.save(document, buildPrintWriter(), XMLManager.class.getResourceAsStream(InstanceTokens.INSTANCE_STYLESHEET_2_0));
 	}
 
 	public static void main(String[] args) throws Exception {
 		if (args.length != 3 && LOGGER.isLoggable(Level.INFO)) {
-			StringBuilder b = new StringBuilder();
+			StringBuilder b = new StringBuilder(128);
 			b.append("InstanceShuffler " + InstanceParser.VERSION);
 			b.append("Usage: java ... InstanceShuffler <instanceFileName> <seed> <mode>\n");
 			b.append("  <instanceFileName> must be the name of a file which contains the representation of a CSP instance in format XCSP 2.0");

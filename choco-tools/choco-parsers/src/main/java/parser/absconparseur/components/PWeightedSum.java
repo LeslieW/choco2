@@ -26,11 +26,11 @@ import parser.absconparseur.PredicateTokens;
 
 
 public class PWeightedSum extends PGlobalConstraint {
-	private int[] coeffs;
+	private final int[] coeffs;
 
-	private PredicateTokens.RelationalOperator operator;
+	private final PredicateTokens.RelationalOperator operator;
 
-	private int limit;
+	private final int limit;
 
 	public int[] getCoeffs() {
 		return coeffs;
@@ -63,8 +63,8 @@ public class PWeightedSum extends PGlobalConstraint {
 	public String toString() {
 		String s = super.toString() + " : weightedSum\n\t";
 		for (int i = 0; i < coeffs.length; i++)
-			s += coeffs[i] + "*" + scope[i].getName() + " ";
-		s += PredicateTokens.RelationalOperator.getStringFor(operator) + " " + limit;
+			s += coeffs[i] + "*" + scope[i].getName() + ' ';
+		s += PredicateTokens.RelationalOperator.getStringFor(operator) + ' ' + limit;
 		return s;
 	}
 
@@ -78,8 +78,6 @@ public class PWeightedSum extends PGlobalConstraint {
 			sumL+=Math.abs(coeffs[i])*maxAbsoluteValue;
 			sumD+=Math.abs(coeffs[i])*maxAbsoluteValue;
 		}
-		if (sumL != sumD || Double.isInfinite(sumD))
-			return false;
-		return true;
-	}
+        return !(sumL != sumD || Double.isInfinite(sumD));
+    }
 }

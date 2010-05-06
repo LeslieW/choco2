@@ -188,7 +188,7 @@ public class SolveGoal {
      * @param vs pool of value
      * @return index of {@code v} in {@code vs}, -1 otherwise
      */
-    private int index(String v, String[] vs){
+    private static int index(String v, String[] vs){
         for(int i = 0; i < vs.length; i++){
             if(vs[i].equals(v))return i;
         }

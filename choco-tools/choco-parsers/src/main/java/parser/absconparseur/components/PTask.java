@@ -3,25 +3,25 @@ package parser.absconparseur.components;
 import parser.absconparseur.Toolkit;
 
 public class PTask {
-	private Object origin; // may be null if absent, an Integer or a Variable
+	private final Object origin; // may be null if absent, an Integer or a Variable
 
 	private int originPositionInScope;
 
 	private int originValue;
 
-	private Object duration;
+	private final Object duration;
 
 	private int durationPositionInScope;
 
 	private int durationValue;
 
-	private Object end;
+	private final Object end;
 
 	private int endPositionInScope;
 
 	private int endValue;
 
-	private Object height;
+	private final Object height;
 
 	private int heightPositionInScope;
 
@@ -115,7 +115,7 @@ public class PTask {
 	
 	
 	 public void displayEvaluations() {
-	 System.out.println(originValue + " " + durationValue + " " + endValue + " " + heightValue);
+	 System.out.println(originValue + " " + durationValue + ' ' + endValue + ' ' + heightValue);
 	 }
 
 	public String toString() {

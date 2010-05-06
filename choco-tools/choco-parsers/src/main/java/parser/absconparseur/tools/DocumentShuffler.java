@@ -35,37 +35,35 @@ import java.util.StringTokenizer;
 
 public class DocumentShuffler {
 
-	private String changeNames(String s, Map<String, String> map) {
-		StringBuffer sb = new StringBuffer();
+	private static String changeNames(String s, Map<String, String> map) {
+        StringBuilder sb = new StringBuilder(128);
 		StringTokenizer st = new StringTokenizer(s);
 		String name = st.nextToken();
 		sb.append(map.get(name));
 		while (st.hasMoreTokens()) {
 			name = st.nextToken();
-			sb.append(" " + map.get(name));
+            sb.append(' ').append(map.get(name));
 		}
 		return sb.toString();
 	}
 
-	Map<String, String> variableNamesMap = new HashMap<String, String>();
+	Map<String, String> variableNamesMap = new HashMap<String, String>(16);
 
-	private int[] buildPermutation(Random random, int size) {
+	private static int[] buildPermutation(Random random, int size) {
 		int[] values = new int[size];
 		for (int i = 0; i < values.length; i++)
 			values[i] = i;
-		int nbValues = values.length;
-		int[] t = new int[size];
+        int[] t = new int[size];
 		for (int i = 0; i < size; i++) {
 			int j = random.nextInt(size - i);
 			t[i] = values[j];
 			values[j] = values[size - i - 1];
-			nbValues--;
-		}
+        }
 		return t;
 	}
 
-	private Map<String, String> modifyOrder(Random random, Element parent, NodeList nodeList, boolean variables, int mode) {
-		Map<String, String> variablesMap = new HashMap<String, String>();
+	private static Map<String, String> modifyOrder(Random random, Element parent, NodeList nodeList, boolean variables, int mode) {
+		Map<String, String> variablesMap = new HashMap<String, String>(16);
 		int[] permutation = buildPermutation(random, nodeList.getLength());
 		Element[] elements = new Element[nodeList.getLength()];
 		for (int i = 0; i < nodeList.getLength(); i++) {
@@ -92,7 +90,7 @@ public class DocumentShuffler {
 		return variablesMap;
 	}
 
-	public Document shuffle(Document document, int seed, int mode) {
+	public static Document shuffle(Document document, int seed, int mode) {
 		Random random = new Random(seed);
 
 		Element variablesElement = XMLManager.getFirstElementByTagNameFromRoot(document, InstanceTokens.VARIABLES);
@@ -126,19 +124,19 @@ public class DocumentShuffler {
 			// String reference = element.getAttribute(XMLInstanceRepresentation.REFERENCE);
 			Element parameters = XMLManager.getElementByTagNameFrom(element, InstanceTokens.PARAMETERS, 0);
 			if (parameters != null) {
-				String canonicalExpression = "";
+				StringBuilder canonicalExpression = new StringBuilder(128);
 				//LOGGER.info("before " + parameters.getTextContent());
 				StringTokenizer st = new StringTokenizer(parameters.getTextContent());
 				while (st.hasMoreTokens()) {
 					String token = st.nextToken();
 					if (variablesMap.containsKey(token))
-						canonicalExpression += " " + variablesMap.get(token);
+                        canonicalExpression.append(' ').append(variablesMap.get(token));
 					else
-						canonicalExpression += " " + token;
+                        canonicalExpression.append(' ').append(token);
 				}
 				//LOGGER.info("after " + canonicalExpression);
 				
-				parameters.setTextContent(canonicalExpression.trim());
+				parameters.setTextContent(canonicalExpression.toString().trim());
 			}
 		}
 

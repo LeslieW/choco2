@@ -25,7 +25,7 @@ package parser.absconparseur.components;
 public class PCumulative extends PGlobalConstraint {
 	private PTask[] tasks;
 
-	private int limit;
+	private final int limit;
 
 	public PCumulative(String name, PVariable[] scope, PTask[] tasks, int limit) {
 		super(name, scope);
@@ -60,8 +60,8 @@ public class PCumulative extends PGlobalConstraint {
 	public String toString() {
 		String s = super.toString() + " : cumulative\n\t";
         for (PTask task : tasks) {
-            s += "  [origin=" + computeStringRepresentationOf(task.getOrigin()) + " " + "duration=" + computeStringRepresentationOf(task.getDuration()) + " ";
-            s += "end=" + computeStringRepresentationOf(task.getEnd()) + " " + "height=" + computeStringRepresentationOf(task.getHeight()) + "]\n\t";
+            s += "  [origin=" + computeStringRepresentationOf(task.getOrigin()) + ' ' + "duration=" + computeStringRepresentationOf(task.getDuration()) + ' ';
+            s += "end=" + computeStringRepresentationOf(task.getEnd()) + ' ' + "height=" + computeStringRepresentationOf(task.getHeight()) + "]\n\t";
         }
 		s += "nbTasks=" + tasks.length + " limit=" + limit;
 		return s;

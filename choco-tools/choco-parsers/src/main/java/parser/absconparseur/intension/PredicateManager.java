@@ -41,10 +41,10 @@ public class PredicateManager {
 		int arity = Evaluator.getArityOf(token);
 		if (arity == 0)
 			return token;
-		String s = token + "(" + stack.pop();
+		String s = token + '(' + stack.pop();
 		for (int i = 1; i < arity; i++)
-			s = s + "," + stack.pop();
-		return s + ")";
+			s = s + ',' + stack.pop();
+		return s + ')';
 	}
 
 	public static String buildFunctionalExpression(String[] postfixExpression) {
@@ -124,7 +124,7 @@ public class PredicateManager {
 		String s = token;
 		int arity = Evaluator.getArityOf(token);
 		for (int i = 0; i < arity; i++)
-			s = buildUniversalPostfixExpression(st, formalParameters, found) + " " + s;
+			s = buildUniversalPostfixExpression(st, formalParameters, found) + ' ' + s;
 		return s;
 	}
 

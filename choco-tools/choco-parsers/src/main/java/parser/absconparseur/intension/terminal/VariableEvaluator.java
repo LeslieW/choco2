@@ -27,9 +27,9 @@ import parser.absconparseur.intension.types.IntegerType;
 
 public class VariableEvaluator extends TerminalEvaluator implements IntegerType {
 
-	private EvaluationManager manager;
+	private final EvaluationManager manager;
 
-	private int position;
+	private final int position;
 
 	public int getPosition() {
 		return position;

@@ -55,7 +55,7 @@ public final class EIdentifier extends Expression{
 
     @Override
     public int intValue() {
-        return ((Integer)object).intValue();
+        return (Integer) object;
     }
 
     @Override

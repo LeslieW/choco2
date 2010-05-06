@@ -27,7 +27,7 @@ import parser.absconparseur.intension.types.IntegerType;
 
 public class LongEvaluator extends TerminalEvaluator implements IntegerType {
 
-	private long value;
+	private final long value;
 
 	public long getValue() {
 		return value;

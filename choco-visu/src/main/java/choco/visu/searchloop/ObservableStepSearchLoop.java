@@ -27,15 +27,15 @@ import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import choco.kernel.solver.search.AbstractSearchLoop;
 import static choco.visu.searchloop.State.*;
 
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 public class ObservableStepSearchLoop extends AbstractSearchLoop implements IObservableStepSearchLoop {
 
 
-	private final Vector<IObserver> obs;
+	private final ArrayList<IObserver> obs;
 
-	private AbstractSearchLoop internalSearchLoop;
+	private final AbstractSearchLoop internalSearchLoop;
 
 	private int previousNbSolutions;
 
@@ -46,8 +46,8 @@ public class ObservableStepSearchLoop extends AbstractSearchLoop implements IObs
 
 	public ObservableStepSearchLoop(AbstractGlobalSearchStrategy searchStrategy) {
 		super(searchStrategy);
-		obs = new Vector<IObserver>();
-        internalSearchLoop = (AbstractSearchLoop)searchStrategy.searchLoop;
+		obs = new ArrayList<IObserver>(16);
+        internalSearchLoop = searchStrategy.searchLoop;
         searchStrategy.setSearchLoop(this);
 	}
 
@@ -199,7 +199,7 @@ public class ObservableStepSearchLoop extends AbstractSearchLoop implements IObs
 		if (o == null)
 			throw new NullPointerException();
 		if (!obs.contains(o)) {
-			obs.addElement(o);
+			obs.add(o);
 		}
 	}
 

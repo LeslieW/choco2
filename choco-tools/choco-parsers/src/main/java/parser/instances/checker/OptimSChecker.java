@@ -1,7 +1,7 @@
 package parser.instances.checker;
 
-import parser.instances.ResolutionStatus;
 import choco.kernel.solver.search.checker.SolutionCheckerException;
+import parser.instances.ResolutionStatus;
 
 public final class OptimSChecker implements IOptimChecker {
 	
@@ -40,19 +40,19 @@ public final class OptimSChecker implements IOptimChecker {
 	}
 
 	public boolean checkLowerBound(boolean doMaximize, Number lbVal) {
-		return lbVal == null ? false : checkLowerBound(doMaximize, lbVal.intValue());
+		return lbVal != null && checkLowerBound(doMaximize, lbVal.intValue());
 	}
 
 	public boolean checkUpperBound(boolean doMaximize, Number ubVal) {
-		return ubVal == null ? false : checkUpperBound(doMaximize, ubVal.intValue());
+		return ubVal != null && checkUpperBound(doMaximize, ubVal.intValue());
 	}
 
 	public boolean checkOptimum(Number optVal) {
-		return optVal ==null ? false :checkOptimum(optVal.intValue());
+		return optVal != null && checkOptimum(optVal.intValue());
 	}
 	
 	private void fail(ResolutionStatus status, Number objective)  throws SolutionCheckerException {
-		throw new SolutionCheckerException("check-status...["+pretty()+"][status:"+status+"][obj:"+objective+"]");
+		throw new SolutionCheckerException("check-status...["+pretty()+"][status:"+status+"][obj:"+objective+ ']');
 	}
 	
 	@Override
@@ -76,7 +76,7 @@ public final class OptimSChecker implements IOptimChecker {
 
 	@Override
 	public String pretty() {
-		return "check-optim:"+( minObjValue == maxObjValue ? minObjValue : "[" + minObjValue +","+maxObjValue+"]");
+		return "check-optim:"+( minObjValue == maxObjValue ? minObjValue : "[" + minObjValue + ',' +maxObjValue+ ']');
 	}
 
 	@Override

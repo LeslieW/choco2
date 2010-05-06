@@ -135,22 +135,22 @@ public class PredicateTokens {
 	
 	
 	private static String function(String functionName, Object operand) {
-		return operand + " " + functionName + " ";
+		return operand + " " + functionName + ' ';
 	}
 
 	private static String function(String functionName, Object operand1, Object operand2) {
-		return operand2 + " " + operand1 + " " + functionName + " ";
+		return operand2 + " " + operand1 + ' ' + functionName + ' ';
 	}
 
 	public static String function(String functionName, Object operand1, Object operand2, Object operand3) {
-		return operand3 + " " + operand2 + " " + operand1 + " " + functionName + " ";
+		return operand3 + " " + operand2 + ' ' + operand1 + ' ' + functionName + ' ';
 	}
 
 	public static String function(String functionName, Object[] operands) {
-		String s = "";
+		StringBuilder s = new StringBuilder(128);
 		for (int i = operands.length - 1; i >= 0; i--)
-			s = s + operands[i] + " ";
-		return s + functionName + " ";
+            s.append(operands[i]).append(' ');
+		return s + functionName + ' ';
 	}
 
 	public static String eq(Object operand1, Object operand2) {

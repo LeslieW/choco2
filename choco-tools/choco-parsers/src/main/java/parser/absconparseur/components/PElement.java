@@ -25,19 +25,19 @@ package parser.absconparseur.components;
 import parser.absconparseur.Toolkit;
 
 public class PElement extends PGlobalConstraint {
-	private PVariable index;
+	private final PVariable index;
 
-	private Object[] table;
+	private final Object[] table;
 
-	private Object value;
+	private final Object value;
 
-	private int offset=1; // by default, indexing starts from 1
+	private static final int offset=1; // by default, indexing starts from 1
 
-	private int indexPositionInScope;
+	private final int indexPositionInScope;
 
-	private int[] tablePositionsInScope;
+	private final int[] tablePositionsInScope;
 	
-	private int valuePositionInScope;
+	private final int valuePositionInScope;
 
 	public PElement(String name, PVariable[] scope, PVariable indexVariable, Object[] table, Object value) {
 		super(name, scope);
@@ -58,12 +58,13 @@ public class PElement extends PGlobalConstraint {
 	}
 
 	public String toString() {
-		String s = super.toString() + " : element\n\t";
-		s += "index=" + index.getName() + "  table=";
+		StringBuilder s = new StringBuilder(128);
+        s.append(super.toString()).append(" : element\n\t");
+        s.append("index=").append(index.getName()).append("  table=");
 		for (int i = 0; i < table.length; i++)
-			s += computeStringRepresentationOf(table[i]) + " ";
-		s += "  value=" + computeStringRepresentationOf(value);
-		return s;
+            s.append(computeStringRepresentationOf(table[i])).append(' ');
+        s.append("  value=").append(computeStringRepresentationOf(value));
+		return s.toString();
 	}
 
     public PVariable getIndex() {

@@ -25,15 +25,14 @@ package parser.absconparseur.components;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.constraints.Constraint;
 
-import java.util.logging.Logger;
-
 import static java.lang.Integer.parseInt;
+import java.util.logging.Logger;
 
 public abstract class PConstraint {
 
     protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
-    private int index;
+    private final int index;
 
     protected String name;
 
@@ -77,11 +76,12 @@ public abstract class PConstraint {
 	public abstract long computeCostOf(int[] tuple);
 
 	public String toString() {
-		String s = "  constraint " + name + " with arity = " + scope.length + ", scope = ";
-		s += scope[0].getName();
+		StringBuilder s = new StringBuilder(128);
+        s.append("  constraint ").append(name).append(" with arity = ").append(scope.length).append(", scope = ");
+		s.append(scope[0].getName());
 		for (int i = 1; i < scope.length; i++)
-			s += " " + scope[i].getName();
-		return s;
+            s.append(' ').append(scope[i].getName());
+		return s.toString();
 	}
 
 	public boolean isGuaranteedToBeDivisionByZeroFree() {

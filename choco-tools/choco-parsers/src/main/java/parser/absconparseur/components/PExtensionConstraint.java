@@ -27,7 +27,7 @@ import parser.chocogen.ModelConstraintFactory;
 
 public class PExtensionConstraint extends PConstraint {
 
-	private PRelation relation;
+	private final PRelation relation;
 
 	/**
 	 * The Relation might have been identified as a

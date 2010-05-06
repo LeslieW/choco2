@@ -50,12 +50,12 @@ public final class EArray extends Expression{
 
     @Override
     public String toString() {
-        StringBuffer st = new StringBuffer("[");
+        StringBuilder st = new StringBuilder("[");
         st.append(what.get(0).toString());
         for(int i = 1; i < what.size(); i++){
-            st.append(",").append(what.get(i).toString());
+            st.append(',').append(what.get(i).toString());
         }
-        return st.append("]").toString();
+        return st.append(']').toString();
     }
 
     @Override

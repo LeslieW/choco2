@@ -45,7 +45,7 @@ import java.util.ArrayList;
 
 public final class SudokuPApplet extends AChocoPApplet{
 
-    private final int size = 25;
+    private static final int size = 25;
 
     public SudokuPApplet(final Object parameters) {
         super(parameters);
@@ -57,10 +57,6 @@ public final class SudokuPApplet extends AChocoPApplet{
      * @param list of visu variables o watch
      */
     public final void initialize(final ArrayList<IVisuVariable> list) {
-        final Var[] vars = new Var[list.size()];
-        for(int i = 0; i < list.size(); i++){
-            vars[i] = list.get(i).getSolverVar();
-        }
         bricks = new AChocoBrick[list.size()];
         for(int i = 0; i < list.size(); i++){
             IVisuVariable vv = list.get(i);
