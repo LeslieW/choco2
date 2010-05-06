@@ -1411,7 +1411,7 @@ public class CPSolver implements Solver {
 	 */
 	protected SConstraint makeMapespanConstraint() {
 		IntDomainVar[] vars = new IntDomainVar[getNbTaskVars() + 1];
-		vars[0] = getMakespan();
+		vars[0] = makespan;
 		for (int i = 0; i < getNbTaskVars(); i++) {
 			vars[i + 1] = getTaskVar(i).end();
 		}
@@ -1701,19 +1701,20 @@ public class CPSolver implements Solver {
 		return floatVars.quickIterator();
 	}
 
-	/**
-	 * @deprecated
-	 */
-	@Deprecated
-	public final DisposableIterator<SConstraint> getIntConstraintIterator() {
+    /**
+     * @deprecated
+     */
+    @Deprecated
+    @SuppressWarnings({"unchecked"})
+    public final DisposableIterator<SConstraint> getIntConstraintIterator() {
+        return constraints.getIterator();
+    }
+    @SuppressWarnings({"unchecked"})
+    public final DisposableIterator<SConstraint> getConstraintIterator() {
 		return constraints.getIterator();
 	}
 
-	public final DisposableIterator<SConstraint> getConstraintIterator() {
-		return constraints.getIterator();
-	}
-
-	/**
+    /**
 	 * currentElement if the model has been found to be feasible (there exist
 	 * solutions) or not. precondition : has to be called after a search
 	 *
@@ -2080,7 +2081,7 @@ public class CPSolver implements Solver {
 		setFirstSolution(!all);
 		generateSearchStrategy();
 		launch();
-		return isFeasible();
+		return feasible;
 	}
 
 	public Boolean solve() {
@@ -2092,7 +2093,7 @@ public class CPSolver implements Solver {
 	}
 
 	public Boolean nextSolution() {
-		return getSearchStrategy().nextSolution();
+		return strategy.nextSolution();
 	}
 
 	/**
@@ -2164,8 +2165,8 @@ public class CPSolver implements Solver {
 	 * @return
 	 */
 	public String runtimeStatistics() {
-		if( getSearchStrategy() != null) {
-			return StringUtils.pretty(getSearchStrategy()) + " - " + getSearchStrategy().limitManager.pretty();
+		if(strategy != null) {
+			return StringUtils.pretty(strategy) + " - " + strategy.limitManager.pretty();
 		}else {
 			return "";
 		}
@@ -2223,19 +2224,19 @@ public class CPSolver implements Solver {
 		setFirstSolution(false);
 		generateSearchStrategy();
 		launch();
-		return this.isFeasible();
+		return this.feasible;
 	}
 
 	@Deprecated
 	public void setMinimizationObjective(IntVar obj) {
 		objective = obj;
-		configuration.putBoolean(Configuration.MAXIMIZE, false);
+		configuration.putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
 	}
 
 	@Deprecated
 	public void setMaximizationObjective(IntVar obj) {
 		objective = obj;
-		configuration.putBoolean(Configuration.MAXIMIZE, true);
+		configuration.putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MAXIMIZE);
 	}
 
 	@Deprecated

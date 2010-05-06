@@ -24,6 +24,7 @@ package common;/* * * * * * * * * * * * * * * * * * * * * * * * *
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.kernel.solver.Configuration;
+import choco.kernel.solver.ResolutionPolicy;
 import org.junit.Assert;
 import org.junit.Test;
 import samples.tutorials.MinimumEdgeDeletion;
@@ -46,7 +47,7 @@ public class SearchTest {
             _s.read(_m);
             Configuration configuration = _s.getConfiguration();
             configuration.putBoolean(Configuration.STOP_AT_FIRST_SOLUTION, false);
-            configuration.putBoolean(Configuration.MAXIMIZE, false);
+            configuration.putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
             configuration.putInt(Configuration.SOLUTION_POOL_CAPACITY, capa);
             _s.setValIntSelector(new MinVal());
             //_s.generateSearchStrategy();

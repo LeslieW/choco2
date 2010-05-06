@@ -1,9 +1,5 @@
 package choco.cp.solver.configure;
 
-import static choco.kernel.solver.Configuration.*;
-import static choco.kernel.solver.Configuration.MINIMIZE;
-import static choco.kernel.solver.Configuration.NOGOOD_RECORDING_FROM_RESTART;
-import static choco.kernel.solver.Configuration.RECOMPUTATION_GAP;
 import choco.cp.solver.search.AbstractSearchLoopWithRestart;
 import choco.cp.solver.search.BranchAndBound;
 import choco.cp.solver.search.SearchLoop;
@@ -14,14 +10,12 @@ import choco.cp.solver.search.restart.IKickRestart;
 import choco.cp.solver.search.restart.NogoodKickRestart;
 import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.solver.Configuration;
+import static choco.kernel.solver.Configuration.*;
+import choco.kernel.solver.ResolutionPolicy;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.propagation.ShavingTools;
-import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import choco.kernel.solver.search.AbstractOptimize;
-import choco.kernel.solver.search.AbstractSearchLoop;
-import choco.kernel.solver.search.ISolutionPool;
-import choco.kernel.solver.search.SolutionPoolFactory;
+import choco.kernel.solver.search.*;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.real.RealVar;
@@ -33,7 +27,8 @@ public final class StrategyFactory {
 	}
 
 	public static boolean isOptimize(Configuration conf) {
-		return conf.readBoolean(MINIMIZE) || conf.readBoolean(MAXIMIZE);
+        final ResolutionPolicy policy = conf.readEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.class);
+        return !ResolutionPolicy.SATISFACTION.equals(policy);
 	}
 	
 	
@@ -44,32 +39,30 @@ public final class StrategyFactory {
 	}
 	
 	public static void setDoMaximize(Configuration conf) {
-		conf.putTrue(MAXIMIZE);
-		conf.putFalse(MINIMIZE);
+		conf.putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MAXIMIZE);
 	}
 	
 	public static void setDoMinimize(Configuration conf) {
-		conf.putTrue(MINIMIZE);
-		conf.putFalse(MAXIMIZE);
+		conf.putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
 	}
 	
 	public static boolean doMaximize(Solver solver) {
 		final Configuration conf = solver.getConfiguration();
-		final boolean max = conf.readBoolean(MAXIMIZE);
-		final boolean min = conf.readBoolean(MINIMIZE);
-		if(max && !min) return true;
-		else if(min) return false;
-		else throw new SolverException("minimize/maximize conflict");
+        final ResolutionPolicy policy = conf.readEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.class);
+		return ResolutionPolicy.MAXIMIZE.equals(policy);
 	}
 	
 	public static Boolean doMaximize(Configuration conf) {
-		final boolean max = conf.readBoolean(MAXIMIZE);
-		final boolean min = conf.readBoolean(MINIMIZE);
-		if(max) {
-			if(min) throw new SolverException("minimize/maximize conflict");
-			else return Boolean.TRUE;
-		} else if(min) return Boolean.FALSE;
-		else return null;
+		ResolutionPolicy policy = conf.readEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.class);
+        switch (policy) {
+            case MAXIMIZE:
+                return Boolean.TRUE;
+            case MINIMIZE:
+                return Boolean.FALSE;
+            case SATISFACTION:
+            default:
+                return null;
+        }
 	}
 	
 	
