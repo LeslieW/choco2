@@ -40,12 +40,12 @@ public final class EInt extends Expression{
 
     public EInt(String sign, String svalue) {
         super(EType.INT);
-        value = Integer.parseInt(sign + svalue);
+        value = Integer.parseInt((sign.equals("-")?sign:"") + svalue);
     }
 
     @Override
     public String toString() {
-        return ""+value;
+        return String.valueOf(value);
     }
 
     @Override

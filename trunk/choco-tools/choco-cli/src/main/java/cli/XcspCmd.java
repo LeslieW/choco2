@@ -1,13 +1,12 @@
 package cli;
 
-import java.io.File;
-
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.Option;
-
 import parser.instances.AbstractInstanceModel;
 import parser.instances.XcspModel;
 import parser.instances.xcsp.XcspSettings;
+
+import java.io.File;
 
 public class XcspCmd extends AbstractBenchmarkCmd {
 
@@ -31,8 +30,12 @@ public class XcspCmd extends AbstractBenchmarkCmd {
 		super.checkData();	
 		//overrides properties
 		final XcspSettings set = getXcspSettings();
-		if( singloton != null) set.setDoSingletonConsistency(singloton);
-		if( heuristic != null) set.setHeuristic(heuristic);
+		if( singloton != null){
+            set.putBoolean(XcspSettings.SINGLETON_CONSISTENCY, singloton);
+        }
+		if( heuristic != null){
+            set.putEnum(XcspSettings.HEURISTIC, XcspSettings.match(heuristic));
+        }
 	}
 
 

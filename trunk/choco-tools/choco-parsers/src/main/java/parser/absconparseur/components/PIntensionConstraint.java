@@ -30,9 +30,9 @@ import parser.absconparseur.intension.PredicateManager;
 
 
 public class PIntensionConstraint extends PConstraint {
-	private PFunction function; // a predicate is a kind of function - so function may be a PPredicate
+	private final PFunction function; // a predicate is a kind of function - so function may be a PPredicate
 
-	private String[] universalPostfixExpression;
+	private final String[] universalPostfixExpression;
 
 	public PFunction getFunction() {
 		return function;

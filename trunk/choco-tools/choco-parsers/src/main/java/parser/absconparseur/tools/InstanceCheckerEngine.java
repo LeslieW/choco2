@@ -42,17 +42,17 @@ public class InstanceCheckerEngine extends Thread {
 
 	public static final String DEFAULT_PREFIX = "inst";
 
-	private InstanceChecker checkerGraphic;
+	private final InstanceChecker checkerGraphic;
 
-	private InstanceChecker.Indicator indicator;
+	private final InstanceChecker.Indicator indicator;
 
-	private File srcDirectory;
+	private final File srcDirectory;
 
-	private File dstDirectory;
+	private final File dstDirectory;
 
-	private boolean defaultFileName;
+	private final boolean defaultFileName;
 
-	private InstanceChecker.CHECKING_MODE mode;
+	private final InstanceChecker.CHECKING_MODE mode;
 
 	private int counter1 = 0;
 
@@ -66,7 +66,7 @@ public class InstanceCheckerEngine extends Thread {
 
 	private boolean overwriteDecided;
 
-	private boolean competitionControl;
+	private final boolean competitionControl;
 
 	public void setOverwrite(boolean overwrite) {
 		this.overwrite = overwrite;
@@ -93,17 +93,17 @@ public class InstanceCheckerEngine extends Thread {
 		finished = b;
 	}
 
-	private boolean mustBeTreated(String fileName) {
+	private static boolean mustBeTreated(String fileName) {
 		fileName = fileName.toLowerCase();
 		return fileName.endsWith("xml") || fileName.endsWith("bz2");
 	}
 
-	private String valueOf(int cpt) {
+	private static String valueOf(int cpt) {
 		return (cpt < 10 ? "000" : cpt < 100 ? "00" : cpt < 1000 ? "0" : "") + cpt;
 	}
 
 	private String getNameOfFileToSave(File srcFile, boolean containsPredicatesBefore) {
-		String basename = (defaultFileName ? DEFAULT_PREFIX + valueOf(counter1) : srcFile.getName().substring(0, srcFile.getName().lastIndexOf(".")));
+		String basename = (defaultFileName ? DEFAULT_PREFIX + valueOf(counter1) : srcFile.getName().substring(0, srcFile.getName().lastIndexOf('.')));
 		// basename = basename.replaceFirst(".int", "");
 		// basename = basename.replaceFirst(".ext", "");
 		if (containsPredicatesBefore && mode == InstanceChecker.CHECKING_MODE.EXTENSIONAL)
@@ -171,7 +171,7 @@ public class InstanceCheckerEngine extends Thread {
 		if (mode == InstanceChecker.CHECKING_MODE.VALIDATION)
 			return;
 
-		boolean containsPredicateBefore = problem.getPredicatesMap().size() > 0 || problem.getFunctionsMap().size() > 0;
+		boolean containsPredicateBefore = !problem.getPredicatesMap().isEmpty() || !problem.getFunctionsMap().isEmpty();
 		PrintWriter out = buildPrintWriterFor(srcFile, containsPredicateBefore);
 
 		// TODO mixer ce qui suit avec la gestion forma canonique
@@ -180,13 +180,13 @@ public class InstanceCheckerEngine extends Thread {
 			problem.convertToExtension();
 			indicator.write("ok\n");
 			indicator.write("    modifying XML document...");
-			document = translator.modifyDocumentFrom(this, document, problem);
+			document = DocumentModifier.modifyDocumentFrom(this, document, problem);
 			problem.updateStructures();
 			indicator.write("ok\n");
 		}
 
 		indicator.write("    setting to canonical form...");
-		document = translator.setCanonicalFormOf(this, document, problem.hasCanonicalNames(),problem.getMaxConstraintRAity());
+		document = DocumentModifier.setCanonicalFormOf(this, document, problem.hasCanonicalNames(),problem.getMaxConstraintRAity());
 		indicator.write("ok\n");
 		problem = null;
 
@@ -205,14 +205,14 @@ public class InstanceCheckerEngine extends Thread {
 			LOGGER.log(Level.INFO, "{0} ignored", srcFile);
 			counter3++;
 		} else {
-			indicator.write(srcFile.getName() + "\n");
+			indicator.write(srcFile.getName() + '\n');
 			try {
 				treat(srcFile);
 				counter1++;
 			} catch (Exception e) {
 				counter2++;
 				// e.printStackTrace();
-				indicator.write("  ERROR as " + e.getMessage() + " " + "\n");
+				indicator.write("  ERROR as " + e.getMessage() + ' ' + '\n');
 			}
 		}
 		if (checkerGraphic != null)
@@ -228,14 +228,13 @@ public class InstanceCheckerEngine extends Thread {
 	private void operate(File file) {
 		if (finished)
 			return;
-		if (file.isDirectory() == false)
+		if (!file.isDirectory())
 			operateFile(file);
 		else
 			operateDirectory(file);
 	}
 
 	public void run() {
-		long start = System.currentTimeMillis();
 		try {
 			overwriteDecided = false;
 			operate(srcDirectory);
@@ -245,9 +244,8 @@ public class InstanceCheckerEngine extends Thread {
 			System.exit(1);
 		}
 
-		long stop = System.currentTimeMillis();
 		if (checkerGraphic != null)
-			checkerGraphic.endOfCoder(counter1, counter2, counter3, stop - start);
+			checkerGraphic.endOfCoder(counter1, counter2, counter3);
 
 	}
 

@@ -72,7 +72,7 @@ public final class Parameter extends ParVar{
      * @param map
      * @return {@link boolean}
      */
-    private boolean buildBool(String name, EBool value, HashMap<String, Object> map){
+    private static boolean buildBool(String name, EBool value, HashMap<String, Object> map){
         boolean b = value.value;
         map.put(name, b);
         return b;
@@ -85,7 +85,7 @@ public final class Parameter extends ParVar{
      * @param map
      * @return {@link int}
      */
-    private int buildInt(String name, EInt value, HashMap<String, Object> map){
+    private static int buildInt(String name, EInt value, HashMap<String, Object> map){
         int i = value.value;
         map.put(name, i);
         return i;
@@ -99,7 +99,7 @@ public final class Parameter extends ParVar{
      * @param map
      * @return {@link choco.kernel.model.variables.set.SetConstantVariable}
      */
-    private SetConstantVariable buildSet(String name, ESet set, HashMap<String, Object> map){
+    private static SetConstantVariable buildSet(String name, ESet set, HashMap<String, Object> map){
         final SetConstantVariable s;
         switch (set.getTypeOf()){
             case SET_B:
@@ -125,7 +125,7 @@ public final class Parameter extends ParVar{
      * @param value input declaration
      * @param map
      */
-    private void buildArray(String name, DInt2 index, Declaration what, EArray value, HashMap<String, Object> map){
+    private static void buildArray(String name, DInt2 index, Declaration what, EArray value, HashMap<String, Object> map){
         // no need to get lowB, it is always 1 (see specification of FZN for more informations)
         int size = index.getUpp();
         switch (what.typeOf) {
@@ -148,7 +148,7 @@ public final class Parameter extends ParVar{
             case SET:
                 SetConstantVariable[] sarr = new SetConstantVariable[size];
                 for(int i = 0; i < size; i++){
-                    sarr[i] = buildSet(name+"_"+i, (ESet)value.getWhat_i(i), map);
+                    sarr[i] = buildSet(name+ '_' +i, (ESet)value.getWhat_i(i), map);
                 }
                 map.put(name, sarr);
                 break;

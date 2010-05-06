@@ -28,7 +28,7 @@ import gnu.trove.TIntIntHashMap;
 public class PGlobalCardinality extends PGlobalConstraint {
 
     public Object[] table;
-    private int[] tablePositionsInScope;
+    private final int[] tablePositionsInScope;
     public int offset; // offset of variables and values/noccurrences
 
     public PGlobalCardinality(String name, PVariable[] scope, Object[] table, int offset) {

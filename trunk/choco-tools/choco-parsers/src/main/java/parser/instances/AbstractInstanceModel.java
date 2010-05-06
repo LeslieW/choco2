@@ -22,24 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package parser.instances;
 
-import static parser.instances.ResolutionStatus.ERROR;
-import static parser.instances.ResolutionStatus.OPTIMUM;
-import static parser.instances.ResolutionStatus.SAT;
-import static parser.instances.ResolutionStatus.TIMEOUT;
-import static parser.instances.ResolutionStatus.UNKNOWN;
-import static parser.instances.ResolutionStatus.UNSAT;
-import static parser.instances.ResolutionStatus.UNSUPPORTED;
-
-import java.io.File;
-import java.sql.Timestamp;
-import java.text.MessageFormat;
-import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import parser.absconparseur.tools.UnsupportedConstraintException;
-import parser.instances.checker.IStatusChecker;
-import parser.instances.checker.SCheckFactory;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.configure.MessageFactory;
 import choco.cp.solver.configure.StrategyFactory;
@@ -53,6 +35,17 @@ import choco.kernel.solver.search.checker.SolutionCheckerException;
 import choco.kernel.solver.search.measure.IMeasures;
 import db.DbManager;
 import db.DbTables;
+import parser.absconparseur.tools.UnsupportedConstraintException;
+import static parser.instances.ResolutionStatus.*;
+import parser.instances.checker.IStatusChecker;
+import parser.instances.checker.SCheckFactory;
+
+import java.io.File;
+import java.sql.Timestamp;
+import java.text.MessageFormat;
+import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A class to provide facilities for loading and solving instance described by a file (txt, xml, ...). </br>
@@ -188,7 +181,7 @@ public abstract class AbstractInstanceModel {
 	private final static String DESCR_MSG="{0}...dim:[nbv:{1}][nbc:{2}][nbconstants:{3}]";
 
 
-	private final void logOnModel() {
+	private void logOnModel() {
 		if(LOGGER.isLoggable(Level.CONFIG)) {
 			if(model == null) LOGGER.log(Level.CONFIG, "model...[null]");
 			else {
@@ -200,7 +193,7 @@ public abstract class AbstractInstanceModel {
 		}
 	}
 
-	private final void logOnSolver() {
+	private void logOnSolver() {
 		if(LOGGER.isLoggable(Level.CONFIG)) {
 			if(solver == null) LOGGER.log(Level.CONFIG, "solver...[null]");
 			else {
@@ -212,7 +205,7 @@ public abstract class AbstractInstanceModel {
 		}
 	}
 
-	private final void logOnPP() {
+	private void logOnPP() {
 		if(LOGGER.isLoggable(Level.CONFIG)) {
 			if( isFeasible == Boolean.TRUE && StrategyFactory.isOptimize(defaultConf) ) {
 				LOGGER.log(Level.CONFIG, "preprocessing...[status:{0}][obj:{1}]", new Object[]{status, objective});
@@ -463,10 +456,9 @@ public abstract class AbstractInstanceModel {
 	 */
 	public void databaseReport() {
 		//insert solver
-		Integer solverID = dbManager.insertEntryAndRetrieveGPK(DbTables.T_SOLVERS, 
-				new Object[]{ getInstanceName(), status.getName(), getFullSecTime(), "", //getValuesMessage(),
-				dbManager.getModelID(solver), dbManager.getEnvironmentID(), getSeed(), new Timestamp(System.currentTimeMillis())}
-		);
+		Integer solverID = dbManager.insertEntryAndRetrieveGPK(DbTables.T_SOLVERS,
+                getInstanceName(), status.getName(), getFullSecTime(), "", //getValuesMessage(),
+                dbManager.getModelID(solver), dbManager.getEnvironmentID(), getSeed(), new Timestamp(System.currentTimeMillis()));
 		//TODO remettre getModelID en protected quand dans choco
 		Integer measuresID;
 		if( solver != null) {
@@ -514,8 +506,8 @@ public abstract class AbstractInstanceModel {
 
 
 
-	private final String createTimeConfiguration() {
-		final StringBuilder b = new StringBuilder();
+	private String createTimeConfiguration() {
+		final StringBuilder b = new StringBuilder(128);
 		b.append(getFullSecTime()).append(" TIME    ");
 		b.append(getParseTime()).append(" PARSTIME    ");
 		b.append(getPreProcTime()).append(" PREPROC    ");

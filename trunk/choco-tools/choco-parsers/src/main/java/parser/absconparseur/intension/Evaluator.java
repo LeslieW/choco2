@@ -48,19 +48,19 @@ public abstract class Evaluator {
 
 	protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
-	private static Map<String, Class> classMap;
+	private static final Map<String, Class> classMap;
 
-	private static Map<String, Integer> arityMap;
+	private static final Map<String, Integer> arityMap;
 
-	private static Set<String> symmetricSet;
+	private static final Set<String> symmetricSet;
 
-	private static Set<String> associativeSet;
+	private static final Set<String> associativeSet;
 
 	static {
-		classMap = new HashMap<String, Class>();
-		arityMap = new HashMap<String, Integer>();
-		symmetricSet = new HashSet<String>();
-		associativeSet = new HashSet<String>();
+		classMap = new HashMap<String, Class>(16);
+		arityMap = new HashMap<String, Integer>(16);
+		symmetricSet = new HashSet<String>(16);
+		associativeSet = new HashSet<String>(16);
 
 		Class[] classes = ReflectionManager.searchClassesInheritingFrom(Evaluator.class, Modifier.PUBLIC, Modifier.ABSTRACT);
         if(classes.length==0){
@@ -104,7 +104,7 @@ public abstract class Evaluator {
         }
         for (Class clazz : classes) {
 			String className = Toolkit.getRelativeClassNameOf(clazz);
-			String evaluatorToken = className.substring(0, 1).toLowerCase() + className.substring(1, className.lastIndexOf("Evaluator"));
+			String evaluatorToken = String.format("%s%s", className.substring(0, 1).toLowerCase(), className.substring(1, className.lastIndexOf("Evaluator")));
 
 			// LOGGER.info("evaluatorToken = " + evaluatorToken + " absoluteClassName = " + clazz.getName());
             classMap.put(evaluatorToken, clazz);
@@ -221,9 +221,9 @@ public abstract class Evaluator {
 
 	public static void displayStack() {
 		if(LOGGER.isLoggable(Level.INFO)) {
-			StringBuilder s = new StringBuilder();
+			StringBuilder s = new StringBuilder(32);
 			for (int i = 0; i <= top; i++)
-				s.append(stack[i]).append(" ");
+				s.append(stack[i]).append(' ');
 			LOGGER.info(new String(s));
 		}
 	}

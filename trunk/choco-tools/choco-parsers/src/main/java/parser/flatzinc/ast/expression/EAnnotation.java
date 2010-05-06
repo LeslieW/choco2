@@ -48,13 +48,13 @@ public final class EAnnotation extends Expression{
 
     @Override
     public String toString() {
-        StringBuffer st  = new StringBuffer(id.value);
-        if(exps!=null && exps.size()>0){
-            st.append("(").append(exps.get(0).toString());
+        StringBuilder st = new StringBuilder(id.value);
+        if(exps!=null && !exps.isEmpty()){
+            st.append('(').append(exps.get(0).toString());
             for(int i = 1; i < exps.size(); i++){
-                st.append(",").append(exps.get(i).toString());
+                st.append(',').append(exps.get(i).toString());
             }
-            st.append(")");
+            st.append(')');
         }
         return st.toString();
     }

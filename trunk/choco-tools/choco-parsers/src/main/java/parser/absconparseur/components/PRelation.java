@@ -266,7 +266,7 @@ public class PRelation {
 	}
 
 	public String getStringListOfTuples() {
-		StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder(128);
 		for (int i = 0; i < tuples.length; i++) {
 			for (int j = 0; j < tuples[i].length; j++) {
 				s.append(tuples[i][j]);

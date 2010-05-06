@@ -99,7 +99,7 @@ public final class FZNParser {
      * @param <T> expected return object
      * @return {@link Parser} of {@link EArray}
      */
-    <T> Parser<EArray> array(Parser<T> expr) {
+    static <T> Parser<EArray> array(Parser<T> expr) {
         return Mapper.curry(EArray.class).sequence(TerminalParser.term("["), expr.sepBy(TerminalParser.term(",")), TerminalParser.term("]"));
     }
 
@@ -110,7 +110,7 @@ public final class FZNParser {
      * @param <T>    expected type
      * @return {@link Parser<T>}
      */
-    <T> Parser<T> paren(Parser<T> parser) {
+    static <T> Parser<T> paren(Parser<T> parser) {
         return parser.between(TerminalParser.term("("), TerminalParser.term(")"));
     }
 
@@ -121,7 +121,7 @@ public final class FZNParser {
      * @param <T>    expected type
      * @return List of {@link T}
      */
-    final <T> Parser<List<T>> list(Parser<T> parser) {
+    static final <T> Parser<List<T>> list(Parser<T> parser) {
         return paren(parser.sepBy(TerminalParser.term(",")));
     }
 

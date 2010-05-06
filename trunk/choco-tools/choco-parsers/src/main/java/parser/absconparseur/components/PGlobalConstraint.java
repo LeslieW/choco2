@@ -37,7 +37,7 @@ public abstract class PGlobalConstraint extends PConstraint {
 	}
 
 	// object is either an Integer, a PVariable or null
-	protected String computeStringRepresentationOf(Object object) {
+	protected static String computeStringRepresentationOf(Object object) {
 		if (object == null)
 			return "nil";
 		if (object instanceof PVariable)

@@ -49,9 +49,9 @@ public class ChocoFactoryRPC extends ChocoFactory {
 
 	public void createConstraints(boolean forceExp, boolean light) {
 		ExtConstraintFactory extFact = new ExtConstraintFactory(m, parser);
-		extFact.preAnalyse(relfactory);
+		extFact.preAnalyse();
 
-		final Collection<Constraint> maxRPCConstraints = new ArrayList<Constraint>();
+		final Collection<Constraint> maxRPCConstraints = new ArrayList<Constraint>(16);
 
 		Map<String, PConstraint> pcstr = parser.getMapOfConstraints();
 		String options = (forceExp ? Options.E_DECOMP : "");
@@ -65,7 +65,7 @@ public class ChocoFactoryRPC extends ChocoFactory {
 			}
 		}
 		if (maxRPCConstraints.size() > 2) {
-			final Set<Variable> variables = new HashSet<Variable>();
+			final Set<Variable> variables = new HashSet<Variable>(16);
 			for (Constraint c : maxRPCConstraints) {
 				for (Variable v : c.extractVariables()) {
 					if (v instanceof IntegerVariable
@@ -92,7 +92,7 @@ public class ChocoFactoryRPC extends ChocoFactory {
 		}
 	}
 
-	private int nbVariables(Constraint c) {
+	private static int nbVariables(Constraint c) {
 		int nb = 0;
 		for (Variable v : c.extractVariables()) {
 			if (v instanceof IntegerVariable
@@ -103,17 +103,15 @@ public class ChocoFactoryRPC extends ChocoFactory {
 		return nb;
 	}
 
-	public Constraint[] makeModelConstraint(PConstraint pc) {
+	public static Constraint[] makeModelConstraint(PConstraint pc) {
 		Constraint[] c = null;
 		if (pc instanceof PExtensionConstraint) {
 			c = ExtConstraintFactory
 					.makeExtConstraint((PExtensionConstraint) pc);
 		} else if (pc instanceof PIntensionConstraint) {
-			ModelConstraintFactory mcf = new ModelConstraintFactory(m, parser);
-			c = mcf.makeIntensionConstraint((PIntensionConstraint) pc);
+			c = ModelConstraintFactory.makeIntensionConstraint((PIntensionConstraint) pc);
 		} else if (pc instanceof PGlobalConstraint) {
-			GloConstraintFactory gf = new GloConstraintFactory(m, parser);
-			c = gf.makeGlobalConstraint((PGlobalConstraint) pc);
+			c = GloConstraintFactory.makeGlobalConstraint((PGlobalConstraint) pc);
 		}
 		return c;
 	}

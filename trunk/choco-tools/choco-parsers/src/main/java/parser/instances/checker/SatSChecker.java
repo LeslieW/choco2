@@ -1,7 +1,7 @@
 package parser.instances.checker;
 
-import parser.instances.ResolutionStatus;
 import choco.kernel.solver.search.checker.SolutionCheckerException;
+import parser.instances.ResolutionStatus;
 
 public class SatSChecker implements IStatusChecker {
 
@@ -13,7 +13,7 @@ public class SatSChecker implements IStatusChecker {
 	}
 
 	public void fail(ResolutionStatus status) throws SolutionCheckerException{
-		throw new SolutionCheckerException("check-status...["+pretty()+"][status:+"+status+"]");
+		throw new SolutionCheckerException("check-status...["+pretty()+"][status:+"+status+ ']');
 	}
 	
 	@Override

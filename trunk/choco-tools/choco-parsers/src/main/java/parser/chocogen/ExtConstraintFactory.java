@@ -37,7 +37,6 @@ import parser.absconparseur.components.PRelation;
 import parser.absconparseur.components.PVariable;
 import parser.absconparseur.tools.InstanceParser;
 
-import java.util.Iterator;
 import java.util.List;
 
 
@@ -51,16 +50,14 @@ public class ExtConstraintFactory extends ObjectFactory {
     }
 
 	// add the neq into the difference graph
-	public void preAnalyse(RelationFactory relfact) {
-		Iterator<PConstraint> it = parser.getMapOfConstraints().values().iterator();
-		while (it.hasNext()) {
-			PConstraint pec = it.next();
-			if (pec instanceof PExtensionConstraint) {
-				if (pec.getArity() == 2) {
-					relfact.detectIntensionConstraint((PExtensionConstraint)pec);
-				}
-			}
-		}
+	public void preAnalyse() {
+        for (final PConstraint pConstraint : parser.getMapOfConstraints().values()) {
+            if (pConstraint instanceof PExtensionConstraint) {
+                if (pConstraint.getArity() == 2) {
+                    RelationFactory.detectIntensionConstraint((PExtensionConstraint) pConstraint);
+                }
+            }
+        }
 	}
 
 	public static Constraint[] makeExtConstraint(PExtensionConstraint pec) {

@@ -51,31 +51,31 @@ public class ReportFormatter {
 	}
 
 	public final void storeDiagnostic(String name, int val) {
-		final String value = name+" "+DFORMAT.format(val);
+		final String value = name+ ' ' +DFORMAT.format(val);
 		appendDiagnostic(value);
 		dbInformations.add(value);
 	}
 
 	public final void storeDiagnostic(String name, Number val) {
-		final String value = name+" "+DFORMAT.format(val);
+		final String value = name+ ' ' +DFORMAT.format(val);
 		appendDiagnostic(value);
 		dbInformations.add(value);
 	}
 	public final void appendDiagnostic(String name, int val) {
-		appendDiagnostic(name+" "+DFORMAT.format(val));
+		appendDiagnostic(name+ ' ' +DFORMAT.format(val));
 	}
 
 	public final void appendDiagnostic(String name, double val) {
-		appendDiagnostic(name+" "+DFORMAT.format(val));
+		appendDiagnostic(name+ ' ' +DFORMAT.format(val));
 	}
 
 	public final void appendDiagnostic(String name, Number val) {
-		appendDiagnostic(name+" "+DFORMAT.format(val));
+		appendDiagnostic(name+ ' ' +DFORMAT.format(val));
 	}
 
 
 	public final void appendDiagnostics(String name, int val, double time) {
-		appendDiagnostic(name+" "+DFORMAT.format(val));
+		appendDiagnostic(name+ ' ' +DFORMAT.format(val));
 		appendDiagnostic(name+"/s "+DFORMAT.format(val/time));
 	}
 
@@ -84,7 +84,7 @@ public class ReportFormatter {
 	}
 
 	public final void storeConfiguration(String value) {
-		if(value != null && ! value.equals("")) {
+		if(value != null && value.length() != 0) {
 			appendConfiguration(value);
 			dbInformations.add(value);
 		}

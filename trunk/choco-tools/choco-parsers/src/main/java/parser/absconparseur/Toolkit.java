@@ -45,8 +45,7 @@ public class Toolkit {
 			Process p = Runtime.getRuntime().exec(completeCommand);
 			if (out != null) {
 				BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
-				String firstLine = in.readLine();
-				String line = firstLine;
+                String line = in.readLine();
 				while (line != null) {
 					out.println(line);
 					line = in.readLine();
@@ -142,27 +141,27 @@ public class Toolkit {
 
 	public static String getRawInstanceName(String s) {
 		int first = (s.lastIndexOf(File.separator) != -1 ? s.lastIndexOf(File.separator) + 1 : 0);
-		int last = (s.lastIndexOf(".") != -1 ? s.lastIndexOf(".") : s.length());
+		int last = (s.lastIndexOf('.') != -1 ? s.lastIndexOf('.') : s.length());
 		return (first > last ? s.substring(first) : s.substring(first, last));
 	}
 
 	public static String getRelativeParentPackageNameOf(Class clazz) {
 		String s = clazz.getName();
-		int last = s.lastIndexOf(".");
+		int last = s.lastIndexOf('.');
 		if (last == -1)
 			return null;
 		String path = s.substring(0, last);
-		return path.substring(path.lastIndexOf(".") + 1);
+		return path.substring(path.lastIndexOf('.') + 1);
 	}
 
 	public static String getRelativeClassNameOf(Class clazz) {
 		String s = clazz.getName();
-		return s.substring(s.lastIndexOf(".") + 1);
+		return s.substring(s.lastIndexOf('.') + 1);
 	}
 
 	public static String getRelativeClassNameOf(Object object) {
 		String s = object.getClass().getName();
-		return s.substring(s.lastIndexOf(".") + 1);
+		return s.substring(s.lastIndexOf('.') + 1);
 	}
 
 	public static String getSeparator(int mode) {
@@ -188,8 +187,7 @@ public class Toolkit {
 
 	public static Integer parseInteger(String token) {
 		try {
-			int l = Integer.parseInt(token);
-			return Integer.valueOf(l);
+            return Integer.parseInt(token);
 		} catch (NumberFormatException e) {
 			return null;
 		}
@@ -197,8 +195,7 @@ public class Toolkit {
 
 	public static Long parseLong(String token) {
 		try {
-			long l = Long.parseLong(token);
-			return Long.valueOf(l);
+            return Long.parseLong(token);
 		} catch (NumberFormatException e) {
 			return null;
 		}
@@ -213,7 +210,7 @@ public class Toolkit {
 		int hour = calendar.get(Calendar.HOUR_OF_DAY);
 		int minute = calendar.get(Calendar.MINUTE);
 		DecimalFormat df = new DecimalFormat("00");
-		return year + "_" + df.format(month) + "_" + df.format(day) + "_" + df.format(hour) + "_" + df.format(minute);
+		return year + "_" + df.format(month) + '_' + df.format(day) + '_' + df.format(hour) + '_' + df.format(minute);
 	}
 
 	public static String getFormattedMemorySize(long size) {
@@ -250,8 +247,7 @@ public class Toolkit {
 	}
 
 	public static void copy(int[] dstSupport, int[] srcSupport) {
-		for (int i = 0; i < dstSupport.length; i++)
-			dstSupport[i] = srcSupport[i];
+        System.arraycopy(srcSupport, 0, dstSupport, 0, dstSupport.length);
 	}
 
 	public static int searchFirstStringOccurrenceIn(String s, String[] t) {
@@ -269,7 +265,7 @@ public class Toolkit {
 	}
 
 	public static String buildStringFromInts(int[] t) {
-		StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder(16);
 		for (int i = 0; i < t.length; i++) {
 			sb.append(t[i]);
 			if (i<t.length-1)
@@ -279,7 +275,7 @@ public class Toolkit {
 	}
 	
 	public static String buildStringFromTokens(String[] t) {
-		StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder(16);
 		for (int i = 0; i < t.length; i++) {
 			sb.append(t[i]);
 			if (i<t.length-1)
@@ -300,7 +296,7 @@ public class Toolkit {
 	 * Returns a string built from the given first one by inserting (if necessary) a whitespace before and after each occurence of a character of the second one.
 	 */
 	public static String insertWhitespaceAround(String s, String t) {
-		StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder(16);
 		for (int i = 0; i < s.length(); i++) {
 			char c = s.charAt(i);
 			boolean found = false;
@@ -308,9 +304,9 @@ public class Toolkit {
 				if (t.charAt(j) == c)
 					found = true;
 			if (found) {
-				sb.append(" ");
+				sb.append(' ');
 				sb.append(c);
-				sb.append(" ");
+				sb.append(' ');
 			} else
 				sb.append(c);
 		}

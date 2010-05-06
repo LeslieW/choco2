@@ -29,15 +29,15 @@ import static java.lang.Integer.parseInt;
 
 public class PPredicate  extends PFunction {
 
-	private String name;
+	private final String name;
 
 	private String[] formalParameters;
 
 	private String functionalExpression;
 
-	private String[] unversalPostfixExpression;
+	private final String[] unversalPostfixExpression;
 
-    private int index;
+    private final int index;
 
     public String getName() {
 		return name;

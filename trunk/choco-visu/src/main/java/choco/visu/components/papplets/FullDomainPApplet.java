@@ -44,9 +44,9 @@ import java.util.ArrayList;
 
 public final class FullDomainPApplet extends AChocoPApplet{
 
-    private final int size = 15;
+    private static final int size = 15;
     private String[] names;
-    private static int maxNameLength = 25;
+    private static final int maxNameLength = 25;
 
     public FullDomainPApplet(final Object parameters) {
         super(parameters);
@@ -59,10 +59,6 @@ public final class FullDomainPApplet extends AChocoPApplet{
      * @param list of visu variables o watch
      */
     public void initialize(final ArrayList<IVisuVariable> list) {
-        final Var[] vars = new Var[list.size()];
-        for(int i = 0; i < list.size(); i++){
-            vars[i] = list.get(i).getSolverVar();
-        }
         names = new String[list.size()];
         bricks = new AChocoBrick[list.size()];
         for(int i = 0; i < list.size(); i++){

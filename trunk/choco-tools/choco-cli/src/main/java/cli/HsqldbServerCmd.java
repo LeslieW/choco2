@@ -22,28 +22,18 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package cli;
 
-import static db.OdbHsqldbBridge.DBNAME;
-import static db.OdbHsqldbBridge.exportDatabase;
-import static db.OdbHsqldbBridge.getDefaultOdbPattern;
-import static db.OdbHsqldbBridge.makeEmbeddedURL;
-import static db.OdbHsqldbBridge.makeNetworkURL;
-import static db.OdbHsqldbBridge.uncompressDatabase;
+import static db.OdbHsqldbBridge.*;
+import org.hsqldb.Server;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.Option;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Level;
-
-import org.hsqldb.Server;
-import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.Option;
 
 /**
  * The command extract a database into a given directory or compress a database into a given file.
@@ -116,7 +106,7 @@ public class HsqldbServerCmd extends AbstractCmdLine {
 
 	protected void displayConnectionUrls() {
 		if(LOGGER.isLoggable(Level.INFO)) {
-			final StringBuilder b  =new StringBuilder();
+			final StringBuilder b  =new StringBuilder(128);
 			b.append("\nconnection to the database using jdbc:");
 			b.append("\n\t-Embedded: ").append(makeEmbeddedURL(dbDir, dbName));
 			b.append("\n\t-Server:\n\t\t").append(makeNetworkURL("localhost", dbName));
@@ -136,7 +126,7 @@ public class HsqldbServerCmd extends AbstractCmdLine {
 	protected Server startHsqldbServer() {
 		Server server = new Server();
 		server.setDatabaseName(0, dbName);
-		server.setDatabasePath( 0, dbDir.getAbsolutePath()+"/"+dbName);
+		server.setDatabasePath( 0, dbDir.getAbsolutePath()+ '/' +dbName);
 		server.setLogWriter(null);
 		server.setErrWriter(null);
 		server.start();

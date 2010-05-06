@@ -71,7 +71,7 @@ public class ModelConstraintFactory extends ObjectFactory{
         }
     }
 
-    private static Map constExp = new HashMap();
+    private static final Map<String, ConstExp> constExp = new HashMap<String, ConstExp>(17);
     static {
         constExp.put("eq", ConstExp.eq);
         constExp.put("ne", ConstExp.ne);
@@ -92,7 +92,7 @@ public class ModelConstraintFactory extends ObjectFactory{
         constExp.put("precReiChoco", ConstExp.precReiChoco);
 
 
-    };
+    }
 
     private enum IntExp {
         neg("neg", 1),
@@ -115,7 +115,7 @@ public class ModelConstraintFactory extends ObjectFactory{
         }
     }
 
-    private static Map intExp = new HashMap();
+    private static final Map<String, IntExp> intExp = new HashMap<String, IntExp>(10);
     static {
         intExp.put("neg", IntExp.neg);
         intExp.put("add", IntExp.add);
@@ -127,7 +127,7 @@ public class ModelConstraintFactory extends ObjectFactory{
         intExp.put("abs", IntExp.abs);
         intExp.put("min", IntExp.min);
         intExp.put("max", IntExp.max);
-    };
+    }
 
 
     private enum BooleanExp {
@@ -145,14 +145,14 @@ public class ModelConstraintFactory extends ObjectFactory{
         }
     }
 
-    private static Map boolExp = new HashMap();
+    private static final Map<String, BooleanExp> boolExp = new HashMap<String, BooleanExp>(5);
     static {
         boolExp.put("and", BooleanExp.and);
         boolExp.put("not", BooleanExp.not);
         boolExp.put("or", BooleanExp.or);
         boolExp.put("xor", BooleanExp.xor);
         boolExp.put("iff", BooleanExp.iff);
-    };
+    }
 
     private enum BooleanPartExp{
         ifte("if", 2);
@@ -165,18 +165,19 @@ public class ModelConstraintFactory extends ObjectFactory{
 
     }
 
-    private static Map boolPartExp = new HashMap();
+    private static final Map<String, BooleanPartExp> boolPartExp = new HashMap<String, BooleanPartExp>(1);
     static {
         boolPartExp.put("if", BooleanPartExp.ifte);
-    };
+    }
 
 
-     public ModelConstraintFactory(Model m, InstanceParser parser) {
+    public ModelConstraintFactory(Model m, InstanceParser parser) {
         super(m, parser);
     }
 
 
-    public Constraint[] makeIntensionConstraint(PIntensionConstraint pic) {
+    @SuppressWarnings({"unchecked"})
+    public static Constraint[] makeIntensionConstraint(PIntensionConstraint pic) {
 
         String[] pp = pic.getUniversalPostfixExpression();
         //List pile = new ArrayList();
@@ -193,7 +194,7 @@ public class ModelConstraintFactory extends ObjectFactory{
                     q.addFirst(pic.getScope()[idx].getChocovar());
                 }
             } else if (boolExp.containsKey(val)) {
-                BooleanExp b = (BooleanExp) boolExp.get(val);
+                BooleanExp b = boolExp.get(val);
                 Constraint[] is = new Constraint[b.arity];
                 for (int j = 0; j < b.arity; j++) {
                     is[j] = (Constraint) q.removeFirst();
@@ -201,7 +202,7 @@ public class ModelConstraintFactory extends ObjectFactory{
                 q.addFirst(createBool(b, is));
 
             } else if (constExp.containsKey(val)) {
-                ConstExp b = (ConstExp) constExp.get(val);
+                ConstExp b = constExp.get(val);
                 IntegerExpressionVariable[] is = new IntegerExpressionVariable[b.arity];
                 for (int j = 0; j < b.arity; j++) {
                     is[j] = (IntegerExpressionVariable) q.removeFirst();
@@ -209,7 +210,7 @@ public class ModelConstraintFactory extends ObjectFactory{
                 q.addFirst(createExp(b, is));
 
             } else if (intExp.containsKey(val)) {
-                IntExp b = (IntExp) intExp.get(val);
+                IntExp b = intExp.get(val);
                 IntegerExpressionVariable[] is = new IntegerExpressionVariable[b.arity];
                 for (int j = 0; j < b.arity; j++) {
                     is[j] = (IntegerExpressionVariable) q.removeFirst();
@@ -218,8 +219,7 @@ public class ModelConstraintFactory extends ObjectFactory{
 
             } else if(boolPartExp.containsKey(val)){
 
-                BooleanPartExp b = (BooleanPartExp) boolPartExp.get(val);
-                Constraint[] is = new Constraint[b.arity];
+                BooleanPartExp b = boolPartExp.get(val);
                 Constraint c = (Constraint)q.removeFirst();
                 IntegerExpressionVariable[] iss = new IntegerExpressionVariable[b.arity];
                 for (int j = 0; j < b.arity; j++) {
@@ -232,11 +232,10 @@ public class ModelConstraintFactory extends ObjectFactory{
                 throw new Error("I don't know what to do with that :" + val);
             }
         }
-        Constraint[] c = new Constraint[]{(Constraint) q.removeFirst()};
-        return c;
+        return new Constraint[]{(Constraint) q.removeFirst()};
     }
 
-    private IntegerExpressionVariable createBoolPart(BooleanPartExp b, Constraint c, IntegerExpressionVariable[] iss) {
+    private static IntegerExpressionVariable createBoolPart(BooleanPartExp b, Constraint c, IntegerExpressionVariable[] iss) {
         switch (b) {
             case ifte:
                 return Choco.ifThenElse(c, iss[0], iss[1]);
@@ -246,7 +245,7 @@ public class ModelConstraintFactory extends ObjectFactory{
     }
 
 
-    private Constraint createExp(ConstExp b, IntegerExpressionVariable... i){
+    private static Constraint createExp(ConstExp b, IntegerExpressionVariable... i){
         switch (b) {
             case eq:
                 return eq(i[0], i[1]);
@@ -295,7 +294,7 @@ public class ModelConstraintFactory extends ObjectFactory{
         }
     }
 
-    private Constraint createBool(BooleanExp  b, Constraint... i){
+    private static Constraint createBool(BooleanExp  b, Constraint... i){
         switch (b) {
             case and:
                 if(i.length ==2){
@@ -330,7 +329,7 @@ public class ModelConstraintFactory extends ObjectFactory{
 
 
 
-    private IntegerExpressionVariable createInt(IntExp b, IntegerExpressionVariable... i){
+    private static IntegerExpressionVariable createInt(IntExp b, IntegerExpressionVariable... i){
         switch (b) {
             case add:
                 return Choco.plus(i[0], i[1]);

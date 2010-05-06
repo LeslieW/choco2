@@ -1,12 +1,10 @@
 package cli;
 
-import java.io.File;
-
-import org.kohsuke.args4j.CmdLineException;
-
 import parser.instances.AbstractInstanceModel;
 import parser.instances.BasicSettings;
 import parser.instances.FcspModel;
+
+import java.io.File;
 
 public class FcspCmd extends AbstractBenchmarkCmd {
 
@@ -14,11 +12,6 @@ public class FcspCmd extends AbstractBenchmarkCmd {
 		super(new BasicSettings());
 	}
 
-	
-	@Override
-	protected void checkData() throws CmdLineException {
-		super.checkData();
-	}
 
 	@Override
 	protected AbstractInstanceModel createInstance() {

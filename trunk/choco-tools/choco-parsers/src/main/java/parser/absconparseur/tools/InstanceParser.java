@@ -54,9 +54,7 @@ public class InstanceParser {
 
 	private String type;
 
-	private String format;
-
-	private int maxConstraintArity;
+    private int maxConstraintArity;
 
 	private Map<String, PDomain> mapOfDomains;
 
@@ -180,7 +178,7 @@ public class InstanceParser {
 		maxConstraintArity = s.length() == 0 || s.equals("?") ? -1 : Integer.parseInt(s);
 		type = presentationElement.getAttribute(InstanceTokens.TYPE.trim());
 		type = type.length() == 0 || type.equals("?") ? InstanceTokens.CSP : type;
-		format = presentationElement.getAttribute(InstanceTokens.FORMAT.trim());
+        final String format = presentationElement.getAttribute(InstanceTokens.FORMAT.trim());
 		if (displayInstance)
 			LOGGER.info("Instance with maxConstraintArity=" + maxConstraintArity + " type=" + type + " format=" + format);
 		s = presentationElement.getAttribute(InstanceTokens.NB_SOLUTIONS).trim();
@@ -189,7 +187,7 @@ public class InstanceParser {
 		minViolatedConstraints = satisfiable.equals("true") ? "0" : s.length() == 0 || s.equals("?") ? "unknown" : s;
 	}
 
-	private int[] parseDomainValues(int nbValues, String stringOfValues) {
+	private static int[] parseDomainValues(int nbValues, String stringOfValues) {
 		int cnt = 0;
 		int[] values = new int[nbValues];
 		StringTokenizer st = new StringTokenizer(stringOfValues);
@@ -208,7 +206,7 @@ public class InstanceParser {
 		return values;
 	}
 
-	private PDomain parseDomain(Element domainElement) {
+	private static PDomain parseDomain(Element domainElement) {
 		String name = domainElement.getAttribute(InstanceTokens.NAME);
 		int nbValues = Integer.parseInt(domainElement.getAttribute(InstanceTokens.NB_VALUES));
 		int[] values = parseDomainValues(nbValues, domainElement.getTextContent());
@@ -218,7 +216,7 @@ public class InstanceParser {
 	}
 
 	private void parseDomains(Element domainsElement) {
-		mapOfDomains = new HashMap<String, PDomain>();
+		mapOfDomains = new HashMap<String, PDomain>(16);
 		int nbDomains = Integer.parseInt(domainsElement.getAttribute(InstanceTokens.NB_DOMAINS));
 		if (displayInstance)
 			LOGGER.log(Level.INFO, "=> {0} domains",nbDomains);
@@ -228,7 +226,7 @@ public class InstanceParser {
 			PDomain domain = parseDomain((Element) nodeList.item(i));
 			mapOfDomains.put(domain.getName(), domain);
 			if (displayInstance)
-				LOGGER.info(""+domain);
+				LOGGER.info(String.valueOf(domain));
 		}
 	}
 
@@ -239,7 +237,7 @@ public class InstanceParser {
 	}
 
 	private void parseVariables(Element variablesElement) {
-		mapOfVariables = new HashMap<String, PVariable>();
+		mapOfVariables = new HashMap<String, PVariable>(16);
 		int nbVariables = Integer.parseInt(variablesElement.getAttribute(InstanceTokens.NB_VARIABLES));
 		if (displayInstance)
 			LOGGER.info("=> " + nbVariables + " variables");
@@ -251,11 +249,11 @@ public class InstanceParser {
 			mapOfVariables.put(variable.getName(), variable);
 			variables[i] = variable;
 			if (displayInstance)
-				LOGGER.info(""+variable);
+				LOGGER.info(String.valueOf(variable));
 		}
 	}
 
-	private PRelation parseRelationTuples(String name, int arity, int nbTuples, String semantics, String textContent) {
+	private static PRelation parseRelationTuples(String name, int arity, int nbTuples, String semantics, String textContent) {
 		int[][] tuples = new int[nbTuples][arity];
 		StringTokenizer st = new StringTokenizer(textContent, InstanceTokens.WHITE_SPACE + InstanceTokens.TUPLES_SEPARATOR);
 		for (int i = 0; i < tuples.length; i++)
@@ -264,7 +262,7 @@ public class InstanceParser {
 		return new PRelation(name, arity, nbTuples, semantics, tuples);
 	}
 
-	private PRelation parseSoftRelationTuples(String name, int arity, int nbTuples, String semantics, String textContent, String textDefaultCost) {
+	private static PRelation parseSoftRelationTuples(String name, int arity, int nbTuples, String semantics, String textContent, String textDefaultCost) {
 		int[][] tuples = new int[nbTuples][arity];
 		int[] weights = new int[nbTuples];
 		StringTokenizer st = new StringTokenizer(textContent, InstanceTokens.WHITE_SPACE + InstanceTokens.TUPLES_SEPARATOR);
@@ -285,7 +283,7 @@ public class InstanceParser {
 		return new PSoftRelation(name, arity, nbTuples, semantics, tuples, weights, defaultCost);
 	}
 
-	private PRelation parseRelation(Element relationElement) {
+	private static PRelation parseRelation(Element relationElement) {
 		String name = relationElement.getAttribute(InstanceTokens.NAME);
 		int arity = Integer.parseInt(relationElement.getAttribute(InstanceTokens.ARITY));
 		int nbTuples = Integer.parseInt(relationElement.getAttribute(InstanceTokens.NB_TUPLES));
@@ -297,7 +295,7 @@ public class InstanceParser {
 	}
 
 	private void parseRelations(Element relationsElement) {
-		mapOfRelations = new HashMap<String, PRelation>();
+		mapOfRelations = new HashMap<String, PRelation>(16);
 		if (relationsElement == null)
 			return;
 		if (displayInstance)
@@ -311,7 +309,7 @@ public class InstanceParser {
 		}
 	}
 
-	private PPredicate parsePredicate(Element predicateElement) {
+	private static PPredicate parsePredicate(Element predicateElement) {
 		String name = predicateElement.getAttribute(InstanceTokens.NAME);
 		Element parameters = (Element) predicateElement.getElementsByTagName(InstanceTokens.PARAMETERS).item(0);
 		Element expression = (Element) predicateElement.getElementsByTagName(InstanceTokens.EXPRESSION).item(0);
@@ -320,7 +318,7 @@ public class InstanceParser {
 	}
 
 	private void parsePredicates(Element predicatesElement) {
-		mapOfPredicates = new HashMap<String, PPredicate>();
+		mapOfPredicates = new HashMap<String, PPredicate>(16);
 		if (predicatesElement == null)
 			return;
 		int nbPredicates = Integer.parseInt(predicatesElement.getAttribute(InstanceTokens.NB_PREDICATES));
@@ -336,7 +334,7 @@ public class InstanceParser {
 		}
 	}
 
-	private PFunction parseFunction(Element functionElement) {
+	private static PFunction parseFunction(Element functionElement) {
 		String name = functionElement.getAttribute(InstanceTokens.NAME);
 		Element parameters = (Element) functionElement.getElementsByTagName(InstanceTokens.PARAMETERS).item(0);
 		Element expression = (Element) functionElement.getElementsByTagName(InstanceTokens.EXPRESSION).item(0);
@@ -345,7 +343,7 @@ public class InstanceParser {
 	}
 
 	private void parseFunctions(Element functionsElement) {
-		mapOfFunctions = new HashMap<String, PFunction>();
+		mapOfFunctions = new HashMap<String, PFunction>(16);
 		if (functionsElement == null)
 			return;
 		int nbFunctions = Integer.parseInt(functionsElement.getAttribute(InstanceTokens.NB_FUNCTIONS));
@@ -369,7 +367,7 @@ public class InstanceParser {
 		return involvedVariables;
 	}
 
-	private int searchIn(String s, PVariable[] t) {
+	private static int searchIn(String s, PVariable[] t) {
 		for (int i = 0; i < t.length; i++)
 			if (t[i].getName().equals(s))
 				return i;
@@ -380,7 +378,7 @@ public class InstanceParser {
 		StringTokenizer st = new StringTokenizer(Toolkit.insertWhitespaceAround(parameters.getTextContent().trim(), InstanceTokens.BRACKETS), InstanceTokens.WHITE_SPACE);
 		PVariable index = mapOfVariables.get(st.nextToken()); // index is necessarily a variable
 		st.nextToken(); // token [ skipped
-		List<Object> table = new ArrayList<Object>();
+		List<Object> table = new ArrayList<Object>(16);
 		String token = st.nextToken();
 		while (!token.equals("]")) {
 			Object object = mapOfVariables.get(token);
@@ -396,7 +394,7 @@ public class InstanceParser {
 		return new PElement(name, scope, index, table.toArray(new Object[table.size()]), value);
 	}
 
-	private PConstraint parseWeightedSumConstraint(String name, PVariable[] scope, Element parameters) {
+	private static PConstraint parseWeightedSumConstraint(String name, PVariable[] scope, Element parameters) {
 		NodeList nodeList = parameters.getChildNodes();
 		StringTokenizer st = new StringTokenizer(nodeList.item(0).getTextContent(), InstanceTokens.WHITE_SPACE + "[{}]");
 		int[] coeffs = new int[scope.length];
@@ -410,15 +408,15 @@ public class InstanceParser {
 		return new PWeightedSum(name, scope, coeffs, operator, limit);
 	}
 
-	protected String buildStringRepresentationOf(Element parameters) {
+	protected static String buildStringRepresentationOf(Element parameters) {
 		NodeList nodeList = parameters.getChildNodes();
-		StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder(128);
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			Node node = nodeList.item(i);
 			if (node.getNodeName().equals(InstanceTokens.NIL)) {
-				sb.append(" ");
+				sb.append(' ');
 				sb.append(InstanceTokens.NIL);
-				sb.append(" ");
+				sb.append(' ');
 			} else
 				sb.append(Toolkit.insertWhitespaceAround(node.getTextContent(), InstanceTokens.BRACKETS));
 		}
@@ -428,7 +426,7 @@ public class InstanceParser {
 	protected PConstraint parseCumulativeConstraint(String name, PVariable[] scope, Element parameters) {
 		StringTokenizer st = new StringTokenizer(buildStringRepresentationOf(parameters), InstanceTokens.WHITE_SPACE + "{}");
 		st.nextToken(); // token '[' skipped
-		List<PTask> tasks = new ArrayList<PTask>();
+		List<PTask> tasks = new ArrayList<PTask>(16);
 		String token = st.nextToken();
 		while (!token.equals("]")) {
 			Object origin = mapOfVariables.get(token);
@@ -457,7 +455,7 @@ public class InstanceParser {
 	protected PConstraint parseDisjunctiveConstraint(String name, PVariable[] scope, Element parameters) {
 		StringTokenizer st = new StringTokenizer(buildStringRepresentationOf(parameters), InstanceTokens.WHITE_SPACE + "{}");
 		st.nextToken(); // token '[' skipped
-		List<PTask> tasks = new ArrayList<PTask>();
+		List<PTask> tasks = new ArrayList<PTask>(16);
 		String token = st.nextToken();
 		while (!token.equals("]")) {
 			Object origin = mapOfVariables.get(token);
@@ -477,9 +475,9 @@ public class InstanceParser {
 	private PConstraint parseGlobalCardinalityConstraint(String name, PVariable[] involvedVariables, Element parameters){
 		StringTokenizer st = new StringTokenizer(buildStringRepresentationOf(parameters));
 		st.nextToken(); // token '[' skipped
-		Set<PVariable> involvedVariablesInParameters = new HashSet<PVariable>();
+		Set<PVariable> involvedVariablesInParameters = new HashSet<PVariable>(16);
 		String token = st.nextToken();
-		List<Object> table = new ArrayList<Object>();
+		List<Object> table = new ArrayList<Object>(16);
 		while (!token.equals("]")) {
 			Object var = mapOfVariables.get(token);
 			if (var == null)
@@ -514,9 +512,9 @@ public class InstanceParser {
 	private PConstraint parseLexLessConstraint(String name, PVariable[] involvedVariables, Element parameters){
 		StringTokenizer st = new StringTokenizer(buildStringRepresentationOf(parameters));
 		st.nextToken(); // token '[' skipped
-		Set<PVariable> involvedVariablesInParameters = new HashSet<PVariable>();
+		Set<PVariable> involvedVariablesInParameters = new HashSet<PVariable>(16);
 		String token = st.nextToken();
-		List<Object> table = new ArrayList<Object>();
+		List<Object> table = new ArrayList<Object>(16);
 		while (!token.equals("]")) {
 			Object var = mapOfVariables.get(token);
 			if (var == null)
@@ -546,9 +544,9 @@ public class InstanceParser {
 	private PConstraint parseLexLessEqConstraint(String name, PVariable[] involvedVariables, Element parameters){
 		StringTokenizer st = new StringTokenizer(buildStringRepresentationOf(parameters));
 		st.nextToken(); // token '[' skipped
-		Set<PVariable> involvedVariablesInParameters = new HashSet<PVariable>();
+		Set<PVariable> involvedVariablesInParameters = new HashSet<PVariable>(16);
 		String token = st.nextToken();
-		List<Object> table = new ArrayList<Object>();
+		List<Object> table = new ArrayList<Object>(16);
 		while (!token.equals("]")) {
 			Object var = mapOfVariables.get(token);
 			if (var == null)
@@ -630,15 +628,15 @@ public class InstanceParser {
 	}
 
 	private void parseConstraints(Element constraintsElement) throws UnsupportedConstraintException {
-		mapOfConstraints = new HashMap<String, PConstraint>();
+		mapOfConstraints = new HashMap<String, PConstraint>(16);
 		int nbConstraints = Integer.parseInt(constraintsElement.getAttribute(InstanceTokens.NB_CONSTRAINTS));
 		if (displayInstance && LOGGER.isLoggable(Level.INFO)) {
-			StringBuffer st = new StringBuffer();
+            StringBuilder st = new StringBuilder(128);
 			st.append("=> ").append(nbConstraints).append(" constraints");
 			if (type.equals(InstanceTokens.WCSP)) {
 				int maximalCost = Integer.parseInt(constraintsElement.getAttribute(InstanceTokens.MAXIMAL_COST));
 				String s = constraintsElement.getAttribute(InstanceTokens.INITIAL_COST);
-				int initialCost = s.equals("") ? 0 : Integer.parseInt(s);
+				int initialCost = s.length() == 0 ? 0 : Integer.parseInt(s);
 				st.append(" maximalCost=").append(maximalCost).append(" initialCost=").append(initialCost);
 			}
 			LOGGER.info(st.toString());

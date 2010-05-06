@@ -44,7 +44,9 @@ public abstract class Expression {
         ANN, ARR, BOO, IDA, IDE, INT, SET_B, SET_L, STR 
     }
 
+    @SuppressWarnings({"InstantiatingObjectToGetClassObject"})
     protected static final Class int_arr = new int[0].getClass();
+    @SuppressWarnings({"InstantiatingObjectToGetClassObject"})
     protected static final Class bool_arr = new boolean[0].getClass();
 
     final EType typeOf;
@@ -57,9 +59,9 @@ public abstract class Expression {
         return typeOf;
     }
 
-    static final void exit(){
+    static void exit(){
         LOGGER.severe("Expression  unexpected call");
-        new Exception().printStackTrace();
+//        new Exception().printStackTrace();
         throw new UnsupportedOperationException();
     }
 

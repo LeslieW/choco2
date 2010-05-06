@@ -2,15 +2,6 @@
 
 package cli;
 
-import java.io.File;
-import java.util.Random;
-import java.util.logging.Level;
-
-import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.Option;
-
-import parser.instances.AbstractInstanceModel;
-import parser.instances.BasicSettings;
 import choco.cp.solver.configure.LimitFactory;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
@@ -23,6 +14,14 @@ import db.DbManager;
 import db.EmbeddedDbConnector;
 import db.IDbConnector;
 import db.RemoteDbConnector;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.Option;
+import parser.instances.AbstractInstanceModel;
+import parser.instances.BasicSettings;
+
+import java.io.File;
+import java.util.Random;
+import java.util.logging.Level;
 
 /**
  * The class define a command pattern designed for benchmarking.
@@ -57,7 +56,7 @@ public abstract class AbstractBenchmarkCmd extends AbstractCmdLine implements Fi
 	protected Integer timeLimit;
 
 	@Option(name="-v",aliases={"--verbosity"},usage="set the verbosity level")
-	public final void setGlobalVerbosity(Verbosity verbosity) {
+	public static void setGlobalVerbosity(Verbosity verbosity) {
 		ChocoLogging.setVerbosity(verbosity);
 	}
 

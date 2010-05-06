@@ -50,19 +50,17 @@ public final class DottyTreeSearchPApplet extends AChocoPApplet {
 
     private Var watch = null;
     private int intobjective = 0;
-    double realobjective = 0.0;
-    int last = -1;
-    Boolean maximize = null;
-    Boolean restart = null;
-    FileWriter fw;
+    private int last = -1;
+    private Boolean maximize = null;
+    private Boolean restart = null;
     private final String fileName;
-    private final LinkedList<String> q = new LinkedList();
-    private final LinkedList<String> nodes = new LinkedList();
-    private final LinkedList<String> edges = new LinkedList();
-    int width = -1;
-    int depth = -1;
-    protected static final String ROOT = "ROOT";
-    int nodeLimit = 100;
+    private final LinkedList<String> q = new LinkedList<String>();
+    private final LinkedList<String> nodes = new LinkedList<String>();
+    private final LinkedList<String> edges = new LinkedList<String>();
+    private int width = -1;
+    private int depth = -1;
+    private static final String ROOT = "ROOT";
+    private int nodeLimit = 100;
 
 
     public DottyTreeSearchPApplet(final Object parameters) {
@@ -84,12 +82,6 @@ public final class DottyTreeSearchPApplet extends AChocoPApplet {
                     this.intobjective = Integer.MIN_VALUE;
                 } else {
                     this.intobjective = Integer.MAX_VALUE;
-                }
-            } else {
-                if (maximize) {
-                    this.realobjective = Double.MIN_VALUE;
-                } else {
-                    this.realobjective = Double.MAX_VALUE;
                 }
             }
         }
@@ -115,7 +107,7 @@ public final class DottyTreeSearchPApplet extends AChocoPApplet {
     public final void updateEdges(final boolean back) {
         String to = null;
         String from = null;
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder(128);
         if (q.size() > 1) {
             if (back) {
                 from = q.removeLast();
@@ -148,8 +140,8 @@ public final class DottyTreeSearchPApplet extends AChocoPApplet {
             depth = -1;
         }
         if (!sol) depth++;
-        final StringBuffer node = new StringBuffer("\"").append(name).append("(")
-                .append(width).append(",").append(depth).append(")\"");
+        final StringBuilder node = new StringBuilder("\"").append(name).append('(')
+                .append(width).append(',').append(depth).append(")\"");
         q.add(node.toString());
         node.append("[label=\"").append(name).append("\",");
         if (sol) {
@@ -165,7 +157,7 @@ public final class DottyTreeSearchPApplet extends AChocoPApplet {
     /**
      * Update the objective if necessary
      */
-    public final void updateObjective() {
+    final void updateObjective() {
         if (watch.isInstantiated()) {
             if (watch instanceof IntDomainVar) {
                 IntDomainVar v = (IntDomainVar) watch;
@@ -190,6 +182,7 @@ public final class DottyTreeSearchPApplet extends AChocoPApplet {
     public final void printGraph() {
         if (nodes.size() < nodeLimit) {
             if (watch != null) updateObjective();
+            final FileWriter fw;
             try {
                 fw = new FileWriter(fileName);
                 fw.write("digraph G {\n");
@@ -233,10 +226,6 @@ public final class DottyTreeSearchPApplet extends AChocoPApplet {
      * @param list of visu variables o watch
      */
     public final void initialize(final ArrayList<IVisuVariable> list) {
-        Var[] vars = new Var[list.size()];
-        for (int i = 0; i < list.size(); i++) {
-            vars[i] = list.get(i).getSolverVar();
-        }
         bricks = new AChocoBrick[list.size()];
         for (int i = 0; i < list.size(); i++) {
             IVisuVariable vv = list.get(i);
@@ -248,8 +237,8 @@ public final class DottyTreeSearchPApplet extends AChocoPApplet {
     }
 
 
-    float s = 0;
-    float xincrement = (float)0.1;
+    private float s = 0;
+    private static final float xincrement = (float)0.1;
 
     /**
      * build the specific PApplet.

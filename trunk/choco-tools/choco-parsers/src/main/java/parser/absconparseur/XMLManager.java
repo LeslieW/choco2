@@ -46,11 +46,11 @@ public final class XMLManager {
 
 	protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
-	private static boolean useStyleSheet = true; // true; // TODO //true; //false; // true // a style sheet can seriously degrade performances
+	private static final boolean useStyleSheet = true; // true; // TODO //true; //false; // true // a style sheet can seriously degrade performances
 
 	private static final class ErrorHandler extends DefaultHandler {
 		
-		private MessageFormat message = new MessageFormat("({0}: {1}, {2}): {3}");
+		private final MessageFormat message = new MessageFormat("({0}: {1}, {2}): {3}");
 
 		private void print(SAXParseException x) {
 			String msg = message.format(new Object[] { x.getSystemId(), x.getLineNumber(), x.getColumnNumber(), x.getMessage() });

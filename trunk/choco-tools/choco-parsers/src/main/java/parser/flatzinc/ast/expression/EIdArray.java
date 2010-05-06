@@ -59,12 +59,12 @@ public final class EIdArray extends Expression{
 
     @Override
     public String toString() {
-        return name+"["+index.toString()+"]";
+        return name+ '[' +index.toString()+ ']';
     }
 
     @Override
     public int intValue() {
-        return ((Integer)object).intValue();
+        return (Integer) object;
     }
 
     @Override

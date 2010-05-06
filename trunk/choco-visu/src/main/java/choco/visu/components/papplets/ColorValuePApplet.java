@@ -45,7 +45,7 @@ import java.util.ArrayList;
 
 public final class ColorValuePApplet extends AChocoPApplet{
 
-    private final int size = 15;
+    private static final int size = 15;
     private String[] names;
     private static final int maxNameLenght = 25;
 
@@ -60,10 +60,6 @@ public final class ColorValuePApplet extends AChocoPApplet{
      * @param list of visu variables o watch
      */
     public final void initialize(final ArrayList<IVisuVariable> list) {
-        final Var[] vars = new Var[list.size()];
-        for(int i = 0; i < list.size(); i++){
-            vars[i] = list.get(i).getSolverVar();
-        }
         names = new String[list.size()];
         bricks = new AChocoBrick[list.size()];
         for(int i = 0; i < list.size(); i++){

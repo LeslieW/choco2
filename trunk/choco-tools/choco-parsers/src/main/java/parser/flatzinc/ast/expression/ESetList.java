@@ -52,13 +52,13 @@ public final class ESetList extends ESet{
 
     @Override
     public String toString() {
-        StringBuffer bf = new StringBuffer("{");
+        StringBuilder bf = new StringBuilder("{");
         if(values.length>0){
             bf.append(values[0]);
             for(int i = 1; i < values.length; i++){
-                bf.append(",").append(values[i]);
+                bf.append(',').append(values[i]);
             }
         }
-        return bf.append("}").toString();
+        return bf.append('}').toString();
     }
 }

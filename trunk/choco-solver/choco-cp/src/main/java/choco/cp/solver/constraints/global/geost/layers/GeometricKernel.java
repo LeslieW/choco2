@@ -18,14 +18,11 @@ import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import static java.text.MessageFormat.format;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 class MemoStore {
-    public boolean active = false;
+    public boolean active;
     public int p = 1; //Maximum nbr of objects stored
     public List<List<Obj>> listObj; // actual list of objects
     Map<int[], Integer> m;// = new HashMap<int[],Integer>;
@@ -77,7 +74,7 @@ public final class GeometricKernel {
         memo.p = 1;
         memo.active = memo_;
         memo.listObj = new ArrayList<List<Obj>>(0);
-        memo.m = new HashMap<int[], Integer>();
+        memo.m = new HashMap<int[], Integer>(16);
         included = included_;
         this.solver = aSolver;
         this.constraint = aConstraint;
@@ -100,7 +97,7 @@ public final class GeometricKernel {
     List getFR(int d, int k, Obj o, Point c, Point jump, List<InternalConstraint> ACTRS, boolean increase) {
         stp.opt.GetFRCalled++;
 
-        List<Object> result = new ArrayList<Object>();
+        List<Object> result = new ArrayList<Object>(2);
         List v;
         if (increase) {
             for (int rr = get_fr_ptr_a; rr < ACTRS.size() + get_fr_ptr_a; rr++) {
@@ -156,6 +153,7 @@ public final class GeometricKernel {
      * @return It return false if we couldn't prune anything, this means that we sweeped the whole space and couldn't find a placement. This cause
      *         a failure of the Geost_Constraint. Otherwise it returns true.
      */
+    @SuppressWarnings({"PrimitiveArrayArgumentToVariableArgMethod"})
     public boolean filterCtrs(int k, int[] oIDs, List<ExternalConstraint> ectrs) throws ContradictionException {
 
 
@@ -163,11 +161,11 @@ public final class GeometricKernel {
 
         if (stp.opt.serial != null) {
             try {
-                List<Obj> tmp = new ArrayList<Obj>();
-                for (int i = 0; i < oIDs.length; i++) {
-                    tmp.add(stp.getObject(i));
-                }
-                stp.opt.serial.writeObject(tmp);
+//                List<Obj> tmp = new ArrayList<Obj>(oIDs.length);
+//                for (int i = 0; i < oIDs.length; i++) {
+//                    tmp.add(stp.getObject(i));
+//                }
+                stp.opt.serial.writeObject(Arrays.asList(oIDs));
             } catch (Exception e) {
                 throw new SolverException("Prune:unable to serialize parameters");
             }
@@ -257,7 +255,7 @@ public final class GeometricKernel {
                         nonFix = true;
                     }
                     if (stp.opt.debug) {
-                        LOGGER.info("***Result of FilterCstrs:" + o);
+                        LOGGER.info(String.format("***Result of FilterCstrs:%s", o));
                     }
                 }
 
@@ -461,14 +459,12 @@ public final class GeometricKernel {
         Point c = new Point(k);
         Point n = new Point(k);
 
-        List<InternalConstraint> ACTRS = ictrs;
-
         for (int i = 0; i < o.getCoordinates().length; i++) {
             c.setCoord(i, o.getCoord(i).getInf()); // Initial position of point
             n.setCoord(i, o.getCoord(i).getSup() + 1); // Upper limits + 1 in the different dimensions
         }
 //        LOGGER.info("A");
-        List forbidRegion = getFR(d, k, o, c, n, ACTRS, true);
+        List forbidRegion = getFR(d, k, o, c, n, ictrs, true);
         //LOGGER.info("GetFR(d:"+d+",k:"+k+",o:"+o+",c:"+c+",n:"+c+",ACTRS:,true -> "+forbidRegion);
 
         boolean infeasible = (Boolean) forbidRegion.get(0);
@@ -509,7 +505,7 @@ public final class GeometricKernel {
 //            curDelta.put(delta,curDelta.get(delta)+1);
 
             //LOGGER.info("E:"+c);
-            forbidRegion = getFR(d, k, o, c, n, ACTRS, true);
+            forbidRegion = getFR(d, k, o, c, n, ictrs, true);
             //LOGGER.info("GetFR(d:"+d+",k:"+k+",o:"+o+",c:"+c+",n:"+c+",ACTRS:,true -> "+forbidRegion);
             //LOGGER.info("F");
             infeasible = (Boolean) forbidRegion.get(0);
@@ -558,9 +554,9 @@ public final class GeometricKernel {
      */
 
 
-    List adjustUp(Point c, Point n, Obj o, int d, int k) {
+    static List adjustUp(Point c, Point n, Obj o, int d, int k) {
         //LOGGER.info("Adjust Up("+c+","+ n+",?,"+d+","+k  +")");
-        List<Object> result = new ArrayList<Object>();
+        List<Object> result = new ArrayList<Object>(3);
         int jPrime = 0;
         int j = k - 1;
         while (j >= 0) {
@@ -599,9 +595,6 @@ public final class GeometricKernel {
         Point c = new Point(k);
         Point n = new Point(k);
 
-        List<InternalConstraint> ACTRS = new ArrayList<InternalConstraint>();
-        ACTRS = ictrs;
-
 
         for (int i = 0; i < o.getCoordinates().length; i++) {
             c.setCoord(i, o.getCoord(i).getSup()); // Initial position of point
@@ -609,7 +602,7 @@ public final class GeometricKernel {
         }
 
 
-        List forbidRegion = getFR(d, k, o, c, n, ACTRS, false);
+        List forbidRegion = getFR(d, k, o, c, n, ictrs, false);
         boolean infeasible = (Boolean) forbidRegion.get(0);
         Region f = (Region) forbidRegion.get(1);
         while (b && infeasible) {
@@ -631,7 +624,7 @@ public final class GeometricKernel {
 //            curDelta.put(delta,curDelta.get(delta)+1);
 
 
-            forbidRegion = getFR(d, k, o, c, n, ACTRS, false);
+            forbidRegion = getFR(d, k, o, c, n, ictrs, false);
             infeasible = (Boolean) forbidRegion.get(0);
             f = (Region) forbidRegion.get(1);
         }
@@ -647,8 +640,8 @@ public final class GeometricKernel {
     /**
      * Moves down to the next feasible point, this function is used by the PruneMax function.
      */
-    List adjustDown(Point c, Point n, Obj o, int d, int k) {
-        List<Object> result = new ArrayList<Object>();
+    static List adjustDown(Point c, Point n, Obj o, int d, int k) {
+        List<Object> result = new ArrayList<Object>(3);
         int jPrime = 0;
         int j = k - 1;
         while (j >= 0) {
@@ -743,7 +736,7 @@ public final class GeometricKernel {
         oIDs[0] = oID;
         oIDs[1] = oID + 1;
 
-        List<InternalConstraint> added = new ArrayList<InternalConstraint>();
+        List<InternalConstraint> added = new ArrayList<InternalConstraint>(16);
 
         for (int ic = 0; ic < o.getRelatedExternalConstraints().size(); ic++) {
             ExternalConstraint ectr = o.getRelatedExternalConstraints().get(ic);
@@ -760,7 +753,7 @@ public final class GeometricKernel {
         return added;
     }
 
-    private boolean same_domain(int[][] old_domain, Obj o) {
+    private static boolean same_domain(int[][] old_domain, Obj o) {
         for (int i = 0; i < old_domain.length; i++) {
             if (old_domain[i][0] != o.getCoord(i).getDomainSize()) {
                 return false;
@@ -780,7 +773,7 @@ public final class GeometricKernel {
 
         Integer sid_prime = null;
         int[][] domain_prime = null;
-        List<InternalConstraint> ICTRS = new ArrayList<InternalConstraint>();
+        List<InternalConstraint> ICTRS = Collections.emptyList();// = new ArrayList<InternalConstraint>(16);
 
         for (int i = 0; i < ectrs.size(); i++) {
             ectrs.get(i).setFrame(externalLayer.InitFrameExternalConstraint(ectrs.get(i), oIDs));
@@ -853,7 +846,7 @@ public final class GeometricKernel {
             List<InternalConstraint> incr_ICTRS = absForbReg(o);
             //Note that the merging has been done in AbsForReg
 
-            if ((ICTRS.size() != 0) && (incr_ICTRS.size() != 0)) {
+            if ((!ICTRS.isEmpty()) && (!incr_ICTRS.isEmpty())) {
                 try {
                     Outbox old_ob = (Outbox) ICTRS.get(ICTRS.size() - 1);
                     Outbox new_ob = (Outbox) incr_ICTRS.get(0);
@@ -937,7 +930,7 @@ public final class GeometricKernel {
      */
     Point getPreviousIteration(int k, int[] d, Obj o, Point c, List<Obj> memo) {
 
-        if (memo.size() > 0) { //&& (dominates(k,d,c,memo.firstElement(),o)) ) {
+        if (!memo.isEmpty()) { //&& (dominates(k,d,c,memo.firstElement(),o)) ) {
             for (int i = 0; i < memo.size(); i++) {
                 //c.print(); LOGGER.info(" dominates "); memo.get(i).print(); LOGGER.info(" ?");
                 boolean b = (dominates(k, d, c, memo.get(i), o));
@@ -1108,7 +1101,7 @@ public final class GeometricKernel {
 
     /* Implementation of the curve mode Section 7.7. "Speeding up the feasible point search when the forbidden regions do not correspond to boxes"*/
 
-    Region lexMore(Region box, Region best_box, int d, int k, boolean increase) {
+    static Region lexMore(Region box, Region best_box, int d, int k, boolean increase) {
         if (box == null) {
             return best_box;
         }
@@ -1141,11 +1134,11 @@ public final class GeometricKernel {
         return box;
     }
 
-    Region largestLexBox(int d, int k, boolean increase, Region box1, Region box2) {
+    static Region largestLexBox(int d, int k, boolean increase, Region box1, Region box2) {
         return lexMore_normal(box1, box2, d, k, increase);
     }
 
-    Region lexMore_normal(Region box, Region best_box, int d, int k, boolean increase) {
+    static Region lexMore_normal(Region box, Region best_box, int d, int k, boolean increase) {
         if (box == null) {
             return best_box;
         }
@@ -1175,7 +1168,7 @@ public final class GeometricKernel {
         return box;
     }
 
-    Region lexMore_volume(Region candidate, Region B, int d, int k, boolean increase) {
+    static Region lexMore_volume(Region candidate, Region B, int d, int k, boolean increase) {
 
         if (candidate == null) {
             return B;
@@ -1208,13 +1201,13 @@ public final class GeometricKernel {
 
     }
 
-    Region proportionalFBox(InternalConstraint ictr, int d, int k, Obj o, Point c, Point jump, boolean increase, double prop) {
+    static Region proportionalFBox(InternalConstraint ictr, int d, int k, Obj o, Point c, Point jump, boolean increase, double prop) {
         double[] prop_ = new double[1];
         prop_[0] = prop;
         return proportionalFBox(ictr, d, k, o, c, jump, increase, prop_);
     }
 
-    Region proportionalFBox(InternalConstraint ictr, int d, int k, Obj o, Point c, Point jump, boolean increase, double[] prop) {
+    static Region proportionalFBox(InternalConstraint ictr, int d, int k, Obj o, Point c, Point jump, boolean increase, double[] prop) {
         if (!(ictr instanceof ForbiddenRegion)) {
             throw new SolverException("proportionalFBox():ictr is not a distance internal constraint (not a subclass of Forbidden Region for MaximizeSizeOfFBox.");
         }
@@ -1276,7 +1269,7 @@ public final class GeometricKernel {
 
         Region candidate = null;
 
-        List<ForbiddenRegion> list = new ArrayList<ForbiddenRegion>();
+        List<ForbiddenRegion> list = new ArrayList<ForbiddenRegion>(16);
         for (InternalConstraint ictr : ictrs) {
             if (!(ictr instanceof ForbiddenRegion)) {
                 throw new SolverException("GetBestFR():not a ForviddenRegion constraint.");
@@ -1294,7 +1287,7 @@ public final class GeometricKernel {
         }
 
         int maxVolume = 0;
-        List<Region> maxVolumeList = new ArrayList<Region>();
+        List<Region> maxVolumeList = new ArrayList<Region>(16);
         for (ForbiddenRegion fr : list) {
             Region B, f = null;
             List r = fr.isFeasible(increase, d, k, o, c, n);
@@ -1334,10 +1327,10 @@ public final class GeometricKernel {
                 }
 
                 if (trace) {
-                    LOGGER.info("fr(" + f.getMinimumBoundary(0) + "," + f.getMinimumBoundary(1) + "," + f.getMaximumBoundary(0) + "," + f.getMaximumBoundary(1) + ");");
+                    LOGGER.info("fr(" + f.getMinimumBoundary(0) + ',' + f.getMinimumBoundary(1) + ',' + f.getMaximumBoundary(0) + ',' + f.getMaximumBoundary(1) + ");");
                 }
                 if (trace) {
-                    LOGGER.info("fr(" + B.getMinimumBoundary(0) + "," + B.getMinimumBoundary(1) + "," + B.getMaximumBoundary(0) + "," + B.getMaximumBoundary(1) + ");");
+                    LOGGER.info("fr(" + B.getMinimumBoundary(0) + ',' + B.getMinimumBoundary(1) + ',' + B.getMaximumBoundary(0) + ',' + B.getMaximumBoundary(1) + ");");
                 }
 
 
@@ -1368,25 +1361,25 @@ public final class GeometricKernel {
         list = null;
 
         //choose the one with the best lex
-        if (maxVolumeList.size() > 0) {
+        if (!maxVolumeList.isEmpty()) {
             candidate = maxVolumeList.get(0);
         } else {
             candidate = null;
         }
         for (int i = 1; i < maxVolumeList.size(); i++) {
-            candidate = lexMore(candidate, (Region) maxVolumeList.get(i), d, k, increase);
+            candidate = lexMore(candidate, maxVolumeList.get(i), d, k, increase);
         }
 
-        List result = new ArrayList();
+        List result = new ArrayList(2);
         result.add((candidate != null)); //true means infeasible
         result.add(candidate);
         return result;
     }
 
 
-    List adjustDown(Point c, Point n, Obj o, int d, int k, boolean mode) {
+    static List adjustDown(Point c, Point n, Obj o, int d, int k, boolean mode) {
         int cd = c.getCoord(d);
-        List<Object> result = new ArrayList<Object>();
+        List<Object> result = new ArrayList<Object>(4);
         int jPrime = 0;
         int j = k - 1;
         while (j >= 0) {
@@ -1418,9 +1411,9 @@ public final class GeometricKernel {
         return result;
     }
 
-    List adjustUp(Point c, Point n, Obj o, int d, int k, boolean mode) {
+    static List adjustUp(Point c, Point n, Obj o, int d, int k, boolean mode) {
         int cd = c.getCoord(d);
-        List<Object> result = new ArrayList<Object>();
+        List<Object> result = new ArrayList<Object>(4);
         int jPrime = 0;
         int j = k - 1;
         while (j >= 0) {
@@ -1454,7 +1447,7 @@ public final class GeometricKernel {
     boolean newPruneMin(Obj o, int d, int k, List<InternalConstraint> ictrs) throws ContradictionException {
         boolean trace = false;
         if (trace) {
-            LOGGER.info("//in:o" + o.getObjectId() + ":" + o + "(" + ictrs + ")");
+            LOGGER.info("//in:o" + o.getObjectId() + ':' + o + '(' + ictrs + ')');
         }
         boolean processing = true;
 //        LOGGER.info("{sphereList.clear();   ");
@@ -1485,9 +1478,6 @@ public final class GeometricKernel {
         Point c = new Point(k);
         Point n = new Point(k);
 
-        List<InternalConstraint> ACTRS = new ArrayList<InternalConstraint>();
-        ACTRS = ictrs;
-
         for (int i = 0; i < o.getCoordinates().length; i++) {
             c.setCoord(i, o.getCoord(i).getInf()); // Initial position of point
             n.setCoord(i, o.getCoord(i).getSup() + 1); // Upper limits + 1 in the different dimensions
@@ -1497,7 +1487,7 @@ public final class GeometricKernel {
         //LOGGER.info("\\begin{itemize}");
         //LOGGER.info("\\item GetBestFR$(d="+d+",k="+k+", o=o3, c="+c+",n="+n+",ICTRS=\\{c_1,c_2\\},increase=\\TRUE,mode="+mode+",prop="+stp.opt.prop+")$ ");
         //double[] prop = { 0.66, 0.5, 0.33};
-        List forbidRegion = getBestFR(d, k, o, c, n, ACTRS, true, mode, stp.opt.prop);
+        List forbidRegion = getBestFR(d, k, o, c, n, ictrs, true, mode, stp.opt.prop);
         //LOGGER.info(" returns $[infeasible="+forbidRegion.get(0)+",f="+forbidRegion.get(1)+"]$ ");
 
 
@@ -1507,11 +1497,11 @@ public final class GeometricKernel {
 
 
             LOGGER.info("if (phase==" + (stp.opt.phase) + "){");
-            LOGGER.info("sphereList.clear(); container_size(" + stp.getObject(3).getCoord(0).getInf() * 2 + "," + stp.getObject(3).getCoord(1).getInf() * 2 + "," + stp.getObject(3).getCoord(2).getInf() * 2 + ");");
+            LOGGER.info("sphereList.clear(); container_size(" + stp.getObject(3).getCoord(0).getInf() * 2 + ',' + stp.getObject(3).getCoord(1).getInf() * 2 + ',' + stp.getObject(3).getCoord(2).getInf() * 2 + ");");
             for (Integer l : stp.getObjectKeySet()) {
                 Obj otmp = stp.getObject(l);
                 if (otmp.coordInstantiated()) {
-                    LOGGER.info(" sphere(" + o.getObjectId() + "," + otmp.getRadius() + ",");
+                    LOGGER.info(" sphere(" + o.getObjectId() + ',' + otmp.getRadius() + ',');
                     for (int i = 0; i < k; i++) {
                         if (i != k - 1) {
                             LOGGER.info(otmp.getCoord(i).getInf() + ",");
@@ -1547,11 +1537,11 @@ public final class GeometricKernel {
 
 
             if (infeasible) {
-                LOGGER.info(";mode=" + mode + ";d=" + d + ";");
+                LOGGER.info(";mode=" + mode + ";d=" + d + ';');
                 LOGGER.info("fr(");
                 for (int i = 0; i < k; i++) {
                     if (i != k - 1) {
-                        LOGGER.info(f.getMinimumBoundary(i) + "," + f.getMaximumBoundary(i) + ",");
+                        LOGGER.info(f.getMinimumBoundary(i) + "," + f.getMaximumBoundary(i) + ',');
                     } else {
                         LOGGER.info(f.getMinimumBoundary(i) + "," + f.getMaximumBoundary(i) + ");");
                     }
@@ -1610,7 +1600,7 @@ public final class GeometricKernel {
             adjUp = null;
 
             if (stp.opt.delta.get(d) == null) {
-                stp.opt.delta.put(d, new HashMap<Integer, Integer>());
+                stp.opt.delta.put(d, new HashMap<Integer, Integer>(16));
             }
             HashMap<Integer, Integer> curDelta = stp.opt.delta.get(d);
             int delta = Math.abs(c.getCoord(d) - initial_c.getCoord(d));
@@ -1624,7 +1614,7 @@ public final class GeometricKernel {
 //            LOGGER.info("\\begin{itemize}");
             //LOGGER.info("\\item GetBestFR$(d="+d+",k="+k+", o=o3, c="+c+",n="+n+",ICTRS=\\{c_1,c_2\\},increase=\\TRUE,mode="+mode+",prop="+stp.opt.prop+")$ ");
             //double[] prop2 = { 0.66, 0.5, 0.33};
-            forbidRegion = getBestFR(d, k, o, c, n, ACTRS, true, mode, stp.opt.prop);
+            forbidRegion = getBestFR(d, k, o, c, n, ictrs, true, mode, stp.opt.prop);
             //LOGGER.info(" returns $[infeasible="+forbidRegion.get(0)+",f="+forbidRegion.get(1)+"]$ ");
             if (processing) {
 
@@ -1634,7 +1624,7 @@ public final class GeometricKernel {
                 for (Integer l : stp.getObjectKeySet()) {
                     Obj otmp = stp.getObject(l);
                     if (otmp.coordInstantiated()) {
-                        LOGGER.info(" sphere(" + o.getObjectId() + "," + otmp.getRadius() + ",");
+                        LOGGER.info(" sphere(" + o.getObjectId() + ',' + otmp.getRadius() + ',');
                         for (int i = 0; i < k; i++) {
                             if (i != k - 1) {
                                 LOGGER.info(otmp.getCoord(i).getInf() + ",");
@@ -1647,11 +1637,11 @@ public final class GeometricKernel {
                 LOGGER.info("}");
 
                 if (infeasible) {
-                    LOGGER.info(";mode=" + mode + ";d=" + d + ";");
+                    LOGGER.info(";mode=" + mode + ";d=" + d + ';');
                     LOGGER.info(" fr(");
                     for (int i = 0; i < k; i++) {
                         if (i != k - 1) {
-                            LOGGER.info(f.getMinimumBoundary(i) + "," + f.getMaximumBoundary(i) + ",");
+                            LOGGER.info(f.getMinimumBoundary(i) + "," + f.getMaximumBoundary(i) + ',');
                         } else {
                             LOGGER.info(f.getMinimumBoundary(i) + "," + f.getMaximumBoundary(i) + ");");
                         }
@@ -1745,16 +1735,13 @@ public final class GeometricKernel {
         Point c = new Point(k);
         Point n = new Point(k);
 
-        List<InternalConstraint> ACTRS = new ArrayList<InternalConstraint>();
-        ACTRS = ictrs;
-
 
         for (int i = 0; i < o.getCoordinates().length; i++) {
             c.setCoord(i, o.getCoord(i).getSup()); // Initial position of point
             n.setCoord(i, o.getCoord(i).getInf() - 1); // Lower limits - 1 in the different dimensions
         }
 
-        List forbidRegion = getBestFR(d, k, o, c, n, ACTRS, false, mode, stp.opt.prop);
+        List forbidRegion = getBestFR(d, k, o, c, n, ictrs, false, mode, stp.opt.prop);
         boolean infeasible = (Boolean) forbidRegion.get(0);
         Region f = (Region) forbidRegion.get(1);
         while (b && infeasible) {
@@ -1774,7 +1761,7 @@ public final class GeometricKernel {
             adjDown = null;
 
             if (stp.opt.delta.get(d) == null) {
-                stp.opt.delta.put(d, new HashMap<Integer, Integer>());
+                stp.opt.delta.put(d, new HashMap<Integer, Integer>(16));
             }
             HashMap<Integer, Integer> curDelta = stp.opt.delta.get(d);
             int delta = Math.abs(c.getCoord(d) - initial_c.getCoord(d));
@@ -1784,7 +1771,7 @@ public final class GeometricKernel {
             curDelta.put(delta, curDelta.get(delta) + 1);
 
 
-            forbidRegion = getBestFR(d, k, o, c, n, ACTRS, false, mode, stp.opt.prop);
+            forbidRegion = getBestFR(d, k, o, c, n, ictrs, false, mode, stp.opt.prop);
             infeasible = (Boolean) forbidRegion.get(0);
             f = (Region) forbidRegion.get(1);
             forbidRegion = null;
@@ -1796,7 +1783,7 @@ public final class GeometricKernel {
         return b;
     }
 
-    boolean isFeasible(Point p, List<InternalConstraint> ictrs) {
+    static boolean isFeasible(Point p, List<InternalConstraint> ictrs) {
         for (InternalConstraint ictr : ictrs) {
             if (!(ictr instanceof ForbiddenRegion)) {
                 throw new SolverException("GeometricKernel:isFeasible():not a ForbiddenRegion constraint.");
@@ -1814,8 +1801,8 @@ public final class GeometricKernel {
 
     //7.7.2. Utility functions
 
-    List<ForbiddenRegion> setOfCstrsOnPt(Point c, List<InternalConstraint> ictrs) {
-        List<ForbiddenRegion> r = new ArrayList<ForbiddenRegion>();
+    static List<ForbiddenRegion> setOfCstrsOnPt(Point c, List<InternalConstraint> ictrs) {
+        List<ForbiddenRegion> r = new ArrayList<ForbiddenRegion>(ictrs.size());
         for (InternalConstraint ictr : ictrs) {
             if (!(ictr instanceof ForbiddenRegion)) {
                 throw new SolverException("GeometricKernel:SetOfCstrsOnPt():not a ForbiddenRegion constraint.");
@@ -1829,11 +1816,11 @@ public final class GeometricKernel {
         return r;
     }
 
-    int nbrOfCstrsOnPt(Point c, List<InternalConstraint> ictrs) {
+    static int nbrOfCstrsOnPt(Point c, List<InternalConstraint> ictrs) {
         return setOfCstrsOnPt(c, ictrs).size();
     }
 
-    Point maxPt(Point p1, Point p2, int d, boolean second_pt_is_defined, boolean increase) {
+    static Point maxPt(Point p1, Point p2, int d, boolean second_pt_is_defined, boolean increase) {
         if ((!second_pt_is_defined) || ((p1.getCoord(d) >= p2.getCoord(d)) == increase)) {
             return p1;
         }
@@ -1841,14 +1828,14 @@ public final class GeometricKernel {
 
     }
 
-    Point slidePt(Point p, int d, int value) {
+    static Point slidePt(Point p, int d, int value) {
         Point r = new Point(p);
         r.setCoord(d, value);
         return r;
     }
 
 
-    int prev(boolean increase) {
+    static int prev(boolean increase) {
         if (increase) {
             return -1;
         } else {
@@ -1856,7 +1843,7 @@ public final class GeometricKernel {
         }
     }
 
-    int succ(boolean increase) {
+    static int succ(boolean increase) {
         if (increase) {
             return 1;
         } else {
@@ -1864,21 +1851,21 @@ public final class GeometricKernel {
         }
     }
 
-    int min(int a, int b, boolean increase) {
+    static int min(int a, int b, boolean increase) {
         if (increase) {
             return Math.min(a, b);
         }
         return Math.max(a, b);
     }
 
-    int max(int a, int b, boolean increase) {
+    static int max(int a, int b, boolean increase) {
         if (increase) {
             return Math.max(a, b);
         }
         return Math.min(a, b);
     }
 
-    Region buildBox(int k, Point p1, Point p2) {
+    static Region buildBox(int k, Point p1, Point p2) {
         Region box = new Region(k, 0);
         for (int i = 0; i < k; i++) {
             box.setMinimumBoundary(i, Math.min(p1.getCoord(i), p2.getCoord(i)));
@@ -1887,7 +1874,7 @@ public final class GeometricKernel {
         return box;
     }
 
-    double ratio(Region box) {
+    static double ratio(Region box) {
         return box.ratio();
     }
 
@@ -1946,7 +1933,7 @@ public final class GeometricKernel {
         return result;
     }
 
-    Point extend_both(Point p, int d, int k, Point cut_point, ForbiddenRegion ictr, ForbiddenRegion ictr2, boolean increase) {
+    static Point extend_both(Point p, int d, int k, Point cut_point, ForbiddenRegion ictr, ForbiddenRegion ictr2, boolean increase) {
 //        Region box= new Region(p);
         Point result = new Point(p);
 
@@ -1969,7 +1956,7 @@ public final class GeometricKernel {
 
     //7.7.2. Comparison Functions Between Two Boxes
 
-    boolean largestInverseLex(int d_prune, int k, boolean increase, Region box, Region best_box) {
+    static boolean largestInverseLex(int d_prune, int k, boolean increase, Region box, Region best_box) {
         //invariant
         if (!(box != null && best_box != null)) {
             throw new SolverException("GeometricKernel:LargestInverseLex():invariant 1 failed");
@@ -1994,7 +1981,7 @@ public final class GeometricKernel {
         return false;
     }
 
-    Region largestInvLexBox(int d_prune, int k, boolean increase, Region box, Region best_box) {
+    static Region largestInvLexBox(int d_prune, int k, boolean increase, Region box, Region best_box) {
         //if box are the sames (regarding sizes in all dim.), returns the second one
         if (box == null) {
             return best_box;
@@ -2008,7 +1995,7 @@ public final class GeometricKernel {
         return best_box;
     }
 
-    boolean equalInverseLex(int k, Region box, Region best_box) {
+    static boolean equalInverseLex(int k, Region box, Region best_box) {
         for (int i = 0; i < k; i++) {
             if (box.getSize(i) != best_box.getSize(i)) {
                 return false;
@@ -2038,7 +2025,7 @@ public final class GeometricKernel {
 //
 
     //
-    Region bestVolume(Region box, Region best_box) {
+    static Region bestVolume(Region box, Region best_box) {
         if (box == null) {
             return best_box;
         }
@@ -2059,13 +2046,13 @@ public final class GeometricKernel {
 //    }
 
     //
-    boolean equalVolume(Region box, Region best_box) {
+    static boolean equalVolume(Region box, Region best_box) {
         return (box.volume() == best_box.volume());
     }
 
     Region selectionCriteria(int d_prune, int k, boolean increase, Region box1, Region box2) {
         if (stp.opt.debug) {
-            LOGGER.info("/*debug*/SelectionCriteria(d_prune=" + d_prune + ", k=" + k + ", increase=" + increase + " box1=" + box1 + " ,box2=" + box2 + ")");
+            LOGGER.info("/*debug*/SelectionCriteria(d_prune=" + d_prune + ", k=" + k + ", increase=" + increase + " box1=" + box1 + " ,box2=" + box2 + ')');
         }
         if (box1 == null) {
             if (stp.opt.debug) {
@@ -2081,7 +2068,8 @@ public final class GeometricKernel {
         }
         int won1 = 0;
         int won2 = 0;
-
+        assert box1 != null;
+        assert box2 != null;
         if ((box1.ratio() <= 0.1) && (box2.ratio() <= 0.1) && ((!box1.included(box2)) && (!box2.included(box1)))) {
             Region tmp = largestLexBox(d_prune, k, increase, box1, box2);
             if (stp.opt.debug) {
@@ -2167,12 +2155,13 @@ public final class GeometricKernel {
             LOGGER.info("/*debug*/SelectionCriteria() returns " + box2);
         }
         return box2;
+
     }
 
 
     //7.7.3. Single Constraint Box Generators
 
-    Region finishToExtendBox(int d_prune, int k, Point n, boolean increase, ForbiddenRegion ictr, int todim, Region box) {
+    static Region finishToExtendBox(int d_prune, int k, Point n, boolean increase, ForbiddenRegion ictr, int todim, Region box) {
         for (int d = k - 1; d >= todim; d--) {
             int d_prime = (d + d_prune) % k;
 
@@ -2208,7 +2197,7 @@ public final class GeometricKernel {
 //        return box;
 //    }
 
-    Region getGreedyBoxFromPoint(int d_prune, int k, Point c, Point n, ForbiddenRegion ictr, boolean increase, int limit_prune) {
+    static Region getGreedyBoxFromPoint(int d_prune, int k, Point c, Point n, ForbiddenRegion ictr, boolean increase, int limit_prune) {
         Region box = new Region(c);
         if (k == 3) {
             if (increase) {
@@ -2234,7 +2223,7 @@ public final class GeometricKernel {
     }
 
 
-    Region getGreedyBoxFromJumpVector(int d_prev_least, int d_prune, int k, Point c, Point n, int inter, ForbiddenRegion ictr, boolean increase, int limit_prune) {
+    static Region getGreedyBoxFromJumpVector(int d_prev_least, int d_prune, int k, Point c, Point n, int inter, ForbiddenRegion ictr, boolean increase, int limit_prune) {
         Region box = new Region(c);
         if (k == 3) {
             if (increase) {
@@ -2458,7 +2447,7 @@ public final class GeometricKernel {
 
     Region findBoxInter(int d_prune, int d_least, int d_prev_least, int k, Point c, Point g, Point n, boolean increase, ForbiddenRegion ictr_c, ForbiddenRegion ictr_g, int pos_p) {
         if (stp.opt.debug) {
-            LOGGER.info("/*debug*/FindBoxInter(d_prune=" + d_prune + ", d_least=" + d_least + ", d_prev_least=" + d_prev_least + ", k=" + k + ", c=" + c + ", g=" + g + ", n=" + n + ", increase" + increase + ", ictr_c=" + ictr_c + ", ictr_g=" + ictr_g + ", pos_p=" + pos_p + ")");
+            LOGGER.info("/*debug*/FindBoxInter(d_prune=" + d_prune + ", d_least=" + d_least + ", d_prev_least=" + d_prev_least + ", k=" + k + ", c=" + c + ", g=" + g + ", n=" + n + ", increase" + increase + ", ictr_c=" + ictr_c + ", ictr_g=" + ictr_g + ", pos_p=" + pos_p + ')');
         }
         if (!((increase && (c.getCoord(d_least) <= g.getCoord(d_least))) || ((!increase) && (c.getCoord(d_least) >= g.getCoord(d_least))))) {
             throw new SolverException("GeometricKernel:Region FindBoxInterIn():invariant1");
@@ -2484,7 +2473,7 @@ public final class GeometricKernel {
 
         if (b) {
             if (stp.opt.processing) {
-                LOGGER.info("\n/*Processing*/intersection(" + d_prune + "," + inter + ");");
+                LOGGER.info("\n/*Processing*/intersection(" + d_prune + ',' + inter + ");");
             }
             //if ((d_prev_least!=d_prune) && (k==2)) {LOGGER.info("GeometricKernel:FindBoxInter():invariant"); }
             Region rbox = getGreedyBoxFromJumpVector(d_prev_least, d_prune, k, c, n, inter, ictr_c, increase, pos_p);
@@ -2562,9 +2551,9 @@ public final class GeometricKernel {
     @SuppressWarnings({"unchecked"})
     List longestCommonInterval(int d, int k, Point p, ForbiddenRegion ictr, ForbiddenRegion ictr2, Point jump, boolean increase) {
         if (stp.opt.debug) {
-            LOGGER.info("/*debug*/LongestCommonInterval(d=" + d + ", k=" + k + ", p=" + p + ", ictr=" + ictr + ", ictr2=" + ictr2 + ", jump=" + jump + ", increase=" + increase + ")");
+            LOGGER.info("/*debug*/LongestCommonInterval(d=" + d + ", k=" + k + ", p=" + p + ", ictr=" + ictr + ", ictr2=" + ictr2 + ", jump=" + jump + ", increase=" + increase + ')');
         }
-        List result = new ArrayList();
+        List result = new ArrayList(3);
         boolean inIctr = ictr.insideForbidden(p);
         boolean inIctr2 = ictr2.insideForbidden(p);
         Point min, max;
@@ -2616,7 +2605,7 @@ public final class GeometricKernel {
 
     boolean infeasibleTriangle(Point a, Point b, Point c, ForbiddenRegion ictr, int k) {
         if (stp.opt.debug) {
-            LOGGER.info("/*debug*/InfeasibleTriangle(a=" + a + ", b=" + b + ", c=" + c + ", ictr=" + ictr + ", k=" + k + ")");
+            LOGGER.info("/*debug*/InfeasibleTriangle(a=" + a + ", b=" + b + ", c=" + c + ", ictr=" + ictr + ", k=" + k + ')');
         }
         if (ictr instanceof DistGeqIC) {
             DistGeqIC dgeqic = (DistGeqIC) ictr;
@@ -2671,7 +2660,7 @@ public final class GeometricKernel {
 //        return box;
 //    }
 
-    boolean infeasibleSegment(Point a, Point b, ForbiddenRegion ictr) {
+    static boolean infeasibleSegment(Point a, Point b, ForbiddenRegion ictr) {
         if (ictr instanceof DistLeqIC) {
             DistLeqIC dleqic = (DistLeqIC) ictr;
             boolean cond1 = (dleqic.segInsideForbidden(a, b));
@@ -2747,7 +2736,7 @@ public final class GeometricKernel {
     Region findBoxTriangleDicho1(int d_prune, int d_dicho_ext, int d_dicho_int, int k, Point Pra, Point Pdiag, Point n,
                                  boolean increase, ForbiddenRegion ictr_pradiag, ForbiddenRegion ictr_pdiag, int pos_p) {
         if (stp.opt.debug) {
-            LOGGER.info("/*debug*/FindBoxTriangleDicho1(d_prune=" + d_prune + ", d_dicho_ext=" + d_dicho_ext + ", d_dicho_int" + d_dicho_int + "=, k=" + k + ", Pra=" + Pra + ", Pdiag=" + Pdiag + ", n=" + n + ", increase=" + increase + ", ictr_pradiag=" + ictr_pradiag + ", ictr_pdiag=" + ictr_pdiag + ", pos_p=" + pos_p + ")");
+            LOGGER.info("/*debug*/FindBoxTriangleDicho1(d_prune=" + d_prune + ", d_dicho_ext=" + d_dicho_ext + ", d_dicho_int" + d_dicho_int + "=, k=" + k + ", Pra=" + Pra + ", Pdiag=" + Pdiag + ", n=" + n + ", increase=" + increase + ", ictr_pradiag=" + ictr_pradiag + ", ictr_pdiag=" + ictr_pdiag + ", pos_p=" + pos_p + ')');
         }
         //Invariant
         if ((!(ictr_pradiag.insideForbidden(Pra))) || (!(ictr_pradiag.insideForbidden(Pdiag))) || (!(ictr_pdiag.insideForbidden(Pdiag)))) {
@@ -2840,7 +2829,7 @@ public final class GeometricKernel {
     Region findBoxTriangleDicho2(int d_prune, int d_dicho_ext, int d_dicho_int, int k, Point Pra, Point Pdiag, Point n,
                                  boolean increase, ForbiddenRegion ictr_pradiag, ForbiddenRegion ictr_pdiag, int pos_p) {
         if (stp.opt.debug) {
-            LOGGER.info("/*debug*/FindBoxTriangleDicho2(d_prune=" + d_prune + ", d_dicho_ext=" + d_dicho_ext + ", d_dicho_int=" + d_dicho_int + ", k=" + k + ", Pra=" + Pra + ", Pdiag=" + Pdiag + ", n=" + n + ", increase=" + increase + ", ictr_pradiag=" + ictr_pradiag + ", ictr_pdiag=" + ictr_pdiag + ", pos_p=" + pos_p + ")");
+            LOGGER.info("/*debug*/FindBoxTriangleDicho2(d_prune=" + d_prune + ", d_dicho_ext=" + d_dicho_ext + ", d_dicho_int=" + d_dicho_int + ", k=" + k + ", Pra=" + Pra + ", Pdiag=" + Pdiag + ", n=" + n + ", increase=" + increase + ", ictr_pradiag=" + ictr_pradiag + ", ictr_pdiag=" + ictr_pdiag + ", pos_p=" + pos_p + ')');
         }
         //Invariant
         if ((!(ictr_pradiag.insideForbidden(Pra))) || (!(ictr_pradiag.insideForbidden(Pdiag))) || (!(ictr_pdiag.insideForbidden(Pdiag)))) {
@@ -2970,7 +2959,7 @@ public final class GeometricKernel {
     Region checkTriangleDDicho(int d_prune, int d_dicho_ext, int d_dicho_int, int k, Point Pra, Point Pdiag, Point n,
                                boolean increase, ForbiddenRegion ictr_pradiag, ForbiddenRegion ictr_pdiag, int pos_p, int mid) {
         if (stp.opt.debug) {
-            LOGGER.info("/*debug*/CheckTriangleDDicho(d_prune=" + d_prune + ", d_dicho_ext=" + d_dicho_ext + ", d_dicho_int=" + d_dicho_int + ", k=" + k + ", Pra=" + Pra + ", Pdiag=" + Pdiag + ", n=" + n + ", increase=" + increase + ", ictr_pradiag=" + ictr_pradiag + ", ictr_pdiag=" + ictr_pdiag + ", pos_p=" + pos_p + ", mid=" + mid + ")");
+            LOGGER.info("/*debug*/CheckTriangleDDicho(d_prune=" + d_prune + ", d_dicho_ext=" + d_dicho_ext + ", d_dicho_int=" + d_dicho_int + ", k=" + k + ", Pra=" + Pra + ", Pdiag=" + Pdiag + ", n=" + n + ", increase=" + increase + ", ictr_pradiag=" + ictr_pradiag + ", ictr_pdiag=" + ictr_pdiag + ", pos_p=" + pos_p + ", mid=" + mid + ')');
         }
 
         Region box = null;
@@ -3052,7 +3041,7 @@ public final class GeometricKernel {
     Region findBoxTriangleDDicho(int d_prune, int d_dicho_ext, int d_dicho_int, int k, Point Pra, Point Pdiag, Point n,
                                  boolean increase, ForbiddenRegion ictr_pradiag, ForbiddenRegion ictr_pdiag, int pos_p) {
         if (stp.opt.debug) {
-            LOGGER.info("/*debug*/FindBoxTriangleDDicho(int d_prune=" + d_prune + ", int d_dicho_ext=" + d_dicho_ext + ", int d_dicho_int=" + d_dicho_int + ", int k=" + k + ", Point Pra=" + Pra + ", Point Pdiag=" + Pdiag + ", Point n=" + n + ",boolean increase=" + increase + ", ForbiddenRegion ictr_pradiag=" + ictr_pradiag + ", ForbiddenRegion ictr_pdiag=" + ictr_pdiag + ", int pos_p=" + pos_p + ")");
+            LOGGER.info("/*debug*/FindBoxTriangleDDicho(int d_prune=" + d_prune + ", int d_dicho_ext=" + d_dicho_ext + ", int d_dicho_int=" + d_dicho_int + ", int k=" + k + ", Point Pra=" + Pra + ", Point Pdiag=" + Pdiag + ", Point n=" + n + ",boolean increase=" + increase + ", ForbiddenRegion ictr_pradiag=" + ictr_pradiag + ", ForbiddenRegion ictr_pdiag=" + ictr_pdiag + ", int pos_p=" + pos_p + ')');
         }
 
         Pdiag = new Point(Pdiag);//Ensure parameter caller is not modified
@@ -3086,7 +3075,7 @@ public final class GeometricKernel {
                     //}
                     Pdiag.setCoord(d_dicho_ext, max(Pra.getCoord(d_dicho_ext), pos, increase));
                     if (!(ictr_pdiag.insideForbidden(Pdiag))) {
-                        throw new SolverException("GeometricKernel:FindBoxTriangleDDicho():Pdiag not in ictr_pdiag for m=2 increase=" + increase + " d_dicho_ext=" + d_dicho_ext + " Pra=" + Pra + " " + " Pdiaginit:" + Pdiag_initial + " " + Pdiag + " maxSize=" + ictr_pdiag.maximizeSizeOfFBox(!increase, d_dicho_ext, k, new Region(Pdiag)));
+                        throw new SolverException("GeometricKernel:FindBoxTriangleDDicho():Pdiag not in ictr_pdiag for m=2 increase=" + increase + " d_dicho_ext=" + d_dicho_ext + " Pra=" + Pra + ' ' + " Pdiaginit:" + Pdiag_initial + ' ' + Pdiag + " maxSize=" + ictr_pdiag.maximizeSizeOfFBox(!increase, d_dicho_ext, k, new Region(Pdiag)));
                     }
                 }
             }
@@ -3096,7 +3085,7 @@ public final class GeometricKernel {
                 mid = -1;
                 minimize = false;
                 do {
-                    minimize = !minimize;
+                    minimize ^= true;
                     best_box = null;
 
                     mid = -1;
@@ -3144,11 +3133,11 @@ public final class GeometricKernel {
                             Region cbox = new Region(box);//box to Check
                             if (cbox.mid == -1) {
                                 throw new SolverException("GeometricKernel:FinxBoxTriangleDDicho():box.mid is -1." +
-                                        "Pra:" + Pra + " Pdiag:" + Pdiag + " increase:" + increase + " CASE_A_OR_C:" + CASE_A_OR_C + " m:" + m + " " + cbox + " " + cbox.father + " " + ictr_pdiag + " " + ictr_pradiag);
+                                        "Pra:" + Pra + " Pdiag:" + Pdiag + " increase:" + increase + " CASE_A_OR_C:" + CASE_A_OR_C + " m:" + m + ' ' + cbox + ' ' + cbox.father + ' ' + ictr_pdiag + ' ' + ictr_pradiag);
                             }
 
                             if (!(cbox.mid >= cbox.getMinimumBoundary(cbox.dicho_ext) && cbox.mid <= cbox.getMaximumBoundary(cbox.dicho_ext))) {
-                                throw new SolverException("GeometricKernel:FinxBoxTriangleDDicho():box.mid is outside box. Pra:" + Pra + " Pdiag:" + Pdiag + " increase:" + increase + " CASE_A_OR_C:" + CASE_A_OR_C + " m:" + m + " " + cbox + " " + cbox.father + " mid:" + cbox.mid + " " + ictr_pdiag + " " + ictr_pradiag);
+                                throw new SolverException("GeometricKernel:FinxBoxTriangleDDicho():box.mid is outside box. Pra:" + Pra + " Pdiag:" + Pdiag + " increase:" + increase + " CASE_A_OR_C:" + CASE_A_OR_C + " m:" + m + ' ' + cbox + ' ' + cbox.father + " mid:" + cbox.mid + ' ' + ictr_pdiag + ' ' + ictr_pradiag);
                             }
 
                             Region dbox = new Region(box); //dbox: box containing the diagonal.
@@ -3197,40 +3186,38 @@ public final class GeometricKernel {
                             boolean d2_in_both_inv = ((infeasibleSegment(p4, p3, ictr_pdiag)) && (infeasibleSegment(p4, p3, ictr_pradiag)));
 
                             if (!(d1_in_both == d1_in_both_inv)) {
-                                StringBuffer st = new StringBuffer();
+                                StringBuilder st = new StringBuilder(128);
                                 st.append("GeometricKernel:FinxBoxTriangleDDicho():(!(d1_in_both==d1_in_both_inv))");
-                                st.append("Pra:" + Pra + " Pdiag:" + Pdiag + " increase:" + increase + " CASE_A_OR_C:" + CASE_A_OR_C + " m:" + m + " cbox:" + cbox + " dbox:" + dbox + " dicho_ext:" + dbox.dicho_ext + " info:" + cbox.father + " mid:" + cbox.mid + " " + ictr_pdiag + " " + ictr_pradiag);
-                                st.append("d1_in_both:" + d1_in_both + " d1_in_both_inv:" + d1_in_both_inv + " d2_in_both:" + d2_in_both + " d2_in_both_inv:" + d2_in_both_inv);
-                                st.append("p1:" + p1 + " p2:" + p2 + " p3:" + p3 + " p4:" + p4);
+                                st.append("Pra:").append(Pra).append(" Pdiag:").append(Pdiag).append(" increase:").append(increase).append(" CASE_A_OR_C:").append(CASE_A_OR_C).append(" m:").append(m).append(" cbox:").append(cbox).append(" dbox:").append(dbox).append(" dicho_ext:").append(dbox.dicho_ext).append(" info:").append(cbox.father).append(" mid:").append(cbox.mid).append(' ').append(ictr_pdiag).append(' ').append(ictr_pradiag);
+                                st.append("d1_in_both:").append(d1_in_both).append(" d1_in_both_inv:").append(d1_in_both_inv).append(" d2_in_both:").append(d2_in_both).append(" d2_in_both_inv:").append(d2_in_both_inv);
+                                st.append("p1:").append(p1).append(" p2:").append(p2).append(" p3:").append(p3).append(" p4:").append(p4);
                                 throw new SolverException(st.toString());
                             }
 
                             if (!(d2_in_both == d2_in_both_inv)) {
-                                StringBuffer st = new StringBuffer();
+                                StringBuilder st = new StringBuilder(128);
                                 st.append("GeometricKernel:FinxBoxTriangleDDicho():(!(d2_in_both==d2_in_both_inv))");
-                                st.append("Pra:" + Pra + " Pdiag:" + Pdiag + " increase:" + increase + " CASE_A_OR_C:" + CASE_A_OR_C + " m:" + m + " cbox:" + cbox + " dbox:" + dbox + " dicho_ext:" + dbox.dicho_ext + " info:" + cbox.father + " mid:" + cbox.mid + " " + ictr_pdiag + " " + ictr_pradiag);
-                                st.append("d1_in_both:" + d1_in_both + " d1_in_both_inv:" + d1_in_both_inv + " d2_in_both:" + d2_in_both + " d2_in_both_inv:" + d2_in_both_inv);
+                                st.append("Pra:").append(Pra).append(" Pdiag:").append(Pdiag).append(" increase:").append(increase).append(" CASE_A_OR_C:").append(CASE_A_OR_C).append(" m:").append(m).append(" cbox:").append(cbox).append(" dbox:").append(dbox).append(" dicho_ext:").append(dbox.dicho_ext).append(" info:").append(cbox.father).append(" mid:").append(cbox.mid).append(' ').append(ictr_pdiag).append(' ').append(ictr_pradiag);
+                                st.append("d1_in_both:").append(d1_in_both).append(" d1_in_both_inv:").append(d1_in_both_inv).append(" d2_in_both:").append(d2_in_both).append(" d2_in_both_inv:").append(d2_in_both_inv);
 
-                                st.append("p1:" + p1 + " p2:" + p2 + " p3:" + p3 + " p4:" + p4);
-                                st.append("InfeasibleSegment(" + p3 + "," + p4 + "," + ictr_pdiag + ")):" + (infeasibleSegment(p3, p4, ictr_pdiag)) +
-                                        " && (InfeasibleSegment(" + p3 + "," + p4 + "," + ictr_pradiag + "):" + (infeasibleSegment(p3, p4, ictr_pradiag)) + ")");
-                                st.append("InfeasibleSegment(" + p4 + "," + p3 + "," + ictr_pdiag + ")):" + (infeasibleSegment(p4, p3, ictr_pdiag)) +
-                                        " && (InfeasibleSegment(" + p4 + "," + p3 + "," + ictr_pradiag + "):" + (infeasibleSegment(p4, p3, ictr_pradiag)) + ")");
+                                st.append("p1:").append(p1).append(" p2:").append(p2).append(" p3:").append(p3).append(" p4:").append(p4);
+                                st.append("InfeasibleSegment(").append(p3).append(',').append(p4).append(',').append(ictr_pdiag).append(")):").append(infeasibleSegment(p3, p4, ictr_pdiag)).append(" && (InfeasibleSegment(").append(p3).append(',').append(p4).append(',').append(ictr_pradiag).append("):").append(infeasibleSegment(p3, p4, ictr_pradiag)).append(')');
+                                st.append("InfeasibleSegment(").append(p4).append(',').append(p3).append(',').append(ictr_pdiag).append(")):").append(infeasibleSegment(p4, p3, ictr_pdiag)).append(" && (InfeasibleSegment(").append(p4).append(',').append(p3).append(',').append(ictr_pradiag).append("):").append(infeasibleSegment(p4, p3, ictr_pradiag)).append(')');
 //                                boolean b;
-                                st.append("1");
+                                st.append('1');
 //                                b=(InfeasibleSegment(p3,p4,ictr_pradiag));
-                                st.append("2");
+                                st.append('2');
 //                                b=(InfeasibleSegment(p4,p3,ictr_pradiag));
                                 throw new SolverException(st.toString());
                             }
 
                             if (!(d1_in_both || d2_in_both)) {
-                                StringBuffer st = new StringBuffer();
+                                StringBuilder st = new StringBuilder(128);
                                 st.append("GeometricKernel:FinxBoxTriangleDDicho():(!(d1_in_both || d2_in_both))");
-                                st.append("Pra:" + Pra + " Pdiag:" + Pdiag + " increase:" + increase + " CASE_A_OR_C:" + CASE_A_OR_C + " m:" + m + " cbox:" + cbox + " dbox:" + dbox + " dicho_ext:" + dbox.dicho_ext + " info:" + cbox.info + " father:" + cbox.father + " mid:" + cbox.mid + " " + ictr_pdiag + " " + ictr_pradiag);
-                                st.append("d1_in_both:" + d1_in_both + " d1_in_both_inv:" + d1_in_both_inv + " d2_in_both:" + d2_in_both + " d2_in_both_inv:" + d2_in_both_inv);
+                                st.append("Pra:").append(Pra).append(" Pdiag:").append(Pdiag).append(" increase:").append(increase).append(" CASE_A_OR_C:").append(CASE_A_OR_C).append(" m:").append(m).append(" cbox:").append(cbox).append(" dbox:").append(dbox).append(" dicho_ext:").append(dbox.dicho_ext).append(" info:").append(cbox.info).append(" father:").append(cbox.father).append(" mid:").append(cbox.mid).append(' ').append(ictr_pdiag).append(' ').append(ictr_pradiag);
+                                st.append("d1_in_both:").append(d1_in_both).append(" d1_in_both_inv:").append(d1_in_both_inv).append(" d2_in_both:").append(d2_in_both).append(" d2_in_both_inv:").append(d2_in_both_inv);
 
-                                st.append("p1:" + p1 + " p2:" + p2 + " p3:" + p3 + " p4:" + p4);
+                                st.append("p1:").append(p1).append(" p2:").append(p2).append(" p3:").append(p3).append(" p4:").append(p4);
                                 throw new SolverException(st.toString());
                             }
 
@@ -3292,7 +3279,7 @@ public final class GeometricKernel {
 //    }
 
 
-    boolean feasiblePtInRegion() { //Is there any point in f which is Feasible?
+    static boolean feasiblePtInRegion() { //Is there any point in f which is Feasible?
 //        Point scan = f.pointMin();
 //        int k=scan.getCoords().length;
 //        int curcounter=k-1; //by convention, we start with the greastest index.
@@ -3317,7 +3304,7 @@ public final class GeometricKernel {
 
     // 7.7.5. Sweep Algorithm Dealing with Curved Forbidden Regions
 
-    boolean nextPtIsFree(Point p, int d, Obj o, List<InternalConstraint> ictrs, boolean increase) {
+    static boolean nextPtIsFree(Point p, int d, Obj o, List<InternalConstraint> ictrs, boolean increase) {
         Point g_prime = new Point(p);
         g_prime.setCoord(d, g_prime.getCoord(d) + succ(increase));
         return (o.isInside(g_prime)) && (isFeasible(g_prime, ictrs));
@@ -3442,7 +3429,7 @@ public final class GeometricKernel {
 
     Pair<Boolean, Region> getDeltaFRSingle(int d_prune, int k, Obj o, Point c, Point n, List<InternalConstraint> ictrs, boolean increase, int delta_prune) {
         if (stp.opt.processing) {
-            LOGGER.info("\n/*Processing*/sweep_point(" + c.getCoord(0) + "," + c.getCoord(1) + ");");
+            LOGGER.info("\n/*Processing*/sweep_point(" + c.getCoord(0) + ',' + c.getCoord(1) + ");");
         }
         int d_least = (k - 1 + d_prune) % k;
         if (d_least < 0) {
@@ -3462,7 +3449,7 @@ public final class GeometricKernel {
                 LOGGER.info(fr + " ");
             }
         }
-        if (C_c.size() == 0) {
+        if (C_c.isEmpty()) {
             return new Pair<Boolean, Region>(false, null);
         }
 
@@ -3484,7 +3471,7 @@ public final class GeometricKernel {
         }
         //writeBox(best_greedy,increase,false);
         if (stp.opt.debug) {
-            LOGGER.info("/*example*/returns (true," + best_greedy + ")");
+            LOGGER.info("/*example*/returns (true," + best_greedy + ')');
         }
 
         return new Pair<Boolean, Region>(true, best_greedy);
@@ -3492,11 +3479,11 @@ public final class GeometricKernel {
 
     Pair<Boolean, Region> getDeltaFRMultiple(int d_prune, int k, Obj o, Point c, Point n, List<InternalConstraint> ictrs, boolean increase, int delta_prune) {
         if (stp.opt.debug) {
-            LOGGER.info("/*debug*/GetDeltaFRMultiple(d_prune=" + d_prune + ", k=" + k + ", o=" + o + ", c=" + c + ", n=" + n + ", ictrs=" + ictrs + ", increase=" + increase + ", delta_prune=" + delta_prune + ")");
+            LOGGER.info("/*debug*/GetDeltaFRMultiple(d_prune=" + d_prune + ", k=" + k + ", o=" + o + ", c=" + c + ", n=" + n + ", ictrs=" + ictrs + ", increase=" + increase + ", delta_prune=" + delta_prune + ')');
         }
 
         if (stp.opt.processing) {
-            LOGGER.info("\n/*Processing*/sweep_point(" + c.getCoord(0) + "," + c.getCoord(1) + ");");
+            LOGGER.info("\n/*Processing*/sweep_point(" + c.getCoord(0) + ',' + c.getCoord(1) + ");");
         }
 
         List<ForbiddenRegion> C_c = setOfCstrsOnPt(c, ictrs);
@@ -3506,7 +3493,7 @@ public final class GeometricKernel {
                 LOGGER.info(fr + " ");
             }
         }
-        if (C_c.size() == 0) {
+        if (C_c.isEmpty()) {
             if (stp.opt.debug) {
                 LOGGER.info("/*debug*/GetDeltaFRMultiple() returns (" + false + ",null)");
             }
@@ -3533,7 +3520,7 @@ public final class GeometricKernel {
                 box.setType("single");
                 //writeBox(box,increase,false);
                 if (stp.opt.debug) {
-                    LOGGER.info("/*debug*/GetDeltaFRMultiple() returns (true" + box + ")");
+                    LOGGER.info("/*debug*/GetDeltaFRMultiple() returns (true" + box + ')');
                 }
                 return new Pair<Boolean, Region>(true, box);
             }
@@ -3745,7 +3732,7 @@ public final class GeometricKernel {
 //        }
 
         if (stp.opt.debug) {
-            LOGGER.info("/*debug*/GetDeltaFRMultiple() returns (true," + best_box + ")");
+            LOGGER.info("/*debug*/GetDeltaFRMultiple() returns (true," + best_box + ')');
         }
         return new Pair<Boolean, Region>(true, best_box);
 
@@ -3910,7 +3897,7 @@ public final class GeometricKernel {
 //    }
 
 
-    boolean compareAndChooseBox(int d_prune, int k, boolean increase, Region box, Region best_box) {
+    static boolean compareAndChooseBox(int d_prune, int k, boolean increase, Region box, Region best_box) {
         //if (EqualVolume(d_prune,k,increase,box,best_box))
         return largestInverseLex(d_prune, k, increase, box, best_box);
         //return GreatestVolume(d_prune,k,increase,box,best_box);
@@ -3928,10 +3915,10 @@ public final class GeometricKernel {
             }
             if (chosen_box != null) {
                 if (!chosen_box.getType().equals("diagonal+rect")) {
-                    LOGGER.info("\n/*Processing*/" + function + "(" + chosen_box.getMinimumBoundary(0) + "," + chosen_box.getMaximumBoundary(0) + "," + chosen_box.getMinimumBoundary(1) + "," + chosen_box.getMaximumBoundary(1) + ",\"" + chosen_box.getType() + "\",\"\",0);");
+                    LOGGER.info("\n/*Processing*/" + function + '(' + chosen_box.getMinimumBoundary(0) + ',' + chosen_box.getMaximumBoundary(0) + ',' + chosen_box.getMinimumBoundary(1) + ',' + chosen_box.getMaximumBoundary(1) + ",\"" + chosen_box.getType() + "\",\"\",0);");
                 } else {
                     if (chosen_box.mid == -1) {
-                        LOGGER.info("\n/*Processing*/" + function + "(" + chosen_box.getMinimumBoundary(0) + "," + chosen_box.getMaximumBoundary(0) + "," + chosen_box.getMinimumBoundary(1) + "," + chosen_box.getMaximumBoundary(1) + ",\""
+                        LOGGER.info("\n/*Processing*/" + function + '(' + chosen_box.getMinimumBoundary(0) + ',' + chosen_box.getMaximumBoundary(0) + ',' + chosen_box.getMinimumBoundary(1) + ',' + chosen_box.getMaximumBoundary(1) + ",\""
                                 + "diagonal\",\"\"," + chosen_box.orientation + ");");
                     } else {
 
@@ -3967,13 +3954,13 @@ public final class GeometricKernel {
                             }
 
 
-                            LOGGER.info("\n/*Processing*/" + function + "(" + box.getMinimumBoundary(0) + "," + box.getMaximumBoundary(0) + ","
-                                    + box.getMinimumBoundary(1) + "," + box.getMaximumBoundary(1) + ",\""
+                            LOGGER.info("\n/*Processing*/" + function + '(' + box.getMinimumBoundary(0) + ',' + box.getMaximumBoundary(0) + ','
+                                    + box.getMinimumBoundary(1) + ',' + box.getMaximumBoundary(1) + ",\""
                                     + "low_diag\",\"" + info + "\"," + chosen_box.orientation + ");");
                             box = new Region(chosen_box);
                             box.setMinimumBoundary(box.dicho_ext, box.mid);
-                            LOGGER.info("\n/*Processing*/" + function + "(" + box.getMinimumBoundary(0) + "," + box.getMaximumBoundary(0) + ","
-                                    + box.getMinimumBoundary(1) + "," + box.getMaximumBoundary(1) + ",\""
+                            LOGGER.info("\n/*Processing*/" + function + '(' + box.getMinimumBoundary(0) + ',' + box.getMaximumBoundary(0) + ','
+                                    + box.getMinimumBoundary(1) + ',' + box.getMaximumBoundary(1) + ",\""
                                     + "diagonal\",\"" + info + "\"," + chosen_box.orientation + ");");
                         } else {
                             String info = "";
@@ -4006,13 +3993,13 @@ public final class GeometricKernel {
                                 }
                             }
 
-                            LOGGER.info("\n/*Processing*/" + function + "(" + box.getMinimumBoundary(0) + "," + box.getMaximumBoundary(0) + ","
-                                    + box.getMinimumBoundary(1) + "," + box.getMaximumBoundary(1) + ",\""
+                            LOGGER.info("\n/*Processing*/" + function + '(' + box.getMinimumBoundary(0) + ',' + box.getMaximumBoundary(0) + ','
+                                    + box.getMinimumBoundary(1) + ',' + box.getMaximumBoundary(1) + ",\""
                                     + "low_diag\",\"" + info + "\"," + chosen_box.orientation + ");");
                             box = new Region(chosen_box);
                             box.setMaximumBoundary(box.dicho_ext, box.mid);
-                            LOGGER.info("\n/*Processing*/" + function + "(" + box.getMinimumBoundary(0) + "," + box.getMaximumBoundary(0) + ","
-                                    + box.getMinimumBoundary(1) + "," + box.getMaximumBoundary(1) + ",\""
+                            LOGGER.info("\n/*Processing*/" + function + '(' + box.getMinimumBoundary(0) + ',' + box.getMaximumBoundary(0) + ','
+                                    + box.getMinimumBoundary(1) + ',' + box.getMaximumBoundary(1) + ",\""
                                     + "diagonal\",\"" + info + "\"," + chosen_box.orientation + ");");
                         }
                     }
@@ -4046,7 +4033,7 @@ public final class GeometricKernel {
 
             //stp.delta stores the for each diff d the number of diff of size d jumped
             if (stp.opt.delta.get(d_current) == null) {
-                stp.opt.delta.put(d_current, new HashMap<Integer, Integer>());
+                stp.opt.delta.put(d_current, new HashMap<Integer, Integer>(16));
             }
             HashMap<Integer, Integer> curDelta = stp.opt.delta.get(d_current);
             if (curDelta.get(diff) == null) {
@@ -4065,11 +4052,11 @@ public final class GeometricKernel {
                         //stp.succDelta stores for each diff and for the current pruning dimension d,
                         //the list of the number of time a diff happened, for each diff.
                         if (stp.opt.succDelta.get(last_dprune) == null) {
-                            stp.opt.succDelta.put(d, new HashMap<Integer, List<Integer>>());
+                            stp.opt.succDelta.put(d, new HashMap<Integer, List<Integer>>(16));
                         }
                         HashMap<Integer, List<Integer>> curSuccDelta = stp.opt.succDelta.get(last_dprune);
                         if (curSuccDelta.get(last_diff) == null) {
-                            curSuccDelta.put(last_diff, new ArrayList<Integer>());
+                            curSuccDelta.put(last_diff, new ArrayList<Integer>(16));
                         }
                         List<Integer> succ_list = curSuccDelta.get(last_diff);
                         succ_list.add(diff_counter);
@@ -4093,7 +4080,7 @@ public final class GeometricKernel {
     }
 
     @SuppressWarnings({"unchecked"})
-    List checkTrashingState(Point c, int d, int k, int cdpl, Region f, boolean bad_ratio, int nbr_steps, int mode) {
+    static List checkTrashingState(Point c, int d, int k, int cdpl, Region f, boolean bad_ratio, int nbr_steps, int mode) {
         int d_prev_least = (k - 2 + k + d) % k;
         bad_ratio = bad_ratio || (f.ratio() < 0.1);
         if (cdpl != c.getCoord(d_prev_least)) {
@@ -4131,7 +4118,7 @@ public final class GeometricKernel {
             }
             bad_ratio = false;
         }
-        List r = new ArrayList();
+        List r = new ArrayList(3);
         r.add(bad_ratio);
         r.add(nbr_steps);
         r.add(mode);
@@ -4139,7 +4126,7 @@ public final class GeometricKernel {
     }
 
     @SuppressWarnings({"unchecked"})
-    List checkTrashingState_dl(Point c, int d, int k, int cdpl, Region f, boolean bad_ratio, int nbr_steps, int mode) {
+    static List checkTrashingState_dl(Point c, int d, int k, int cdpl, Region f, boolean bad_ratio, int nbr_steps, int mode) {
         int d_prev_least = (k - 2 + d) % k;
         bad_ratio = (f.ratio() < 0.1);
         if (cdpl != c.getCoord(d_prev_least)) {
@@ -4177,7 +4164,7 @@ public final class GeometricKernel {
             }
             bad_ratio = false;
         }
-        List r = new ArrayList();
+        List r = new ArrayList(3);
         r.add(bad_ratio);
         r.add(nbr_steps);
         r.add(mode);
@@ -4207,7 +4194,7 @@ public final class GeometricKernel {
                 Obj tmp = stp.getObject(i);
                 if (tmp.coordInstantiated()) {
                     if (tmp.isSphere()) {
-                        LOGGER.info("\n/*Processing*/sphere_object(" + tmp.getCoord(0).getSup() + "," + tmp.getCoord(1).getSup() + "," + tmp.getRadius() + "," + tmp.getObjectId() + ");");
+                        LOGGER.info("\n/*Processing*/sphere_object(" + tmp.getCoord(0).getSup() + ',' + tmp.getCoord(1).getSup() + ',' + tmp.getRadius() + ',' + tmp.getObjectId() + ");");
                     }
                 }
             }
@@ -4220,9 +4207,9 @@ public final class GeometricKernel {
                         DistLeqIC dlic = (DistLeqIC) fr;
                         if (stp.getObject(dlic.o2).coordInstantiated()) {
                             if (dlic.hasDistanceVar()) {
-                                LOGGER.info("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getSup() + "," + stp.getObject(dlic.o2).getCoord(1).getSup() + "," + dlic.getDistanceVar().getSup() + ",\"LeqVar\");");
+                                LOGGER.info("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getSup() + ',' + stp.getObject(dlic.o2).getCoord(1).getSup() + ',' + dlic.getDistanceVar().getSup() + ",\"LeqVar\");");
                             } else {
-                                LOGGER.info("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getSup() + "," + stp.getObject(dlic.o2).getCoord(1).getSup() + "," + dlic.D + ",\"Leq\");");
+                                LOGGER.info("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getSup() + ',' + stp.getObject(dlic.o2).getCoord(1).getSup() + ',' + dlic.D + ",\"Leq\");");
                             }
                         }
                     }
@@ -4230,21 +4217,21 @@ public final class GeometricKernel {
                         DistGeqIC dlic = (DistGeqIC) fr;
                         if (stp.getObject(dlic.o2).coordInstantiated()) {
                             if (dlic.hasDistanceVar()) {
-                                LOGGER.info("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getSup() + "," + stp.getObject(dlic.o2).getCoord(1).getSup() + "," + dlic.getDistanceVar().getInf() + ",\"GeqVar\");");
+                                LOGGER.info("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getSup() + ',' + stp.getObject(dlic.o2).getCoord(1).getSup() + ',' + dlic.getDistanceVar().getInf() + ",\"GeqVar\");");
                             } else {
-                                LOGGER.info("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getSup() + "," + stp.getObject(dlic.o2).getCoord(1).getSup() + "," + dlic.D + ",\"Geq\");");
+                                LOGGER.info("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getSup() + ',' + stp.getObject(dlic.o2).getCoord(1).getSup() + ',' + dlic.D + ",\"Geq\");");
                             }
                         }
                     }
 
                     if (fr instanceof DistLinearIC) {
                         DistLinearIC dlic = (DistLinearIC) fr;
-                        LOGGER.info("\n/*Processing*/constraint(" + dlic.a[0] + "," + dlic.a[1] + "," + dlic.b + ",\"Linear\");");
+                        LOGGER.info("\n/*Processing*/constraint(" + dlic.a[0] + ',' + dlic.a[1] + ',' + dlic.b + ",\"Linear\");");
                     }
 
                 }
             }
-            LOGGER.info("\n/*Processing*/sweep_point(" + c.getCoord(0) + "," + c.getCoord(1) + ");");
+            LOGGER.info("\n/*Processing*/sweep_point(" + c.getCoord(0) + ',' + c.getCoord(1) + ");");
 
         }
 
@@ -4283,7 +4270,7 @@ public final class GeometricKernel {
 
 
             if (stp.opt.debug) {
-                LOGGER.info("/*example*/Adjustup(c=" + c + ",n=" + n + ",o=" + o + ",d=" + d + ",k=" + k + ")");
+                LOGGER.info("/*example*/Adjustup(c=" + c + ",n=" + n + ",o=" + o + ",d=" + d + ",k=" + k + ')');
             }
             List adjUp = adjustUp(c, n, o, d, k); // update the position of c to check
             if (stp.opt.debug) {
@@ -4309,7 +4296,7 @@ public final class GeometricKernel {
                     Obj tmp = stp.getObject(i);
                     if (tmp.coordInstantiated()) {
                         if (tmp.isSphere()) {
-                            LOGGER.info("\n/*Processing*/sphere_object(" + tmp.getCoord(0).getSup() + "," + tmp.getCoord(1).getSup() + "," + tmp.getRadius() + "," + tmp.getObjectId() + ");");
+                            LOGGER.info("\n/*Processing*/sphere_object(" + tmp.getCoord(0).getSup() + ',' + tmp.getCoord(1).getSup() + ',' + tmp.getRadius() + ',' + tmp.getObjectId() + ");");
                         }
                     }
                 }
@@ -4322,25 +4309,25 @@ public final class GeometricKernel {
                         if (fr instanceof DistLeqIC) {
                             DistLeqIC dlic = (DistLeqIC) fr;
                             if ((stp.getObject(dlic.o2).coordInstantiated()) && (!(stp.getObject(dlic.o1).coordInstantiated()))) {
-                                LOGGER.info("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getSup() + "," + stp.getObject(dlic.o2).getCoord(1).getSup() + "," + dlic.D + ",\"Leq\");");
+                                LOGGER.info("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getSup() + ',' + stp.getObject(dlic.o2).getCoord(1).getSup() + ',' + dlic.D + ",\"Leq\");");
                             }
                         }
                         if (fr instanceof DistGeqIC) {
                             DistGeqIC dlic = (DistGeqIC) fr;
                             if ((stp.getObject(dlic.o2).coordInstantiated()) && (!(stp.getObject(dlic.o1).coordInstantiated()))) {
 
-                                LOGGER.info("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getSup() + "," + stp.getObject(dlic.o2).getCoord(1).getSup() + "," + dlic.D + ",\"Geq\");");
+                                LOGGER.info("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getSup() + ',' + stp.getObject(dlic.o2).getCoord(1).getSup() + ',' + dlic.D + ",\"Geq\");");
                             }
                         }
                         if (fr instanceof DistLinearIC) {
                             DistLinearIC dlic = (DistLinearIC) fr;
-                            LOGGER.info("\n/*Processing*/constraint(" + dlic.a[0] + "," + dlic.a[1] + "," + dlic.b + ",\"Linear\");");
+                            LOGGER.info("\n/*Processing*/constraint(" + dlic.a[0] + ',' + dlic.a[1] + ',' + dlic.b + ",\"Linear\");");
                         }
 
 
                     }
                 }
-                LOGGER.info("\n/*Processing*/new_position(" + c.getCoord(0) + "," + c.getCoord(1) + ");");
+                LOGGER.info("\n/*Processing*/new_position(" + c.getCoord(0) + ',' + c.getCoord(1) + ");");
             }
 
 
@@ -4434,7 +4421,7 @@ public final class GeometricKernel {
                 Obj tmp = stp.getObject(i);
                 if (tmp.coordInstantiated()) {
                     if (tmp.isSphere()) {
-                        LOGGER.info("\n/*Processing*/sphere_object(" + tmp.getCoord(0).getSup() + "," + tmp.getCoord(1).getSup() + "," + tmp.getRadius() + "," + tmp.getObjectId() + ");");
+                        LOGGER.info("\n/*Processing*/sphere_object(" + tmp.getCoord(0).getSup() + ',' + tmp.getCoord(1).getSup() + ',' + tmp.getRadius() + ',' + tmp.getObjectId() + ");");
                     }
                 }
             }
@@ -4446,25 +4433,25 @@ public final class GeometricKernel {
                     if (fr instanceof DistLeqIC) {
                         DistLeqIC dlic = (DistLeqIC) fr;
                         if (stp.getObject(dlic.o2).coordInstantiated()) {
-                            LOGGER.info("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getSup() + "," + stp.getObject(dlic.o2).getCoord(1).getSup() + "," + dlic.D + ",\"Leq\");");
+                            LOGGER.info("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getSup() + ',' + stp.getObject(dlic.o2).getCoord(1).getSup() + ',' + dlic.D + ",\"Leq\");");
                         }
                     }
                     if (fr instanceof DistGeqIC) {
                         DistGeqIC dlic = (DistGeqIC) fr;
                         if (stp.getObject(dlic.o2).coordInstantiated()) {
-                            LOGGER.info("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getSup() + "," + stp.getObject(dlic.o2).getCoord(1).getSup() + "," + dlic.D + ",\"Geq\");");
+                            LOGGER.info("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getSup() + ',' + stp.getObject(dlic.o2).getCoord(1).getSup() + ',' + dlic.D + ",\"Geq\");");
                         }
                     }
 
                     if (fr instanceof DistLinearIC) {
                         DistLinearIC dlic = (DistLinearIC) fr;
-                        LOGGER.info("\n/*Processing*/constraint(" + dlic.a[0] + "," + dlic.a[1] + "," + dlic.b + ",\"Linear\");");
+                        LOGGER.info("\n/*Processing*/constraint(" + dlic.a[0] + ',' + dlic.a[1] + ',' + dlic.b + ",\"Linear\");");
                     }
 
 
                 }
             }
-            LOGGER.info("\n/*Processing*/sweep_point(" + c.getCoord(0) + "," + c.getCoord(1) + ");");
+            LOGGER.info("\n/*Processing*/sweep_point(" + c.getCoord(0) + ',' + c.getCoord(1) + ");");
 
         }
 
@@ -4522,7 +4509,7 @@ public final class GeometricKernel {
                     Obj tmp = stp.getObject(i);
                     if (tmp.coordInstantiated()) {
                         if (tmp.isSphere()) {
-                            LOGGER.info("\n/*Processing*/sphere_object(" + tmp.getCoord(0).getSup() + "," + tmp.getCoord(1).getSup() + "," + tmp.getRadius() + "," + tmp.getObjectId() + ");");
+                            LOGGER.info("\n/*Processing*/sphere_object(" + tmp.getCoord(0).getSup() + ',' + tmp.getCoord(1).getSup() + ',' + tmp.getRadius() + ',' + tmp.getObjectId() + ");");
                         }
                     }
                 }
@@ -4534,24 +4521,24 @@ public final class GeometricKernel {
                         if (fr instanceof DistLeqIC) {
                             DistLeqIC dlic = (DistLeqIC) fr;
                             if (stp.getObject(dlic.o2).coordInstantiated()) {
-                                LOGGER.info("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getSup() + "," + stp.getObject(dlic.o2).getCoord(1).getSup() + "," + dlic.D + ",\"Leq\");");
+                                LOGGER.info("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getSup() + ',' + stp.getObject(dlic.o2).getCoord(1).getSup() + ',' + dlic.D + ",\"Leq\");");
                             }
                         }
                         if (fr instanceof DistGeqIC) {
                             DistGeqIC dlic = (DistGeqIC) fr;
                             if (stp.getObject(dlic.o2).coordInstantiated()) {
-                                LOGGER.info("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getSup() + "," + stp.getObject(dlic.o2).getCoord(1).getSup() + "," + dlic.D + ",\"Geq\");");
+                                LOGGER.info("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getSup() + ',' + stp.getObject(dlic.o2).getCoord(1).getSup() + ',' + dlic.D + ",\"Geq\");");
                             }
                         }
                         if (fr instanceof DistLinearIC) {
                             DistLinearIC dlic = (DistLinearIC) fr;
-                            LOGGER.info("\n/*Processing*/constraint(" + dlic.a[0] + "," + dlic.a[1] + "," + dlic.b + ",\"Linear\");");
+                            LOGGER.info("\n/*Processing*/constraint(" + dlic.a[0] + ',' + dlic.a[1] + ',' + dlic.b + ",\"Linear\");");
                         }
 
 
                     }
                 }
-                LOGGER.info("\n/*Processing*/new_position(" + c.getCoord(0) + "," + c.getCoord(1) + ");");
+                LOGGER.info("\n/*Processing*/new_position(" + c.getCoord(0) + ',' + c.getCoord(1) + ");");
 
             }
 
@@ -4639,7 +4626,7 @@ public final class GeometricKernel {
 //    }
 
 
-    public List<Point> circleIntersectiont(double x1, double y1, double r1, double x2, double y2, double r2) {
+    public static List<Point> circleIntersectiont(double x1, double y1, double r1, double x2, double y2, double r2) {
 
         double distance = Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2));
         if ((distance > r1 + r2) || (distance < Math.abs(r1 - r2))) {
@@ -4662,7 +4649,7 @@ public final class GeometricKernel {
         int y_1i = ((int) Math.floor(y_1));
         int y_2i = ((int) Math.floor(y_2));
 
-        List<Point> listOfPoints = new ArrayList<Point>();
+        List<Point> listOfPoints = new ArrayList<Point>(2);
         Point p1 = new Point(2);
         p1.setCoord(0, x_1i);
         p1.setCoord(1, y_1i);
@@ -4704,7 +4691,7 @@ public final class GeometricKernel {
                         if (found == null) {
                             found = dl.getDistanceVar();
                         } else {
-                            throw new SolverException("GeometricKernel:getE():Two E variables for variable oid " + oid + ".");
+                            throw new SolverException("GeometricKernel:getE():Two E variables for variable oid " + oid + '.');
                         }
                     }
                 }
@@ -4712,7 +4699,7 @@ public final class GeometricKernel {
         }
 
         if (found == null) {
-            throw new SolverException("GeometricKernel:getE():No E variables for variable oid " + oid + ".");
+            throw new SolverException("GeometricKernel:getE():No E variables for variable oid " + oid + '.');
         }
 
         this.E[oid] = found;
@@ -4744,7 +4731,7 @@ public final class GeometricKernel {
                         if (found == null) {
                             found = dl.getDistanceVar();
                         } else {
-                            throw new SolverException("GeometricKernel:getD():Two D variables for variable oid " + oid + ".");
+                            throw new SolverException("GeometricKernel:getD():Two D variables for variable oid " + oid + '.');
                         }
                     }
                 }
@@ -4752,7 +4739,7 @@ public final class GeometricKernel {
         }
 
         if (found == null) {
-            throw new SolverException("GeometricKernel:getD():No D variables for variable oid " + oid + ".");
+            throw new SolverException("GeometricKernel:getD():No D variables for variable oid " + oid + '.');
         }
 
         this.D[oid] = found;
@@ -4772,7 +4759,7 @@ public final class GeometricKernel {
                 IntDomainVar D = getD(i);
                 int oldSup = D.getSup();
                 int newSup = Dprec.getVal() - (stp.getObject(i).getRadius() + stp.getObject(i - 1).getRadius());
-                LOGGER.info("D:[" + D.getInf() + "," + D.getSup() + "] oldSup:"+oldSup+" newSup:"+newSup);
+                LOGGER.info("D:[" + D.getInf() + ',' + D.getSup() + "] oldSup:"+oldSup+" newSup:"+newSup);
                 if (newSup>=oldSup) {
                     continue;
                 }

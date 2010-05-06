@@ -46,23 +46,21 @@ public class RelationFactory extends ObjectFactory {
 	}
 
 	public void initializeExtList() {
-		extlist = new HashMap<PRelation, List<PExtensionConstraint>>();
-		Iterator<PConstraint> it = parser.getMapOfConstraints().values().iterator();
-		while (it.hasNext()) {
-			PConstraint p = it.next();
-			if (p instanceof PExtensionConstraint) {
-				PExtensionConstraint p1 = (PExtensionConstraint) p;
-				List<PExtensionConstraint> lcts = extlist.get(p1.getRelation());
-				if (lcts == null) {
-					lcts = new LinkedList<PExtensionConstraint>();
-					extlist.put(p1.getRelation(), lcts);
-				}
-				lcts.add(p1);
-			}
-		}
+		extlist = new HashMap<PRelation, List<PExtensionConstraint>>(16);
+        for (final PConstraint pConstraint : parser.getMapOfConstraints().values()) {
+            if (pConstraint instanceof PExtensionConstraint) {
+                PExtensionConstraint p1 = (PExtensionConstraint) pConstraint;
+                List<PExtensionConstraint> lcts = extlist.get(p1.getRelation());
+                if (lcts == null) {
+                    lcts = new LinkedList<PExtensionConstraint>();
+                    extlist.put(p1.getRelation(), lcts);
+                }
+                lcts.add(p1);
+            }
+        }
 	}
 
-	public DFA makeDFA(PRelation prel) {
+	public static DFA makeDFA(PRelation prel) {
 		DFA dfa = null;
 		if (prel.getSemantics().equals("supports")) {
 			dfa = new DFA(prel.getListTuples());
@@ -135,7 +133,7 @@ public class RelationFactory extends ObjectFactory {
     }
 
     //convert a 0/1 tuple in an integer value
-    public int getVal(int[] bint) {
+    public static int getVal(int[] bint) {
         int val = 0;
         for (int i = 0; i < bint.length; i++) {
             val += bint[i]*Math.pow(2,i);
@@ -144,7 +142,7 @@ public class RelationFactory extends ObjectFactory {
     }
 
     //convert a 0/1 tuple in an integer value
-    public int[] getTuple(int val, int arity) {
+    public static int[] getTuple(int val, int arity) {
         int[] t = new int[arity];
         for (int i = 0; i < arity; i++) {
             if((val & (1 << i)) != 0) {
@@ -155,8 +153,8 @@ public class RelationFactory extends ObjectFactory {
         return t;
     }
 
-    public void makeClausesEncoding(PRelation prel) {
-        List<XmlClause> enc = new ArrayList<XmlClause>();
+    public static void makeClausesEncoding(PRelation prel) {
+        List<XmlClause> enc = new ArrayList<XmlClause>(16);
         if (prel.getSemantics().equals("conflicts")) {
             List<int[]> ltuples = prel.getListTuples();
             for(int[] cl : ltuples) {
@@ -166,7 +164,7 @@ public class RelationFactory extends ObjectFactory {
             //compute the conflicts !
             List<int[]> ltuples = prel.getListTuples();
             List<int[]> conflict = new LinkedList<int[]>();
-            BitSet validTuple = new BitSet();
+            BitSet validTuple = new BitSet(16);
             for(int[] cl : ltuples) {
                 validTuple.set(getVal(cl));
             }
@@ -183,7 +181,7 @@ public class RelationFactory extends ObjectFactory {
 		prel.setClauseEncoding(enc);
 	}
 
-    public XmlClause makeClause(int[] cl, int valtest) {
+    public static XmlClause makeClause(int[] cl, int valtest) {
         int nbposv = 0;
         int nbnegv = 0;
         for (int aCl : cl) {
@@ -306,7 +304,7 @@ public class RelationFactory extends ObjectFactory {
 	 *
 	 * @param pec
 	 */
-	public boolean detectIntensionConstraint(PExtensionConstraint pec) {
+	public static boolean detectIntensionConstraint(PExtensionConstraint pec) {
 		assert (pec.getArity() == 2);
 		PRelation brel = pec.getRelation();
 		PDomain[] doms = new PDomain[2];
@@ -336,7 +334,7 @@ public class RelationFactory extends ObjectFactory {
 		return false;
 	}
 
-	public boolean checkEqInCouples(PRelation brel, PDomain[] pdom) {
+	public static boolean checkEqInCouples(PRelation brel, PDomain[] pdom) {
 		if (brel.isEqInTuples() &&
 				pdom[0].getNbValues() < 5000 &&
 				pdom[1].getNbValues() < 5000) {
@@ -346,7 +344,7 @@ public class RelationFactory extends ObjectFactory {
 		return false;
 	}
 
-	public boolean checkNeqInCouples(PRelation brel, PDomain[] pdom) {
+	public static boolean checkNeqInCouples(PRelation brel, PDomain[] pdom) {
 		if (brel.isNeqInTuples() &&
 				pdom[0].getNbValues() < 5000 &&
 				pdom[1].getNbValues() < 5000) {

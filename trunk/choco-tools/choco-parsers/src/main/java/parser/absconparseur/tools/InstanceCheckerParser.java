@@ -45,15 +45,13 @@ import java.util.logging.Logger;
 public class InstanceCheckerParser {
     protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
-	private InstanceCheckerEngine engine;
+	private final InstanceCheckerEngine engine;
 
 	private String instanceName;
 
-	private String format;
+    private String type;
 
-	private String type;
-
-	private Set<String> allNameIdentifiers;
+	private final Set<String> allNameIdentifiers;
 
 	private Map<String, PDomain> mapOfDomains;
 
@@ -135,7 +133,7 @@ public class InstanceCheckerParser {
 		if (relationNames != null)
 			for (int i = 0; i < relationNames.length; i++)
 				if (!relationNames[i].equals(InstanceTokens.getRelationNameFor(i))) {
-					LOGGER.log(Level.INFO, " the {0}th relation is called {1}", new Object[]{Integer.valueOf(i), relationNames[i]});
+					LOGGER.log(Level.INFO, " the {0}th relation is called {1}", new Object[]{i, relationNames[i]});
 					return false;
 				}
 		if (functionNames != null) {
@@ -166,7 +164,7 @@ public class InstanceCheckerParser {
 		return true;
 	}
 
-	private int parseInt(String attribute, String value) throws FormatException {
+	private static int parseInt(String attribute, String value) throws FormatException {
 		try {
 			return Integer.parseInt(value);
 		} catch (NumberFormatException e) {
@@ -174,21 +172,21 @@ public class InstanceCheckerParser {
 		}
 	}
 
-	private int parsePositiveInt(String attribute, String value) throws FormatException {
+	private static int parsePositiveInt(String attribute, String value) throws FormatException {
 		int v = parseInt(attribute, value);
 		if (v < 0)
 			throw new FormatException(attribute + " is not strictly positive");
 		return v;
 	}
 
-	private int parseStrictlyPositiveInt(String attribute, String value) throws FormatException {
+	private static int parseStrictlyPositiveInt(String attribute, String value) throws FormatException {
 		int v = parseInt(attribute, value);
 		if (v <= 0)
 			throw new FormatException(attribute + " is not strictly positive");
 		return v;
 	}
 
-	private String nextToken(String constraintName, StringTokenizer st) throws FormatException {
+	private static String nextToken(String constraintName, StringTokenizer st) throws FormatException {
 		try {
 			return st.nextToken();
 		} catch (Exception e) {
@@ -198,7 +196,7 @@ public class InstanceCheckerParser {
 
 	private void checkAndRecord(String identifier, String context) throws FormatException {
 		if (identifier.length() == 0)
-			throw new FormatException("Missing name attribute for a " + context + ".");
+			throw new FormatException("Missing name attribute for a " + context + '.');
 		for (int i = 0; i < identifier.length(); i++) {
 			char c = identifier.charAt(i);
 			if (c != '_' && !Character.isLetterOrDigit(c) && c != '-')
@@ -214,10 +212,10 @@ public class InstanceCheckerParser {
 			throw new FormatException("The element presentation is absent.");
 
 		instanceName = presentationElement.getAttribute(InstanceTokens.NAME);
-		if (!instanceName.equals("") && !instanceName.equals("?"))
+		if (instanceName.length() != 0 && !instanceName.equals("?"))
 			checkAndRecord(instanceName, "presentation");
 
-		format = presentationElement.getAttribute(InstanceTokens.FORMAT);
+        final String format = presentationElement.getAttribute(InstanceTokens.FORMAT);
 		if (!format.equals(InstanceTokens.XCSP_2_0) && !format.equals(InstanceTokens.XCSP_2_1))
 			throw new FormatException("The value of the attribute format of presentation is not valid as it is different from XCSP 2.0 and XCSP 2.1.");
 		type = presentationElement.getAttribute(InstanceTokens.TYPE.trim());
@@ -244,7 +242,7 @@ public class InstanceCheckerParser {
 		}
 	}
 
-	private int[] parseDomainValues(String domainName, int nbValues, String s) throws FormatException {
+	private static int[] parseDomainValues(String domainName, int nbValues, String s) throws FormatException {
 		int[] values = new int[nbValues];
 		StringTokenizer st = new StringTokenizer(s);
 		int cnt = 0;
@@ -252,10 +250,10 @@ public class InstanceCheckerParser {
 			String token = st.nextToken();
 			int position = token.indexOf(InstanceTokens.DISCRETE_INTERVAL_SEPARATOR);
 			if (position == -1)
-				values[cnt++] = parseInt("pb with value " + token + " in domain " + domainName, token);
+				values[cnt++] = parseInt(String.format("pb with value %s in domain %s", token, domainName), token);
 			else {
-				int min = parseInt("pb with min value of interval " + token + " in domain " + domainName, token.substring(0, position));
-				int max = parseInt("pb with max value of interval " + token + " in domain " + domainName, token.substring(position + InstanceTokens.DISCRETE_INTERVAL_SEPARATOR.length()));
+				int min = parseInt(String.format("pb with min value of interval %s in domain %s", token, domainName), token.substring(0, position));
+				int max = parseInt(String.format("pb with max value of interval %s in domain %s", token, domainName), token.substring(position + InstanceTokens.DISCRETE_INTERVAL_SEPARATOR.length()));
 				if (max < min)
 					throw new FormatException("pb with interval (max > min) " + token + " in domain " + domainName);
 				if (cnt + (max - min) >= values.length)
@@ -275,7 +273,7 @@ public class InstanceCheckerParser {
 	private PDomain parseDomain(Element domainElement) throws FormatException {
 		String name = domainElement.getAttribute(InstanceTokens.NAME);
 		checkAndRecord(name, "domain");
-		int nbValues = parseStrictlyPositiveInt(InstanceTokens.NB_VALUES + " of domain " + name + " ", domainElement.getAttribute(InstanceTokens.NB_VALUES));
+		int nbValues = parseStrictlyPositiveInt(InstanceTokens.NB_VALUES + " of domain " + name + ' ', domainElement.getAttribute(InstanceTokens.NB_VALUES));
 		return new PDomain(name, parseDomainValues(name, nbValues, domainElement.getTextContent()));
 	}
 
@@ -283,7 +281,7 @@ public class InstanceCheckerParser {
 		if (domainsElement == null)
 			throw new FormatException("The element domains is absent.");
 
-		mapOfDomains = new HashMap<String, PDomain>();
+		mapOfDomains = new HashMap<String, PDomain>(16);
 		int nbDomains = parseStrictlyPositiveInt(InstanceTokens.NB_DOMAINS + " of element domains ", domainsElement.getAttribute(InstanceTokens.NB_DOMAINS));
 		domainNames = new String[nbDomains];
 
@@ -311,7 +309,7 @@ public class InstanceCheckerParser {
 		if (variablesElement == null)
 			throw new FormatException("The element variables is absent.");
 
-		mapOfVariables = new HashMap<String, PVariable>();
+		mapOfVariables = new HashMap<String, PVariable>(16);
 		int nbVariables = parseStrictlyPositiveInt(InstanceTokens.NB_VARIABLES + " of element variables ", variablesElement.getAttribute(InstanceTokens.NB_VARIABLES));
 		variableNames = new String[nbVariables];
 
@@ -325,15 +323,19 @@ public class InstanceCheckerParser {
 		}
 	}
 
-	private String listOf(int[] t, int limit) {
-		String s = "(";
+	private static String listOf(int[] t, int limit) {
+		StringBuilder s = new StringBuilder(128);
+        s.append('(');
 		for (int i = 0; i < limit; i++)
-			s += t[i] + (i < limit - 1 ? " " : ")");
-		return s;
+        {
+            s.append(t[i]);
+            s.append(i < limit - 1 ? ' ' : ')');
+        }
+		return s.toString();
 	}
 
-	private String getStringOf(int[] t) {
-		StringBuffer sb = new StringBuffer();
+	private static String getStringOf(int[] t) {
+        StringBuilder sb = new StringBuilder(128);
 		sb.append('(');
 		for (int i = 0; i < t.length; i++)
             sb.append(t[i]).append(i < t.length - 1 ? "," : "");
@@ -357,17 +359,17 @@ public class InstanceCheckerParser {
 			if (semantics.equals(InstanceTokens.SOFT)) {
 				int costFlagPosition = token.lastIndexOf(InstanceTokens.COST_SEPARATOR);
 				if (costFlagPosition != -1) {
-					currentCost = parseInt("Problem with the cost in " + token + " of relation " + name, token.substring(0, costFlagPosition));
+					currentCost = parseInt(String.format("Problem with the cost in %s of relation %s", token, name), token.substring(0, costFlagPosition));
 					token = token.substring(costFlagPosition + 1);
 				}
 				if (currentCost < 0)
 					throw new FormatException("No cost (or a negative cost) is associated with a tuple in relation " + name);
 				weights[i] = currentCost;
 			}
-			tuples[i][0] = parseInt("Problem with the token " + token + " in relation " + name, token);
+			tuples[i][0] = parseInt(String.format("Problem with the token %s in relation %s", token, name), token);
 			int j = 1;
 			while (st2.hasMoreTokens() && j < arity)
-				tuples[i][j++] = parseInt("Problem  with a tuple in relation " + name, st2.nextToken());
+				tuples[i][j++] = parseInt(String.format("Problem  with a tuple in relation %s", name), st2.nextToken());
 			if (j < arity || st2.hasMoreTokens())
 				throw new FormatException("There is a problem with tuple starting with " + listOf(tuples[i], j) + " in relation " + name + ". It has a size different from the indicated arity.");
 			if (i > 0 && Toolkit.lexicographicComparator.compare(tuples[i - 1], tuples[i]) >= 0)
@@ -385,8 +387,8 @@ public class InstanceCheckerParser {
 		String name = relationElement.getAttribute(InstanceTokens.NAME);
 		checkAndRecord(name, "relation");
 
-		int arity = parseStrictlyPositiveInt(InstanceTokens.ARITY + " of relation " + name + " ", relationElement.getAttribute(InstanceTokens.ARITY));
-		int nbTuples = parsePositiveInt(InstanceTokens.NB_TUPLES + " of relation " + name + " ", relationElement.getAttribute(InstanceTokens.NB_TUPLES));
+		int arity = parseStrictlyPositiveInt(InstanceTokens.ARITY + " of relation " + name + ' ', relationElement.getAttribute(InstanceTokens.ARITY));
+		int nbTuples = parsePositiveInt(InstanceTokens.NB_TUPLES + " of relation " + name + ' ', relationElement.getAttribute(InstanceTokens.NB_TUPLES));
 		String semantics = relationElement.getAttribute(InstanceTokens.SEMANTICS);
 		if (semantics.equals(InstanceTokens.SOFT)) {
 			if (!type.equals(InstanceTokens.WCSP))
@@ -403,7 +405,7 @@ public class InstanceCheckerParser {
 	}
 
 	private void parseRelations(Element relationsElement) throws FormatException {
-		mapOfRelations = new HashMap<String, PRelation>();
+		mapOfRelations = new HashMap<String, PRelation>(16);
 		if (relationsElement == null) {
 			relationNames = new String[0];
 			return;
@@ -448,7 +450,7 @@ public class InstanceCheckerParser {
 	}
 
 	private void parseFunctions(Element functionsElement) throws FormatException {
-		mapOfFunctions = new HashMap<String, PFunction>();
+		mapOfFunctions = new HashMap<String, PFunction>(16);
 		if (functionsElement == null) {
 			functionNames = new String[0];
 			return;
@@ -496,7 +498,7 @@ public class InstanceCheckerParser {
 	}
 
 	private void parsePredicates(Element predicatesElement) throws FormatException {
-		mapOfPredicates = new HashMap<String, PPredicate>();
+		mapOfPredicates = new HashMap<String, PPredicate>(16);
 		if (predicatesElement == null) {
 			predicateNames = new String[0];
 			return;
@@ -515,14 +517,14 @@ public class InstanceCheckerParser {
 		}
 	}
 
-	private int searchIn(String s, PVariable[] variables) {
+	private static int searchIn(String s, PVariable[] variables) {
 		for (int i = 0; i < variables.length; i++)
 			if (variables[i].getName().equals(s))
 				return i;
 		return -1;
 	}
 
-	private void checkEffectiveParameters(String name, PVariable[] variables, String[] parameters) throws FormatException {
+	private static void checkEffectiveParameters(String name, PVariable[] variables, String[] parameters) throws FormatException {
 		boolean[] found = new boolean[variables.length];
 		for (String token : parameters) {
 			Long l = Toolkit.parseLong(token);
@@ -539,7 +541,7 @@ public class InstanceCheckerParser {
 				throw new FormatException("The variable " + variables[i].getName() + " does not occur in the list of effective parameters of constraint " + name);
 	}
 
-	private void controlInvolvedVariablesWrtScope(Set<PVariable> involvedVariablesInParameters, PVariable[] scope, String name) throws FormatException {
+	private static void controlInvolvedVariablesWrtScope(Set<PVariable> involvedVariablesInParameters, PVariable[] scope, String name) throws FormatException {
 		if (involvedVariablesInParameters.size() != scope.length)
 			throw new FormatException("The number of variables occuring in scope is different from the number of variables occuring in parameters of constraint " + name);
 		for (int i = 0; i < scope.length; i++)
@@ -549,18 +551,18 @@ public class InstanceCheckerParser {
 
 	private PConstraint parseElementConstraint(String name, PVariable[] scope, Element parameters) throws FormatException {
 		StringTokenizer st = new StringTokenizer(Toolkit.insertWhitespaceAround(parameters.getTextContent(), InstanceTokens.BRACKETS));
-		Set<PVariable> involvedVariablesInParameters = new HashSet<PVariable>();
+		Set<PVariable> involvedVariablesInParameters = new HashSet<PVariable>(16);
 		PVariable index = mapOfVariables.get(nextToken(name, st)); // index is necessarily a variable
 
 		involvedVariablesInParameters.add(index);
 		if (!nextToken(name, st).equals("["))
 			throw new FormatException("One should find [ as second token of the parameters of constraint " + name);
-		List<Object> table = new ArrayList<Object>();
+		List<Object> table = new ArrayList<Object>(16);
 		String token = nextToken(name, st);
 		while (!token.equals("]")) {
 			Object object = mapOfVariables.get(token);
 			if (object == null)
-				object = parseInt("Pb with a token in parameters of table of constraint Element " + name, token);
+				object = parseInt(String.format("Pb with a token in parameters of table of constraint Element %s", name), token);
 			else
 				involvedVariablesInParameters.add((PVariable) object);
 			table.add(object);
@@ -582,7 +584,7 @@ public class InstanceCheckerParser {
 		return new PElement(name, scope, index, table.toArray(new Object[table.size()]), value);
 	}
 
-	private PConstraint parseWeightedSumConstraint(String name, PVariable[] scope, Element parameters) throws FormatException {
+	private static PConstraint parseWeightedSumConstraint(String name, PVariable[] scope, Element parameters) throws FormatException {
 		NodeList nodeList = parameters.getChildNodes();
 		if (nodeList.getLength() != 3)
 			throw new FormatException("Ill-formed parameters of constraint " + name);
@@ -599,7 +601,7 @@ public class InstanceCheckerParser {
 			if (position == -1)
 				throw new FormatException("Ill-formed parameters of constraint " + name);
 			// LOGGER.info(coeffToken + " " + position);
-			coeffs[position] += parseInt("One coefficient " + token + " of the parameters of constraint " + name, coeffToken);
+			coeffs[position] += parseInt(String.format("One coefficient %s of the parameters of constraint %s", token, name), coeffToken);
 			if (!nextToken(name, st).equals("}"))
 				throw new FormatException("One should find } as last token of a pair (coefficient, variable) in constraint " + name);
 			token = nextToken(name, st);
@@ -614,15 +616,15 @@ public class InstanceCheckerParser {
 		return new PWeightedSum(name, scope, coeffs, operator, limit);
 	}
 
-	private String buildStringRepresentationOf(Element parameters) {
+	private static String buildStringRepresentationOf(Element parameters) {
 		NodeList nodeList = parameters.getChildNodes();
-		StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder(128);
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			Node node = nodeList.item(i);
 			if (node.getNodeName().equals(InstanceTokens.NIL)) {
-				sb.append(" ");
+				sb.append(' ');
 				sb.append(InstanceTokens.NIL);
-				sb.append(" ");
+				sb.append(' ');
 			} else
 				sb.append(Toolkit.insertWhitespaceAround(node.getTextContent(), InstanceTokens.BRACKETS));
 		}
@@ -633,34 +635,34 @@ public class InstanceCheckerParser {
 		StringTokenizer st = new StringTokenizer(buildStringRepresentationOf(parameters));
 		if (!nextToken(name, st).equals("["))
 			throw new FormatException("One should find [ as first token of the parameters of constraint " + name);
-		Set<PVariable> involvedVariablesInParameters = new HashSet<PVariable>();
+		Set<PVariable> involvedVariablesInParameters = new HashSet<PVariable>(16);
 		String token = nextToken(name, st);
-		List<PTask> tasks = new ArrayList<PTask>();
+		List<PTask> tasks = new ArrayList<PTask>(16);
 		while (!token.equals("]")) {
 			if (!token.equals("{"))
 				throw new FormatException("One should find { as first token of a task definition in constraint " + name);
 			token = nextToken(name, st);
 			Object origin = mapOfVariables.get(token);
 			if (origin == null)
-				origin = token.equals(InstanceTokens.NIL) ? null : parseInt("origin field " + token + " in the parameters of constraint " + name, token);
+				origin = token.equals(InstanceTokens.NIL) ? null : parseInt(String.format("origin field %s in the parameters of constraint %s", token, name), token);
 			else
 				involvedVariablesInParameters.add((PVariable) origin);
 			token = nextToken(name, st);
 			Object duration = mapOfVariables.get(token);
 			if (duration == null)
-				duration = token.equals(InstanceTokens.NIL) ? null : parseInt("duration field " + token + " in the parameters of constraint " + name, token);
+				duration = token.equals(InstanceTokens.NIL) ? null : parseInt(String.format("duration field %s in the parameters of constraint %s", token, name), token);
 			else
 				involvedVariablesInParameters.add((PVariable) duration);
 			token = nextToken(name, st);
 			Object end = mapOfVariables.get(token);
 			if (end == null)
-				end = token.equals(InstanceTokens.NIL) ? null : parseInt("end field " + token + " in the parameters of constraint " + name, token);
+				end = token.equals(InstanceTokens.NIL) ? null : parseInt(String.format("end field %s in the parameters of constraint %s", token, name), token);
 			else
 				involvedVariablesInParameters.add((PVariable) end);
 			token = nextToken(name, st);
 			Object height = mapOfVariables.get(token);
 			if (height == null)
-				height = parseInt("height field " + token + " in the parameters of constraint " + name, token);
+				height = parseInt(String.format("height field %s in the parameters of constraint %s", token, name), token);
 			else
 				involvedVariablesInParameters.add((PVariable) height);
 			token = nextToken(name, st);
@@ -682,22 +684,22 @@ public class InstanceCheckerParser {
 		StringTokenizer st = new StringTokenizer(buildStringRepresentationOf(parameters));
 		if (!nextToken(name, st).equals("["))
 			throw new FormatException("One should find [ as first token of the parameters of constraint " + name);
-		Set<PVariable> involvedVariablesInParameters = new HashSet<PVariable>();
+		Set<PVariable> involvedVariablesInParameters = new HashSet<PVariable>(16);
 		String token = nextToken(name, st);
-		List<PTask> tasks = new ArrayList<PTask>();
+		List<PTask> tasks = new ArrayList<PTask>(16);
 		while (!token.equals("]")) {
 			if (!token.equals("{"))
 				throw new FormatException("One should find { as first token of a task definition in constraint " + name);
 			token = nextToken(name, st);
 			Object origin = mapOfVariables.get(token);
 			if (origin == null)
-				origin = token.equals(InstanceTokens.NIL) ? null : parseInt("origin field " + token + " in the parameters of constraint " + name, token);
+				origin = token.equals(InstanceTokens.NIL) ? null : parseInt(String.format("origin field %s in the parameters of constraint %s", token, name), token);
 			else
 				involvedVariablesInParameters.add((PVariable) origin);
 			token = nextToken(name, st);
 			Object duration = mapOfVariables.get(token);
 			if (duration == null)
-				duration = token.equals(InstanceTokens.NIL) ? null : parseInt("duration field " + token + " in the parameters of constraint " + name, token);
+				duration = token.equals(InstanceTokens.NIL) ? null : parseInt(String.format("duration field %s in the parameters of constraint %s", token, name), token);
 			else
 				involvedVariablesInParameters.add((PVariable) duration);
 			token = nextToken(name, st);
@@ -718,14 +720,14 @@ public class InstanceCheckerParser {
 		StringTokenizer st = new StringTokenizer(buildStringRepresentationOf(parameters));
 		if (!nextToken(name, st).equals("["))
 			throw new FormatException("One should find [ as first token of the parameters of constraint " + name);
-		Set<PVariable> involvedVariablesInParameters = new HashSet<PVariable>();
+		Set<PVariable> involvedVariablesInParameters = new HashSet<PVariable>(16);
 		String token = nextToken(name, st);
-        List<Object> table = new ArrayList<Object>();
+        List<Object> table = new ArrayList<Object>(16);
         while (!token.equals("]")) {
 			token = nextToken(name, st);
 			Object var = mapOfVariables.get(token);
             if (var == null)
-                var = parseInt("Pb with the value token in parameters of constraint GCC " + name, token);
+                var = parseInt(String.format("Pb with the value token in parameters of constraint GCC %s", name), token);
             else
                 involvedVariablesInParameters.add((PVariable) var);
             table.add(var);
@@ -739,12 +741,12 @@ public class InstanceCheckerParser {
 			if (!token.equals("{"))
 				throw new FormatException("One should find { as first token of a value definition in constraint " + name);
 			token = nextToken(name, st);
-            Integer val = parseInt("value for GCC constraint " + name, nextToken(name, st));
+            Integer val = parseInt(String.format("value for GCC constraint %s", name), nextToken(name, st));
             table.add(val);
 			token = nextToken(name, st);
 			Object noccurrence = mapOfVariables.get(token);
 			if (noccurrence == null)
-				noccurrence = token.equals(InstanceTokens.NIL) ? null : parseInt("noccurence field " + token + " in the parameters of constraint " + name, token);
+				noccurrence = token.equals(InstanceTokens.NIL) ? null : parseInt(String.format("noccurence field %s in the parameters of constraint %s", token, name), token);
 			else
 				involvedVariablesInParameters.add((PVariable) noccurrence);
             table.add(noccurrence);
@@ -767,14 +769,14 @@ public class InstanceCheckerParser {
 		StringTokenizer st = new StringTokenizer(buildStringRepresentationOf(parameters));
 		if (!nextToken(name, st).equals("["))
 			throw new FormatException("One should find [ as first token of the parameters of constraint " + name);
-		Set<PVariable> involvedVariablesInParameters = new HashSet<PVariable>();
+		Set<PVariable> involvedVariablesInParameters = new HashSet<PVariable>(16);
 		String token = nextToken(name, st);
-        List<Object> table = new ArrayList<Object>();
+        List<Object> table = new ArrayList<Object>(16);
         while (!token.equals("]")) {
 			token = nextToken(name, st);
 			Object var = mapOfVariables.get(token);
             if (var == null)
-                var = parseInt("Pb with the value token in parameters of constraint LexLess " + name, token);
+                var = parseInt(String.format("Pb with the value token in parameters of constraint LexLess %s", name), token);
             else
                 involvedVariablesInParameters.add((PVariable) var);
             table.add(var);
@@ -789,7 +791,7 @@ public class InstanceCheckerParser {
 			token = nextToken(name, st);
 			Object var = mapOfVariables.get(token);
             if (var == null)
-                var = parseInt("Pb with the value token in parameters of constraint LexLess " + name, token);
+                var = parseInt(String.format("Pb with the value token in parameters of constraint LexLess %s", name), token);
             else
                 involvedVariablesInParameters.add((PVariable) var);
             table.add(var);
@@ -811,14 +813,14 @@ public class InstanceCheckerParser {
 		StringTokenizer st = new StringTokenizer(buildStringRepresentationOf(parameters));
 		if (!nextToken(name, st).equals("["))
 			throw new FormatException("One should find [ as first token of the parameters of constraint " + name);
-		Set<PVariable> involvedVariablesInParameters = new HashSet<PVariable>();
+		Set<PVariable> involvedVariablesInParameters = new HashSet<PVariable>(16);
 		String token = nextToken(name, st);
-        List<Object> table = new ArrayList<Object>();
+        List<Object> table = new ArrayList<Object>(16);
         while (!token.equals("]")) {
 			token = nextToken(name, st);
 			Object var = mapOfVariables.get(token);
             if (var == null)
-                var = parseInt("Pb with the value token in parameters of constraint LexLess " + name, token);
+                var = parseInt(String.format("Pb with the value token in parameters of constraint LexLess %s", name), token);
             else
                 involvedVariablesInParameters.add((PVariable) var);
             table.add(var);
@@ -833,7 +835,7 @@ public class InstanceCheckerParser {
 			token = nextToken(name, st);
 			Object var = mapOfVariables.get(token);
             if (var == null)
-                var = parseInt("Pb with the value token in parameters of constraint LexLess " + name, token);
+                var = parseInt(String.format("Pb with the value token in parameters of constraint LexLess %s", name), token);
             else
                 involvedVariablesInParameters.add((PVariable) var);
             table.add(var);
@@ -855,7 +857,7 @@ public class InstanceCheckerParser {
 		String name = constraintElement.getAttribute(InstanceTokens.NAME);
 		checkAndRecord(name, "constraint");
 
-		int arity = parseStrictlyPositiveInt(InstanceTokens.ARITY + " of constraint " + name + " ", constraintElement.getAttribute(InstanceTokens.ARITY));
+		int arity = parseStrictlyPositiveInt(InstanceTokens.ARITY + " of constraint " + name + ' ', constraintElement.getAttribute(InstanceTokens.ARITY));
 		String scope = constraintElement.getAttribute(InstanceTokens.SCOPE);
 		if (scope.length() == 0)
 			throw new FormatException("There is no scope attribute for constraint " + name);
@@ -939,7 +941,7 @@ public class InstanceCheckerParser {
 		if (constraintsElement == null)
 			throw new FormatException("The element constraints is absent.");
 
-		mapOfConstraints = new HashMap<String, PConstraint>();
+		mapOfConstraints = new HashMap<String, PConstraint>(16);
 		int nbConstraints = parseStrictlyPositiveInt(InstanceTokens.NB_CONSTRAINTS + " of element constraints ", constraintsElement.getAttribute(InstanceTokens.NB_CONSTRAINTS));
 		constraintNames = new String[nbConstraints];
 
@@ -959,7 +961,7 @@ public class InstanceCheckerParser {
 			String s = constraintsElement.getAttribute(InstanceTokens.MAXIMAL_COST);
 			int maximalCost = s.equals(InstanceTokens.INFINITY) ? Integer.MAX_VALUE : parseStrictlyPositiveInt("pb with maximalCost " + s, s);
 			s = constraintsElement.getAttribute(InstanceTokens.INITIAL_COST);
-			int initialCost = s.equals("") ? 0 : parsePositiveInt("pb with initialCost " + s, s);
+			int initialCost = s.length() == 0 ? 0 : parsePositiveInt("pb with initialCost " + s, s);
 			if (initialCost >= maximalCost)
 				throw new FormatException("InitialCost is greater than maximalCost");
 			if (competitionControl && maximalCost == Integer.MAX_VALUE)
@@ -969,7 +971,7 @@ public class InstanceCheckerParser {
 		}
 	}
 
-	private void controlOrderOfElements(Document document) throws FormatException {
+	private static void controlOrderOfElements(Document document) throws FormatException {
 		if (!DocumentModifier.areOrderedChilds(document, InstanceTokens.PRESENTATION, InstanceTokens.DOMAINS))
 			throw new FormatException("Element <presentation> should be before element <domains>");
 		if (!DocumentModifier.areOrderedChilds(document, InstanceTokens.DOMAINS, InstanceTokens.VARIABLES))
@@ -989,7 +991,7 @@ public class InstanceCheckerParser {
 		this.competitionControl = competitionControl;
 		controlOrderOfElements(document);
 
-		allNameIdentifiers = new HashSet<String>();
+		allNameIdentifiers = new HashSet<String>(16);
 		parsePresentation(XMLManager.getFirstElementByTagNameFromRoot(document, InstanceTokens.PRESENTATION));
 		logic.spot();
 		parseDomains(XMLManager.getFirstElementByTagNameFromRoot(document, InstanceTokens.DOMAINS));
@@ -1179,7 +1181,7 @@ public class InstanceCheckerParser {
 
 		int[][] tuples = new int[(int) size][];
 		weights = new int[(int) size];
-		Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+		Map<Integer, Integer> map = new HashMap<Integer, Integer>(16);
 
 		EvaluationManager evaluationManager = new EvaluationManager(canonicalPredicate);
 
@@ -1269,11 +1271,11 @@ public class InstanceCheckerParser {
 	}
 
 	public void convertToExtension() throws FormatException {
-		if (mapOfFunctions.size() == 0 && mapOfPredicates.size() == 0)
+		if (mapOfFunctions.isEmpty() && mapOfPredicates.isEmpty())
 			return;
 
-		newRelations = new ArrayList<PRelation>();
-		constraintsToNewRelations = new HashMap<String, String>();
+		newRelations = new ArrayList<PRelation>(16);
+		constraintsToNewRelations = new HashMap<String, String>(16);
 
 		int nbConvertions = 0;
 		for (PConstraint constraint : mapOfConstraints.values())
@@ -1302,8 +1304,7 @@ public class InstanceCheckerParser {
 		int nbOldRelations = mapOfRelations.size();
 		String[] t = new String[nbOldRelations + newRelations.size()];
 
-		for (int i = 0; i < nbOldRelations; i++)
-			t[i] = relationNames[i];
+        System.arraycopy(relationNames, 0, t, 0, nbOldRelations);
 		Iterator<PRelation> it = newRelations.iterator();
 		for (int i = nbOldRelations; i < t.length; i++) {
 			PRelation relation = it.next();

@@ -45,7 +45,7 @@ public class PDisjunctive extends PGlobalConstraint {
 	public String toString() {
 		String s = super.toString() + " : disjunctive\n\t";
         for (PTask task : tasks) {
-            s += "  [origin=" + computeStringRepresentationOf(task.getOrigin()) + " " + "duration=" + computeStringRepresentationOf(task.getDuration())  + "]\n\t";
+            s += "  [origin=" + computeStringRepresentationOf(task.getOrigin()) + ' ' + "duration=" + computeStringRepresentationOf(task.getDuration())  + "]\n\t";
         }
 		s += "nbTasks=" + tasks.length;
 		return s;

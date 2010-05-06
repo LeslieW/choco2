@@ -26,11 +26,11 @@ package parser.absconparseur.tools;
  * This class allows iterating all tuples in a lexicograpic order from a given set of domains.
  */
 public class LexicographicIterator {
-	private int[] tuple;
+	private final int[] tuple;
 
-	private int[] position;
+	private final int[] position;
 
-	private int[][] domains;
+	private final int[][] domains;
 
 	public LexicographicIterator(int[][] domains) {
 		this.domains = domains;

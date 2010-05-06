@@ -1,9 +1,9 @@
 package parser.instances;
 
-import java.io.File;
-
 import choco.kernel.solver.Configuration;
 import choco.kernel.solver.search.limit.Limit;
+
+import java.io.File;
 
 
 public class BasicSettings extends Configuration {
@@ -99,7 +99,7 @@ public class BasicSettings extends Configuration {
 	
 
 	public static String getInstModelMsg(Configuration conf) {
-		final StringBuilder b = new StringBuilder();
+		final StringBuilder b = new StringBuilder(32);
 		if( conf.readBoolean(LIGHT_MODEL)) b.append("LIGHT_MODEL    ");
 		if( conf.readBoolean(RANDOM_VALUE)) b.append("RAND_VAL    ");
 		if( conf.readBoolean(RANDOM_TIE_BREAKING)) b.append("RAND_TIE_BREAKING");

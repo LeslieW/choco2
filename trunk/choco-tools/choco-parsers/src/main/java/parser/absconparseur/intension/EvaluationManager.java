@@ -153,7 +153,7 @@ public class EvaluationManager {
 			for (int i = 0; i < evaluators.length; i = shortCircuits[i] == 0 ? i + 1 : nextEvaluator(i))
 				evaluators[i].evaluate();
 
-		assert Evaluator.getTop() == 0 : "" + Evaluator.getTop();
+		assert Evaluator.getTop() == 0 : String.valueOf(Evaluator.getTop());
 		return Evaluator.getTopValue(); // == 1; // 1 means true while 0 means false
 	}
 
@@ -245,8 +245,8 @@ public class EvaluationManager {
                 top++;
                 lstack[top] = 0;
                 dstack[top] = 0;
-			} else if (evaluator instanceof AbsEvaluator)
-				;
+			}/* else if (evaluator instanceof AbsEvaluator)
+				;*/
             else if (evaluator instanceof AddEvaluator) {
                 top--;
                 lstack[top] = lstack[top + 1] + lstack[top];
@@ -271,8 +271,8 @@ public class EvaluationManager {
                 top--;
                 lstack[top] = lstack[top + 1] * lstack[top];
                 dstack[top] = dstack[top + 1] * dstack[top];
-			} else if (evaluator instanceof NegEvaluator)
-				;
+			} /*else if (evaluator instanceof NegEvaluator)
+				;*/
             else if (evaluator instanceof PowEvaluator) {
                 top--;
                 // lstack[top] = (long) Math.pow(lstack[top + 1], lstack[top]);
@@ -304,7 +304,7 @@ public class EvaluationManager {
 
 	public void display() {
 		if(LOGGER.isLoggable(Level.INFO)) {
-			StringBuffer st = new StringBuffer();
+            StringBuilder st = new StringBuilder(128);
 			for (Evaluator evaluator : evaluators) st.append(MessageFormat.format("{0} ", evaluator));
 			LOGGER.info(st.toString());
 		}

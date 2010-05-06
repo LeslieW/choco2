@@ -46,7 +46,7 @@ public class InstanceChecker extends JFrame {
 
 	private final MyPanel content = new MyPanel();
 
-	private Indicator indicator;
+	private final Indicator indicator;
 
 	public interface Indicator {
 		public void write(String text);
@@ -345,12 +345,12 @@ public class InstanceChecker extends JFrame {
 	}
 
 	public void updateCounters(final int nb1, final int nb2, final int nb3) {
-		content.counter1Field.setText("" + nb1);
-		content.counter2Field.setText("" + nb2);
-		content.counter3Field.setText("" + nb3);
+		content.counter1Field.setText(String.valueOf(nb1));
+		content.counter2Field.setText(String.valueOf(nb2));
+		content.counter3Field.setText(String.valueOf(nb3));
 	}
 
-	public void endOfCoder(final int nb1, final int nb2, final int nb3, final long duration) {
+	public void endOfCoder(final int nb1, final int nb2, final int nb3) {
 		updateCounters(nb1, nb2, nb3);
 		// content.statutField.setText("Finished in " + duration + " milliseconds");
 		content.stopButton.setEnabled(false);
@@ -416,7 +416,7 @@ public class InstanceChecker extends JFrame {
 			new InstanceChecker();
 		else {
 			if(LOGGER.isLoggable(Level.INFO)) {
-				final StringBuilder b = new StringBuilder();
+				final StringBuilder b = new StringBuilder(512);
 				b.append("InstanceChecker ").append(InstanceParser.VERSION);
 				b.append("Usage 1 : java ... InstanceChecker gui");
 				b.append("Usage 2 : java ... InstanceChecker <instanceFileName> <mode> {<overwrite>}");

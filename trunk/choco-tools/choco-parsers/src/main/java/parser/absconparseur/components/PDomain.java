@@ -29,11 +29,11 @@ import java.util.Arrays;
 import java.util.BitSet;
 
 public class PDomain {
-	private String name;
+	private final String name;
 
-	private int[] values;
+	private final int[] values;
 
-    private int index;
+    private final int index;
 
     public String getName() {
 		return name;
@@ -49,7 +49,7 @@ public class PDomain {
 
 	public BitSet getBitSetDomain() {
 		if (values[0] < 0) return null;
-		BitSet b = new BitSet();
+		BitSet b = new BitSet(values.length);
 		for (int i = 0; i < values.length; i++) {
 			b.set(values[i]);
 		}
@@ -105,26 +105,26 @@ public class PDomain {
 	public String getStringListOfValues() {
 		int previousValue = values[0];
 		boolean startedInterval = false;
-		StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder(16);
 		for (int i = 1; i < values.length; i++) {
 			int currentValue = values[i];
 			if (currentValue != previousValue + 1) {
 				if (startedInterval) {
-					sb.append(previousValue + InstanceTokens.DISCRETE_INTERVAL_END);
+                    sb.append(previousValue).append(InstanceTokens.DISCRETE_INTERVAL_END);
 					startedInterval = false;
 				} else
 					sb.append(previousValue);
 				sb.append(InstanceTokens.VALUE_SEPARATOR);
 			} else {
 				if (!startedInterval) {
-					sb.append(InstanceTokens.DISCRETE_INTERVAL_START + previousValue + InstanceTokens.DISCRETE_INTERVAL_SEPARATOR);
+                    sb.append(InstanceTokens.DISCRETE_INTERVAL_START).append(previousValue).append(InstanceTokens.DISCRETE_INTERVAL_SEPARATOR);
 					startedInterval = true;
 				}
 			}
 			previousValue = currentValue;
 		}
 		if (startedInterval)
-			sb.append(previousValue + InstanceTokens.DISCRETE_INTERVAL_END);
+            sb.append(previousValue).append(InstanceTokens.DISCRETE_INTERVAL_END);
 		else
 			sb.append(previousValue);
 		return sb.toString();

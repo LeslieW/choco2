@@ -22,22 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package parser.instances;
 
-
-import static parser.instances.xcsp.XcspSettings.DOMOVERDEG;
-import static parser.instances.xcsp.XcspSettings.DOMOVERWDEG;
-import static parser.instances.xcsp.XcspSettings.IMPACT;
-import static parser.instances.xcsp.XcspSettings.SIMPLE;
-import static parser.instances.xcsp.XcspSettings.VERSATILE;
-
-import java.io.File;
-
-import parser.absconparseur.components.PVariable;
-import parser.absconparseur.tools.InstanceParser;
-import parser.absconparseur.tools.SolutionChecker;
-import parser.absconparseur.tools.UnsupportedConstraintException;
-import parser.chocogen.ChocoFactory;
-import parser.chocogen.ObjectFactory;
-import parser.instances.xcsp.XcspSettings;
 import choco.cp.model.CPModel;
 import choco.cp.solver.constraints.integer.extension.ValidityChecker;
 import choco.cp.solver.preprocessor.PreProcessCPSolver;
@@ -47,6 +31,16 @@ import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.model.Model;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.checker.SolutionCheckerException;
+import parser.absconparseur.components.PVariable;
+import parser.absconparseur.tools.InstanceParser;
+import parser.absconparseur.tools.SolutionChecker;
+import parser.absconparseur.tools.UnsupportedConstraintException;
+import parser.chocogen.ChocoFactory;
+import parser.chocogen.ObjectFactory;
+import parser.instances.xcsp.XcspSettings;
+import static parser.instances.xcsp.XcspSettings.Heuristic.IMPACT;
+
+import java.io.File;
 
 //TODO InstanceParser should implement the interface. 
 class ParserWrapper implements InstanceFileParser {
@@ -92,7 +86,7 @@ class ParserWrapper implements InstanceFileParser {
 public class XcspModel extends AbstractInstanceModel {
 
 	//temporary data
-	private int cheuri;
+	private XcspSettings.Heuristic cheuri;
 	private String[] values;
 
 	public XcspModel() {
@@ -111,7 +105,6 @@ public class XcspModel extends AbstractInstanceModel {
 	@Override
 	public void initialize() {
 		super.initialize();
-		cheuri = XcspSettings.DOMOVERWDEG;
 		values = null;
 	}
 
@@ -145,7 +138,7 @@ public class XcspModel extends AbstractInstanceModel {
 	@Override
 	public String getValuesMessage() {
 		if(values != null) {
-			final StringBuilder b = new StringBuilder();
+			final StringBuilder b = new StringBuilder(16);
 			for (int i = 1; i < values.length; i++) {
 				b.append(values[i]).append(' ');
 			}
@@ -171,12 +164,12 @@ public class XcspModel extends AbstractInstanceModel {
 			return Boolean.FALSE;
 		} else {
 			if (defaultConf.readBoolean(BasicSettings.RANDOM_VALUE) ) s.setRandomValueOrdering( (int) getSeed());
-			cheuri = getXcspSettings().getHeuristic();
+			cheuri = defaultConf.readEnum(XcspSettings.HEURISTIC, XcspSettings.Heuristic.class);
 			//set the search
 			switch (cheuri) {
 			case VERSATILE:
 				isFeasible = s.setVersatile(s, timeLimitPP);
-				cheuri = s.getBBSearch().determineHeuristic(s);
+				cheuri = XcspSettings.match(s.getBBSearch().determineHeuristic(s));
 				break;
 			case DOMOVERDEG:
 				isFeasible = s.setDomOverDeg(s); break;
@@ -211,7 +204,7 @@ public class XcspModel extends AbstractInstanceModel {
 		//			}
 		//		}
 		//ChocoLogging.setVerbosity(Verbosity.SEARCH);
-		if (isFeasible && (cheuri == IMPACT || s.rootNodeSingleton(getXcspSettings().doSingletonConsistency(), timeLimitPP))) {
+		if (isFeasible && (cheuri == IMPACT || s.rootNodeSingleton(defaultConf.readBoolean(XcspSettings.SINGLETON_CONSISTENCY), timeLimitPP))) {
 			//			if (ngFromRestart && (s.restartMode || forcerestart)) {
 			//				s.setRecordNogoodFromRestart(true);
 			//				s.generateSearchStrategy();
@@ -226,7 +219,7 @@ public class XcspModel extends AbstractInstanceModel {
 	}
 
 
-	public boolean checkEverythingIsInstantiated(InstanceParser parser, Solver s) {
+	public static boolean checkEverythingIsInstantiated(InstanceParser parser, Solver s) {
 		for (int i = 0; i < parser.getVariables().length; i++) {
 			try {
 				if (!s.getVar(parser.getVariables()[i].getChocovar()).isInstantiated()) {
@@ -254,7 +247,7 @@ public class XcspModel extends AbstractInstanceModel {
 			}
 		}
 		ValidityChecker.nbCheck = 0;
-		if (getXcspSettings().doExternalCheck()) SolutionChecker.main(values);
+		if (defaultConf.readBoolean(XcspSettings.EXTERNAL_CHECK)) SolutionChecker.main(values);
 	}
 
 

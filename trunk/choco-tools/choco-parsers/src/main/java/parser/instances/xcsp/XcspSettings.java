@@ -5,61 +5,41 @@ import parser.instances.BasicSettings;
 public class XcspSettings extends BasicSettings {
 	
 	private static final long serialVersionUID = -6142621495638857916L;
-	
-	//heuristics
-	public static final int DOMOVERDEG = 0;
-	public static final int DOMOVERWDEG = 1;
-	public static final int IMPACT = 2;
-	public static final int VERSATILE = 3;
-	public static final int SIMPLE = 4;
-	
-	private int heuristic = DOMOVERDEG;
-	
-	
-	/** perform singleton consistency step or not */
-	public boolean singletonConsistency = false;
 
-	/** external check of the solution */
-	public boolean externalCheck = false;
+    public enum Heuristic {
+        DOMOVERDEG, DOMOVERWDEG, IMPACT, VERSATILE, SIMPLE
+    }
+
+    /**
+	 * <br/><b>Goal</b>: Set the heuristic for CSP competition
+	 * <br/><b>Type</b>: Heuristic
+	 * <br/><b>Default value</b>: DOMOVERDEG
+	 */
+	@Default(value = "DOMOVERDEG")
+	public static final String HEURISTIC = "xcsp.heuristic";
 	
+	/**
+	 * <br/><b>Goal</b>: perform singleton consistency step or not
+	 * <br/><b>Type</b>: boolean
+	 * <br/><b>Default value</b>: false
+	 */
+	@Default(value = VALUE_FALSE)
+	public static final String SINGLETON_CONSISTENCY= "xcsp.singletonConsistency";
+
+    /**
+	 * <br/><b>Goal</b>: external check of the solution
+	 * <br/><b>Type</b>: boolean
+	 * <br/><b>Default value</b>: false
+	 */
+	@Default(value = VALUE_FALSE)
+	public static final String EXTERNAL_CHECK= "xcsp.externalCheck";
+
 	public XcspSettings() {
 		super();
 	}
-	
-	public final int getHeuristic() {
-		return heuristic;
-	}
-
-
-	public final void setHeuristic(int heuristic) {
-		this.heuristic = heuristic;
-	}
-
-
-
-	public final boolean doSingletonConsistency() {
-		return singletonConsistency;
-	}
-
-	public final void setDoSingletonConsistency(boolean singletonConsistency) {
-		this.singletonConsistency = singletonConsistency;
-	}
-
-
-	public final boolean doExternalCheck() {
-		return externalCheck;
-	}
-
-
-	//FIXME 
-//	@Override
-//	public void configure() {
-//		super.configure();
-//		heuristic = readInt(TOOLS_PREFIX+"xcsp.heuristic", heuristic);
-//		ObjectFactory.algorithmAC = readInt(TOOLS_PREFIX+"xcsp.ac", ObjectFactory.algorithmAC);
-//		singletonConsistency = readBoolean(TOOLS_PREFIX+"xcsp.singloton", singletonConsistency);
-//		externalCheck = readBoolean(TOOLS_PREFIX+"xcsp.externalcheck", externalCheck);
-//	}
-
+    
+    public static Heuristic match(int heuristic){
+        return Heuristic.values()[heuristic];
+    }
 	
 }

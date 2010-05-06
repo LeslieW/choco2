@@ -102,7 +102,7 @@ public class GloConstraintFactory extends ObjectFactory {
 	}
 
 
-	public Constraint[] makeAlldDifferent(PAllDifferent pgc) {
+	public static Constraint[] makeAlldDifferent(PAllDifferent pgc) {
 		IntegerVariable[] vars = new IntegerVariable[pgc.getScope().length];
 		for (int i = 0; i < pgc.getScope().length; i++) {
 			vars[i] = pgc.getScope()[i].getChocovar();
@@ -111,7 +111,7 @@ public class GloConstraintFactory extends ObjectFactory {
 
 	}
 
-	public Constraint[] makeCumulative(PCumulative pc) {
+	public static Constraint[] makeCumulative(PCumulative pc) {
 		//FIXME the manager is already dealing with disjunctive extraction
 		int n = pc.getTasks().length;
 		if (pc.getLimit() == 1) {
@@ -124,7 +124,7 @@ public class GloConstraintFactory extends ObjectFactory {
 				start = ((PVariable) t.getOrigin()).getChocovar();
 				duration = (Integer) t.getDuration();
 				if (t.getEnd() == null) {
-					end = makeIntVar("end_" + i, start.getLowB() + (Integer) t.getDuration(), start.getUppB() + (Integer) t.getDuration());
+					end = makeIntVar(String.format("end_%d", i), start.getLowB() + (Integer) t.getDuration(), start.getUppB() + (Integer) t.getDuration());
 				} else {
 					end = ((PVariable) t.getEnd()).getChocovar();
 				}
@@ -143,7 +143,7 @@ public class GloConstraintFactory extends ObjectFactory {
 			duration = constant((Integer) t.getDuration());
 			heights[i] = (Integer) t.getHeight();
 			if (t.getEnd() == null) {
-				end = makeIntVar("end_" + i, start.getLowB() + (Integer) t.getDuration(), start.getUppB() + (Integer) t.getDuration());
+				end = makeIntVar(String.format("end_%d", i), start.getLowB() + (Integer) t.getDuration(), start.getUppB() + (Integer) t.getDuration());
 			} else {
 				end = ((PVariable) t.getEnd()).getChocovar();
 			}
@@ -152,13 +152,13 @@ public class GloConstraintFactory extends ObjectFactory {
 		return new Constraint[]{cumulativeMax(taskvars, heights, pc.getLimit())};
 	}
 
-	public Constraint[] makeElement(PElement pe) {
+	public static Constraint[] makeElement(PElement pe) {
 		IntegerVariable v = null;
 		if(pe.getValue() instanceof PVariable){
 			v = ((PVariable)pe.getValue()).getChocovar();
 		}else if(pe.getValue() instanceof Integer){
 			v = makeIntVar("value", (Integer)pe.getValue(), (Integer)pe.getValue());
-			m.addVariable(Options.V_BOUND, v);
+            v.addOption(Options.V_BOUND);
 		}
 		if(pe.getTable().length>0 && pe.getTable()[0] instanceof PVariable){
 			IntegerVariable[] vars = new IntegerVariable[pe.getTable().length];
@@ -179,7 +179,7 @@ public class GloConstraintFactory extends ObjectFactory {
 	}
 
 
-	public Constraint[] makeWeightedSum(PWeightedSum pws) {
+	public static Constraint[] makeWeightedSum(PWeightedSum pws) {
 		int[] coef = pws.getCoeffs();
 		IntegerVariable[] vars = new IntegerVariable[pws.getScope().length];
 		for (int i = 0; i < pws.getScope().length; i++) {
@@ -202,7 +202,7 @@ public class GloConstraintFactory extends ObjectFactory {
 		}
 	}
 
-	public Constraint[] makeDisjunctive(PDisjunctive pd) {
+	public static Constraint[] makeDisjunctive(PDisjunctive pd) {
 		int n = pd.getTasks().length;
 		TaskVariable[] tasks = new TaskVariable[n];
 		IntegerVariable start, duration, end;
@@ -218,14 +218,14 @@ public class GloConstraintFactory extends ObjectFactory {
 			}else {
 				duration = constant((Integer)t.getDuration());
 			}
-			end = makeIntVar("end_" + i, start.getLowB() + duration.getLowB(), start.getUppB() + duration.getUppB());
+			end = makeIntVar(String.format("end_%d", i), start.getLowB() + duration.getLowB(), start.getUppB() + duration.getUppB());
 
 			tasks[i] = new TaskVariable("t", start, end, duration);
 		}
 		return new Constraint[]{disjunctive(tasks)};
 	}
 
-	public Constraint[] makeGlobalCardinality(PGlobalCardinality pgcc) {
+	public static Constraint[] makeGlobalCardinality(PGlobalCardinality pgcc) {
 		IntegerVariable[] vars = new IntegerVariable[pgcc.offset];
 		int min = Integer.MAX_VALUE;
 		int max = Integer.MIN_VALUE;
@@ -260,7 +260,7 @@ public class GloConstraintFactory extends ObjectFactory {
 		return new Constraint[]{buildGcc(vars, values, noccurrences)};
 	}
 
-	public Constraint[] makeLexLess(PLexLess pll) {
+	public static Constraint[] makeLexLess(PLexLess pll) {
 		IntegerVariable[] vars1 = new IntegerVariable[pll.offset];
 		IntegerVariable[] vars2 = new IntegerVariable[pll.table.length - pll.offset];
 		for(int i = 0; i < pll.table.length; i++){
@@ -282,7 +282,7 @@ public class GloConstraintFactory extends ObjectFactory {
 		return new Constraint[]{lex(vars1, vars2)};
 	}
 
-	public Constraint[] makeLexLessEq(PLexLessEq plle) {
+	public static Constraint[] makeLexLessEq(PLexLessEq plle) {
 		IntegerVariable[] vars1 = new IntegerVariable[plle.offset];
 		IntegerVariable[] vars2 = new IntegerVariable[plle.table.length - plle.offset];
 		for(int i = 0; i < plle.table.length; i++){
@@ -304,7 +304,7 @@ public class GloConstraintFactory extends ObjectFactory {
 		return new Constraint[]{lexeq(vars1, vars2)};
 	}
 	
-	public Constraint[] makeGlobalConstraint(PGlobalConstraint pgc) {
+	public static Constraint[] makeGlobalConstraint(PGlobalConstraint pgc) {
 		if (pgc instanceof PAllDifferent) {
 			return makeAlldDifferent((PAllDifferent) pgc);
 		} else if (pgc instanceof PCumulative) {

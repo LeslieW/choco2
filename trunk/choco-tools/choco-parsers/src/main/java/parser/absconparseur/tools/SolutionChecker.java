@@ -46,14 +46,14 @@ public class SolutionChecker {
 
 	private InstanceParser parser;
 
-	private InstanceParser loadAndParseInstance(String instanceFileName) throws Exception {
+	private static InstanceParser loadAndParseInstance(String instanceFileName) throws Exception {
 		InstanceParser parser = new InstanceParser();
 		parser.loadInstance(instanceFileName);
 		parser.parse(false);
 		return parser;
 	}
 
-	private int[] buildSolutionFrom(String line, int nbVariables) throws Exception {
+	private static int[] buildSolutionFrom(String line, int nbVariables) throws Exception {
 		int[] t = new int[nbVariables];
 		int i = 0;
 		StringTokenizer st = new StringTokenizer(line);
@@ -71,7 +71,7 @@ public class SolutionChecker {
 		return t;
 	}
 
-	private int[] loadSolution(String solutionFileName, int nbVariables) throws Exception {
+	private static int[] loadSolution(String solutionFileName, int nbVariables) throws Exception {
 		BufferedReader rd = new BufferedReader(new FileReader(solutionFileName));
 		String line = rd.readLine().trim();
 		if (line.equals(InstanceTokens.UNSAT)) {
@@ -100,7 +100,7 @@ public class SolutionChecker {
 		try {
 			parser = loadAndParseInstance(instanceFileName);
 		} catch (Exception e) {
-			LOGGER.severe("PROBLEM \t When loading and/or parsing file " + instanceFileName + " " + e);
+			LOGGER.severe("PROBLEM \t When loading and/or parsing file " + instanceFileName + ' ' + e);
 			e.printStackTrace();
 			System.exit(2);
 		}
@@ -115,7 +115,7 @@ public class SolutionChecker {
 			try {
 				return loadSolution(solutionFileName, parser.getVariables().length);
 			} catch (Exception e) {
-				LOGGER.severe("PROBLEM \t When loading and/or parsing file " + solutionFileName + " " + e);
+				LOGGER.severe("PROBLEM \t When loading and/or parsing file " + solutionFileName + ' ' + e);
 				System.exit(2);
 				return null;
 			}

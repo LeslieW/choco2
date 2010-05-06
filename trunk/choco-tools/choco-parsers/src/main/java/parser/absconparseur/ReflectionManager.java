@@ -37,11 +37,11 @@ public class ReflectionManager {
 	public final static char JAR_SEPARATOR_CHAR = '/';
 
 	public static class DigestedFields {
-		private List<String> names;
+		private final List<String> names;
 
-		private List<Class> types;
+		private final List<Class> types;
 
-		private List<String> values;
+		private final List<String> values;
 
 		public String getName(int i) {
 			return names.get(i);
@@ -91,7 +91,7 @@ public class ReflectionManager {
 	 * @return
 	 */
 	private static String replaceAll(String s, char oldChar, char newChar) {
-		StringBuffer sb = new StringBuffer(s);
+        StringBuilder sb = new StringBuilder(s);
 		for (int i = 0; i < sb.length(); i++)
 			if (sb.charAt(i) == oldChar)
 				sb.setCharAt(i, newChar);
@@ -109,7 +109,7 @@ public class ReflectionManager {
 		String s = replaceAll(classFile.getAbsolutePath(), File.separatorChar, '.');
 		int firstIndex = s.indexOf(basicPackageName);
 		assert firstIndex != -1;
-		int lastIndex = s.lastIndexOf(".");
+		int lastIndex = s.lastIndexOf('.');
 		s = s.substring(firstIndex, lastIndex);
 		return s;
 	}
@@ -136,9 +136,9 @@ public class ReflectionManager {
 	 */
 	public static List<Class> searchClassesInheritingFromIn(Class rootClass, File directory, int requiredModifiers, int forbiddenModifiers) {
 		assert directory.isDirectory();
-		List<Class> list = new ArrayList<Class>();
-		File[] files = directory.listFiles();
-		for (int i = 0; i < files.length; i++) {
+        List<Class> list = new ArrayList<Class>(16);
+        File[] files = directory.listFiles();
+        for (int i = 0; i < files.length; i++) {
 			if (files[i].isDirectory())
 				list.addAll(searchClassesInheritingFromIn(rootClass, files[i], requiredModifiers, forbiddenModifiers));
 			else if (files[i].getName().endsWith(".class"))
@@ -167,7 +167,7 @@ public class ReflectionManager {
 	 * @param forbiddenModifiers a propagationSet of forbidden modifiers for all subclasses
 	 */
 	private static List<Class> searchClassesInheretingFromInJar(Class rootClass, String jarName, int requiredModifiers, int forbiddenModifiers) {
-		List<Class> list = new ArrayList<Class>();
+		List<Class> list = new ArrayList<Class>(16);
 		Enumeration enumeration = getEntriesOf(jarName);
 		if (enumeration == null)
 			return list;
@@ -178,7 +178,7 @@ public class ReflectionManager {
 			if (!name.endsWith(".class") || !name.startsWith(packTmp)) // rootClass.getPackage().getName()))
 				continue;
 			// .class is removed and each '/' is replaced by '.' as in jar '/' is always the class separator
-			name = replaceAll(name.substring(0, name.lastIndexOf(".")), JAR_SEPARATOR_CHAR, '.');
+			name = replaceAll(name.substring(0, name.lastIndexOf('.')), JAR_SEPARATOR_CHAR, '.');
 			updateListIfSubclassing(list, rootClass, name, requiredModifiers, forbiddenModifiers);
 		}
 		return list;
@@ -213,7 +213,7 @@ public class ReflectionManager {
 	 * @param forbiddenModifiers a set of forbidden modifiers for all subclasses
 	 */
 	public static Class[] searchClassesInheritingFrom(Class rootClass, int requiredModifiers, int forbiddenModifiers) {
-		List<Class> classes = new ArrayList<Class>();
+		List<Class> classes = new ArrayList<Class>(16);
 
 		StringTokenizer st = new StringTokenizer(System.getProperty("java.class.path", "."), File.pathSeparator);
 		while (st.hasMoreTokens()) {
@@ -226,7 +226,7 @@ public class ReflectionManager {
 					classes.addAll(searchClassesInheritingFromIn(rootClass, file, requiredModifiers, forbiddenModifiers));
 			}
 		}
-		return classes.toArray(new Class[0]);
+		return classes.toArray(new Class[classes.size()]);
 	}
 
 	public static Field getFirstFieldOfWithType(Class cl, Class<?> targetClass) {
@@ -293,7 +293,7 @@ public class ReflectionManager {
 	}
 
 	public static String getStringConcatenationOfDeclaredFieldsOf(Object object) {
-		StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder(128);
 		try {
 			Class cl = object.getClass();
 			Field[] fields = cl.getDeclaredFields();
@@ -304,7 +304,7 @@ public class ReflectionManager {
 				int position = value.lastIndexOf('/');
 				value = value.substring(position + 1);
 				if (i > 0)
-					sb.append(" ");
+					sb.append(' ');
 				sb.append(value);
 			}
 		} catch (Exception e) {
@@ -340,7 +340,7 @@ public class ReflectionManager {
 
 			if (!name.substring(name.lastIndexOf('/') + 1).equals(className))
 				continue;
-			return replaceAll(name.substring(0, name.lastIndexOf(".")), JAR_SEPARATOR_CHAR, '.');
+			return replaceAll(name.substring(0, name.lastIndexOf('.')), JAR_SEPARATOR_CHAR, '.');
 		}
 		return null;
 	}
@@ -365,7 +365,7 @@ public class ReflectionManager {
 				if (directory.exists() && directory.isDirectory()) {
 					String path = searchClassInDirectory(directory, className + ".class");
 					if (path != null) {
-						path = path.substring(classPathToken.length() + (classPathToken.endsWith(File.separator) ? 0 : 1), path.lastIndexOf("."));
+						path = path.substring(classPathToken.length() + (classPathToken.endsWith(File.separator) ? 0 : 1), path.lastIndexOf('.'));
 						return replaceAll(path, File.separatorChar, '.');
 					}
 				}
@@ -450,7 +450,7 @@ public class ReflectionManager {
 		}
 	}
 
-	private static Map<String, String> mapOfClassNames = new HashMap<String, String>();
+	private static final Map<String, String> mapOfClassNames = new HashMap<String, String>(16);
 
 	/**
 	 * An object of the class whose name is given is built. There are two restrictions:
