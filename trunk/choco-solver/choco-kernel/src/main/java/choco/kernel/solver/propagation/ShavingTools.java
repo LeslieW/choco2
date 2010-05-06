@@ -1,12 +1,9 @@
 package choco.kernel.solver.propagation;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.common.util.tools.VariableUtils;
-
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
-import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import choco.kernel.solver.search.IObjectiveManager;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -17,8 +14,6 @@ public class ShavingTools {
 	public final Solver solver;
 
 	public final IntDomainVar[] vars;
-
-	public boolean backwardPropagation = false;
 
 	public boolean shaveLowerBound = false;
 
@@ -35,14 +30,6 @@ public class ShavingTools {
 		super();
 		this.solver = solver;
 		this.vars = checkAbsentVar(vars, solver.getObjective() );
-	}
-
-	public final boolean isBackwardPropagation() {
-		return backwardPropagation;
-	}
-
-	public final void setBackwardPropagation(boolean backwardPropagation) {
-		this.backwardPropagation = backwardPropagation;
 	}
 
 	public final boolean isShavingLowerBound() {
@@ -99,9 +86,6 @@ public class ShavingTools {
 				else shaveBoundVar(var);			
 			}
 		}	
-		if(nbRemovals > 0 && !isBackwardPropagation() ) {
-			solver.propagate();
-		}
 	}
 
 	public final void shaving() throws ContradictionException {
@@ -142,10 +126,9 @@ public class ShavingTools {
 			solver.worldPop();
 			nbRemovals++;
 			var.removeVal(val, null, true);
-			if(isBackwardPropagation()) solver.propagate();
+			solver.propagate();
 		}
 	}
-
 
 	public final void destructiveLowerBound(final IObjectiveManager objM) throws ContradictionException {
 		boolean mem = detectLuckySolution;
@@ -196,13 +179,8 @@ public class ShavingTools {
 		} catch (ContradictionException e) {
 			return Boolean.FALSE;
 		}
-		final AbstractGlobalSearchStrategy strategy = solver.getSearchStrategy();
-		final int oldBaseWorld = strategy.baseWorld;
-		strategy.baseWorld = solver.getWorldIndex();
 		solver.worldPush();
-		Boolean b = strategy.nextSolution();
-		strategy.baseWorld = oldBaseWorld;
-		return b;
+		return solver.getSearchStrategy().nextSolution();
 	}
 
 

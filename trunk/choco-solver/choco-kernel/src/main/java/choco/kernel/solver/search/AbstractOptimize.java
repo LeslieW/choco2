@@ -120,6 +120,9 @@ public abstract class AbstractOptimize extends AbstractGlobalSearchStrategy {
 
 
 	protected final void bottomUpSearch() {
+		final int oldBaseWorld = baseWorld;
+		baseWorld = solver.getWorldIndex();
+		solver.worldPush();
 		while( shavingTools.nextBottomUp(objManager) == Boolean.FALSE) {
 			//The current upper bound is infeasible, try next
 			objManager.incrementFloorBound();
@@ -127,10 +130,12 @@ public abstract class AbstractOptimize extends AbstractGlobalSearchStrategy {
 			else {
 				//partially initialize a new search tree
 				clearTrace();
-				solver.worldPopUntil(baseWorld+1);
+				solver.worldPopUntil(baseWorld);
+				solver.worldPush();
 				nextMove = INIT_SEARCH;
 			} 
 		}
+		baseWorld = oldBaseWorld;
 	}
 
 	@Override

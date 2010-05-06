@@ -432,7 +432,6 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 				filtering.propagate();
 				//feasibility test (DDFF)
 				if ( ! bounds.computeBounds(flags.contains(DYNAMIC_LB)) ) {
-					bounds.computeBounds(flags.contains(DYNAMIC_LB));
 					fail();
 				}
 			}while( updateNbNonEmpty(bounds.getMinimumNumberOfBins(), bounds.getMaximumNumberOfBins()));

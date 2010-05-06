@@ -422,7 +422,10 @@ public abstract class AbstractInstanceModel {
 		logMsg.appendConfiguration( MessageFactory.getGeneralMsg(defaultConf, getInstanceName()));
 		logMsg.storeConfiguration( createTimeConfiguration() );
 		logMsg.storeConfiguration( BasicSettings.getInstModelMsg(defaultConf) );
-		if (solver != null) logMsg.storeConfiguration( MessageFactory.getRestartMsg(solver));
+		if (solver != null) {
+			logMsg.storeConfiguration( MessageFactory.getShavingMsg(solver));
+			logMsg.storeConfiguration( MessageFactory.getRestartMsg(solver));
+		}
 	}
 
 
