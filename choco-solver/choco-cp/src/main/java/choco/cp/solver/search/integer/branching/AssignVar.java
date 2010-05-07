@@ -33,21 +33,17 @@ import choco.kernel.solver.search.ValIterator;
 import choco.kernel.solver.search.ValSelector;
 
 public class AssignVar extends AbstractLargeIntBranchingStrategy {
-	private VarSelector varHeuristic;
-	private ValIterator valHeuristic;
-	private ValSelector valSHeuristic;
-	protected ValueChooserWrapper wrapper;
+	private final VarSelector varHeuristic;
+	private final ValueChooserWrapper wrapper;
 
-	public AssignVar(VarSelector varSel, ValIterator valHeuri) {
+	public AssignVar(VarSelector varSel, ValIterator valIterator) {
 		varHeuristic = varSel;
-		valHeuristic = valHeuri;
-		wrapper = new ValIteratorWrapper();
+		wrapper = new ValIteratorWrapper(valIterator);
 	}
 
-	public AssignVar(VarSelector varSel, ValSelector valHeuri) {
+	public AssignVar(VarSelector varSel, ValSelector valSelector) {
 		varHeuristic = varSel;
-		valSHeuristic = valHeuri;
-		wrapper = new ValSelectorWrapper();
+		wrapper = new ValSelectorWrapper(valSelector);
 	}
 
 	/**
@@ -89,7 +85,7 @@ public class AssignVar extends AbstractLargeIntBranchingStrategy {
 		return getDefaultAssignMsg(decision);
 	}
 
-	protected interface ValueChooserWrapper {
+	protected interface ValueChooserWrapper  {
 		public boolean finishedBranching(IntBranchingDecision decision);
 
 		public int getFirstBranch(IntBranchingDecision decision);
@@ -98,8 +94,15 @@ public class AssignVar extends AbstractLargeIntBranchingStrategy {
 		public int getNextBranch(IntBranchingDecision decision);
 	}
 
-	protected class ValIteratorWrapper implements ValueChooserWrapper {
-		public boolean finishedBranching(final IntBranchingDecision decision) {
+    @SuppressWarnings({"unchecked"})
+	protected static final class ValIteratorWrapper  implements ValueChooserWrapper {
+        private final ValIterator valHeuristic;
+
+        public ValIteratorWrapper(final ValIterator valHeuristic) {
+            this.valHeuristic = valHeuristic;
+        }
+
+        public boolean finishedBranching(final IntBranchingDecision decision) {
 			return ( ! valHeuristic.hasNextVal(decision.getBranchingIntVar(), decision.getBranchingValue()));
 		}
 
@@ -112,18 +115,24 @@ public class AssignVar extends AbstractLargeIntBranchingStrategy {
 		}
 	}
 
+    @SuppressWarnings({"unchecked"})
+	protected static final class ValSelectorWrapper implements ValueChooserWrapper {
+		private final ValSelector valSelector;
 
-	protected class ValSelectorWrapper implements ValueChooserWrapper {
-		public boolean finishedBranching(final IntBranchingDecision decision) {
+        public ValSelectorWrapper(final ValSelector valSelector) {
+            this.valSelector = valSelector;
+        }
+
+        public boolean finishedBranching(final IntBranchingDecision decision) {
 			return decision.getBranchingIntVar().getDomainSize() == 0;
 		}
 
 		public int getFirstBranch(final IntBranchingDecision decision) {
-			return valSHeuristic.getBestVal(decision.getBranchingIntVar());
+			return valSelector.getBestVal(decision.getBranchingIntVar());
 		}
 
 		public int getNextBranch(final IntBranchingDecision decision) {
-			return valSHeuristic.getBestVal(decision.getBranchingIntVar());
+			return valSelector.getBestVal(decision.getBranchingIntVar());
 		}
 	}
 

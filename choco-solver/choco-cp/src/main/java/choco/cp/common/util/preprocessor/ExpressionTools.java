@@ -27,9 +27,9 @@ import choco.cp.solver.constraints.integer.*;
 import choco.cp.solver.constraints.integer.bool.BoolTimesXYZ;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
 import choco.cp.solver.constraints.reified.leaves.ConstantLeaf;
-import choco.cp.solver.preprocessor.PreProcessCPSolver;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.Configuration;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.reified.ArithmNode;
 import choco.kernel.solver.constraints.reified.INode;
@@ -513,14 +513,15 @@ public final class ExpressionTools {
      * that has more than ratioHole % of holes in the domain ?
      *
      * @param e expression
+     * @param configuration
      * @return true if one of the variables has some holes
      */
-    public static boolean hasHolesWithinOneDomain(final ExpressionSConstraint e) {
+    public static boolean hasHolesWithinOneDomain(final ExpressionSConstraint e, final Configuration configuration) {
         final IntDomainVar[] vs = e.getVars();
         for (int i = 0; i < vs.length; i++) {
             final IntDomainVar v = vs[i];
             final int span = v.getSup() - v.getInf() + 1;
-            if (PreProcessCPSolver.ratioHole * span > v.getDomainSize()) {
+            if (configuration.readDouble(Configuration.RATION_HOLE) * span > v.getDomainSize()) {
                 return true;
             }
         }

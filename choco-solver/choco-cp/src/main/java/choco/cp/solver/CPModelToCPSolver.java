@@ -23,9 +23,9 @@
 package choco.cp.solver;
 
 import choco.Options;
+import choco.cp.common.util.preprocessor.ExpressionTools;
 import choco.cp.model.CPModel;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
-import choco.cp.solver.preprocessor.detectors.ExpressionDetector;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
@@ -410,7 +410,7 @@ public class CPModelToCPSolver {
             c.setLevelAc(1);
         }
         //important step to deal properly with linear equation
-		final SConstraint intensional = ExpressionDetector.getScalarConstraint(c, cpsolver);
+		final SConstraint intensional = ExpressionTools.getScalarConstraint(c, cpsolver);
 		if (intensional != null) {
 			return intensional;
 		} else {

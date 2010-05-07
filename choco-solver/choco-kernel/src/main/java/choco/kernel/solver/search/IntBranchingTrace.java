@@ -53,7 +53,7 @@ public final class IntBranchingTrace implements IntBranchingDecision {
 
 
 
-	public IntBranchingTrace(AbstractIntBranchingStrategy branching,
+	private IntBranchingTrace(AbstractIntBranchingStrategy branching,
 			Object branchingObject, int branchIndex, int branchingValue) {
 		super();
 		this.branching = branching;
@@ -145,7 +145,7 @@ public final class IntBranchingTrace implements IntBranchingDecision {
 
 	@Override
 	public String toString() {
-		StringBuilder b = new StringBuilder();
+		StringBuilder b = new StringBuilder(128);
 		if (branchingObject instanceof IPretty) {
 			b.append( ( (IPretty) branchingObject).pretty());
 		}else {

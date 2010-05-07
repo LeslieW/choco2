@@ -25,10 +25,10 @@ package choco.cp.common.util.preprocessor.detector;
 import choco.Choco;
 import static choco.Choco.constant;
 import static choco.Choco.makeIntVar;
+import choco.cp.common.util.preprocessor.ExpressionTools;
 import choco.cp.model.CPModel;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
 import choco.cp.solver.preprocessor.PreProcessCPSolver;
-import choco.cp.solver.preprocessor.detectors.ExpressionDetector;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.MetaConstraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -121,7 +121,7 @@ public class DisjunctionsSolverDetector extends AbstractGraphBasedDetector{
                 Constraint ic = it.next();
                 if (ic instanceof MetaConstraint) {
                     ExpressionSConstraint es = new ExpressionSConstraint(ppcs.getMod2Sol().buildNode(ic));
-                    ExpressionDetector.SimplePrecedence sp = ExpressionDetector.getPrecedenceConstraint(es);
+                    ExpressionTools.SimplePrecedence sp = ExpressionTools.getPrecedenceConstraint(es);
                     if (sp != null) {
                         b = true;
                         addEdge(sp.v1, sp.v2, ic);

@@ -20,7 +20,7 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.solver.preprocessor.detectors;
+package choco.cp.common.util.preprocessor.detector;
 
 /*
  * Created by IntelliJ IDEA.
