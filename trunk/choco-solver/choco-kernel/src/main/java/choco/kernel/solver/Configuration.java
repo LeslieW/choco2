@@ -288,6 +288,14 @@ public class Configuration extends Properties {
     @Default(value = "0.99")
     public final static String REAL_REDUCTION = "cp.real.reduction";
 
+    /**
+     * <br/><b>Goal</b>: The ratio of holes within domains to which decision are performed to switch from BC to AC
+     * <br/><b>Type</b>: double
+     * <br/><b>Default value</b>: 0.7f
+     */
+    @Default(value = "0.7f")
+    public static final String RATION_HOLE = "cp.domain.rationHole";
+
 
     /**
      * Creates an empty property list with loaded default values.

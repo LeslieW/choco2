@@ -1,12 +1,13 @@
 package parser.instances;
 
+import choco.cp.solver.preprocessor.PreProcessConfiguration;
 import choco.kernel.solver.Configuration;
 import choco.kernel.solver.search.limit.Limit;
 
 import java.io.File;
 
 
-public class BasicSettings extends Configuration {
+public class BasicSettings extends PreProcessConfiguration{
 
 	private static final long serialVersionUID = 7557235241412627008L;
 

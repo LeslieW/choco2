@@ -25,6 +25,7 @@ package parser.instances;
 import choco.cp.model.CPModel;
 import choco.cp.solver.constraints.integer.extension.ValidityChecker;
 import choco.cp.solver.preprocessor.PreProcessCPSolver;
+import choco.cp.solver.preprocessor.PreProcessConfiguration;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.MinDomain;
@@ -189,29 +190,8 @@ public class XcspModel extends AbstractInstanceModel {
 				break;
 			}
 		}
-		//		if (forcerestart != null) {
-		//			if (forcerestart) {
-		//				s.setGeometricRestart(base, growth);
-		//				//should investigate the effect of reinitializing branching in more details
-		//				//it seemed useful with restartFromSol and useless with a restart policy.
-		//				s.restartConfig.setInitializeSearchAfterRestart(false); 
-		//			}
-		//		} else {
-		//			if (s.restartMode) {
-		//				s.setGeometricRestart(10, 1.3);                                
-		//				s.restartConfig.setInitializeSearchAfterRestart(false);
-		//				//s.setGeometricRestart(Math.min(Math.max(s.getNbIntVars(), 200), 400), 1.4d);
-		//			}
-		//		}
-		//ChocoLogging.setVerbosity(Verbosity.SEARCH);
-		if (isFeasible && (cheuri == IMPACT || s.rootNodeSingleton(defaultConf.readBoolean(XcspSettings.SINGLETON_CONSISTENCY), timeLimitPP))) {
-			//			if (ngFromRestart && (s.restartMode || forcerestart)) {
-			//				s.setRecordNogoodFromRestart(true);
-			//				s.generateSearchStrategy();
-			//				//s.getSearchStrategy().setSearchLoop(new SearchLoopWithNogoodFromRestart(s.getSearchStrategy(), s.getRestartStrategy()));
-			//				s.launch();
-			//				return s.isFeasible();
-			//			} else return s.solve();
+        final boolean doSingleton = defaultConf.readBoolean(XcspSettings.SINGLETON_CONSISTENCY) ;
+		if (isFeasible && (cheuri == IMPACT ||(!doSingleton || s.rootNodeSingleton(timeLimitPP)))) {
 			return s.solve();
 		} else {
 			return Boolean.FALSE;
@@ -263,8 +243,9 @@ public class XcspModel extends AbstractInstanceModel {
 	@Override
 	protected void logOnConfiguration() {
 		super.logOnConfiguration();
-		PreProcessCPSolver psolver = (PreProcessCPSolver) solver;
-		logMsg.storeConfiguration(psolver.restartMode+" RESTART    "+cheuri+" HEURISTIC    "+defaultConf.readBoolean(BasicSettings.RANDOM_VALUE)+" RANDVAL");
+		logMsg.storeConfiguration(PreProcessConfiguration.getPreProcessMsg(defaultConf)
+                + cheuri+" HEURISTIC    "
+                + defaultConf.readBoolean(BasicSettings.RANDOM_VALUE)+" RANDVAL");
 	}
 
 

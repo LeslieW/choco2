@@ -62,7 +62,7 @@ public final class MessageFactory {
 		}
 		if(conf.readBoolean( RESTART_AFTER_SOLUTION)) b.append("FROM_SOLUTION    ");
 		if( conf.readBoolean(NOGOOD_RECORDING_FROM_RESTART) ) b.append("NOGOOD_RECORDING");
-		return null;
+		return b.toString();
 	}
 
 	public static String getShavingMsg(Solver solver) {
@@ -74,7 +74,7 @@ public final class MessageFactory {
 			b.append("DESTRUCTIVE_LOWER_BOUND");
 			if(conf.readBoolean(INIT_DLB_SHAVING)) {b.append("_WITH_SHAVING");}
 		}
-		return new String(b);
+		return b.toString();
 	}
 
 

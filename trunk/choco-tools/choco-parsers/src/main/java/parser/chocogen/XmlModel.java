@@ -26,10 +26,12 @@ package parser.chocogen;
 import choco.cp.model.CPModel;
 import choco.cp.solver.constraints.integer.extension.ValidityChecker;
 import choco.cp.solver.preprocessor.PreProcessCPSolver;
+import choco.cp.solver.preprocessor.PreProcessConfiguration;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.solver.Configuration;
 import choco.kernel.solver.Solver;
 import parser.absconparseur.tools.InstanceParser;
 import parser.absconparseur.tools.SolutionChecker;
@@ -90,11 +92,6 @@ public class XmlModel {
 	private int nbback = 0;
 	private static long[] time = new long[5];
 	private static String[] values;
-
-
-	private static boolean doSingleton() {
-		return singleton;
-	}
 
 	public void init() {
 		time = new long[5];
@@ -286,6 +283,7 @@ public class XmlModel {
 	public PreProcessCPSolver solve(CPModel model) throws  Error {
 
 		PreProcessCPSolver s = new PreProcessCPSolver();
+        final Configuration conf = s.getConfiguration();
 		s.read(model);
 		if (verb > 0) {
 			LOGGER.info(MessageFormat.format("solve...dim:[nbv:{0}][nbc:{1}][nbconstants:{2}]", s.getNbIntVars(), s.getNbIntConstraints(), s.getNbConstants()));
@@ -328,20 +326,22 @@ public class XmlModel {
 				break;
 			}
 		}
+        final boolean restartMode = conf.readBoolean(PreProcessConfiguration.RESTART_MODE);
 		if (forcerestart != null) {
 			if (forcerestart) {
 				s.setGeometricRestart(base, growth);
 			}
 		} else {
-			if (s.restartMode) {
+			if (restartMode) {
 				s.setGeometricRestart(10, 1.3);                                
 				//s.setGeometricRestart(Math.min(Math.max(s.getNbIntVars(), 200), 400), 1.4d);
 			}
 		}
 		//ChocoLogging.setVerbosity(Verbosity.SEARCH);
-		if (isFeasible && (cheuri == IMPACT || s.rootNodeSingleton(singleton, initialisationtime))) {
-			if (ngFromRestart && (s.restartMode || forcerestart)) {
-				s.setRecordNogoodFromRestart(true);
+		if (isFeasible
+                && (cheuri == IMPACT || (!singleton || s.rootNodeSingleton(initialisationtime)))) {
+			if (ngFromRestart && (restartMode || forcerestart)) {
+				conf.putBoolean(Configuration.NOGOOD_RECORDING_FROM_RESTART, true);
 				s.generateSearchStrategy();
 				//s.getSearchStrategy().setSearchLoop(new SearchLoopWithNogoodFromRestart(s.getSearchStrategy(), s.getRestartStrategy()));
 				s.launch();
@@ -406,14 +406,15 @@ public class XmlModel {
 			LOGGER.info(sol.toString());
 			//}
 		}
-		double rtime = (double) (time[4] - time[0]) / 1000D;
+		final double rtime = (double) (time[4] - time[0]) / 1000D;
 		res.append(' ').append(rtime).append(" TIME     ");
 		res.append(' ').append(nbnode).append(" NDS   ");
 		res.append(' ').append(time[1] - time[0]).append(" PARSTIME     ");
 		res.append(' ').append(time[2] - time[1]).append(" BUILDPB      ");
 		res.append(' ').append(time[3] - time[2]).append(" CONFIG       ");
 		res.append(' ').append(time[4] - time[3]).append(" RES      ");
-		res.append(' ').append(s.restartMode).append(" RESTART      ");
+        final boolean restartMode = s.getConfiguration().readBoolean(PreProcessConfiguration.RESTART_MODE);
+		res.append(' ').append(restartMode).append(" RESTART      ");
 		res.append(' ').append(cheuri).append(" HEURISTIC      ");
 		res.append(' ').append(randvalh).append(" RANDVAL      ");
 		LOGGER.info("d AC " + ObjectFactory.algorithmAC);
