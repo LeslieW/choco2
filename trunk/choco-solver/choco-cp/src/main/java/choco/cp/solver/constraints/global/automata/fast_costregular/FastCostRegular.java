@@ -1,19 +1,5 @@
 package choco.cp.solver.constraints.global.automata.fast_costregular;
 
-import gnu.trove.TIntArrayList;
-import gnu.trove.TIntHashSet;
-import gnu.trove.TIntIterator;
-import gnu.trove.TIntStack;
-
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.HashSet;
-import java.util.Queue;
-import java.util.Set;
-
-import org.jgrapht.graph.DirectedMultigraph;
-
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
@@ -26,8 +12,14 @@ import choco.kernel.solver.constraints.global.automata.fast_costregular.structur
 import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.Node;
 import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.StoredValuedDirectedMultiGraph;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
-import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import gnu.trove.TIntArrayList;
+import gnu.trove.TIntHashSet;
+import gnu.trove.TIntIterator;
+import gnu.trove.TIntStack;
+import org.jgrapht.graph.DirectedMultigraph;
+
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -44,35 +36,40 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
     TIntStack toRemove;
     IStateBool boundChange;
     int lastWorld = -1;
-    long lastWorldStamp = -1;
-    protected final Solver solver;
+    int lastNbOfBacktracks = -1;
+    int lastNbOfRestarts = -1;
+    protected final IEnvironment environment;
 
 
     int[][][] costs;
+    Solver solver;
     FiniteAutomaton pi;
     DirectedMultigraph<Node, Arc> originalGraph;
     Node source;
 
-    public FastCostRegular(IntDomainVar[] vars, FiniteAutomaton pi, int[][][] costs, Solver solver) {
+    public FastCostRegular(IntDomainVar[] vars, FiniteAutomaton pi, int[][][] costs, Solver s) {
         super(vars);
-        this.solver = solver;
+        this.environment = s.getEnvironment();
+        this.solver = s;
         this.vs = new IntDomainVar[vars.length-1];
         System.arraycopy(vars, 0, vs, 0, vs.length);
         this.z = vars[vars.length-1];
         this.toRemove = new TIntStack();
-        this.boundChange = solver.getEnvironment().makeBool(false);
+        this.boundChange = environment.makeBool(false);
         this.costs = costs;
         this.pi = pi;
     }
-    public FastCostRegular(IntDomainVar[] vars, DirectedMultigraph<Node, Arc> graph, Node source,  Solver solver)
+    public FastCostRegular(IntDomainVar[] vars, DirectedMultigraph<Node, Arc> graph, Node source, Solver s)
     {
         super(vars);
-        this.solver= solver;
+        this.environment = s.getEnvironment();
+        this.solver = s;
         this.vs = new IntDomainVar[vars.length-1];
         System.arraycopy(vars, 0, vs, 0, vs.length);
         this.z = vars[vars.length-1];
         this.toRemove = new TIntStack();
-        this.boundChange = solver.getEnvironment().makeBool(false);
+        this.boundChange = environment.makeBool(false);
+
         this.originalGraph =graph;
         this.source = source;
 
@@ -443,18 +440,21 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
 
     protected void checkWorld()
     {
-        int current = solver.getWorldIndex();
-        //nbN + nbB defines a valid time stamp (no need for additional field in env)
-        long currentstamp = solver.getSearchStrategy().getNodeCount() + solver.getSearchStrategy().getBackTrackCount();
-        if (current < lastWorld || (current == lastWorld && currentstamp != lastWorldStamp))
+        int currentworld = environment.getWorldIndex();
+        int currentbt = solver.getBackTrackCount();
+        int currentrestart = solver.getRestartCount();
+        //System.err.println("TIME STAMP : "+currentbt+"   BT COUNT : "+solver.getBackTrackCount());
+       // assert (currentbt == solver.getBackTrackCount());
+        if (currentworld < lastWorld || currentbt != lastNbOfBacktracks || currentrestart > lastNbOfRestarts)
         {
             this.toRemove.reset();
             this.graph.inStack.clear();
             this.graph.toUpdateLeft.reset();
             this.graph.toUpdateRight.reset();
         }
-        lastWorld = current;
-        lastWorldStamp = currentstamp;
+        lastWorld = currentworld;
+        lastNbOfBacktracks = currentbt;
+        lastNbOfRestarts = currentrestart;
     }
 
 
