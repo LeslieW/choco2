@@ -222,7 +222,7 @@ public interface IEnvironment {
 
     <E> StoredBipartiteSet makeStoredBipartiteList(Collection<E> coll);
 
-    <E> StoredBipartiteSet makeStoredBipartiteList2(E[] elm);
+    <E> StoredBipartiteSet makeStoredBipartiteList(E[] elm);
 
     IStateIntVector makeBipartiteIntList(int[] entries);
 

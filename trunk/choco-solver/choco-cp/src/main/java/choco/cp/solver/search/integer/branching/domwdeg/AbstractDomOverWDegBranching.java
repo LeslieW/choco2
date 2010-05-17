@@ -22,22 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.branching.domwdeg;
 
-import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.addConstraintExtension;
-import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.addConstraintToVarWeights;
-import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.addFailure;
-import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.addIncFailure;
-import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.computeWeightedDegreeFromScratch;
-import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.getConstraintExtension;
-import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.getConstraintFailures;
-import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.getVarExtension;
-import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.getVariableIncWDeg;
-import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.hasTwoNotInstVars;
-import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.initConstraintExtensions;
-import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.initVarExtensions;
-
-import java.util.Iterator;
-
 import choco.cp.solver.search.integer.branching.IRandomBreakTies;
+import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.*;
 import choco.cp.solver.search.integer.varselector.ratioselector.IntVarRatioSelector;
 import choco.cp.solver.search.integer.varselector.ratioselector.MinRatioSelector;
 import choco.cp.solver.search.integer.varselector.ratioselector.RandMinRatioSelector;
@@ -50,6 +36,8 @@ import choco.kernel.solver.constraints.SConstraintType;
 import choco.kernel.solver.propagation.listener.PropagationEngineListener;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.Var;
+
+import java.util.Iterator;
 
 public abstract class AbstractDomOverWDegBranching extends
 AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomBreakTies {
@@ -132,11 +120,6 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 				final AbstractVar var = (AbstractVar) cstr.getVarQuick(k);
 				if (var != currentVar && ! var.isInstantiated()) {
 					getVarExtension(var).add(delta);
-					if(getVarExtension(var).get() < 0) {
-						System.out.println(DomWDegUtils.getVariableWDeg(solver));
-						System.out.println();
-						System.out.println(this);
-					}
 					assert getVarExtension(var).get() >= 0; //check robustness of the incremental weights
 				}
 			}

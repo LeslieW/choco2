@@ -145,7 +145,9 @@ public final class SetNaryUnion extends AbstractLargeSetSConstraint {
     }
     private void instanciateIfLastOccurence(int x) throws ContradictionException {
         if (occurCpt[x].get()<=1 && unionSet.isInDomainKernel(x)) {
-            if (occurCpt[x].get()<=0) {System.out.println();fail();}
+            if (occurCpt[x].get()<=0) {
+                fail();
+            }
             int removed=0;
             for (int idx = 0; idx < setVars.length; idx++) {
                 if(setVars[idx].isInDomainEnveloppe(x)) {
