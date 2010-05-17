@@ -93,7 +93,7 @@ public abstract class AbstractEnvironment implements IEnvironment {
     }
 
     @SuppressWarnings({"unchecked"})
-    public <E> StoredBipartiteSet makeStoredBipartiteList2(E[] elm){
+    public <E> StoredBipartiteSet makeStoredBipartiteList(E[] elm){
         return new StoredBipartiteSet(this, elm);
     }
 

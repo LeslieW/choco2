@@ -22,10 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.common.util.disposable;
 
+import choco.kernel.common.logging.ChocoLogging;
 import gnu.trove.TObjectIntHashMap;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
+import java.util.logging.Logger;
 
 /**
  * User : cprudhom<br/>
@@ -36,6 +38,8 @@ import java.util.Queue;
  * An interface to declare disposable object, ie object that can be reused (iterators,...)
  */
 public abstract class Disposable {
+
+    private static final Logger LOGGER  = ChocoLogging.getMainLogger();
 
     /**
      * Set the satus of Disposable object.
@@ -99,14 +103,14 @@ public abstract class Disposable {
         }
 
         private static void flush(){
-            System.out.println("*******************************");
-            System.out.println("FLUSH");
+            LOGGER.info("*******************************");
+            LOGGER.info("FLUSH");
             for(int i = 0; i<  index; i++){
                 if(!stacks[i].isEmpty()){
-                    System.out.println(stacks[i].peek().getClass().getName()+"->"+stacks[i].size());
+                    LOGGER.info(String.format("%s->%d", stacks[i].peek().getClass().getName(), stacks[i].size()));
                 }
             }
-            System.out.println("*******************************");
+            LOGGER.info("*******************************");
         }
     }
 }
