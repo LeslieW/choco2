@@ -48,6 +48,7 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.real.RealVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.model.variables.set.SetVariable;
+import choco.kernel.solver.Configuration;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -95,7 +96,7 @@ public class ReifiedSomeTest {
     public void setUp() throws Exception {
         m = new CPModel();
         s = new CPSolver();
-        s.setPrecision(0.1);
+        s.getConfiguration().putDouble(Configuration.REAL_PRECISION, 0.1);
     }
 
     @Test
@@ -178,7 +179,7 @@ public class ReifiedSomeTest {
         LOGGER.info("ReifiedSomeTest.test5");
         s1 = makeSetVar("s1", 1, 3);
         s2 = makeSetVar("s2", 1, 3);
-        //m.addConstraint(ifOnlyIf(member(s1, 1), member(s2, 1)));
+        m.addConstraint(ifOnlyIf(member(s1, 1), member(s2, 1)));
         s.read(m);
         s.solve();
         assertTrue("Solution found : unexpected", s.isFeasible());
@@ -191,7 +192,7 @@ public class ReifiedSomeTest {
         LOGGER.info("ReifiedSomeTest.test6");
         s1 = makeSetVar("s1", 1, 3);
         s2 = makeSetVar("s2", 1, 3);
-        //m.addConstraint(implies(member(s1, 1), member(s2, 1)));
+        m.addConstraint(implies(member(s1, 1), member(s2, 1)));
         s.read(m);
         s.solve();
         assertTrue("Solution found : unexpected", s.isFeasible());
@@ -638,7 +639,7 @@ public class ReifiedSomeTest {
         IntegerConstantVariable copd = constant(1);
         IntegerConstantVariable verapamil = constant(0);
 
-        HashMap<Constraint, String> cardioConstraints = new HashMap<Constraint, String>(16);
+        HashMap<SConstraint, String> cardioConstraints = new HashMap<SConstraint, String>(16);
 
         /*ArrayList infeasTuple = new ArrayList();
                   infeasTuple.add(new int[]{1, 1});
@@ -653,12 +654,12 @@ public class ReifiedSomeTest {
         Constraint cv5 = not(and(eq((betaBlocker), (1)), eq((verapamil), (1))));
 
 
-        cardioConstraints.put(cv4, "Beta Blocker with Chronic Obscructive Lung Disease. (risk of bronchospasm)");
-        cardioConstraints.put(cv5, "Beta blocker with verapamil. (risk of symptomatic heart block)");
 
         m.addConstraint(cv4);
         m.addConstraint(cv5);
         s.read(m);
+        cardioConstraints.put(s.getCstr(cv4), "Beta Blocker with Chronic Obscructive Lung Disease. (risk of bronchospasm)");
+        cardioConstraints.put(s.getCstr(cv5), "Beta blocker with verapamil. (risk of symptomatic heart block)");
         s.solve();
 
         if (s.getNbSolutions() > 0) {
@@ -839,7 +840,7 @@ public class ReifiedSomeTest {
 
             s.read(m);
 
-            s.setFirstSolution(true);
+//            s.getConfiguration().putBoolean(Configuration.STOP_AT_FIRST_SOLUTION, true);
             s.attachGoal(new ImpactBasedBranching(s, s.getVar(vars)));
             s.generateSearchStrategy();
             s.launch();

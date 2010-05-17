@@ -92,18 +92,12 @@ public abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint
 	protected abstract boolean removeFromEnv(int idx) throws ContradictionException;
 
 	protected final boolean removeGreaterFromEnv(int idx, int maxValue) throws ContradictionException {
-		if(ivars[VARS_OFFSET+idx].getInf()>maxValue) {
-			return this.svars[SET_INDEX].remFromEnveloppe(idx, this, false);
-		}
-		return false;
-	}
+        return ivars[VARS_OFFSET + idx].getInf() > maxValue && this.svars[SET_INDEX].remFromEnveloppe(idx, this, false);
+    }
 
 	protected final boolean removeLowerFromEnv(int idx, int minValue) throws ContradictionException {
-		if(ivars[VARS_OFFSET+idx].getSup() < minValue ) {
-			return this.svars[SET_INDEX].remFromEnveloppe(idx, this, false);
-		}
-		return false;
-	}
+        return ivars[VARS_OFFSET + idx].getSup() < minValue && this.svars[SET_INDEX].remFromEnveloppe(idx, this, false);
+    }
 
 	protected abstract boolean updateEnveloppe() throws ContradictionException;
 
@@ -125,12 +119,6 @@ public abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint
 		}
         deltaDomain.dispose();
 	}
-
-	@Override
-	public Boolean isEntailed() {
-		throw new UnsupportedOperationException("isEntailed not yet implemented on MaxOfAList");
-	}
-
 
 	@Override
 	public boolean isConsistent() {
@@ -188,18 +176,17 @@ public abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint
 		final DisposableIntIterator iter = svars[SET_INDEX].getDomain().getKernelIterator();
 		if(iter.hasNext()) {
 			return isSatisfiedValue(iter) == ivars[BOUND_INDEX].getVal(); 
-		}else if(defaultValueEmptySet == null) return true;
-		else return defaultValueEmptySet.intValue() == ivars[BOUND_INDEX].getVal();
+		}else return defaultValueEmptySet == null || defaultValueEmptySet == ivars[BOUND_INDEX].getVal();
 	}
 
 	protected String pretty(String name) {
-		StringBuilder sb = new StringBuilder();
+		StringBuilder sb = new StringBuilder(32);
 		sb.append(ivars[BOUND_INDEX].pretty());
-		sb.append(" = ").append(name).append("(");
+		sb.append(" = ").append(name).append('(');
 		sb.append(svars[SET_INDEX].pretty()).append(", ");
 		sb.append(StringUtils.pretty(ivars, VARS_OFFSET, ivars.length));
 		if(defaultValueEmptySet != null) sb.append(", defVal:").append(defaultValueEmptySet);
-		sb.append(")");
+		sb.append(')');
 		return new String(sb);
 
 	}

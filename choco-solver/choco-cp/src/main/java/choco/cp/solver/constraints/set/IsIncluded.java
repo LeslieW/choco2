@@ -119,10 +119,5 @@ public final class IsIncluded extends AbstractBinSetSConstraint {
 	public String pretty() {
 		return v0.pretty() + " disjoint " + v1.pretty();
 	}
-
-	@Override
-	public Boolean isEntailed() {
-		throw new UnsupportedOperationException("isEntailed not done on setvars");
-	}
 }
 
