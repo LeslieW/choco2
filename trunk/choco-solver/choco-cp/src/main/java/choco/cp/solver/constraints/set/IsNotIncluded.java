@@ -48,7 +48,7 @@ public final class IsNotIncluded extends AbstractBinSetSConstraint {
         super(sv1, sv2);
 	}
 
-	public boolean isKer1IncludedInKer2(SetVar x0, SetVar x1) {
+	public static boolean isKer1IncludedInKer2(SetVar x0, SetVar x1) {
 		if (x0.getKernelDomainSize() <= x1.getKernelDomainSize()) {
 			DisposableIntIterator it1 = x0.getDomain().getKernelIterator();
 			while (it1.hasNext()) {
@@ -64,7 +64,7 @@ public final class IsNotIncluded extends AbstractBinSetSConstraint {
 		}
 	}
 
-	public boolean isKer1IncludedInEnv2(SetVar x0, SetVar x1) {
+	public static boolean isKer1IncludedInEnv2(SetVar x0, SetVar x1) {
 		if (x0.getKernelDomainSize() <= x1.getEnveloppeDomainSize()) {
 			DisposableIntIterator it1 = x0.getDomain().getKernelIterator();
 			while (it1.hasNext()) {
@@ -178,10 +178,5 @@ public final class IsNotIncluded extends AbstractBinSetSConstraint {
 	@Override
 	public String pretty() {
 		return v0.pretty() + " is Not Included in " + v1.pretty();
-	}
-
-	@Override
-	public Boolean isEntailed() {
-		throw new UnsupportedOperationException("isEntailed not done on setvars");
 	}
 }

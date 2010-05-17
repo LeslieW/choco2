@@ -57,7 +57,7 @@ public final class SetNotEq extends AbstractBinSetSConstraint {
 		return false;
 	}
 
-	public boolean checkAreNotEqual(SetVar instVar, SetVar otherVar) {
+	public static boolean checkAreNotEqual(SetVar instVar, SetVar otherVar) {
 		DisposableIntIterator it1 = instVar.getDomain().getKernelIterator();
 		while (it1.hasNext()) {
 			if (!otherVar.isInDomainEnveloppe(it1.next())) {
@@ -189,11 +189,6 @@ public final class SetNotEq extends AbstractBinSetSConstraint {
 	@Override
 	public String pretty() {
 		return v0.pretty() + " neq " + v1.pretty();
-	}
-
-	@Override
-	public Boolean isEntailed() {
-		throw new UnsupportedOperationException("isEntailed not done on setvars");
 	}
 }
 

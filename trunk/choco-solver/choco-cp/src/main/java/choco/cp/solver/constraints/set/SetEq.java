@@ -153,9 +153,4 @@ public final class SetEq extends AbstractBinSetSConstraint {
 	public String pretty() {
 		return v0.pretty() + " = " + v1.pretty();
 	}
-
-	@Override
-	public Boolean isEntailed() {
-		throw new UnsupportedOperationException("isEntailed not done on setvars");
-	}
 }
