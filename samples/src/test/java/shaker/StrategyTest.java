@@ -34,10 +34,10 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import samples.tutorials.GolombRuler;
-import samples.tutorials.MagicSquare;
 import samples.tutorials.PatternExample;
-import samples.tutorials.Queen;
+import samples.tutorials.trunk.GolombRuler;
+import samples.tutorials.trunk.MagicSquare;
+import samples.tutorials.trunk.Queen;
 import shaker.tools.search.IntBranchingFactory;
 
 import java.util.Random;
@@ -66,9 +66,9 @@ public class StrategyTest {
 
     private void createModel(){
         pe.buildModel();
-        pe._s = new CPSolver();
-		pe._s.read(pe._m);
-        pe._s.solveAll();
+        pe.solver = new CPSolver();
+		pe.solver.read(pe.model);
+        pe.solver.solveAll();
     }
 
     private void loadQueenModel() {
@@ -104,7 +104,7 @@ public class StrategyTest {
             random = new Random(i);
 
             s = new CPSolver();
-            s.read(pe._m);
+            s.read(pe.model);
             IntBranchingFactory bf = new IntBranchingFactory();
             IntDomainVar[] vars = s.getIntDecisionVars();
 
@@ -122,7 +122,7 @@ public class StrategyTest {
             random = new Random(i);
 
             s = new CPSolver();
-            s.read(pe._m);
+            s.read(pe.model);
             IntBranchingFactory bf = new IntBranchingFactory();
             IntDomainVar[] vars = s.getIntDecisionVars();
 
@@ -140,7 +140,7 @@ public class StrategyTest {
             random = new Random(i);
 
             s = new CPSolver();
-            s.read(pe._m);
+            s.read(pe.model);
             IntBranchingFactory bf = new IntBranchingFactory();
             IntDomainVar[] vars = s.getIntDecisionVars();
 
@@ -158,8 +158,8 @@ public class StrategyTest {
 //                Assert.assertTrue(s.checkSolution());
 //            }while(s.nextSolution());
 //        }
-        Assert.assertEquals("feasibility incoherence", pe._s.isFeasible(), s.isFeasible());
-        Assert.assertEquals("nb sol incoherence", pe._s.getNbSolutions(), s.getNbSolutions());
+        Assert.assertEquals("feasibility incoherence", pe.solver.isFeasible(), s.isFeasible());
+        Assert.assertEquals("nb sol incoherence", pe.solver.getNbSolutions(), s.getNbSolutions());
 
     }
 
@@ -167,7 +167,7 @@ public class StrategyTest {
     public void testStrategy1() {
         loadQueenModel();
         s = new CPSolver();
-        s.read(pe._m);
+        s.read(pe.model);
         s.attachGoal(new AssignVar(new DomOverWDeg(s), new MidVal()));
         checker();
     }
@@ -176,7 +176,7 @@ public class StrategyTest {
     public void testStrategy2() {
         loadGolombRulerModel();
         s = new CPSolver();
-        s.read(pe._m);
+        s.read(pe.model);
         s.attachGoal(new AssignVar(new MaxValueDomain(s), new DecreasingDomain()));
         checker();
     }

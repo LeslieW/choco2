@@ -20,9 +20,8 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package samples.tutorials.pack;
+package samples.tutorials.scheduling.pack;
 
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -46,6 +45,8 @@ import gnu.trove.TIntArrayList;
 
 import java.util.Arrays;
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
 
 /**
  * @author Arnaud Malapert</br>

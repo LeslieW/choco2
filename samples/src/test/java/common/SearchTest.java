@@ -27,7 +27,7 @@ import choco.kernel.solver.Configuration;
 import choco.kernel.solver.ResolutionPolicy;
 import org.junit.Assert;
 import org.junit.Test;
-import samples.tutorials.MinimumEdgeDeletion;
+import samples.tutorials.trunk.MinimumEdgeDeletion;
 
 /**
  * User : cprudhom<br/>
@@ -43,21 +43,21 @@ public class SearchTest {
 
         @Override
         public void buildSolver() {
-            _s = new CPSolver();
-            _s.read(_m);
-            Configuration configuration = _s.getConfiguration();
+            solver = new CPSolver();
+            solver.read(model);
+            Configuration configuration = solver.getConfiguration();
             configuration.putBoolean(Configuration.STOP_AT_FIRST_SOLUTION, false);
             configuration.putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
             configuration.putInt(Configuration.SOLUTION_POOL_CAPACITY, capa);
-            _s.setValIntSelector(new MinVal());
-            //_s.generateSearchStrategy();
+            solver.setValIntSelector(new MinVal());
+            //solver.generateSearchStrategy();
 
         }
 
         @Override
         public void execute() {
             super.execute();
-            Assert.assertEquals(Math.min(capa, _s.getNbSolutions()), _s.getSearchStrategy().getSolutionPool().size());
+            Assert.assertEquals(Math.min(capa, solver.getNbSolutions()), solver.getSearchStrategy().getSolutionPool().size());
         }
 
     }

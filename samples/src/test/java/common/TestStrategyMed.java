@@ -3,29 +3,21 @@
  */
 package common;
 
-import static choco.kernel.solver.Configuration.BOTTOM_UP;
-import static choco.kernel.solver.Configuration.INIT_DESTRUCTIVE_LOWER_BOUND;
-import static choco.kernel.solver.Configuration.INIT_SHAVING;
-import static choco.kernel.solver.Configuration.NOGOOD_RECORDING_FROM_RESTART;
-import static choco.kernel.solver.Configuration.RESTART_AFTER_SOLUTION;
-import static choco.kernel.solver.Configuration.RESTART_BASE;
-import static choco.kernel.solver.Configuration.RESTART_LUBY;
-import static choco.kernel.solver.Configuration.STOP_AT_FIRST_SOLUTION;
-import static org.junit.Assert.assertEquals;
-
-import java.util.Arrays;
-import java.util.logging.Logger;
-
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
-
-import samples.tutorials.MinimumEdgeDeletion;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
 import choco.kernel.solver.Configuration;
 import choco.kernel.solver.ResolutionPolicy;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
+import samples.tutorials.trunk.MinimumEdgeDeletion;
+
+import java.util.Arrays;
+import java.util.logging.Logger;
+
+import static choco.kernel.solver.Configuration.*;
+import static org.junit.Assert.assertEquals;
 
 public class TestStrategyMed {
 
@@ -46,12 +38,12 @@ public class TestStrategyMed {
 	}
 	private void solve(boolean randomSelectors) {
 		med.buildSolver();
-		if(randomSelectors) ((CPSolver) med._s).setRandomSelectors(0);
+		if(randomSelectors) ((CPSolver) med.solver).setRandomSelectors(0);
 		med.solve();
 		med.prettyOut();
-		assertEquals("Minimum Edge Deletion is Feasible", Boolean.TRUE, med._s.isFeasible());
-		if(objective == null) {objective = med._s.getOptimumValue();}
-		else {assertEquals("objective", objective, med._s.getOptimumValue());}
+		assertEquals("Minimum Edge Deletion is Feasible", Boolean.TRUE, med.solver.isFeasible());
+		if(objective == null) {objective = med.solver.getOptimumValue();}
+		else {assertEquals("objective", objective, med.solver.getOptimumValue());}
 	}
 	private void recursiveTestMED(Object parametersMED, String...confBoolValues) {
 		if(confBoolValues != null && confBoolValues.length > 0) {
@@ -117,9 +109,9 @@ public class TestStrategyMed {
 
 		@Override
 		public void buildSolver() {
-			_s =  new CPSolver(CONFIG);
-			_s.monitorFailLimit(true);
-			_s.read(_m);
+			solver =  new CPSolver(CONFIG);
+			solver.monitorFailLimit(true);
+			solver.read(model);
 		}
 	}
 }

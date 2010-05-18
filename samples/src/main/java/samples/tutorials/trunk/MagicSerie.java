@@ -1,6 +1,5 @@
-package samples.tutorials;
+package samples.tutorials.trunk;
 
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.varselector.MinDomain;
@@ -8,6 +7,8 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.integer.IntegerVariable;
 
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
 
 /**
  * The Magic Serie problem

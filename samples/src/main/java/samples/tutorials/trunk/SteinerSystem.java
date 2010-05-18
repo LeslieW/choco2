@@ -26,9 +26,8 @@
 // *    contributors listed in choco.Entity.java    *
 // *           Copyright (C) F. Laburthe, 1999-2006 *
 // **************************************************
-package samples.tutorials;
+package samples.tutorials.trunk;
 
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.set.AssignSetVar;
@@ -36,10 +35,12 @@ import choco.cp.solver.search.set.MinDomSet;
 import choco.cp.solver.search.set.MinEnv;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.Solution;
+import samples.tutorials.PatternExample;
 
+import static choco.Choco.*;
 import static java.text.MessageFormat.format;
 
-public class SteinerSystem extends PatternExample{
+public class SteinerSystem extends PatternExample {
 
 	/**
 	 * A ternary Steiner system of order n is a set of triplets of distinct elements
@@ -64,7 +65,7 @@ public class SteinerSystem extends PatternExample{
 
 	@Override
 	public void buildModel() {
-		_m = new CPModel();
+		model = new CPModel();
 
 		vars = new SetVariable[n];
 		SetVariable[] intersect = new SetVariable[n * n];
@@ -78,35 +79,35 @@ public class SteinerSystem extends PatternExample{
 
 		// Post constraints
 		for (int i = 0; i < n; i++){
-			_m.addConstraint(eqCard(vars[i], 3));
+			model.addConstraint(eqCard(vars[i], 3));
 		}
 		for (int i = 0; i < n; i++) {
 			for (int j = i + 1; j < n; j++) {
-				_m.addConstraint(setInter(vars[i], vars[j], intersect[i * n + j]));
-				_m.addConstraint(leqCard(intersect[i * n + j], 1));
+				model.addConstraint(setInter(vars[i], vars[j], intersect[i * n + j]));
+				model.addConstraint(leqCard(intersect[i * n + j], 1));
 			}
 		}
 	}
 
 	@Override
 	public void buildSolver() {
-		_s = new CPSolver();
-		_s.read(_m);
+		solver = new CPSolver();
+		solver.read(model);
 	}
 
 	@Override
 	public void solve() {
-		_s.setFirstSolution(true);
-		_s.generateSearchStrategy();
-		_s.addGoal(new AssignSetVar(new MinDomSet(_s, _s.getVar(vars)), new MinEnv()));
-		_s.launch();
+		solver.setFirstSolution(true);
+		solver.generateSearchStrategy();
+		solver.addGoal(new AssignSetVar(new MinDomSet(solver, solver.getVar(vars)), new MinEnv()));
+		solver.launch();
 	}
 
 	@Override
 	public void prettyOut() {
 		StringBuffer s = new StringBuffer();
-		Solution sol = _s.getSearchStrategy().getSolutionPool().getBestSolution();
-		_s.restoreSolution(sol);
+		Solution sol = solver.getSearchStrategy().getSolutionPool().getBestSolution();
+		solver.restoreSolution(sol);
 		s.append("A ternary Steiner system of order n is a set of triplets of n*(n - 1) / 6 " +
 				"distinct elements taking their values between 1 and n," +
 				" such that all the pairs included in two different triplets are different. " +
@@ -114,7 +115,7 @@ public class SteinerSystem extends PatternExample{
 
 		s.append(format("A solution for n = {0}\n\n", p));
 		for (int i = 0; i < n; i++) {
-			s.append(format("set[{0}]:{1}\n", i, vars[i].pretty()));
+			s.append(format("set[{0}]:{1}\n", i, solver.getVar(vars[i]).pretty()));
 		}
 		LOGGER.info(s.toString());
 

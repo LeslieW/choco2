@@ -20,14 +20,16 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package samples.tutorials;
+package samples.tutorials.trunk;
 
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import samples.tutorials.PatternExample;
 
 import java.util.Arrays;
+
+import static choco.Choco.*;
 
 /**
  * @author Arnaud Malapert
@@ -57,18 +59,18 @@ public class GolombRuler extends PatternExample {
 
     @Override
     public void buildModel() {
-        _m = new CPModel();
+        model = new CPModel();
 		ticks = makeIntVarArray("a", m, 0,length);
 		diff = makeIntVarArray("d", ((m)*(m-1))/2, 0,length);
 		breakSymmetries();
 		setAuxVarConstraints();
 		if(alldiff) {
-			_m.addConstraint(allDifferent(diff));
+			model.addConstraint(allDifferent(diff));
 		}else {
 			// d_ij != d_kl
 			for (int i = 0; i < diff.length; i++) {
 				for (int j = i+1; j < diff.length; j++) {
-					_m.addConstraint(neq(diff[i],diff[j]));
+					model.addConstraint(neq(diff[i],diff[j]));
 				}
 			}
 		}
@@ -76,32 +78,32 @@ public class GolombRuler extends PatternExample {
 
     @Override
     public void buildSolver() {
-       _s = new CPSolver();
-       _s.read(_m);
-        _s.monitorBackTrackLimit(true);
+       solver = new CPSolver();
+       solver.read(model);
+        solver.monitorBackTrackLimit(true);
     }
 
     @Override
     public void solve() {
     	//ChocoLogging.setVerbosity(Verbosity.SEARCH);
     	//ChocoLogging.setLoggingMaxDepth(3);
-    	_s.solveAll();
+    	solver.solveAll();
     }
 
     @Override
     public void prettyOut() {
-        LOGGER.info(Arrays.toString(_s.getVar(ticks)));
+        LOGGER.info(Arrays.toString(solver.getVar(ticks)));
     }
 
     private void breakSymmetries() {
 		//monotony
 		for (int i = 2; i < m; i++) {
-			_m.addConstraint(geq(ticks[i],plus(ticks[i-1],1)));
+			model.addConstraint(geq(ticks[i],plus(ticks[i-1],1)));
 		}
 		//translation
-		_m.addConstraint(eq(ticks[0], 0));
+		model.addConstraint(eq(ticks[0], 0));
 		//reflexion
-		_m.addConstraint(leq(plus(minus(ticks[1],ticks[0]),1),minus(ticks[m-1],ticks[m-2])));
+		model.addConstraint(leq(plus(minus(ticks[1],ticks[0]),1),minus(ticks[m-1],ticks[m-2])));
 	}
 
 	private void setAuxVarConstraints() {
@@ -109,8 +111,9 @@ public class GolombRuler extends PatternExample {
 		int cpt =0;
 		for (int i = 0; i < m; i++) {
 			for (int j = i+1; j < m; j++) {
-				_m.addConstraint(eq(diff[cpt++],minus(ticks[j],ticks[i])));
-				if(j>i+1) {_m.addConstraint(geq(diff[cpt-1],plus(diff[cpt-2],1)));}
+				model.addConstraint(eq(diff[cpt++],minus(ticks[j],ticks[i])));
+				if(j>i+1) {
+                    model.addConstraint(geq(diff[cpt-1],plus(diff[cpt-2],1)));}
 			}
 		}
 	}

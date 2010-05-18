@@ -25,9 +25,9 @@ import choco.cp.model.CPModel;
 import choco.kernel.common.logging.ChocoLogging;
 import org.junit.Assert;
 import org.junit.Test;
-import samples.tutorials.CycloHexan;
-import samples.tutorials.Queen;
+import samples.tutorials.continuous.CycloHexan;
 import samples.tutorials.scheduling.DisjunctiveWebEx;
+import samples.tutorials.trunk.Queen;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,15 +53,15 @@ public class TestSerializable {
         pb.buildModel();
         final File file = create();
         try {
-            CPModel.writeInFile((CPModel)pb._m, file);
+            CPModel.writeInFile((CPModel)pb.model, file);
         } catch (IOException e) {
             LOGGER.severe(e.getMessage());
             Assert.fail("IOException");
         }
-        pb._m = null;
-        Assert.assertNull(pb._m);
+        pb.model = null;
+        Assert.assertNull(pb.model);
         try {
-            pb._m = CPModel.readFromFile(file);
+            pb.model = CPModel.readFromFile(file);
         } catch (IOException e) {
             LOGGER.severe(e.getMessage());
             Assert.fail("IOException");
@@ -71,7 +71,7 @@ public class TestSerializable {
         }
         pb.buildSolver();
         pb.solve();
-        Assert.assertEquals(92, pb._s.getSolutionCount());
+        Assert.assertEquals(92, pb.solver.getSolutionCount());
     }
 
 
@@ -81,15 +81,15 @@ public class TestSerializable {
         pb.buildModel();
         File file = null;
         try {
-            file = CPModel.writeInFile((CPModel)pb._m);
+            file = CPModel.writeInFile((CPModel)pb.model);
         } catch (IOException e) {
             LOGGER.severe(e.getMessage());
             Assert.fail("IOException");
         }
-        pb._m = null;
-        Assert.assertNull(pb._m);
+        pb.model = null;
+        Assert.assertNull(pb.model);
         try {
-            pb._m = CPModel.readFromFile(file);
+            pb.model = CPModel.readFromFile(file);
         } catch (IOException e) {
             LOGGER.severe(e.getMessage());
             Assert.fail("IOException");
@@ -99,7 +99,7 @@ public class TestSerializable {
         }
         pb.buildSolver();
         pb.solve();
-        Assert.assertEquals(9, pb._s.getSolutionCount());
+        Assert.assertEquals(9, pb.solver.getSolutionCount());
     }
 
     @Test
@@ -108,15 +108,15 @@ public class TestSerializable {
         pb.buildModel();
         File file = null;
         try {
-            file = CPModel.writeInFile((CPModel)pb._m);
+            file = CPModel.writeInFile((CPModel)pb.model);
         } catch (IOException e) {
             LOGGER.severe(e.getMessage());
             Assert.fail("IOException");
         }
-        pb._m = null;
-        Assert.assertNull(pb._m);
+        pb.model = null;
+        Assert.assertNull(pb.model);
         try {
-            pb._m = CPModel.readFromFile(file);
+            pb.model = CPModel.readFromFile(file);
         } catch (IOException e) {
             LOGGER.severe(e.getMessage());
             Assert.fail("IOException");
@@ -126,6 +126,6 @@ public class TestSerializable {
         }
         pb.buildSolver();
         pb.solve();
-        Assert.assertEquals(69, pb._s.getSolutionCount());
+        Assert.assertEquals(69, pb.solver.getSolutionCount());
     }
 }

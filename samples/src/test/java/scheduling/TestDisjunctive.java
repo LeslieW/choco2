@@ -26,7 +26,6 @@ import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.SettingType;
-import static choco.cp.solver.SettingType.*;
 import choco.cp.solver.constraints.BitFlags;
 import choco.cp.solver.constraints.global.scheduling.disjunctive.Disjunctive.Rule;
 import choco.kernel.common.logging.ChocoLogging;
@@ -41,6 +40,8 @@ import org.junit.Test;
 import samples.tutorials.scheduling.DisjunctiveWebEx;
 
 import java.util.logging.Logger;
+
+import static choco.cp.solver.SettingType.*;
 
 
 /**
@@ -195,9 +196,9 @@ public class TestDisjunctive {
 		//ChocoLogging.setVerbosity(Verbosity.SEARCH);
 		final DisjunctiveWebEx cwe = new DisjunctiveWebEx();
 		cwe.execute(Boolean.FALSE);
-		final Number obj = cwe._s.getObjectiveValue();
+		final Number obj = cwe.solver.getObjectiveValue();
 		cwe.execute(Boolean.TRUE);
-		Assert.assertEquals("Disjunctive Website Example",obj, cwe._s.getObjectiveValue());
+		Assert.assertEquals("Disjunctive Website Example",obj, cwe.solver.getObjectiveValue());
 	}
 
 	@Test

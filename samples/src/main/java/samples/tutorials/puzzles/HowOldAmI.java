@@ -20,12 +20,14 @@
  *     Copyright (C) F. Laburthe,                 *
  *                   N. Jussien    1999-2008      *
  **************************************************/
-package samples.tutorials;
+package samples.tutorials.puzzles;
 
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import samples.tutorials.PatternExample;
+
+import static choco.Choco.*;
 
 /*
 * User : charles
@@ -34,7 +36,7 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 * Since : Choco 2.0.1
 * Update : Choco 2.0.1
 */
-public class HowOldAmI extends PatternExample{
+public class HowOldAmI extends PatternExample {
 
     /**
      * Easy simple problem defined by:
@@ -47,30 +49,38 @@ public class HowOldAmI extends PatternExample{
     IntegerVariable me, him;
 
     @Override
+    public void printDescription() {
+       super.printDescription();
+       LOGGER.info("Six years ago, my brother was twice my age.");
+       LOGGER.info("In five years, our ages will add up to 40");
+       LOGGER.info("How old am I ?");
+    }
+
+    @Override
     public void buildModel() {
-        _m = new CPModel();
+        model = new CPModel();
         me = makeIntVar("me", 0, 40);
         him = makeIntVar("him", 0, 40);
 
-        _m.addConstraint(eq(mult(2, minus(me, 6)), minus(him, 6)));
-        _m.addConstraint(eq(40, plus(plus(me, 5), plus(him,5))));
+        model.addConstraint(eq(mult(2, minus(me, 6)), minus(him, 6)));
+        model.addConstraint(eq(40, plus(plus(me, 5), plus(him,5))));
     }
 
     @Override
     public void buildSolver() {
-        _s = new CPSolver();
-        _s.read(_m);
+        solver = new CPSolver();
+        solver.read(model);
     }
 
     @Override
     public void solve() {
-        _s.solveAll();
+        solver.solveAll();
     }
 
     @Override
     public void prettyOut() {
-        LOGGER.info("Me :"+_s.getVar(me).getVal()+" years old");
-        LOGGER.info("Him :"+_s.getVar(him).getVal()+" years old");
+        LOGGER.info("\nMe :"+ solver.getVar(me).getVal()+" years old");
+        LOGGER.info("Him :"+ solver.getVar(him).getVal()+" years old\n");
     }
 
     public static void main(String[] args) {

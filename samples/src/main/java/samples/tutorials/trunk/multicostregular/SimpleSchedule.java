@@ -20,15 +20,16 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package samples.tutorials.multicostregular;
+package samples.tutorials.trunk.multicostregular;
 
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import static choco.Choco.*;
 
 /**
  * This class present a simple scheduling problem defined in multicost-regular documentation.

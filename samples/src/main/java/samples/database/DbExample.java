@@ -5,12 +5,17 @@ import db.DbTables;
 import db.EmbeddedDbConnector;
 import db.IDbConnector;
 import db.RemoteDbConnector;
-import samples.tutorials.*;
-import static samples.tutorials.GolombRuler.OPTIMAL_RULER;
+import samples.tutorials.Example;
+import samples.tutorials.PatternExample;
+import samples.tutorials.trunk.GolombRuler;
+import samples.tutorials.trunk.MinimumEdgeDeletion;
+import samples.tutorials.trunk.Queen;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
+
+import static samples.tutorials.trunk.GolombRuler.OPTIMAL_RULER;
 
 public class DbExample implements Example {
 
@@ -24,7 +29,7 @@ public class DbExample implements Example {
 
 	public void executeEx(String name, Object args) {
 		EX_WRAPPER.execute(args);
-		dbConnector.getDatabaseManager().insertSolver(EX_WRAPPER._s, name);
+		dbConnector.getDatabaseManager().insertSolver(EX_WRAPPER.solver, name);
 	}
 
 	public void solveGolombRulers() {
@@ -110,15 +115,15 @@ public class DbExample implements Example {
 		@Override
 		public void buildModel() {
 			source.buildModel();
-			_m = source._m;
+			model = source.model;
 
 		}
 
 		@Override
 		public void buildSolver() {
 			source.buildSolver();
-			_s = source._s;
-			_s.setTimeLimit(TIME_LIMIT);
+			solver = source.solver;
+			solver.setTimeLimit(TIME_LIMIT);
 
 		}
 
