@@ -26,9 +26,8 @@
 //*    contributors listed in choco.Entity.java    *
 //*           Copyright (C) F. Laburthe, 1999-2006 *
 //**************************************************
-package samples.tutorials;
+package samples.tutorials.trunk;
 
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
@@ -37,6 +36,8 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
 
 public class Zebra {
 

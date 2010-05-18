@@ -20,13 +20,15 @@
  *     Copyright (C) F. Laburthe,                 *
  *                   N. Jussien    1999-2008      *
  **************************************************/
-package samples.tutorials;
+package samples.tutorials.puzzles;
 
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import samples.tutorials.PatternExample;
+
+import static choco.Choco.*;
 
 /*
 * User : charles
@@ -35,7 +37,7 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 * Since : Choco 2.0.1
 * Update : Choco 2.0.1
 */
-public class Candles extends PatternExample{
+public class Candles extends PatternExample {
 
     /**
      *
@@ -51,43 +53,57 @@ public class Candles extends PatternExample{
     IntegerVariable[] vars;
 
     @Override
+    public void printDescription() {
+        super.printDescription();
+
+        LOGGER.info("Lily and Marshall have seven children, all born on Thanksgiving");
+        LOGGER.info("during six consective years. Since the first anniversary of the elder,");
+        LOGGER.info("Uncle Barney holds a party every Thanksgiving.");
+        LOGGER.info("Today, the day of their birthday, there are seven children, each");
+        LOGGER.info("receives a beautiful cake decorated with so many candles he has years.");
+        LOGGER.info("Uncle Barney finds he bought twice as many candles as two years ago.");
+        LOGGER.info("-> How old are the children and how many candles did Barney buy?");
+
+    }
+
+    @Override
     public void buildModel() {
-        _m = new CPModel();
+        model = new CPModel();
 
         vars = makeIntVarArray("son#", 7, 0, 100);
 
-        _m.addConstraint(eq(vars[0], plus(vars[1],1)));
-        _m.addConstraint(eq(vars[1], plus(vars[2],1)));
-        _m.addConstraint(eq(vars[2], plus(vars[3],1)));
-        _m.addConstraint(eq(vars[3], plus(vars[4],1)));
-        _m.addConstraint(eq(vars[4], plus(vars[5],1)));
-        _m.addConstraint(eq(vars[5], plus(vars[6],1)));
+        model.addConstraint(eq(vars[0], plus(vars[1],1)));
+        model.addConstraint(eq(vars[1], plus(vars[2],1)));
+        model.addConstraint(eq(vars[2], plus(vars[3],1)));
+        model.addConstraint(eq(vars[3], plus(vars[4],1)));
+        model.addConstraint(eq(vars[4], plus(vars[5],1)));
+        model.addConstraint(eq(vars[5], plus(vars[6],1)));
 
         IntegerExpressionVariable twoyearsago = minus(sum(vars), 14);
         IntegerExpressionVariable now = sum(vars);
 
-        _m.addConstraint(eq(mult(twoyearsago,2), now));
+        model.addConstraint(eq(mult(twoyearsago,2), now));
     }
 
     @Override
     public void buildSolver() {
-        _s = new CPSolver();
-        _s.read(_m);
+        solver = new CPSolver();
+        solver.read(model);
     }
 
     @Override
     public void solve() {
-        _s.solveAll();
+        solver.solveAll();
     }
 
     @Override
     public void prettyOut() {
         int sum = 0;
         for(int i = 0; i < 7; i++){
-            sum += _s.getVar(vars[i]).getVal();
-            LOGGER.info("son#"+i+" : "+_s.getVar(vars[i]).getVal()+" years old");
+            sum += solver.getVar(vars[i]).getVal();
+            LOGGER.info("son#"+i+" : "+ solver.getVar(vars[i]).getVal()+" years old");
         }
-        LOGGER.info("Number of candles : "+ sum);
+        LOGGER.info("Number of candles : "+ sum + "\n");
     }
     
     public static void main(String[] args) {

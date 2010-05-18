@@ -25,10 +25,10 @@ package common;
 import choco.kernel.common.logging.ChocoLogging;
 import junit.framework.Assert;
 import org.junit.Test;
-import samples.tutorials.CycloHexan;
 import samples.tutorials.PatternExample;
-import samples.tutorials.Queen;
-import samples.tutorials.SteinerSystem;
+import samples.tutorials.continuous.CycloHexan;
+import samples.tutorials.trunk.Queen;
+import samples.tutorials.trunk.SteinerSystem;
 
 import java.util.logging.Logger;
 
@@ -64,7 +64,7 @@ public class ThreadSafeTest {
         @Override
         public void run() {
 		    toRun.execute();
-            Assert.assertTrue(toRun._s.isFeasible());
+            Assert.assertTrue(toRun.solver.isFeasible());
         }
     }
 

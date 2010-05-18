@@ -20,14 +20,16 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package samples.tutorials;
+package samples.tutorials.trunk;
 
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
+import samples.tutorials.PatternExample;
+
+import static choco.Choco.*;
 
 
 /**
@@ -46,7 +48,7 @@ public class SendMoreMoney extends PatternExample {
 
     @Override
     public void buildModel() {
-        _m = new CPModel();
+        model = new CPModel();
         S = makeIntVar("S", 0, 9);
         E = makeIntVar("E", 0, 9);
         N = makeIntVar("N", 0, 9);
@@ -55,12 +57,12 @@ public class SendMoreMoney extends PatternExample {
         O = makeIntVar("0", 0, 9);
         R = makeIntVar("R", 0, 9);
         Y = makeIntVar("Y", 0, 9);
-        _m.addConstraints(neq(S, 0), neq(M, 0));
-        _m.addConstraint(allDifferent(S, E, N, D, M, O, R, Y));
+        model.addConstraints(neq(S, 0), neq(M, 0));
+        model.addConstraint(allDifferent(S, E, N, D, M, O, R, Y));
         SEND = new IntegerVariable[]{S, E, N, D};
         MORE = new IntegerVariable[]{M, O, R, E};
         MONEY = new IntegerVariable[]{M, O, N, E, Y};
-        _m.addConstraints(
+        model.addConstraints(
                 eq(plus(scalar(new int[]{1000, 100, 10, 1}, SEND),
                         scalar(new int[]{1000, 100, 10, 1}, MORE)),
                         scalar(new int[]{10000, 1000, 100, 10, 1}, MONEY))
@@ -69,27 +71,27 @@ public class SendMoreMoney extends PatternExample {
 
     @Override
     public void buildSolver() {
-        _s = new CPSolver();
-        _s.read(_m);
+        solver = new CPSolver();
+        solver.read(model);
     }
 
     @Override
     public void solve() {
         try {
             LOGGER.info("PROPAGATION");
-            _s.propagate();
+            solver.propagate();
             this.prettyOut();
         } catch (ContradictionException ignored) {
         }
         LOGGER.info("RESOLUTION");
-        _s.solve();
+        solver.solve();
     }
 
     @Override
     public void prettyOut() {
-        LOGGER.info(StringUtils.pretty(_s.getVar(SEND)));
-        LOGGER.info(" + " + StringUtils.pretty(_s.getVar(SEND)));
-        LOGGER.info(" = " + StringUtils.pretty(_s.getVar(SEND)));
+        LOGGER.info(StringUtils.pretty(solver.getVar(SEND)));
+        LOGGER.info(" + " + StringUtils.pretty(solver.getVar(SEND)));
+        LOGGER.info(" = " + StringUtils.pretty(solver.getVar(SEND)));
     }
 
     public static void main(String[] args) {

@@ -22,7 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.tutorials.scheduling;
 
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -33,6 +32,8 @@ import samples.tutorials.PatternExample;
 
 import java.util.Arrays;
 import java.util.logging.Level;
+
+import static choco.Choco.*;
 
 
 public class DisjunctiveWebEx extends PatternExample {
@@ -68,7 +69,7 @@ public class DisjunctiveWebEx extends PatternExample {
 	
 	@Override
 	public void buildModel() {
-		_m = new CPModel();
+		model = new CPModel();
 		tasks =new TaskVariable[N];
 		if(useAlternativeResource) {
 			durations = constantArray(DURATIONS_DATA);
@@ -76,7 +77,7 @@ public class DisjunctiveWebEx extends PatternExample {
 				tasks[i] = makeTaskVar("t"+i, RELEASE_DATES_DATA[i], 20, durations[i]);
 			}
 			//post the disjunctive
-			_m.addConstraint(disjunctive("unique unary resource", tasks, USAGES));
+			model.addConstraint(disjunctive("unique unary resource", tasks, USAGES));
 			//
 		}else {
 			durations = new IntegerVariable[N];
@@ -86,22 +87,22 @@ public class DisjunctiveWebEx extends PatternExample {
 			}	
 			//post the channeling to know if the task is scheduled or not
 			for (int i = 0; i < N; i++) {
-				_m.addConstraint(boolChanneling(USAGES[i], durations[i], DURATIONS_DATA[i]));
+				model.addConstraint(boolChanneling(USAGES[i], durations[i], DURATIONS_DATA[i]));
 			}
 			//post the disjunctive
-			_m.addConstraint(disjunctive("unique unary resource", tasks));
+			model.addConstraint(disjunctive("unique unary resource", tasks));
 			
 		}
 		//state the objective function
-		_m.addConstraint(eq((sum(USAGES)), OBJ));
+		model.addConstraint(eq((sum(USAGES)), OBJ));
 
 	}
 
 	@Override
 	public void buildSolver() {
-		_s = new CPSolver();
-		_s.read(_m);
-		//System.out.println(_s.pretty());
+		solver = new CPSolver();
+		solver.read(model);
+		//System.out.println(solver.pretty());
 	}
 
 	@Override
@@ -109,8 +110,8 @@ public class DisjunctiveWebEx extends PatternExample {
 		if(LOGGER.isLoggable(Level.INFO)) {
 			final String str = ( 
 					"model with "+ (useAlternativeResource ? "alternative resource" : "channeling constraints")+
-					"\nobjective: "+_s.getVar(OBJ)+"\n"+ Arrays.toString(_s.getVar(USAGES))
-					+"\n"+ StringUtils.pretty(_s.getVar(tasks))
+					"\nobjective: "+ solver.getVar(OBJ)+"\n"+ Arrays.toString(solver.getVar(USAGES))
+					+"\n"+ StringUtils.pretty(solver.getVar(tasks))
 			);
 			LOGGER.info(str);			
 		}
@@ -118,7 +119,7 @@ public class DisjunctiveWebEx extends PatternExample {
 
 	@Override
 	public void solve() {
-		_s.maximize(false);
+		solver.maximize(false);
 	}
 	
 	public static void main(String[] args) {

@@ -20,11 +20,9 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package samples.tutorials;
+package samples.tutorials.trunk;
 
 
-import static choco.Choco.makeIntVar;
-import static choco.Choco.regular;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.constraints.Constraint;
@@ -36,6 +34,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+
+import static choco.Choco.makeIntVar;
+import static choco.Choco.regular;
 
 /**
  * Created by IntelliJ IDEA.

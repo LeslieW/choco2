@@ -24,6 +24,7 @@ package samples.tutorials;
 
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
+import samples.tutorials.trunk.Queen;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

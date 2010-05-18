@@ -20,15 +20,17 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package samples.tutorials;
+package samples.tutorials.trunk;
 
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import samples.tutorials.PatternExample;
+
+import static choco.Choco.*;
 
 /**
  *
@@ -37,7 +39,7 @@ import choco.kernel.model.variables.integer.IntegerVariable;
  * @author Arnaud Malapert
  *
  */
-public class Distance extends PatternExample{
+public class Distance extends PatternExample {
 
 
 	public IntegerVariable[] x,y;
@@ -53,7 +55,7 @@ public class Distance extends PatternExample{
 
     @Override
     public void buildModel() {
-        _m =new CPModel();
+        model =new CPModel();
         x = makeIntVarArray("x", 2, -4, 3, Options.V_BOUND);
 		y = makeIntVarArray("y", 2, 2, 10, Options.V_BOUND);
 		d = makeIntVar("dist", 0, 20, Options.V_BOUND);
@@ -64,23 +66,23 @@ public class Distance extends PatternExample{
 		if(ceil) {
 			// ceil(d) = sqrt( a +b )
 			IntegerExpressionVariable lb = plus( power2(minus(d,1)), 1);
-			_m.addConstraint(geq( plus(a,b), lb));
-			_m.addConstraint(leq( plus(a,b), ub));
+			model.addConstraint(geq( plus(a,b), lb));
+			model.addConstraint(leq( plus(a,b), ub));
 		}else {
 			// d = sqrt( a +b )
-			_m.addConstraint(eq( plus(a,b), ub));
+			model.addConstraint(eq( plus(a,b), ub));
 		}
     }
 
     @Override
     public void buildSolver() {
-        _s = new CPSolver();
-		_s.read(_m);
+        solver = new CPSolver();
+		solver.read(model);
     }
 
     @Override
     public void solve() {
-        _s.maximize(_s.getVar(d), false);
+        solver.maximize(solver.getVar(d), false);
     }
 
     @Override
@@ -88,9 +90,9 @@ public class Distance extends PatternExample{
         LOGGER.info("maximize distantce between "+ StringUtils.pretty(x[0],y[0],x[1],y[1]));
         LOGGER.info("maximal distance = 10,63");
         LOGGER.info(" d = sqrt( (x0-x1)^2 + (y0-y1)^2 ) "+(ceil?"-- ceil":"--floor"));
-        LOGGER.info("x = ["+_s.getVar(x[0]).getVal()+","+_s.getVar(x[1]).getVal()+"]");
-        LOGGER.info("y = ["+_s.getVar(y[0]).getVal()+","+_s.getVar(y[1]).getVal()+"]");
-        LOGGER.info("d = " + _s.getVar(d).getVal());
+        LOGGER.info("x = ["+ solver.getVar(x[0]).getVal()+","+ solver.getVar(x[1]).getVal()+"]");
+        LOGGER.info("y = ["+ solver.getVar(y[0]).getVal()+","+ solver.getVar(y[1]).getVal()+"]");
+        LOGGER.info("d = " + solver.getVar(d).getVal());
     }
 
 	private IntegerExpressionVariable power2(IntegerExpressionVariable v) {

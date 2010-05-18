@@ -20,17 +20,19 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package samples.tutorials;
+package samples.tutorials.trunk;
 
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
+import samples.tutorials.PatternExample;
 
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
 
 /*
 * Created by IntelliJ IDEA.
@@ -56,7 +58,7 @@ public class WolfGoatCabbage1 extends PatternExample {
 
     @Override
     public void buildModel() {
-        _m = new CPModel();
+        model = new CPModel();
         // Create an array of numberOfStates states. The start
         // state and the end state are fixed. The intermediate
         // states are unknown as yet.
@@ -67,19 +69,19 @@ public class WolfGoatCabbage1 extends PatternExample {
             // The State method oneStepTo() returns the constraint
             // that requires the argument state to be a valid
             // successor of itself.
-            if (j > 0) _m.addConstraint(states[j - 1].oneStepTo(states[j]));
+            if (j > 0) model.addConstraint(states[j - 1].oneStepTo(states[j]));
         }
     }
 
     @Override
     public void buildSolver() {
-        _s = new CPSolver();
-        _s.read(_m);
+        solver = new CPSolver();
+        solver.read(model);
     }
 
     @Override
     public void solve() {
-        _s.solve();
+        solver.solve();
     }
 
     @Override
@@ -89,16 +91,16 @@ public class WolfGoatCabbage1 extends PatternExample {
 
     private void printStateTransitions() {
         StringBuffer st = new StringBuffer();
-        st.append("\n\n"+(_s.isFeasible() ? "S" : "Not s") + "olved in " + states.length + " states: ");
+        st.append("\n\n"+(solver.isFeasible() ? "S" : "Not s") + "olved in " + states.length + " states: ");
         for (int j = 0; j < states.length; j++) {
             if (j > 0) {
-                if (states[j - 1].isInstantiated(_s)
-                        || states[j].isInstantiated(_s)
+                if (states[j - 1].isInstantiated(solver)
+                        || states[j].isInstantiated(solver)
                         || !states[j - 1].canTransitionTo(states[j]))
                     st.append(" -/-> ");
                 else st.append(" --> ");
             }
-            st.append(states[j].toString(_s));
+            st.append(states[j].toString(solver));
         }
         LOGGER.info(st.toString());
     }

@@ -20,9 +20,8 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package samples.tutorials;
+package samples.tutorials.trunk;
 
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -32,10 +31,13 @@ import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
+import samples.tutorials.PatternExample;
 
 import java.text.MessageFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
 
 
 public class MagicSquare extends PatternExample {
@@ -61,27 +63,27 @@ public class MagicSquare extends PatternExample {
 
 	@Override
 	public void buildModel() {
-		_m = new CPModel();
+		model = new CPModel();
 		final int ub = n*n;
 		vars = makeIntVarArray("v", n, n, 1, ub);
 		// All cells of the matrix must be different
-		_m.addConstraint( allDifferent(ArrayUtils.flatten(vars)));
+		model.addConstraint( allDifferent(ArrayUtils.flatten(vars)));
 		final IntegerVariable[] varDiag1 = new IntegerVariable[n];
 		final IntegerVariable[] varDiag2 = new IntegerVariable[n];
 		for (int i = 0; i < n; i++) {
 			// All rows must be equal to the magic sum
-			_m.addConstraint(eq(sum(vars[i]), magicSum));
+			model.addConstraint(eq(sum(vars[i]), magicSum));
 			// All columns must be equal to the magic sum
-			_m.addConstraint(eq(sum( ArrayUtils.getColumn(vars, i)), magicSum));
+			model.addConstraint(eq(sum( ArrayUtils.getColumn(vars, i)), magicSum));
 			//record diagonals variable
 			varDiag1[i] = vars[i][i];
 			varDiag2[i] = vars[(n - 1) - i][i];
 		}
 		// Every diagonal have to be equal to the magic sum
-		_m.addConstraint(eq(sum(varDiag1), magicSum));
-		_m.addConstraint(eq(sum(varDiag2), magicSum));
+		model.addConstraint(eq(sum(varDiag1), magicSum));
+		model.addConstraint(eq(sum(varDiag2), magicSum));
 		//symmetry breaking constraint: enforce that the upper left corner contains the minimum corner value.
-		_m.addConstraint( and(
+		model.addConstraint( and(
 				lt(vars[0][0], vars[0][n-1]),
 				lt(vars[0][0], vars[n-1][n-1]),
 				lt(vars[0][0], vars[n-1][0])
@@ -91,10 +93,10 @@ public class MagicSquare extends PatternExample {
 
 	@Override
 	public void buildSolver() {
-		_s = new CPSolver();
-		_s.monitorFailLimit(true);
-		_s.read(_m);
-		_s.setTimeLimit(500*1000);
+		solver = new CPSolver();
+		solver.monitorFailLimit(true);
+		solver.read(model);
+		solver.setTimeLimit(500*1000);
 	}
 
 	@Override
@@ -104,11 +106,11 @@ public class MagicSquare extends PatternExample {
 			// Print of the solution
 			st.append("order: ").append(n);
 			st.append("\nmagic sum: ").append(magicSum);
-			if( _s.existsSolution()) {
+			if( solver.existsSolution()) {
 			for (int i = 0; i < n; i++) {
 				st.append('\n');
 				for (int j = 0; j < n; j++) {
-					st.append(MessageFormat.format("{0} ", _s.getVar(vars[i][j]).getVal()));
+					st.append(MessageFormat.format("{0} ", solver.getVar(vars[i][j]).getVal()));
 				}
 			}
 			}else st.append("\nno solution to display!");
@@ -118,7 +120,7 @@ public class MagicSquare extends PatternExample {
 
 	@Override
 	public void solve() {
-		_s.solve();
+		solver.solve();
 	}
 
     	@Override

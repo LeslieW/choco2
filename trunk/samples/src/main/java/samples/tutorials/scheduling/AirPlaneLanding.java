@@ -23,7 +23,6 @@
 package samples.tutorials.scheduling;
 
 import choco.Choco;
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -34,6 +33,8 @@ import choco.kernel.model.variables.scheduling.TaskVariable;
 
 import java.util.Random;
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
 
 /**
  *
@@ -151,6 +152,7 @@ public class AirPlaneLanding {
 		solver.attachGoal(BranchingFactory.setTimes(solver));
 		solver.minimize(false);
 		solver.printRuntimeStatistics();
+        LOGGER.info(solver.pretty());
 
 	}
 	public static void main(String[] args) {

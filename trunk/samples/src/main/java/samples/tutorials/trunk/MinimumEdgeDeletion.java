@@ -1,14 +1,16 @@
-package samples.tutorials;
+package samples.tutorials.trunk;
 
 import choco.Choco;
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import samples.tutorials.PatternExample;
 
 import java.util.Arrays;
 import java.util.Random;
+
+import static choco.Choco.*;
 
 /**
  * Let consider a set of N boolean variables and a binary constraint network (eq or neq).
@@ -70,9 +72,9 @@ public class MinimumEdgeDeletion extends PatternExample {
 
 	@Override
 	public void buildModel() {
-		_m = new CPModel();
+		model = new CPModel();
 		boolVars = makeBooleanVarArray("b", nbBools);
-		_m.addVariables(boolVars);
+		model.addVariables(boolVars);
 		pairVars = new IntegerVariable[nbPairs];
 		deletion = makeIntVar("deletion", 0, nbPairs, Options.V_OBJECTIVE);
 		int cpt = 0;
@@ -80,39 +82,39 @@ public class MinimumEdgeDeletion extends PatternExample {
 			for (int j = 0; j < nbBools; j++) {
 				if(pairs[i][j] == Boolean.TRUE) {
 					pairVars[cpt] = makeBooleanVar("eq_"+i+"_"+j);
-					_m.addConstraint( Choco.reifiedConstraint(pairVars[cpt], eq(boolVars[i], boolVars[j])));
+					model.addConstraint( Choco.reifiedConstraint(pairVars[cpt], eq(boolVars[i], boolVars[j])));
 					cpt++;
 				}else if(pairs[i][j] == Boolean.FALSE) {
 					pairVars[cpt] = makeBooleanVar("neq_"+i+"_"+j);
-					_m.addConstraint( Choco.reifiedConstraint(pairVars[cpt], neq(boolVars[i], boolVars[j])));
+					model.addConstraint( Choco.reifiedConstraint(pairVars[cpt], neq(boolVars[i], boolVars[j])));
 					cpt++;
 				}
 			}
 		}
-		_m.addConstraint( eq( minus(cpt, sum(pairVars)), deletion));
-		//LOGGER.info(_m.pretty());
+		model.addConstraint( eq( minus(cpt, sum(pairVars)), deletion));
+		//LOGGER.info(model.pretty());
 	}
 
 	@Override
 	public void buildSolver() {
-		_s = new CPSolver();
-		_s.read(_m);
-		_s.setFirstSolution(false);
-		_s.setDoMaximize(false);
+		solver = new CPSolver();
+		solver.read(model);
+		solver.setFirstSolution(false);
+		solver.setDoMaximize(false);
 	}
 
 	@Override
 	public void prettyOut() {
-		//LOGGER.info("pairs: "+Arrays.toString(_s.getVar(pairVars)));
-		LOGGER.info("nbDeletions= "+ _s.getOptimumValue());
-		LOGGER.info("bool vars: "+Arrays.toString(_s.getVar(boolVars)));
+		//LOGGER.info("pairs: "+Arrays.toString(solver.getVar(pairVars)));
+		LOGGER.info("nbDeletions= "+ solver.getOptimumValue());
+		LOGGER.info("bool vars: "+Arrays.toString(solver.getVar(boolVars)));
 	}
 
 	@Override
 	public void solve() {
-		//_s.setSolutionPoolCapacity(5);
-		_s.generateSearchStrategy();
-		_s.launch();
+		//solver.setSolutionPoolCapacity(5);
+		solver.generateSearchStrategy();
+		solver.launch();
 	}
 
 	@Override

@@ -20,13 +20,15 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package samples.tutorials;
+package samples.tutorials.trunk;
 
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import samples.tutorials.PatternExample;
+
+import static choco.Choco.*;
 
 /**
  * <i>benchmark proposed by Michel Lemaitre.</i>
@@ -66,7 +68,7 @@ import choco.kernel.model.variables.integer.IntegerVariable;
  */
 
 
-public class U2planning extends PatternExample{
+public class U2planning extends PatternExample {
 
 
 
@@ -106,7 +108,7 @@ public class U2planning extends PatternExample{
 
     @Override
     public void buildModel() {
-        _m = new CPModel();
+        model = new CPModel();
 		int nbStates = (nbSteps + 1);
 		IntegerVariable[][] move = makeIntVarArray("move", nbSteps, nbPersons, 0, 1, Options.V_NO_DECISION);
 		IntegerVariable[][] position = makeIntVarArray("position", nbStates, nbPersons, 0, 1, Options.V_NO_DECISION);
@@ -116,40 +118,40 @@ public class U2planning extends PatternExample{
 
 		for (int u = 0; u < nbPersons; u++) {
 			//  Starting and ending positions. 0 is before the bridge, 1 is after crossing.
-			_m.addConstraint(eq(position[0][u], 0));          // starting positions
-			_m.addConstraint(eq(position[nbStates - 1][u], 1));   // ending positions
+			model.addConstraint(eq(position[0][u], 0));          // starting positions
+			model.addConstraint(eq(position[nbStates - 1][u], 1));   // ending positions
 			for (int s = 0; s < nbSteps - 1; s++) {
 				// Define movements from positions.
-				_m.addConstraint(ifOnlyIf(eq(outward[s][u], 1), leq(position[s][u], minus(position[s + 1][u], 1))));
-				_m.addConstraint(ifOnlyIf(eq(backward[s][u], 1), leq(position[s + 1][u], minus(position[s][u], 1))));
-				_m.addConstraint(eq(move[s][u], plus(outward[s][u], backward[s][u])));
+				model.addConstraint(ifOnlyIf(eq(outward[s][u], 1), leq(position[s][u], minus(position[s + 1][u], 1))));
+				model.addConstraint(ifOnlyIf(eq(backward[s][u], 1), leq(position[s + 1][u], minus(position[s][u], 1))));
+				model.addConstraint(eq(move[s][u], plus(outward[s][u], backward[s][u])));
 				// a redundant constraint that could be useful if we were to instantiate move variables instead of position
-				_m.addConstraint(ifOnlyIf(eq(move[s][u], 0), eq(position[s + 1][u], position[s][u])));
+				model.addConstraint(ifOnlyIf(eq(move[s][u], 0), eq(position[s + 1][u], position[s][u])));
 
 				// redundant constraint (because the cDefDuration one only propagates once all but one are instantiated)
-				_m.addConstraint(geq(duration[s], mult(persons[u].rate, move[s][u])));
+				model.addConstraint(geq(duration[s], mult(persons[u].rate, move[s][u])));
 
 				//  If somebody crosses, the flashlight also crosses in the same direction.
-				_m.addConstraint(leq(outward[s][u], outward[s][flashlightIndex]));
-				_m.addConstraint(leq(backward[s][u], backward[s][flashlightIndex]));
+				model.addConstraint(leq(outward[s][u], outward[s][flashlightIndex]));
+				model.addConstraint(leq(backward[s][u], backward[s][flashlightIndex]));
 			}
 		}
     }
 
     @Override
     public void buildSolver() {
-        _s = new CPSolver();
-		_s.read(_m);
+        solver = new CPSolver();
+		solver.read(model);
     }
 
     @Override
     public void solve() {
-    	_s.solve();
+    	solver.solve();
     }
 
     @Override
     public void prettyOut() {
-        LOGGER.info(_s.pretty());
+        LOGGER.info(solver.pretty());
     }
 
     

@@ -20,34 +20,22 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package samples.tutorials;
+// *  CHOCO: an open-source Constraint Programming  *
+// *     System for Research and Education          *
+// *                                                *
+// *    contributors listed in choco.Entity.java    *
+// *           Copyright (C) F. Laburthe, 1999-2006 *
+// **************************************************
+package samples.tutorials.unused;
 
-public class MinSizeMinLB{ //extends AbstractIntVarSelector {
+import javax.swing.*;
 
-
-//    public MinSizeMinLB(Model pb, IntDomainVar[] vs) {
-//        model = pb;
-//        vars = vs;
-//    }
-//
-//
-//    public IntDomainVar selectIntVar() throws ContradictionException {
-//        int minSize = IStateInt.MAXINT;
-//        int minValue = IStateInt.MAXINT;
-//        IntDomainVar v0 = null;
-//        for (IntDomainVar v : vars) {
-//            if (!v.isInstantiated()) {
-//                int sizev = v.getDomainSize();
-//                if (sizev <= minSize) {
-//                    int infv = v.getInf();
-//                    if (infv <= minValue) {
-//                        minValue = infv;
-//                        minSize = sizev;
-//                        v0 = v;
-//                    }
-//                }
-//            }
-//        }
-//        return v0;
-//    }
+public class DemoFrame {
+  public static void main(String[] args) {
+    JFrame frame = new JFrame("Choco demos");
+    new DemoUI().createGUI(frame.getContentPane());
+    frame.setBounds(10, 10, 800, 600);
+    frame.setVisible(true);
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+  }
 }

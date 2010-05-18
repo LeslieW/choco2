@@ -22,7 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.tutorials.scheduling;
 
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -33,6 +32,8 @@ import samples.tutorials.PatternExample;
 
 import java.util.Arrays;
 import java.util.logging.Level;
+
+import static choco.Choco.*;
 
 
 public class CumulativeWebEx extends PatternExample {
@@ -68,20 +69,20 @@ public class CumulativeWebEx extends PatternExample {
 
 	@Override
 	public void buildModel() {
-		_m = new CPModel();
+		model = new CPModel();
 		if(useAlternativeResource) {
 			usages = makeBooleanVarArray("U", NT);
 			heights = constantArray(HEIGHTS_DATA);
 			//post the cumulative
-			_m.addConstraint(cumulativeMax("unique renewable resource", TASKS, heights, usages, CAPACITY, ""));
+			model.addConstraint(cumulativeMax("unique renewable resource", TASKS, heights, usages, CAPACITY, ""));
 			//set fake tasks to establish the profile capacity
-			_m.addConstraints(
+			model.addConstraints(
 					eq(TASKS[0].start(), 1),
 					eq(TASKS[1].start(), 2),
 					eq(TASKS[2].start(), 3)
 			);
 			//state the objective function
-			_m.addConstraint(eq( sum(usages), OBJ));
+			model.addConstraint(eq( sum(usages), OBJ));
 		}else {
 			usages = makeBooleanVarArray("U", N);
 			heights = new IntegerVariable[N];
@@ -89,12 +90,12 @@ public class CumulativeWebEx extends PatternExample {
 			//post the channeling to know if the task is scheduled or not
 			for (int i = 0; i < N; i++) {
 				heights[i] =  makeIntVar("H_" + i, new int[]{0, HEIGHTS_DATA[i]});
-				_m.addConstraint(boolChanneling(usages[i], heights[i], HEIGHTS_DATA[i]));
+				model.addConstraint(boolChanneling(usages[i], heights[i], HEIGHTS_DATA[i]));
 			}
 			//post the cumulative
-			_m.addConstraint(cumulativeMax("unique renewable resource", TASKS, heights, CAPACITY, ""));
+			model.addConstraint(cumulativeMax("unique renewable resource", TASKS, heights, CAPACITY, ""));
 			//set fake tasks to establish the profile capacit
-			_m.addConstraints(
+			model.addConstraints(
 					eq(usages[0], 1),
 					eq(TASKS[0].start(), 1),
 					eq(usages[1], 1),
@@ -103,16 +104,16 @@ public class CumulativeWebEx extends PatternExample {
 					eq(TASKS[2].start(), 3)
 			);
 			//state the objective function
-			_m.addConstraint(eq(minus(sum(usages),NF), OBJ));
+			model.addConstraint(eq(minus(sum(usages),NF), OBJ));
 		}
 
 	}
 
 	@Override
 	public void buildSolver() {
-		_s = new CPSolver();
-		_s.read(_m);
-		//System.out.println(_s.pretty());
+		solver = new CPSolver();
+		solver.read(model);
+		//System.out.println(solver.pretty());
 	}
 
 	@Override
@@ -120,8 +121,8 @@ public class CumulativeWebEx extends PatternExample {
 		if(LOGGER.isLoggable(Level.INFO)) {
 			final String str = ( 
 					"model with "+ (useAlternativeResource ? "alternative resource" : "channeling constraints")+
-					"\nobjective: "+_s.getVar(OBJ)+"\n"+ Arrays.toString(_s.getVar(usages))
-					+"\n"+ Arrays.toString(_s.getVar(heights))+"\n"+ StringUtils.pretty(_s.getVar(TASKS))
+					"\nobjective: "+ solver.getVar(OBJ)+"\n"+ Arrays.toString(solver.getVar(usages))
+					+"\n"+ Arrays.toString(solver.getVar(heights))+"\n"+ StringUtils.pretty(solver.getVar(TASKS))
 			);
 			LOGGER.info(str);			
 		}
@@ -129,7 +130,7 @@ public class CumulativeWebEx extends PatternExample {
 
 	@Override
 	public void solve() {
-		_s.maximize(false);
+		solver.maximize(false);
 	}
 	
 	public static void main(String[] args) {

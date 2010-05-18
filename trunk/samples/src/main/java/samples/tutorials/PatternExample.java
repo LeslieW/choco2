@@ -37,13 +37,16 @@ import java.util.logging.Level;
  */
 public abstract class PatternExample implements Example {
 
-	public Model _m;
+	public Model model;
 
-	public Solver _s;
+	public Solver solver;
+    
 
 	public void setUp(Object parameters){
 	}
 
+    public void printDescription(){
+    } 
 
 	public abstract void buildModel();
 
@@ -54,19 +57,24 @@ public abstract class PatternExample implements Example {
 	public abstract void prettyOut();
 
 	public final void execute(Object parameters){
-		LOGGER.log(Level.INFO,"\nexecute {0} ...", getClass().getSimpleName());
-		this.setUp(parameters);
+	    LOGGER.log(Level.INFO, ChocoLogging.START_MESSAGE);
+		LOGGER.log(Level.INFO,"* Sample library: executing {0}.java ... \n", getClass().getName());
+
+     	this.setUp(parameters);
+        this.printDescription();
 		this.buildModel();
 		this.buildSolver();
 		this.solve();
 		this.prettyOut();
-		if(LOGGER.isLoggable(Level.INFO)) {
-			if( _s == null) {
-				LOGGER.info("\n***********\n solver object is null.");
+
+        LOGGER.log(Level.INFO, "* Choco usage statistics");
+     	if(LOGGER.isLoggable(Level.INFO)) {
+			if( solver == null) {
+				LOGGER.info(" - solver object is null. No statistics available.");
 			}else {
-				LOGGER.log(Level.INFO, "\n***********\n#sol : {0}\n{1}", new Object[]{ _s.getSolutionCount(), _s.runtimeStatistics()});
+                LOGGER.log(Level.INFO, " - #sol : {0}\n - {1}", new Object[]{ solver.getSolutionCount(), solver.runtimeStatistics()});
 			}
-			ChocoLogging.flushLogs();
+     		ChocoLogging.flushLogs();
 		}
 	}
 

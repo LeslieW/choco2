@@ -23,7 +23,6 @@
 package samples.tutorials.seminar.binpacking;
 
 
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -34,11 +33,13 @@ import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.Solver;
-import samples.tutorials.pack.CPpack;
+import samples.tutorials.scheduling.pack.CPpack;
 
-import static java.text.MessageFormat.format;
 import java.util.Random;
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
+import static java.text.MessageFormat.format;
 
 /**
  * Created by IntelliJ IDEA.

@@ -26,7 +26,7 @@
 // *    contributors listed in choco.Entity.java    *
 // *           Copyright (C) F. Laburthe, 1999-2006 *
 // **************************************************
-package samples.tutorials;
+package samples.tutorials.unused;
 
 import choco.kernel.common.logging.ChocoLogging;
 
@@ -89,7 +89,7 @@ public class DemoUI {
     code = new JTextPane(document);
     code.setFont(new Font("Courier new", Font.PLAIN, 11));
     code.setEditable(false);
-    code.setBorder(BorderFactory.createTitledBorder("How the code looks like ?"));
+    code.setBorder(BorderFactory.createTitledBorder("What does the code look like ?"));
     JScrollPane scroll2 = new JScrollPane(code);
     JSplitPane subsplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scroll, scroll2);
     JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, panel, subsplit);
@@ -102,7 +102,7 @@ public class DemoUI {
     demoNb = list.getSelectedIndex();
     if (demoNb < 0) {
       result.setText("No selected demonstration !\n" +
-          "Please click on one demonstration on the right.");
+          "Please click on one demonstration on the left.");
     } else {
       solving = true;
       try {
@@ -113,10 +113,10 @@ public class DemoUI {
             try {
               Class demoClass =
                   this.getClass().getClassLoader().
-                  loadClass("samples." + demos[demoNb]);
+                  loadClass("samples.tutorials.trunk." + demos[demoNb]);
               Object demoObject = demoClass.newInstance();
               Method demoMethod =
-                  demoClass.getMethod("demo", new Class[]{});
+                  demoClass.getMethod("execute", new Class[]{});
               Object demoReturn = demoMethod.invoke(demoObject);
               ret = (String) demoReturn;
             } catch (ClassNotFoundException e) {
@@ -155,8 +155,16 @@ public class DemoUI {
     int nb = list.getSelectedIndex();
     StringBuffer buf = new StringBuffer();
     buf.append(MessageFormat.format("Code of {0}.java.\n\n", demos[nb]));
-    InputStream in = this.getClass().getResourceAsStream("/src/samples/" + demos[nb] + ".java");
-    if (in != null) {
+
+    File f = new File("/Users/njussien/Documents/Professionnel/Recherche/Developpement/Choco/trunk/samples/src/main/java/samples/tutorials/trunk/" + demos[nb] + ".java");
+    
+      FileInputStream in = null;// this.getClass().getResourceAsStream();
+      try {
+          in = new FileInputStream(f);
+      } catch (FileNotFoundException e) {
+          e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      }
+      if (in != null) {
       Reader reader = new BufferedReader(new InputStreamReader(in));
       int ch;
       try {

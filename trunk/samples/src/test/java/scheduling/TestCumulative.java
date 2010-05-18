@@ -23,12 +23,10 @@
 package scheduling;
 
 import choco.Choco;
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.SettingType;
-import static choco.cp.solver.SettingType.*;
 import choco.cp.solver.constraints.BitFlags;
 import choco.cp.solver.constraints.global.scheduling.cumulative.Cumulative;
 import choco.kernel.common.logging.ChocoLogging;
@@ -40,7 +38,6 @@ import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.junit.Assert;
-import static org.junit.Assert.*;
 import org.junit.Ignore;
 import org.junit.Test;
 import samples.tutorials.scheduling.CumulativeWebEx;
@@ -48,6 +45,10 @@ import samples.tutorials.scheduling.CumulativeWebEx;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
+import static choco.cp.solver.SettingType.*;
+import static org.junit.Assert.*;
 
 
 /**
@@ -605,9 +606,9 @@ public class TestCumulative {
 	public void testExampleCumulativeWebSite() {
 		final CumulativeWebEx cwe = new CumulativeWebEx();
 		cwe.execute(Boolean.FALSE);
-		final Number obj = cwe._s.getObjectiveValue();
+		final Number obj = cwe.solver.getObjectiveValue();
 		cwe.execute(Boolean.TRUE);
-		assertEquals("Cumulative Website Example",obj, cwe._s.getObjectiveValue());
+		assertEquals("Cumulative Website Example",obj, cwe.solver.getObjectiveValue());
 	}
 
     @Test

@@ -27,15 +27,16 @@ import choco.cp.solver.search.integer.branching.AssignOrForbidIntVarVal;
 import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.common.logging.ChocoLogging;
-import static choco.kernel.common.util.tools.StringUtils.pad;
 import choco.kernel.memory.copy.EnvironmentCopying;
 import choco.kernel.model.Model;
 import choco.kernel.solver.Configuration;
 import choco.kernel.solver.Solver;
 import org.junit.Assert;
 import org.junit.Test;
-import samples.tutorials.Queen;
 import samples.tutorials.seminar.ExDonaldGeraldRobert;
+import samples.tutorials.trunk.Queen;
+
+import static choco.kernel.common.util.tools.StringUtils.pad;
 
 /**
  * Created by IntelliJ IDEA.
@@ -97,10 +98,10 @@ public class RecomputationTest {
             sr2.getConfiguration().putInt(Configuration.RECOMPUTATION_GAP, 10);
 //            sr2.attachGoal(new AssignOrForbidIntVarVal(new MinDomain(sr2), new MinVal()));
             // Read the model
-            sr1.read(pb._m);
-            sr2.read(pb._m);
-            s1.read(pb._m);
-            s2.read(pb._m);
+            sr1.read(pb.model);
+            sr2.read(pb.model);
+            s1.read(pb.model);
+            s2.read(pb.model);
 
             // Then solve it
             ChocoLogging.flushLogs();

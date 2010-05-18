@@ -84,14 +84,14 @@ public class RehearsalProblem extends PatternExample {
 
 	@Override
 	public void buildModel() {
-		_m = new CPModel();
+		model = new CPModel();
 		totalWaitingTime = Choco.makeIntVar("totalWaitingTime", 0, totalDuration * nbPlayers -cumulatedDuration, Options.V_BOUND, Options.V_OBJECTIVE);
 		musicPieces = Choco.makeTaskVarArray("piece", 0, totalDuration, durations, Options.V_BOUND);
 		arrivals = Choco.makeIntVarArray("arrival", nbPlayers, 0, totalDuration);
 		departures = Choco.makeIntVarArray("departure", nbPlayers, 0, totalDuration);
 		IntegerExpressionVariable expr = Choco.constant(-cumulatedDuration);
 
-		_m.addVariables(musicPieces);
+		model.addVariables(musicPieces);
 		//define arrival time, departure time and staying time of each player
 		for (int i = 0; i < nbPlayers; i++) {
 			int n = requirements[i].size();
@@ -102,41 +102,41 @@ public class RehearsalProblem extends PatternExample {
 				atmp[j] = t.start();
 				dtmp[j] = t.end();
 			}
-			_m.addConstraints(
+			model.addConstraints(
 					Choco.min(atmp, arrivals[i]),
 					Choco.max(dtmp, departures[i])
 			);
 			expr = Choco.plus(expr, Choco.minus(departures[i], arrivals[i]));
 		}
 		//obj. constraint
-		_m.addConstraint(Choco.eq(totalWaitingTime, expr));
+		model.addConstraint(Choco.eq(totalWaitingTime, expr));
 
 		if(isDisjunctiveModel) {
 			//add an unary resource
-			_m.addConstraint(Choco.disjunctive(musicPieces));
+			model.addConstraint(Choco.disjunctive(musicPieces));
 		}else {
 			//define all possible precedence between tasks
-			_m.addConstraints( Choco.precedenceDisjoint(musicPieces, isPrecOnlyDecision ? Options.NO_OPTION : Options.V_NO_DECISION));
+			model.addConstraints( Choco.precedenceDisjoint(musicPieces, isPrecOnlyDecision ? Options.NO_OPTION : Options.V_NO_DECISION));
 		}
 	}
 
 	@Override
 	public void buildSolver() {
 		CPSolver s = new CPSolver();
-		s.read(_m);
-		_s = s;
+		s.read(model);
+		solver = s;
 	}
 
 	@Override
 	public void prettyOut() {
-		LOGGER.info(""+_s.getVar(totalWaitingTime));
-		LOGGER.info(StringUtils.pretty(_s.getVar(musicPieces)));
+		LOGGER.info(""+ solver.getVar(totalWaitingTime));
+		LOGGER.info(StringUtils.pretty(solver.getVar(musicPieces)));
 
 	}
 
 	@Override
 	public void solve() {
-		_s.minimize(false);
+		solver.minimize(false);
 	}
 	
 	@Override
