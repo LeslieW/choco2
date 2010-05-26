@@ -40,7 +40,7 @@ public class IsOdd extends AbstractUnIntSConstraint {
 
     @Override
     public int getFilteredEventMask(int idx) {
-        return IntVarEvent.INSTINTbitvector;
+        return IntVarEvent.INSTINT_MASK;
     }
 
         public IsOdd(IntDomainVar v0) {

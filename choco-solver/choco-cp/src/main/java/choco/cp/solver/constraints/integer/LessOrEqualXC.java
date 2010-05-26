@@ -55,7 +55,7 @@ public final class LessOrEqualXC extends AbstractUnIntSConstraint {
 
 	@Override
 	public int getFilteredEventMask(int idx) {
-		return IntVarEvent.INSTINTbitvector;
+		return IntVarEvent.INSTINT_MASK;
 	}
 
 

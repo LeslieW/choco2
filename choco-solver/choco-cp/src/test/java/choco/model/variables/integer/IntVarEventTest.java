@@ -140,12 +140,12 @@ public class IntVarEventTest  {
     assertEquals(2, pe.getNbPendingEvents());
     evt = pe.getPendingEvent(0);
     assertEquals(evt.getModifiedObject(), x);
-    assertEquals(IntVarEvent.INCINFbitvector + IntVarEvent.REMVALbitvector, ((IntVarEvent) evt).getEventType());
+    assertEquals(IntVarEvent.INCINF_MASK + IntVarEvent.REMVAL_MASK, ((IntVarEvent) evt).getEventType());
     assertEquals(c2, ((IntVarEvent) evt).getCause());
 
     evt = pe.getPendingEvent(1);
     assertEquals(evt.getModifiedObject(), y);
-    assertEquals(IntVarEvent.BOUNDSbitvector + IntVarEvent.REMVALbitvector, ((IntVarEvent) evt).getEventType());
+    assertEquals(IntVarEvent.BOUNDS_MASK + IntVarEvent.REMVAL_MASK, ((IntVarEvent) evt).getEventType());
     assertEquals(null, ((IntVarEvent) evt).getCause());
   }
 
@@ -181,7 +181,7 @@ public class IntVarEventTest  {
     assertEquals(1, pe.getNbPendingEvents());
     evt = pe.getPendingEvent(0);
     assertEquals(evt.getModifiedObject(), y);
-    assertEquals(IntVarEvent.BOUNDSbitvector + IntVarEvent.REMVALbitvector, ((IntVarEvent) evt).getEventType());
+    assertEquals(IntVarEvent.BOUNDS_MASK + IntVarEvent.REMVAL_MASK, ((IntVarEvent) evt).getEventType());
 
     PartiallyStoredVector constraints = y.getConstraintVector();
     DisposableIntIterator cit = constraints.getIndexIterator();

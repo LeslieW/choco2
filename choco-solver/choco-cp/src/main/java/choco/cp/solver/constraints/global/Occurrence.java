@@ -105,8 +105,8 @@ public final class Occurrence extends AbstractLargeIntSConstraint {
 
    public int getFilteredEventMask(int idx) {
        if (idx == vars.length - 1)
-            return IntVarEvent.BOUNDSbitvector;
-       else return IntVarEvent.INSTINTbitvector + IntVarEvent.REMVALbitvector;
+            return IntVarEvent.BOUNDS_MASK;
+       else return IntVarEvent.INSTINT_MASK + IntVarEvent.REMVAL_MASK;
     }
 
   public void awakeOnInf(int idx) throws ContradictionException {

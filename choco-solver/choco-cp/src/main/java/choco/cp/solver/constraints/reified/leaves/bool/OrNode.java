@@ -22,8 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.reified.leaves.bool;
 
-import choco.cp.solver.constraints.integer.bool.BinOr;
-import choco.cp.solver.constraints.integer.bool.LargeOr;
+import choco.cp.solver.constraints.integer.bool.BooleanFactory;
 import choco.cp.solver.constraints.integer.channeling.ReifiedLargeOr;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.StringUtils;
@@ -77,11 +76,7 @@ public final class OrNode extends AbstractBoolNode implements BoolNode {
         for (int i = 0; i < vs.length; i++) {
             vs[i] = subtrees[i].extractResult(s);
         }
-        if (subtrees.length == 2) {
-            return new BinOr(vs[0],vs[1]);
-        } else {
-            return new LargeOr(vs, s.getEnvironment());
-        }
+        return BooleanFactory.or(s.getEnvironment(), vs);
     }
 
     @Override

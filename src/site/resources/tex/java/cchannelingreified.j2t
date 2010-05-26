@@ -1,0 +1,4 @@
+        IntegerVariable reifiedB = Choco.makeIntVar("bvar", 0, 1);
+	    IntegerVariable x = Choco.makeIntVar("a", 0, 10);
+        IntegerVariable y = Choco.makeIntVar("b", 0, 10);
+        model.addConstraint(Choco.reifiedConstraint(reifiedB, Choco.eq(x, y)));

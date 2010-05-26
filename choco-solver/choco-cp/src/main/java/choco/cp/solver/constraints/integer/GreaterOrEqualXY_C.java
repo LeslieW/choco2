@@ -57,7 +57,7 @@ public final class GreaterOrEqualXY_C extends AbstractBinIntSConstraint {
 
 	@Override
 	public int getFilteredEventMask(int idx) {
-		return IntVarEvent.INSTINTbitvector + IntVarEvent.BOUNDSbitvector;
+		return IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK;
 		// return 0x0B;
 	}
 

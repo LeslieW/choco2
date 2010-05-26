@@ -24,7 +24,6 @@ package choco.cp.solver.constraints.integer.bool.sum;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.memory.IEnvironment;
-import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -44,7 +43,7 @@ public class AbstractBoolSum extends AbstractLargeIntSConstraint {
 
 	@Override
 	public int getFilteredEventMask(int idx) {
-		return IntVarEvent.INSTINTbitvector;
+		return IntVarEvent.INSTINT_MASK;
 	}
 
 	@Override

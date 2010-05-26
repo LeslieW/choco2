@@ -66,9 +66,9 @@ public final class ElementV extends AbstractLargeIntSConstraint {
     @Override
     public int getFilteredEventMask(int idx) {
         if (vars[idx].hasEnumeratedDomain()) {
-            return IntVarEvent.INSTINTbitvector + IntVarEvent.REMVALbitvector;
+            return IntVarEvent.INSTINT_MASK + IntVarEvent.REMVAL_MASK;
         } else {
-            return IntVarEvent.INSTINTbitvector + IntVarEvent.BOUNDSbitvector;
+            return IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK;
         }
     }
 

@@ -1099,7 +1099,7 @@ public boolean check()
 }
 
 public int getFilteredEventMask(int idx) {
-        return (idx < vs.length ? IntVarEvent.REMVALbitvector : IntVarEvent.INSTINTbitvector + IntVarEvent.INCINFbitvector + IntVarEvent.DECSUPbitvector);
+        return (idx < vs.length ? IntVarEvent.REMVAL_MASK : IntVarEvent.INSTINT_MASK + IntVarEvent.INCINF_MASK + IntVarEvent.DECSUP_MASK);
 }
 
 

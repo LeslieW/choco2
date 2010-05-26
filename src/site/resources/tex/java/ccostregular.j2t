@@ -1,0 +1,30 @@
+        int n = 10;
+        IntegerVariable[] vars = makeIntVarArray("x",n,0,2, Options.V_ENUM);
+        IntegerVariable z = makeIntVar("z",3,4, Options.V_BOUND);
+
+        FiniteAutomaton auto = new FiniteAutomaton();
+        int start = auto.addState();
+        int end = auto.addState();
+        auto.setInitialState(start);
+        auto.setFinal(start);
+        auto.setFinal(end);
+
+        auto.addTransition(start,start, 0,1);
+        auto.addTransition(start,end,2);
+
+        auto.addTransition(end,start,2);
+        auto.addTransition(end,start, 0,1);
+
+        int[][][] costs = new int[n][3][2];
+        for (int i = 0 ; i < costs.length ; i++)
+        {
+            costs[i][0][1] = 1;
+            costs[i][1][1] = 1;
+        }
+
+        CPModel m = new CPModel();
+        m.addConstraint(costRegular(vars,z,auto,costs));
+
+        CPSolver s= new CPSolver();
+        s.read(m);
+        s.solveAll();

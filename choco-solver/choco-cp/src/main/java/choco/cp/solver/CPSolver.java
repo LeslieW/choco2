@@ -39,13 +39,13 @@ import choco.cp.solver.constraints.global.scheduling.precedence.PrecedenceVDisjo
 import choco.cp.solver.constraints.global.scheduling.precedence.PrecedenceVSDisjoint;
 import choco.cp.solver.constraints.integer.*;
 import choco.cp.solver.constraints.integer.bool.sat.ClauseStore;
-import choco.cp.solver.constraints.integer.channeling.ReifiedIntSConstraint;
 import choco.cp.solver.constraints.integer.extension.*;
 import choco.cp.solver.constraints.integer.intlincomb.IntLinCombFactory;
 import choco.cp.solver.constraints.real.Equation;
 import choco.cp.solver.constraints.real.MixedEqXY;
 import choco.cp.solver.constraints.real.exp.*;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
+import choco.cp.solver.constraints.reified.ReifiedFactory;
 import choco.cp.solver.constraints.set.Disjoint;
 import choco.cp.solver.constraints.set.*;
 import choco.cp.solver.goals.GoalSearchSolver;
@@ -4068,13 +4068,12 @@ public class CPSolver implements Solver {
 	}
 
 	public SConstraint reifiedIntConstraint(IntDomainVar binVar, SConstraint c) {
-		return new ReifiedIntSConstraint(binVar, (AbstractIntSConstraint) c, this);
+		return ReifiedFactory.builder(binVar, c, this);
 	}
 
 	public static SConstraint reifiedIntConstraint(IntDomainVar binVar, SConstraint c,
-			SConstraint opc) {
-		return new ReifiedIntSConstraint(binVar, (AbstractIntSConstraint) c,
-				(AbstractIntSConstraint) opc);
+                                                   SConstraint opc, final Solver solver) {
+		return ReifiedFactory.builder(binVar, c, opc, solver);
 	}
 
 }

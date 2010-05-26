@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.reified.leaves;
 
-import choco.cp.solver.CPSolver;
+import choco.cp.solver.constraints.reified.ReifiedFactory;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -76,8 +76,8 @@ public final class ConstraintLeaf extends INode implements BoolNode {
 	public IntDomainVar extractResult(Solver s) {
 		IntDomainVar v = s.createBooleanVar(StringUtils.randomName());
 		if (oppositec != null)
-			s.post(((CPSolver)s).reifiedIntConstraint(v,c,oppositec));
-		else s.post(((CPSolver)s).reifiedIntConstraint(v,c));
+			s.post(ReifiedFactory.builder(v,c,oppositec, s));
+		else s.post(ReifiedFactory.builder(v, c,s));
 		return v;
 	}
 

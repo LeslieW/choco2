@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.reified.leaves.bool;
 
-import choco.cp.solver.constraints.integer.bool.BinXnor;
+import choco.cp.solver.constraints.integer.bool.BooleanFactory;
 import choco.cp.solver.constraints.integer.channeling.ReifiedBinXnor;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.Solver;
@@ -69,10 +69,7 @@ public final class XnorNode extends AbstractBoolNode implements BoolNode {
         for (int i = 0; i < vs.length; i++) {
             vs[i] = subtrees[i].extractResult(s);
         }
-        if (subtrees.length == 2) {
-            return new BinXnor(vs[0],vs[1]);
-        }
-        return null;
+        return BooleanFactory.xor(vs);
     }
 
     @Override

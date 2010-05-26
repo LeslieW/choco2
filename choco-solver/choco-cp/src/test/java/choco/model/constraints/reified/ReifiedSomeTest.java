@@ -106,8 +106,9 @@ public class ReifiedSomeTest {
         m.addConstraint(ifOnlyIf(eq((i1), (1)), eq((i1), (2))));
         s.read(m);
         LOGGER.info(s.pretty());
-        s.solve();
+        s.solveAll();
         assertTrue("Solution found : unexpected", !s.isFeasible());
+        assertEquals(0, s.getSolutionCount());
 
     }
 
@@ -128,7 +129,7 @@ public class ReifiedSomeTest {
     public void test2() {
         LOGGER.info("ReifiedSomeTest.test2");
         i1 = makeIntVar("i1", 1, 3);
-        m.addConstraint(implies(eq((i1), (1)), eq((i1), (2))));
+        m.addConstraint(implies(eq((i1), 1), eq(i1, 2)));
         s.read(m);
         s.solve();
         assertTrue("Solution found : unexpected", s.isFeasible());
@@ -174,7 +175,7 @@ public class ReifiedSomeTest {
     }
 
     @Test
-    @Ignore
+//    @Ignore
     public void test5() {
         LOGGER.info("ReifiedSomeTest.test5");
         s1 = makeSetVar("s1", 1, 3);
@@ -205,7 +206,7 @@ public class ReifiedSomeTest {
         i1 = makeIntVar("i1", 1, 3);
         m.addVariable(Options.V_BOUND, i1);
         r2 = makeRealVar("r2", 1, 3);
-        //m.addConstraint(implies(geq(i1, 2), leq(r2, 2)));
+//        m.addConstraint(implies(geq(i1, 2), leq(r2, 2)));
         s.read(m);
         s.solve();
         assertTrue("Solution found : unexpected", s.isFeasible());
@@ -263,13 +264,13 @@ public class ReifiedSomeTest {
 
         m.addConstraint(or(c1, c2, c3));
         s.read(m);
-        s.solve();
+        s.solveAll();
         LOGGER.info("i1 = " + s.getVar(i1).pretty());
         LOGGER.info("i2 = " + s.getVar(i2).pretty());
         LOGGER.info("i3 = " + s.getVar(V3).pretty());
         LOGGER.info(String.valueOf(s.isFeasible()));
         assertTrue("Solution found : unexpected", s.isFeasible());
-
+        assertEquals(3, s.getSolutionCount());
     }
 
     @Test
@@ -1844,21 +1845,23 @@ public class ReifiedSomeTest {
 
     @Test
     public void test_syndaegy1() {
+        ChocoLogging.toSearch();
         int NV = 3;
-
+                                                                            
         Model m = new CPModel();
         Solver s = new CPSolver();
 
         IntegerVariable[] vars = new IntegerVariable[NV];
-        vars[0] = Choco.makeIntVar("v", 0, 1);
+        vars[0] = Choco.makeIntVar("v0", 0, 1);
         for (int i = 1; i < NV; i++) {
-            vars[i] = Choco.makeIntVar("v", 0, 10);
+            vars[i] = Choco.makeIntVar("v"+i, 0, 10);
         }
 
         m.addConstraint(Choco.reifiedConstraint(vars[0], and(eq(vars[1], 1),
                 eq(vars[2], 2)), or(neq(vars[1], 1), neq(vars[2], 2))));
 
         s.read(m);
+        System.out.println(s.pretty());
         s.solveAll();
     }
 

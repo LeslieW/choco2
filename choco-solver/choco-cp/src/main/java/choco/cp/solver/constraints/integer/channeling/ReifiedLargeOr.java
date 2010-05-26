@@ -32,7 +32,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
  * A constraint that ensures :
- * b = x1 Or x2 ... Or xn
+ * b = x1 OR x2 ... OR xn
  * where b, and x1,... xn are boolean variables (of domain {0,1})
  */
 public final class ReifiedLargeOr extends AbstractLargeIntSConstraint {
@@ -56,7 +56,7 @@ public final class ReifiedLargeOr extends AbstractLargeIntSConstraint {
     }
 
     public int getFilteredEventMask(int idx) {
-        return IntVarEvent.INSTINTbitvector;
+        return IntVarEvent.INSTINT_MASK;
     }
 
     public void propagate() throws ContradictionException {

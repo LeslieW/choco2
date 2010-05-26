@@ -46,7 +46,7 @@ public abstract class INode implements IPretty {
     /**
      * To speed up union operation
      */
-    private static IntDomainVar[] emptyIntArray = new IntDomainVar[0];
+    private static final IntDomainVar[] emptyIntArray = new IntDomainVar[0];
 
     /**
      * reference to branches below this node

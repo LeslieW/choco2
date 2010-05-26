@@ -27,6 +27,8 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -36,6 +38,8 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Date: Aug 6, 2008
  * Since : Choco 2.0.0
  *
+ * maintain v1 OR v2 OR ... OR vn where v1, v2, ..., vn are boolean variables
+* i.e variables of domain {0,1}
  */
 public final class LargeOr extends AbstractLargeIntSConstraint {
 
@@ -53,13 +57,13 @@ public final class LargeOr extends AbstractLargeIntSConstraint {
      * @param vars
      * @param environment
      */
-    public LargeOr(IntDomainVar[] vars, IEnvironment environment) {
+    LargeOr(IntDomainVar[] vars, IEnvironment environment) {
         super(vars);
         toZERO = environment.makeInt(0);
     }
 
     public int getFilteredEventMask(int idx) {
-        return IntVarEvent.INSTINTbitvector;
+        return IntVarEvent.INSTINT_MASK;
     }
 
     public void propagate() throws ContradictionException {
@@ -154,6 +158,16 @@ public final class LargeOr extends AbstractLargeIntSConstraint {
                 return null;
         }
         return Boolean.FALSE;
+    }
+
+    /**
+     * Get the opposite constraint
+     *
+     * @return the opposite constraint  @param solver
+     */
+    @Override
+    public AbstractSConstraint<IntDomainVar> opposite(final Solver solver) {
+        return BooleanFactory.nor(vars);
     }
 
 }

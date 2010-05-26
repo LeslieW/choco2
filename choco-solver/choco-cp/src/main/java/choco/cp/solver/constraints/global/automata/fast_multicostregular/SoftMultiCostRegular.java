@@ -762,7 +762,7 @@ protected boolean delayedGraphUpdate() throws ContradictionException {
 
 
 public int getFilteredEventMask(int idx) {
-        return (idx < yOff ? IntVarEvent.REMVALbitvector :  IntVarEvent.INSTINTbitvector + IntVarEvent.INCINFbitvector + IntVarEvent.DECSUPbitvector);
+        return (idx < yOff ? IntVarEvent.REMVAL_MASK :  IntVarEvent.INSTINT_MASK + IntVarEvent.INCINF_MASK + IntVarEvent.DECSUP_MASK);
 }
 
 

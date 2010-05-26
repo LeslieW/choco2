@@ -26,14 +26,13 @@ import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.integer.channeling.ReifiedIntSConstraint;
+import choco.cp.solver.constraints.reified.ReifiedFactory;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import org.junit.After;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
@@ -80,7 +79,7 @@ public class ReifiedIntConstraintTest {
             //m.addVariable(b, y, z);
 			s.read(m);
 
-			s.post(new ReifiedIntSConstraint(s.getVar(b), (AbstractIntSConstraint) s.lt(s.getVar(y), s.getVar(z)), s));
+			s.post(ReifiedFactory.builder(s.getVar(b), s.lt(s.getVar(y), s.getVar(z)), s));
 
 			s.setVarIntSelector(new RandomIntVarSelector(s, seed));
 			s.setValIntSelector(new RandomIntValSelector(seed + 1));
@@ -103,7 +102,7 @@ public class ReifiedIntConstraintTest {
             m.addVariables(b, y, z);
 			s.read(m);
 
-			s.post(new ReifiedIntSConstraint(s.getVar(b), (AbstractIntSConstraint) s.eq(s.getVar(y), s.getVar(z)), s));
+			s.post(ReifiedFactory.builder(s.getVar(b), s.eq(s.getVar(y), s.getVar(z)), s));
 
 			s.setVarIntSelector(new RandomIntVarSelector(s, seed));
 			s.setValIntSelector(new RandomIntValSelector(seed + 1));

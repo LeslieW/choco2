@@ -55,8 +55,8 @@ public final class NotEqualXC extends AbstractUnIntSConstraint {
 
 	@Override
 	public int getFilteredEventMask(int idx) {
-		if(!v0.hasEnumeratedDomain()) return IntVarEvent.INSTINTbitvector+IntVarEvent.BOUNDSbitvector;
-		else return IntVarEvent.INSTINTbitvector;
+		if(!v0.hasEnumeratedDomain()) return IntVarEvent.INSTINT_MASK +IntVarEvent.BOUNDS_MASK;
+		else return IntVarEvent.INSTINT_MASK;
 	}
 
 	public Object clone() throws CloneNotSupportedException {

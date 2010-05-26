@@ -50,7 +50,7 @@ public class AltDisjunctive extends Disjunctive {
 	@Override
 	public int getFilteredEventMask(int idx) {
 		return idx < taskIntVarOffset || idx >= taskIntVarOffset + getNbOptionalTasks() ? 
-				AbstractResourceSConstraint.TASK_MASK : IntVarEvent.INSTINTbitvector + IntVarEvent.REMVALbitvector;
+				AbstractResourceSConstraint.TASK_MASK : IntVarEvent.INSTINT_MASK + IntVarEvent.REMVAL_MASK;
 	}
 	
 	@Override

@@ -56,7 +56,7 @@ public class AC2001BinSConstraint extends CspBinSConstraint {
     }
 
     public final int getFilteredEventMask(int idx) {
-        return IntVarEvent.INSTINTbitvector + IntVarEvent.REMVALbitvector;
+        return IntVarEvent.INSTINT_MASK + IntVarEvent.REMVAL_MASK;
     }
 
 //    public Object clone() {

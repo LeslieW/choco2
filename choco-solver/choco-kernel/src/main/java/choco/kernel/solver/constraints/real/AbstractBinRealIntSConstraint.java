@@ -22,7 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.constraints.real;
 
-import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.SConstraintType;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -99,6 +98,6 @@ public abstract class AbstractBinRealIntSConstraint extends AbstractMixedSRealIn
 
     @Override
     public SConstraintType getConstraintType() {
-        return SConstraintType.INT_REAL;
+        return SConstraintType.MIXED;
     }
 }

@@ -1,4 +1,4 @@
-package choco.cp.solver.constraints.integer.channeling;
+package choco.cp.solver.constraints.reified;
 
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;

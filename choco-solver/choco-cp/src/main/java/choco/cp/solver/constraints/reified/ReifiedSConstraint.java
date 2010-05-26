@@ -20,15 +20,13 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.solver.constraints.set;
+package choco.cp.solver.constraints.reified;
 
-import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.Extension;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraintType;
-import choco.kernel.solver.constraints.set.AbstractMixedSetIntSConstraint;
 import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.Var;
@@ -44,24 +42,22 @@ import java.util.HashSet;
  * cons and oppositeCons do not need to be really the constraint and its
  * opposite, it can be two different constraints as well
  */
-public final class ReifiedIntSetSConstraint extends AbstractMixedSetIntSConstraint{
+public abstract class ReifiedSConstraint<V extends Var, C extends AbstractSConstraint> extends AbstractSConstraint<V>{
 
-    protected AbstractSConstraint cons;
-    protected AbstractSConstraint oppositeCons;
-
-    //scopeCons[i] = j means that the i-th variable of cons is the j-th in reifiedIntConstraint
-    protected int[] scopeCons;
-    //scopeOCons[i] = j means that the i-th variable of oppositeCons is the j-th in reifiedIntConstraint
-    protected int[] scopeOCons;
+    protected C cons;
+    protected C oppositeCons;
 
     private final IntDomainVar bool;
 
-    public static Var[] makeTableVar(IntDomainVar bool, AbstractSConstraint cons, AbstractSConstraint oppcons) {
-        HashSet<Var> consV = new HashSet<Var>();
-        for (int i = 0; i < cons.getNbVars(); i++)
+    @SuppressWarnings({"unchecked"})
+    public static <C extends AbstractSConstraint> Var[] makeTableVar(IntDomainVar bool, C cons, C oppcons) {
+        HashSet<Var> consV = new HashSet<Var>(cons.getNbVars() + oppcons.getNbVars()+1);
+        for (int i = 0; i < cons.getNbVars(); i++){
             consV.add(cons.getVar(i));
-        for (int i = 0; i < oppcons.getNbVars(); i++)
+        }
+        for (int i = 0; i < oppcons.getNbVars(); i++){
             consV.add(oppcons.getVar(i));
+        }
         consV.add(bool);
         Var[] vars = new Var[consV.size()];
         consV.remove(bool);
@@ -74,6 +70,14 @@ public final class ReifiedIntSetSConstraint extends AbstractMixedSetIntSConstrai
         return vars;
     }
 
+    @SuppressWarnings({"unchecked"})
+    ReifiedSConstraint(V[] vars, IntDomainVar bool, C cons, C oppositeCons) {
+        super(vars);
+        this.cons = cons;
+        this.oppositeCons = oppositeCons;
+        this.bool = bool;
+    }
+
     /**
      * A constraint that allows to reify another constraint into a boolean value.
      * b = 1 <=> cons is satisfied
@@ -84,12 +88,12 @@ public final class ReifiedIntSetSConstraint extends AbstractMixedSetIntSConstrai
      * @param cons the reified constraint
      * @param solver solver
      */
-    public ReifiedIntSetSConstraint(IntDomainVar bool, AbstractSConstraint cons, Solver solver) {
-        super(makeTableVar(bool, cons, cons.opposite(solver)));
+    @SuppressWarnings({"unchecked"})
+    public ReifiedSConstraint(IntDomainVar bool, C cons, Solver solver) {
+        super((V[])makeTableVar(bool, cons, cons.opposite(solver)));
         this.cons = cons;
-        this.oppositeCons = cons.opposite(solver);
+        this.oppositeCons = (C)cons.opposite(solver);
         this.bool = bool;
-        init();
     }
 
     /**
@@ -103,12 +107,12 @@ public final class ReifiedIntSetSConstraint extends AbstractMixedSetIntSConstrai
      * @param cons the reified constraint
      * @param oppositeCons the opposite reified constraint
      */
-    public ReifiedIntSetSConstraint(IntDomainVar bool, AbstractSConstraint cons, AbstractSConstraint oppositeCons) {
-        super(makeTableVar(bool, cons, oppositeCons));
+    @SuppressWarnings({"unchecked"})
+    public ReifiedSConstraint(IntDomainVar bool, C cons, C oppositeCons) {
+        super((V[])makeTableVar(bool, cons, oppositeCons));
         this.cons = cons;
         this.oppositeCons = oppositeCons;
         this.bool = bool;
-        init();
     }
 
     /**
@@ -117,38 +121,15 @@ public final class ReifiedIntSetSConstraint extends AbstractMixedSetIntSConstrai
      * @param extensionNumber should use the number returned by getAbstractSConstraintExtensionNumber
      */
     @Override
-    public void addExtension(final int extensionNumber) {
+    public final void addExtension(final int extensionNumber) {
         super.addExtension(extensionNumber);
         Extension ext = extensions[extensionNumber];
         cons.setExtension(ext, extensionNumber);
         oppositeCons.setExtension(ext, extensionNumber);
     }
 
-    public void init() {
-        scopeCons = new int[cons.getNbVars()];
-        scopeOCons = new int[oppositeCons.getNbVars()];
-        for (int i = 0; i < cons.getNbVars(); i++) {
-            Var v = cons.getVar(i);
-            for (int j = 0; j < vars.length; j++) {
-                if (v.equals(vars[j])) {
-                    scopeCons[i] = j;
-                    break;
-                }
-            }
-        }
-        for (int i = 0; i < oppositeCons.getNbVars(); i++) {
-            Var v = oppositeCons.getVar(i);
-            for (int j = 0; j < vars.length; j++) {
-                if (v.equals(vars[j])) {
-                    scopeOCons[i] = j;
-                    break;
-                }
-            }
-        }
-    }
-
     //assume that the boolean is known
-    public void filterReifiedConstraintFromBool() throws ContradictionException {
+    public final void filterReifiedConstraintFromBool() throws ContradictionException {
         if (bool.isInstantiatedTo(1)) {
             cons.awake();
         } else {
@@ -167,7 +148,7 @@ public final class ReifiedIntSetSConstraint extends AbstractMixedSetIntSConstrai
         }
     }
 
-    public void filter() throws ContradictionException {
+    public final void filter() throws ContradictionException {
         if (vars[0].isInstantiated()) {
             filterReifiedConstraintFromBool();
         } else {
@@ -175,52 +156,24 @@ public final class ReifiedIntSetSConstraint extends AbstractMixedSetIntSConstrai
         }
     }
 
-
-    public void awake() throws ContradictionException {
+    public final void propagate() throws ContradictionException {
         filter();
     }
 
-    public void propagate() throws ContradictionException {
-        filter();
-    }
-
-    public void awakeOnInf(int idx) throws ContradictionException {
-        filter();
-    }
-
-    public void awakeOnSup(int idx) throws ContradictionException {
-        filter();
-    }
-
-    public void awakeOnInst(int idx) throws ContradictionException {
-        filter();
-    }
-
-    public void awakeOnRem(int idx, int x) throws ContradictionException {
-        filter();
-    }
-
-    public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
-        filter();
-    }
-
-    public void awakeOnBounds(int varIndex) throws ContradictionException {
-        filter();
-    }
-
+    /**
+     * tests if the constraint is consistent with respect to the current state of domains
+     *
+     * @return wether the constraint is consistent
+     */
     @Override
-    public void awakeOnKer(int varIdx, int x) throws ContradictionException {
-        filter();
+    public final boolean isConsistent() {
+        return Boolean.TRUE.equals(isEntailed());
     }
 
-    @Override
-    public void awakeOnEnv(int varIdx, int x) throws ContradictionException {
-        filter();
-    }
-
-    public void addListener(AbstractSConstraint thecons) {
-        if (thecons instanceof ReifiedIntSetSConstraint) {
-            ReifiedIntSetSConstraint rcons = (ReifiedIntSetSConstraint) thecons;
+    @SuppressWarnings({"unchecked"})
+    public final void addListener(C thecons) {
+        if (thecons instanceof ReifiedSConstraint) {
+            ReifiedSConstraint<V,C> rcons = (ReifiedSConstraint<V,C>) thecons;
             addListener(rcons.cons);
             addListener(rcons.oppositeCons);
         }
@@ -230,14 +183,14 @@ public final class ReifiedIntSetSConstraint extends AbstractMixedSetIntSConstrai
         }
     }
 
-    public int getIndex(AbstractVar v) {
+    public final int getIndex(AbstractVar v) {
         for (int i = 0; i < vars.length; i++) {
             if (vars[i] == v) return cIndices[i];
         }
         return -1; //should never go there !
     }
 
-    public void addListener(boolean dynamicAddition) {
+    public final void addListener(boolean dynamicAddition) {
         super.addListener(dynamicAddition);
         addListener(cons);
         addListener(oppositeCons);
@@ -250,22 +203,22 @@ public final class ReifiedIntSetSConstraint extends AbstractMixedSetIntSConstrai
      * @param propEng the current propagation engine
      */
     @Override
-    public void setPropagationEngine(PropagationEngine propEng) {
+    public final void setPropagationEngine(PropagationEngine propEng) {
         super.setPropagationEngine(propEng);
         cons.setPropagationEngine(propEng);
         oppositeCons.setPropagationEngine(propEng);
     }
 
-    public String pretty() {
-        StringBuffer sb = new StringBuffer("(");
+    public final String pretty() {
+        StringBuilder sb = new StringBuilder("(");
         sb.append(" 1");
         sb.append("<=>").append(cons.pretty());
         if (oppositeCons != null) {
             sb.append(" -- 0");
             sb.append("<=>").append(oppositeCons.pretty());
         }
-        sb.append(")");
-        sb.append("~").append(vars[0].pretty());
+        sb.append(')');
+        sb.append('~').append(vars[0].pretty());
         return sb.toString();
     }
 
@@ -291,6 +244,6 @@ public final class ReifiedIntSetSConstraint extends AbstractMixedSetIntSConstrai
 
     @Override
     public SConstraintType getConstraintType() {
-        return SConstraintType.INT_SET;
+        return SConstraintType.MIXED;
     }
 }

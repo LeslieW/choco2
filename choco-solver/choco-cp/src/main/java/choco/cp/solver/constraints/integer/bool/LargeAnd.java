@@ -22,8 +22,11 @@
 **************************************************/
 package choco.cp.solver.constraints.integer.bool;
 
+import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -33,6 +36,9 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 * Date : 26 oct. 2009
 * Since : Choco 2.1.1
 * Update : Choco 2.1.1
+*
+* maintain v1 AND v2 AND ... AND vn where v1, v2, ..., vn are boolean variables
+* i.e variables of domain {0,1}
 */
 public final class LargeAnd extends AbstractLargeIntSConstraint {
 
@@ -42,13 +48,13 @@ public final class LargeAnd extends AbstractLargeIntSConstraint {
      *
      * @param vars boolean variables
      */
-    public LargeAnd(IntDomainVar[] vars) {
+    LargeAnd(IntDomainVar[] vars) {
         super(vars);
     }
 
     @Override
     public int getFilteredEventMask(int idx) {
-        return 0;
+        return IntVarEvent.NO_MASK;
     }
 
     public void propagate() throws ContradictionException {
@@ -97,5 +103,15 @@ public final class LargeAnd extends AbstractLargeIntSConstraint {
                 return null;
         }
         return Boolean.TRUE;
+    }
+
+    /**
+     * Get the opposite constraint
+     *
+     * @return the opposite constraint  @param solver
+     */
+    @Override
+    public AbstractSConstraint<IntDomainVar> opposite(final Solver solver) {
+        return BooleanFactory.nand(solver.getEnvironment(), vars);
     }
 }

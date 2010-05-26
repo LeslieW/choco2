@@ -48,15 +48,15 @@ public final class BooleanChanneling extends AbstractBinIntSConstraint {
     public int getFilteredEventMask(int idx) {
         if(idx == 0){
             if(v0.hasEnumeratedDomain()){
-                return IntVarEvent.REMVALbitvector;
+                return IntVarEvent.REMVAL_MASK;
             }else{
-                return IntVarEvent.BOUNDSbitvector;
+                return IntVarEvent.BOUNDS_MASK;
             }
         }else{
             if(v1.hasEnumeratedDomain()){
-                return IntVarEvent.REMVALbitvector;
+                return IntVarEvent.REMVAL_MASK;
             }else{
-                return IntVarEvent.BOUNDSbitvector;
+                return IntVarEvent.BOUNDS_MASK;
             }
         }
     }

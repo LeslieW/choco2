@@ -60,7 +60,7 @@ public final class AC3rmBitBinSConstraint extends CspBinSConstraint {
 	}
 
     public int getFilteredEventMask(int idx) {
-        return IntVarEvent.INSTINTbitvector + IntVarEvent.REMVALbitvector;
+        return IntVarEvent.INSTINT_MASK + IntVarEvent.REMVAL_MASK;
     }    
 
     public void fastInitNbSupports() {

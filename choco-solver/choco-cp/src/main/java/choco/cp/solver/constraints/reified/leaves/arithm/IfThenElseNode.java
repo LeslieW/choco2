@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.reified.leaves.arithm;
 
-import choco.cp.solver.constraints.integer.channeling.IfThenElse;
+import choco.cp.solver.constraints.reified.IfThenElse;
 import choco.cp.solver.constraints.reified.leaves.bool.AbstractBoolNode;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.Solver;

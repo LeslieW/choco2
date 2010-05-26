@@ -145,7 +145,7 @@ public final class Regular extends AbstractLargeIntSConstraint {
     }
 
     public int getFilteredEventMask(final int idx) {
-        return IntVarEvent.REMVALbitvector;
+        return IntVarEvent.REMVAL_MASK;
         // return 0x0B;
     }
 

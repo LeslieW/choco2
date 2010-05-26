@@ -54,8 +54,8 @@ public final class Element extends AbstractBinIntSConstraint {
 
     public int getFilteredEventMask(int idx) {
         if (idx == 0)
-            return IntVarEvent.INSTINTbitvector + IntVarEvent.REMVALbitvector;
-        else return IntVarEvent.REMVALbitvector;
+            return IntVarEvent.INSTINT_MASK + IntVarEvent.REMVAL_MASK;
+        else return IntVarEvent.REMVAL_MASK;
     }
 
     /**

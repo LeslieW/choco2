@@ -57,7 +57,7 @@ public final class DomainChanneling extends AbstractLargeIntSConstraint {
 	 * For all the binary variables, we catch only awakeOnInst. Otherwise, we catch awakeOnInst, bounds and awakeOnRem.
 	 */
 	public int getFilteredEventMask(int idx) {
-		return idx < dsize ? IntVarEvent.INSTINTbitvector : IntVarEvent.INSTINTbitvector + IntVarEvent.BOUNDSbitvector + IntVarEvent.REMVALbitvector;
+		return idx < dsize ? IntVarEvent.INSTINT_MASK : IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK + IntVarEvent.REMVAL_MASK;
 	}
 
 	/**

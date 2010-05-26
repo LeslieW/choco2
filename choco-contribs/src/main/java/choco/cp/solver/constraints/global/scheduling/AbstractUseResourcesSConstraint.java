@@ -1,20 +1,18 @@
 package choco.cp.solver.constraints.global.scheduling;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-
 import choco.Choco;
 import choco.cp.solver.constraints.integer.bool.sum.BoolSumStructure;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.global.scheduling.AbstractTaskSConstraint;
-import choco.kernel.solver.propagation.listener.TaskPropagator;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.TaskVar;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public abstract class AbstractUseResourcesSConstraint extends AbstractTaskSConstraint {
 
@@ -36,7 +34,7 @@ public abstract class AbstractUseResourcesSConstraint extends AbstractTaskSConst
 	@Override
 	public int getFilteredEventMask(int idx) {
 		//listen only usage inst. (ignore changes on the real domain of the task)
-		return idx < BOOL_OFFSET ? 0 : IntVarEvent.INSTINTbitvector;
+		return idx < BOOL_OFFSET ? 0 : IntVarEvent.INSTINT_MASK;
 	}
 
 	@Override
@@ -83,7 +81,7 @@ public abstract class AbstractUseResourcesSConstraint extends AbstractTaskSConst
 	}
 
 	protected final void filterLatestCompletionTime(int k) throws ContradictionException {
-		ArrayList <Integer> lctOp = new ArrayList<Integer>();
+		ArrayList <Integer> lctOp = new ArrayList<Integer>(rtasks.length);
 		for(IRTask r: rtasks){
 			if(r.isOptional())
 				lctOp.add(r.getHTask().getLCT());
@@ -118,7 +116,7 @@ public abstract class AbstractUseResourcesSConstraint extends AbstractTaskSConst
 
 
 	protected void filterEarliestStartingTime(int k) throws ContradictionException {
-		ArrayList<Integer> estOp = new ArrayList<Integer>();
+		ArrayList<Integer> estOp = new ArrayList<Integer>(rtasks.length);
 		for(IRTask r: rtasks){
 			if(r.isOptional())
 				estOp.add(r.getHTask().getEST());

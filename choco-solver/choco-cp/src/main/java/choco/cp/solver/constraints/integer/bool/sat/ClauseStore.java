@@ -91,7 +91,7 @@ public final class ClauseStore extends AbstractLargeIntSConstraint {
 
 
     public int getFilteredEventMask(int idx) {
-        return IntVarEvent.INSTINTbitvector;
+        return IntVarEvent.INSTINT_MASK;
     }
 
     public Lits getVoc() {

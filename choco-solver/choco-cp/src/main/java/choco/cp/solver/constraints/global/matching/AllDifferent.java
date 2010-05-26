@@ -56,7 +56,7 @@ public final class AllDifferent extends AbstractBipartiteMatching {
   }
 
     public int getFilteredEventMask(int idx) {
-        return IntVarEvent.REMVALbitvector + IntVarEvent.INSTINTbitvector;
+        return IntVarEvent.REMVAL_MASK + IntVarEvent.INSTINT_MASK;
         // return 0x0B;
     }
 

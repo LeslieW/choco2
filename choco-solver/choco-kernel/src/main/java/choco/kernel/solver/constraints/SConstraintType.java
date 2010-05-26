@@ -31,7 +31,7 @@ package choco.kernel.solver.constraints;
 */
 public enum SConstraintType {
 
-    INTEGER(true), SET(true), REAL(false), INT_SET(true), INT_REAL(false), EXPRESSION(false), META(false);
+    INTEGER(true), SET(true), REAL(true), MIXED(true), EXPRESSION(false);
 
 
     final boolean reified;

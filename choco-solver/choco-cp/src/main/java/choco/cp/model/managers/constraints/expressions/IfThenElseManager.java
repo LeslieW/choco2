@@ -30,7 +30,6 @@ import choco.kernel.model.constraints.ConstraintType;
 import choco.kernel.model.constraints.ExpressionManager;
 import choco.kernel.model.constraints.MetaConstraint;
 import choco.kernel.model.variables.Variable;
-import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.reified.INode;
 
@@ -56,17 +55,17 @@ public final class IfThenElseManager implements ExpressionManager {
                 MetaConstraint mc = (MetaConstraint)cstrs[0];
                 for (int i = 0; i < mc.getConstraints().length; i++) {
                     Constraint c = mc.getConstraints()[i];
-                    IntegerExpressionVariable[] ev = new IntegerExpressionVariable[c.getNbVars()];
+                    Variable[] ev = new Variable[c.getNbVars()];
                     for(int j = 0; j < c.getNbVars(); j++){
-                        ev[j]  = (IntegerExpressionVariable)c.getVariables()[j];
+                        ev[j]  = c.getVariables()[j];
                     }
                     nt[i] = c.getExpressionManager().makeNode(solver, new Constraint[]{c}, ev);
                 }
                 return new IfThenElseNode(nt);
             }else /*if(cstrs[0] instanceof ComponentConstraint)*/{
-                IntegerExpressionVariable[] ev = new IntegerExpressionVariable[cstrs[0].getNbVars()];
+                Variable[] ev = new Variable[cstrs[0].getNbVars()];
                 for(int j = 0; j < cstrs[0].getNbVars(); j++){
-                    ev[j]  = (IntegerExpressionVariable)cstrs[0].getVariables()[j];
+                    ev[j]  = cstrs[0].getVariables()[j];
                 }
                 nt[0] = cstrs[0].getExpressionManager().makeNode(solver, new Constraint[]{cstrs[0]}, ev);
                 nt[1] = vars[0].getExpressionManager().makeNode(s, vars[0].getConstraints(), vars[0].getVariables());

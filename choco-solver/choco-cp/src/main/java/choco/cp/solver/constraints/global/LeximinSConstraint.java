@@ -127,7 +127,7 @@ public final class LeximinSConstraint extends AbstractLargeIntSConstraint {
 
 	@Override
 	public int getFilteredEventMask(int idx) {
-		return IntVarEvent.INSTINTbitvector + IntVarEvent.BOUNDSbitvector;       
+		return IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK;
 	}
 	/**
 	 * A utility class that merges two <code>IntVar</code>

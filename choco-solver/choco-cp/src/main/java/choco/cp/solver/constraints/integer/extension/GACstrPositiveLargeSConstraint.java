@@ -126,7 +126,7 @@ public final class GACstrPositiveLargeSConstraint extends CspLargeSConstraint {
     }
 
     public int getFilteredEventMask(int idx) {
-        return IntVarEvent.INSTINTbitvector + IntVarEvent.REMVALbitvector;
+        return IntVarEvent.INSTINT_MASK + IntVarEvent.REMVAL_MASK;
     }
 
     public void initializeData() {

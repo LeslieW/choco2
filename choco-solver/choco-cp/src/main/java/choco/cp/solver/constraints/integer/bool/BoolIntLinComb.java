@@ -151,9 +151,9 @@ public final class BoolIntLinComb extends AbstractLargeIntSConstraint {
 
     public int getFilteredEventMask(int idx) {
         if (idx < nbVars) {
-            return IntVarEvent.INSTINTbitvector;
+            return IntVarEvent.INSTINT_MASK;
         } else {
-            return IntVarEvent.INSTINTbitvector + IntVarEvent.BOUNDSbitvector;
+            return IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK;
         }
     }
 

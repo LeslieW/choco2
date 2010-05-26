@@ -64,7 +64,7 @@ public final class AC3rmBinSConstraint extends CspBinSConstraint {
 	}
 
     public int getFilteredEventMask(int idx) {
-        return IntVarEvent.INSTINTbitvector + IntVarEvent.REMVALbitvector;
+        return IntVarEvent.INSTINT_MASK + IntVarEvent.REMVAL_MASK;
         // return 0x0B;
     }
 

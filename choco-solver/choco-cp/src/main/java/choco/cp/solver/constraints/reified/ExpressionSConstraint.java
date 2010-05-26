@@ -27,7 +27,6 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.extension.FCBinSConstraint;
 import choco.cp.solver.constraints.reified.leaves.bool.NotNode;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.model.constraints.ConstraintType;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
@@ -42,10 +41,7 @@ import choco.kernel.solver.constraints.reified.INode;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * User: hcambaza
@@ -248,8 +244,8 @@ public final class ExpressionSConstraint extends TuplesTest implements SConstrai
         if (getNbVars() == 0) //case of TRUE, FALSE constraint for example
             return getDecomposition(s);
         if (getNbVars() == 2
-                && getVars()[0].hasEnumeratedDomain()
-                && getVars()[1].hasEnumeratedDomain()) {
+                && vars[0].hasEnumeratedDomain()
+                && vars[1].hasEnumeratedDomain()) {
 
             int maxspan = Math.max(vars[0].getSup() - vars[0].getInf() + 1,
                     vars[1].getSup() - vars[1].getInf() + 1);
@@ -260,9 +256,9 @@ public final class ExpressionSConstraint extends TuplesTest implements SConstrai
                 return ((CPSolver) s).relationPairAC(vars[0], vars[1], this);
             }
         } else if ((levelAc == -1 && getNbVars() < 6) || levelAc == 0) {
-            return ((CPSolver) s).relationTupleAC(getVars(), this);
+            return s.relationTupleAC(vars, this);
         } else {
-            return ((CPSolver) s).relationTupleFC(getVars(), this);
+            return CPSolver.relationTupleFC(vars, this);
         }
     }
 
@@ -354,16 +350,10 @@ public final class ExpressionSConstraint extends TuplesTest implements SConstrai
         return SConstraintType.EXPRESSION;
     }
 
-    public void setType(ConstraintType type) {
-        //todo ? specific handling for expressions ?
-    }
-
     public Iterator<IntegerVariable> getVariableIterator() {
         IntegerVariable[] vs = expr.getModelScope();
         List<IntegerVariable> lvar = new LinkedList<IntegerVariable>();
-        for (int i = 0; i < vs.length; i++) {
-            lvar.add(vs[i]);
-        }
+        lvar.addAll(Arrays.asList(vs));
         return lvar.iterator();
     }
 
@@ -384,13 +374,7 @@ public final class ExpressionSConstraint extends TuplesTest implements SConstrai
         throw new SolverException("opposite should not be called on a predicat");
     }
 
-    // public Constraint copy();
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return null;
-    }
-
-    public int[] copy(int[] tab) {
+    public static int[] copy(int[] tab) {
         int[] tab2 = new int[tab.length];
         System.arraycopy(tab, 0, tab2, 0, tab.length);
         return tab2;

@@ -64,7 +64,7 @@ public final class NotEqualXY_C extends AbstractBinIntSConstraint {
 		//Otherwise, we must check if we can remove the value from v1 when the bounds has changed.
 		final IntDomainVar v = idx == 0 ? v1 : v0;
 		return v.hasEnumeratedDomain() ? 
-				IntVarEvent.INSTINTbitvector : IntVarEvent.INSTINTbitvector + IntVarEvent.BOUNDSbitvector;
+				IntVarEvent.INSTINT_MASK : IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK;
 	}
 
 	private void removeValV0() throws ContradictionException {

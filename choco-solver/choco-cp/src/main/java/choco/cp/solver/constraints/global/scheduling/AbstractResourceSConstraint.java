@@ -22,15 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling;
 
-import static choco.kernel.common.util.tools.TaskUtils.hasEnumeratedDomain;
-
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-
 import choco.cp.solver.constraints.BitFlags;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.tools.IteratorUtils;
+import static choco.kernel.common.util.tools.TaskUtils.hasEnumeratedDomain;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
@@ -41,6 +36,10 @@ import choco.kernel.solver.variables.scheduling.IRMakespan;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
 
 /**
  * @author Arnaud Malapert</br> 
@@ -49,7 +48,7 @@ import choco.kernel.solver.variables.scheduling.TaskVar;
  */
 public abstract class AbstractResourceSConstraint extends AbstractTaskSConstraint implements IResource<TaskVar> {
 
-	public static final int TASK_MASK = IntVarEvent.INSTINTbitvector + IntVarEvent.BOUNDSbitvector;
+	public static final int TASK_MASK = IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK;
 	
 	protected final IRTask[] rtasks;
 
@@ -133,7 +132,7 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 	@Override
 	public int getFilteredEventMask(int idx) {
 		return idx < taskIntVarOffset || idx >= taskIntVarOffset + nbOptionalTasks ? 
-				AbstractResourceSConstraint.TASK_MASK : IntVarEvent.INSTINTbitvector;
+				AbstractResourceSConstraint.TASK_MASK : IntVarEvent.INSTINT_MASK;
 	}
 
 	@Override
