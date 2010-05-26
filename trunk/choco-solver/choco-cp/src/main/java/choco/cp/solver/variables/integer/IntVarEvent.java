@@ -55,32 +55,47 @@ public class IntVarEvent<C extends AbstractSConstraint & IntPropagator> extends 
     public static final int INSTINT = 3;
 
     /**
+     * Constants for the <i>eventType</i> bitvector: value of bitvector no eventtype
+     */
+    public static final int NO_MASK = 0;
+
+    /**
      * Constants for the <i>eventType</i> bitvector: value of bitvector for updates to lower bound of IntVars
      */
-    public static final int INCINFbitvector = 1;
+    public static final int INCINF_MASK = 1;
+    @Deprecated
+    public static final int INCINFbitvector = INCINF_MASK;
 
     /**
      * Constants for the <i>eventType</i> bitvector: value of bitvector for updates to upper bound of IntVars
      */
-    public static final int DECSUPbitvector = 2;
+    public static final int DECSUP_MASK = 2;
+    @Deprecated
+    public static final int DECSUPbitvector = DECSUP_MASK;
 
     /**
      * Constants for the <i>eventType</i> bitvector: value of bitvector for updates to both bound of IntVars
      */
-    public static final int BOUNDSbitvector = 3;
+    public static final int BOUNDS_MASK = 3;
+    @Deprecated
+    public static final int BOUNDSbitvector = BOUNDS_MASK;
 
     /**
      * Constants for the <i>eventType</i> bitvector: value of bitvector for holes in the domain of IntVars
      */
-    public static final int REMVALbitvector = 4;
+    public static final int REMVAL_MASK = 4;
+    @Deprecated
+    public static final int REMVALbitvector = REMVAL_MASK;
 
     /**
      * Constants for the <i>eventType</i> bitvector: value of bitvector for instantiations of IntVars
      */
-    public static final int INSTINTbitvector = 8;
+    public static final int INSTINT_MASK = 8;
+    @Deprecated
+    public static final int INSTINTbitvector = INSTINT_MASK;
 
 
-    public static final int[] EVENTS = new int[]{INCINFbitvector, DECSUPbitvector, REMVALbitvector, INSTINTbitvector};
+    public static final int[] EVENTS = new int[]{INCINF_MASK, DECSUP_MASK, REMVAL_MASK, INSTINT_MASK};
 
     public IntVarEvent(IntDomainVarImpl var) {
         super(var);
@@ -92,10 +107,10 @@ public class IntVarEvent<C extends AbstractSConstraint & IntPropagator> extends 
      */
     public String toString() {
         return ("VarEvt(" + modifiedVar + ")[" + eventType + ":"
-                + ((eventType & INCINFbitvector) != 0 ? "I" : "")
-                + ((eventType & DECSUPbitvector) != 0 ? "S" : "")
-                + ((eventType & REMVALbitvector) != 0 ? "r" : "")
-                + ((eventType & INSTINTbitvector) != 0 ? "X" : "")
+                + ((eventType & INCINF_MASK) != 0 ? "I" : "")
+                + ((eventType & DECSUP_MASK) != 0 ? "S" : "")
+                + ((eventType & REMVAL_MASK) != 0 ? "r" : "")
+                + ((eventType & INSTINT_MASK) != 0 ? "X" : "")
                 + "]");
     }
     
@@ -168,13 +183,13 @@ public class IntVarEvent<C extends AbstractSConstraint & IntPropagator> extends 
         C evtCause = (C)cause;
         freeze();
 
-        if ((propagatedEvents & INSTINTbitvector) != 0 && (evtType & INSTINTbitvector) != 0)
+        if ((propagatedEvents & INSTINT_MASK) != 0 && (evtType & INSTINT_MASK) != 0)
             propagateInstEvent(evtCause);
-        if ((propagatedEvents & INCINFbitvector) != 0 && (evtType & INCINFbitvector) != 0)
+        if ((propagatedEvents & INCINF_MASK) != 0 && (evtType & INCINF_MASK) != 0)
             propagateInfEvent(evtCause);
-        if ((propagatedEvents & DECSUPbitvector) != 0 && (evtType & DECSUPbitvector) != 0)
+        if ((propagatedEvents & DECSUP_MASK) != 0 && (evtType & DECSUP_MASK) != 0)
             propagateSupEvent(evtCause);
-        if ((propagatedEvents & REMVALbitvector) != 0 && (evtType & REMVALbitvector) != 0)
+        if ((propagatedEvents & REMVAL_MASK) != 0 && (evtType & REMVAL_MASK) != 0)
             propagateRemovalsEvent(evtCause);
 
         // last, release event
@@ -186,7 +201,7 @@ public class IntVarEvent<C extends AbstractSConstraint & IntPropagator> extends 
      */
     public void propagateInstEvent(C evtCause) throws ContradictionException {
         IntDomainVarImpl v = modifiedVar;
-        DisposableIterator<Couple<C>> cit = v.getActiveConstraints(INSTINTbitvector, evtCause);
+        DisposableIterator<Couple<C>> cit = v.getActiveConstraints(INSTINT_MASK, evtCause);
         try {
             while (cit.hasNext()) {
                 Couple<C> cc = cit.next();
@@ -203,7 +218,7 @@ public class IntVarEvent<C extends AbstractSConstraint & IntPropagator> extends 
      */
     public void propagateInfEvent(C evtCause) throws ContradictionException {
         IntDomainVarImpl v = modifiedVar;
-        DisposableIterator<Couple<C>> cit = v.getActiveConstraints(INCINFbitvector, evtCause);
+        DisposableIterator<Couple<C>> cit = v.getActiveConstraints(INCINF_MASK, evtCause);
         try {
             while (cit.hasNext()) {
                 Couple<C> cc = cit.next();
@@ -219,7 +234,7 @@ public class IntVarEvent<C extends AbstractSConstraint & IntPropagator> extends 
      */
     public void propagateSupEvent(C evtCause) throws ContradictionException {
         IntDomainVarImpl v = modifiedVar;
-        DisposableIterator<Couple<C>> cit = v.getActiveConstraints(DECSUPbitvector, evtCause);
+        DisposableIterator<Couple<C>> cit = v.getActiveConstraints(DECSUP_MASK, evtCause);
         try {
             while (cit.hasNext()) {
                 Couple<C> cc = cit.next();
@@ -235,7 +250,7 @@ public class IntVarEvent<C extends AbstractSConstraint & IntPropagator> extends 
      */
     public void propagateRemovalsEvent(C evtCause) throws ContradictionException {
         IntDomainVarImpl v = modifiedVar;
-        DisposableIterator<Couple<C>> cit = v.getActiveConstraints(REMVALbitvector, evtCause);
+        DisposableIterator<Couple<C>> cit = v.getActiveConstraints(REMVAL_MASK, evtCause);
         try {
             while (cit.hasNext()) {
                 Couple<C> cc = cit.next();
@@ -254,16 +269,16 @@ public class IntVarEvent<C extends AbstractSConstraint & IntPropagator> extends 
     private int promoteEvent(int basicEvt) {
         switch (basicEvt) {
             case INSTINT:
-                return INSTINTbitvector + INCINFbitvector + DECSUPbitvector + REMVALbitvector;
+                return INSTINT_MASK + INCINF_MASK + DECSUP_MASK + REMVAL_MASK;
 
             case INCINF:
-                return INCINFbitvector + REMVALbitvector;
+                return INCINF_MASK + REMVAL_MASK;
 
             case DECSUP:
-                return DECSUPbitvector + REMVALbitvector;
+                return DECSUP_MASK + REMVAL_MASK;
 
             case REMVAL:
-                return REMVALbitvector;
+                return REMVAL_MASK;
 
             default:
                 return 1 << basicEvt;

@@ -46,7 +46,7 @@ public final class BoolTimesXYZ extends AbstractTernIntSConstraint {
 	}
 
     public int getFilteredEventMask(int idx) {
-        return IntVarEvent.INSTINTbitvector;
+        return IntVarEvent.INSTINT_MASK;
     }
 
     public void awakeOnInst(int idx) throws ContradictionException {

@@ -125,7 +125,7 @@ public class IntervalIntDomainTest{
   public void test2() {
     LOGGER.finer("test2");
 
-      s.getVar(y).getEvent().addPropagatedEvents(IntVarEvent.BOUNDSbitvector);
+      s.getVar(y).getEvent().addPropagatedEvents(IntVarEvent.BOUNDS_MASK);
     yDom.freezeDeltaDomain();
     assertTrue(yDom.releaseDeltaDomain());
 

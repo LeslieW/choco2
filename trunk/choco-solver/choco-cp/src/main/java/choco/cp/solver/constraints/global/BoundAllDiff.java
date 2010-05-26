@@ -74,7 +74,7 @@ public final class BoundAllDiff extends AbstractLargeIntSConstraint {
     }
 
   public int getFilteredEventMask(int idx) {
-    return IntVarEvent.INSTINTbitvector + IntVarEvent.BOUNDSbitvector;
+    return IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK;
     // return 0x0B;
   }
 

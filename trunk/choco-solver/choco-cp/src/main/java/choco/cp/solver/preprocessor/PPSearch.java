@@ -31,7 +31,7 @@ import choco.cp.solver.constraints.integer.DistanceXYC;
 import choco.cp.solver.constraints.integer.DistanceXYZ;
 import choco.cp.solver.constraints.integer.IntLinComb;
 import choco.cp.solver.constraints.integer.bool.BoolIntLinComb;
-import choco.cp.solver.constraints.integer.channeling.ReifiedIntSConstraint;
+import choco.cp.solver.constraints.reified.ReifiedIntSConstraint;
 import choco.cp.solver.search.BranchingFactory;
 import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.branching.ImpactBasedBranching;
@@ -53,8 +53,6 @@ import java.util.List;
  * Created by IntelliJ IDEA.
  * User: hcambaza
  * Date: Aug 15, 2008
- * Time: 4:15:56 PM
- * To change this template use File | Settings | File Templates.
  */
 public class PPSearch {
 
@@ -234,8 +232,8 @@ public class PPSearch {
         }
     }
 
-    public IntDomainVar[] getBooleanVars(CPSolver s) {
-        List<IntDomainVar> ldvs = new ArrayList<IntDomainVar>();
+    public static IntDomainVar[] getBooleanVars(CPSolver s) {
+        List<IntDomainVar> ldvs = new ArrayList<IntDomainVar>(s.getNbIntVars());
         for (int i = 0; i < s.getNbIntVars(); i++) {
             IntDomainVar v = s.getIntVar(i);
             if (v.hasBooleanDomain()) {
@@ -249,8 +247,8 @@ public class PPSearch {
         return vs;
     }
 
-    public IntDomainVar[] getOtherVars(CPSolver s) {
-        List<IntDomainVar> ldvs = new ArrayList<IntDomainVar>();
+    public static IntDomainVar[] getOtherVars(CPSolver s) {
+        List<IntDomainVar> ldvs = new ArrayList<IntDomainVar>(s.getNbIntVars());
         for (int i = 0; i < s.getNbIntVars(); i++) {
             IntDomainVar v = s.getIntVar(i);
             if (v.getDomainSize() > 2) {
@@ -264,7 +262,7 @@ public class PPSearch {
         return vs;
     }
 
-    public IntDomainVar[] concat(IntDomainVar[] t1, IntDomainVar[] t2) {
+    public static IntDomainVar[] concat(IntDomainVar[] t1, IntDomainVar[] t2) {
         IntDomainVar[] vs = new IntDomainVar[t1.length + t2.length];
         System.arraycopy(t1, 0, vs, 0, t1.length);
         System.arraycopy(t2, 0, vs, t1.length, t2.length);
@@ -313,7 +311,7 @@ public class PPSearch {
         return heuristic;
     }
 
-    public int getSumOfDomains(CPSolver s) {
+    public static int getSumOfDomains(CPSolver s) {
         int sum = 0;
         for (int i = 0; i < s.getNbIntVars(); i++) {
             sum += s.getIntVar(i).getDomainSize();

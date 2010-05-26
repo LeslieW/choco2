@@ -23,11 +23,9 @@
 package choco.kernel.model.constraints;
 
 import choco.kernel.common.util.tools.ArrayUtils;
-import choco.kernel.common.util.tools.IteratorUtils;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.variables.Variable;
 
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.Properties;
 
 /* 
@@ -37,7 +35,7 @@ import java.util.Properties;
  * Since : Choco 2.0.0
  *
  */
-public class MetaConstraint<E extends Constraint> extends AbstractConstraint {
+public final class MetaConstraint<E extends Constraint> extends AbstractConstraint {
 
 	private final static Variable[] EMPTY_ARRAY = {};
 	
@@ -88,4 +86,26 @@ public class MetaConstraint<E extends Constraint> extends AbstractConstraint {
             constraint.findManager(propertiesFile);
         }
     }
+
+
+	private void constraintsPrettyPrint(StringBuilder buffer)
+	{
+		buffer.append(StringUtils.pretty(getConstraints(), 0, getConstraints().length));
+}
+
+	@Override
+	public String pretty()
+	{
+		final StringBuilder st = new StringBuilder(getName());
+//		st.append(" [ ");
+//		variablesPrettyPrint(st);
+//		st.append(" ]: (");
+		st.append(" ( ");
+
+		constraintsPrettyPrint(st);
+		st.append(" ) ");
+		return st.toString();
+	}
+
+
 }

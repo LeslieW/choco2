@@ -111,7 +111,7 @@ public final class IntLinComb extends AbstractLargeIntSConstraint {
     }
 
     public int getFilteredEventMask(int idx) {
-        return IntVarEvent.INSTINTbitvector + IntVarEvent.BOUNDSbitvector;
+        return IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK;
     }
 
     /**

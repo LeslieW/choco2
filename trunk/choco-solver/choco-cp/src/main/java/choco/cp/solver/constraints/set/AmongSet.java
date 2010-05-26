@@ -96,7 +96,7 @@ public final class AmongSet extends AbstractMixedSetIntSConstraint {
 
     @Override
     public int getFilteredEventMask(int idx) {
-        return IntVarEvent.REMVALbitvector;
+        return IntVarEvent.REMVAL_MASK;
     }
 
     private void init() {

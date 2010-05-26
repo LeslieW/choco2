@@ -61,15 +61,15 @@ public final class EqualXY_C extends AbstractBinIntSConstraint {
 	public int getFilteredEventMask(int idx) {
 		if(idx == 0){
 			if(v0.hasEnumeratedDomain()){
-				return IntVarEvent.INSTINTbitvector + IntVarEvent.REMVALbitvector;
+				return IntVarEvent.INSTINT_MASK + IntVarEvent.REMVAL_MASK;
 			}else{
-				return IntVarEvent.INSTINTbitvector + IntVarEvent.BOUNDSbitvector;
+				return IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK;
 			}
 		}else{
 			if(v1.hasEnumeratedDomain()){
-				return IntVarEvent.INSTINTbitvector + IntVarEvent.REMVALbitvector;
+				return IntVarEvent.INSTINT_MASK + IntVarEvent.REMVAL_MASK;
 			}else{
-				return IntVarEvent.INSTINTbitvector + IntVarEvent.BOUNDSbitvector;
+				return IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK;
 			}
 		}
 	}

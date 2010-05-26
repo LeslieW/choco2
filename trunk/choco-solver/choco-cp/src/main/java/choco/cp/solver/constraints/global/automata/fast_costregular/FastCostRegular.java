@@ -578,7 +578,7 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
     }
 
     public final int getFilteredEventMask(int idx) {
-        return (idx < vs.length ? IntVarEvent.REMVALbitvector: IntVarEvent.BOUNDSbitvector);
+        return (idx < vs.length ? IntVarEvent.REMVAL_MASK : IntVarEvent.BOUNDS_MASK);
     }
 
 

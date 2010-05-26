@@ -23,12 +23,11 @@
 package choco.cp.solver.constraints.reified.leaves.bool;
 
 import choco.cp.solver.constraints.global.Occurrence;
-import choco.cp.solver.constraints.integer.channeling.ReifiedIntSConstraint;
+import choco.cp.solver.constraints.reified.ReifiedFactory;
 import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.constraints.reified.BoolNode;
 import choco.kernel.solver.constraints.reified.INode;
 import choco.kernel.solver.constraints.reified.NodeType;
@@ -66,7 +65,7 @@ public final class AndNode extends AbstractBoolNode{
 			vs[i] = subtrees[i].extractResult(s);
 		}
 		s.post(s.eq(s.sum(vs),sand));
-		s.post(new ReifiedIntSConstraint(v,(AbstractIntSConstraint)s.eq(sand,subtrees.length), s));
+		s.post(ReifiedFactory.builder(v, s.eq(sand,subtrees.length), s));
 		return v;
 	}
 
@@ -81,7 +80,8 @@ public final class AndNode extends AbstractBoolNode{
 		for (int i = 0; i < vs.length-1; i++) {
 			vs[i] = subtrees[i].extractResult(s);
 		}
-        vs[vs.length - 1] = new IntDomainVarImpl(s, StringUtils.randomName(), IntDomainVar.BOUNDS, subtrees.length, subtrees.length);
+        vs[vs.length - 1] = new IntDomainVarImpl(s, StringUtils.randomName(), IntDomainVar.ONE_VALUE,
+                subtrees.length, subtrees.length);
         return new Occurrence(vs, 1, true, true, s.getEnvironment());
     }
 
@@ -92,13 +92,13 @@ public final class AndNode extends AbstractBoolNode{
 
 	@Override
 	public String pretty() {
-        StringBuffer st = new StringBuffer("(");
+        StringBuilder st = new StringBuilder("(");
         int i = 0;
         while (i < subtrees.length-1) {
             st.append(subtrees[i].pretty()).append(" and ");
             i++;
         }
-        st.append(subtrees[i].pretty()).append(")");
+        st.append(subtrees[i].pretty()).append(')');
         return st.toString();
     }
 }

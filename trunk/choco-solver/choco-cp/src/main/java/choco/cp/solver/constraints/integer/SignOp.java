@@ -60,7 +60,7 @@ public final class SignOp extends AbstractBinIntSConstraint {
 	}
 
     public int getFilteredEventMask(int idx) {
-        return IntVarEvent.INSTINTbitvector + IntVarEvent.BOUNDSbitvector;
+        return IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK;
     }
 
     @Override

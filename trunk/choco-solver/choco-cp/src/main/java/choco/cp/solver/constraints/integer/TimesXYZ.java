@@ -40,7 +40,7 @@ public final class TimesXYZ extends AbstractTernIntSConstraint {
 
     @Override
     public int getFilteredEventMask(int idx) {
-        return IntVarEvent.INSTINTbitvector + IntVarEvent.BOUNDSbitvector;
+        return IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK;
     }
 
   @Override

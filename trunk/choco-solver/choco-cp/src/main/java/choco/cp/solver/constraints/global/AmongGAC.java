@@ -79,9 +79,9 @@ public final class AmongGAC extends AbstractLargeIntSConstraint {
     @Override
     public int getFilteredEventMask(int idx) {
         if(idx == nb_vars){
-            return IntVarEvent.INSTINTbitvector + IntVarEvent.INCINFbitvector + IntVarEvent.DECSUPbitvector;
+            return IntVarEvent.INSTINT_MASK + IntVarEvent.INCINF_MASK + IntVarEvent.DECSUP_MASK;
         }
-        return IntVarEvent.INSTINTbitvector + IntVarEvent.REMVALbitvector;
+        return IntVarEvent.INSTINT_MASK + IntVarEvent.REMVAL_MASK;
     }
 
     /**

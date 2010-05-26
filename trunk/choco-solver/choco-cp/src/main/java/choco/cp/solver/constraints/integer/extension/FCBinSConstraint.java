@@ -21,7 +21,7 @@ public final class FCBinSConstraint extends CspBinSConstraint {
 	}
 
     public int getFilteredEventMask(int idx) {
-        return IntVarEvent.INSTINTbitvector;
+        return IntVarEvent.INSTINT_MASK;
     }
 
 

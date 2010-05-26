@@ -116,7 +116,7 @@ public final class GAC3rmPositiveLargeConstraint extends CspLargeSConstraint {
     }
 
     public int getFilteredEventMask(int idx) {
-        return IntVarEvent.INSTINTbitvector + IntVarEvent.REMVALbitvector;
+        return IntVarEvent.INSTINT_MASK + IntVarEvent.REMVAL_MASK;
     }
 
     /**

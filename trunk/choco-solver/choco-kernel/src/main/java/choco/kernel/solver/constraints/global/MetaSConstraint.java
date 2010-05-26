@@ -32,6 +32,8 @@ public class MetaSConstraint implements SConstraint, IResource<TaskVar> {
 
 	public final SConstraint[] constraints;
 
+    public final SConstraintType type;
+
 	protected String name;
 
 
@@ -47,9 +49,31 @@ public class MetaSConstraint implements SConstraint, IResource<TaskVar> {
 		this.constraints = constraints;
 		this.vars = vars == null ? EMPTY_INTVAR_ARRAY : vars;
 		this.tasks = tasks == null ? EMPTY_TASK_ARRAY : tasks ;
+        this.type = computeType(constraints);
 	}
 
-	public final String getName() {
+    /**
+     * Compute the global type of the constraint, based on the sub-constraints.
+     * @param constraints list of implied constraints
+     * @return a SConstraintType 
+     */
+    private static SConstraintType computeType(final SConstraint[] constraints) {
+        SConstraintType type = constraints[0].getConstraintType();
+        if(SConstraintType.EXPRESSION.equals(type)){
+            return SConstraintType.EXPRESSION;
+        }else{
+            for(int i = 1; i < constraints.length; i++ ){
+                if(SConstraintType.EXPRESSION.equals(type)){
+                    return SConstraintType.EXPRESSION;
+                }else if(!constraints[i].getConstraintType().equals(type)){
+                    type = SConstraintType.MIXED;
+                }
+            }
+        }
+        return type;
+    }
+
+    public final String getName() {
 		return name;
 	}
 
@@ -158,7 +182,7 @@ public class MetaSConstraint implements SConstraint, IResource<TaskVar> {
 
 	@Override
 	public List<IRTask> asRTaskList() {
-		return Collections.<IRTask>emptyList();
+		return Collections.emptyList();
 	}
 
 	@Override
@@ -173,7 +197,7 @@ public class MetaSConstraint implements SConstraint, IResource<TaskVar> {
      */
     @Override
     public SConstraintType getConstraintType() {
-        return SConstraintType.META;
+        return type;
     }
 
 	@Override
@@ -203,6 +227,6 @@ public class MetaSConstraint implements SConstraint, IResource<TaskVar> {
 	public int getFineDegree(int idx) {
 		return constraints.length;
 	}
-    
-    
+
+
 }

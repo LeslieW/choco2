@@ -36,6 +36,10 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 * Date : 26 oct. 2009
 * Since : Choco 2.1.1
 * Update : Choco 2.1.1
+*
+* A constraint that ensures :
+ * b = x1 AND x2 ... AND xn
+ * where b, and x1,... xn are boolean variables (of domain {0,1})
 */
 public final class ReifiedLargeAnd  extends AbstractLargeIntSConstraint {
 
@@ -59,7 +63,7 @@ public final class ReifiedLargeAnd  extends AbstractLargeIntSConstraint {
 
     @Override
     public int getFilteredEventMask(int idx) {
-        return IntVarEvent.INSTINTbitvector;
+        return IntVarEvent.INSTINT_MASK;
     }
 
     public void propagate() throws ContradictionException {

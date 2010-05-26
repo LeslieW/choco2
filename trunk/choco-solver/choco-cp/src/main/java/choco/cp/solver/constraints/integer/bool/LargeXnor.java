@@ -25,6 +25,8 @@ package choco.cp.solver.constraints.integer.bool;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -34,6 +36,9 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 * Date : 27 oct. 2009
 * Since : Choco 2.1.1
 * Update : Choco 2.1.1
+*
+* maintain v1 XNOR v2 XNOR ... XNOR vn where v1, v2, ..., vn are boolean variables
+* i.e variables of domain {0,1}
 */
 public final class LargeXnor extends AbstractLargeIntSConstraint {
 
@@ -43,13 +48,13 @@ public final class LargeXnor extends AbstractLargeIntSConstraint {
      *
      * @param vars boolean variables
      */
-    public LargeXnor(IntDomainVar[] vars) {
+    LargeXnor(IntDomainVar[] vars) {
         super(vars);
     }
 
     @Override
     public int getFilteredEventMask(int idx) {
-        return IntVarEvent.INSTINTbitvector;
+        return IntVarEvent.INSTINT_MASK;
         // return 0x0B;
     }
 
@@ -121,5 +126,15 @@ public final class LargeXnor extends AbstractLargeIntSConstraint {
             }
         }
         return Boolean.TRUE;
+    }
+
+    /**
+     * Get the opposite constraint
+     *
+     * @return the opposite constraint  @param solver
+     */
+    @Override
+    public AbstractSConstraint<IntDomainVar> opposite(final Solver solver) {
+        return BooleanFactory.xor(vars);
     }
 }

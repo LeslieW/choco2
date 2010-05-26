@@ -24,6 +24,8 @@ package choco.cp.solver.constraints.integer.bool;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -33,13 +35,13 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  */
 public final class BinOr extends AbstractBinIntSConstraint {
 
-	public BinOr(IntDomainVar v1, IntDomainVar v2) {
+	BinOr(IntDomainVar v1, IntDomainVar v2) {
 		super(v1, v2);
 	}
 
 
     public int getFilteredEventMask(int idx) {
-        return IntVarEvent.INSTINTbitvector;
+        return IntVarEvent.INSTINT_MASK;
     }    
 
     public void propagate() throws ContradictionException {
@@ -81,4 +83,13 @@ public final class BinOr extends AbstractBinIntSConstraint {
 		else return null;
 	}
 
+    /**
+     * Get the opposite constraint
+     *
+     * @return the opposite constraint  @param solver
+     */
+    @Override
+    public AbstractSConstraint<IntDomainVar> opposite(final Solver solver) {
+        return BooleanFactory.nor(vars);
+    }
 }

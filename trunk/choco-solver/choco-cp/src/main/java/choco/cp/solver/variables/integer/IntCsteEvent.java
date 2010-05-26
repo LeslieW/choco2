@@ -40,10 +40,10 @@ public class IntCsteEvent<C extends AbstractSConstraint & IntPropagator> extends
      */
     public String toString() {
         return ("VarEvt(" + modifiedVar + ")[" + eventType + ':'
-                + ((eventType & INCINFbitvector) != 0 ? "I" : "")
-                + ((eventType & DECSUPbitvector) != 0 ? "S" : "")
-                + ((eventType & REMVALbitvector) != 0 ? "r" : "")
-                + ((eventType & INSTINTbitvector) != 0 ? "X" : "")
+                + ((eventType & INCINF_MASK) != 0 ? "I" : "")
+                + ((eventType & DECSUP_MASK) != 0 ? "S" : "")
+                + ((eventType & REMVAL_MASK) != 0 ? "r" : "")
+                + ((eventType & INSTINT_MASK) != 0 ? "X" : "")
                 + ']');
     }
 

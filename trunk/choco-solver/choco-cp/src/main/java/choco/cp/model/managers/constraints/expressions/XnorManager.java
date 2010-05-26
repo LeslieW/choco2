@@ -24,13 +24,12 @@ package choco.cp.model.managers.constraints.expressions;
 
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.integer.bool.BinXnor;
+import choco.cp.solver.constraints.integer.bool.BooleanFactory;
 import choco.cp.solver.constraints.reified.leaves.bool.XnorNode;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.MetaConstraint;
 import choco.kernel.model.variables.Variable;
-import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -56,9 +55,7 @@ public final class XnorManager extends IntConstraintManager {
     public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
         if (solver instanceof CPSolver) {
                 if (parameters == null) {
-                    if (variables.length == 2) {
-                        return new BinXnor(solver.getVar(variables[0]), solver.getVar(variables[1]));
-                    }
+                    return BooleanFactory.xnor(solver.getVar(variables));
                 }
             }
             throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
@@ -77,9 +74,9 @@ public final class XnorManager extends IntConstraintManager {
         INode[] nt = new INode[mc.getConstraints().length];
         for (int i = 0; i < mc.getConstraints().length; i++) {
             Constraint c = mc.getConstraints()[i];
-            IntegerExpressionVariable[] ev = new IntegerExpressionVariable[c.getNbVars()];
+            Variable[] ev = new Variable[c.getNbVars()];
             for(int j = 0; j < c.getNbVars(); j++){
-                ev[j]  = (IntegerExpressionVariable)c.getVariables()[j];
+                ev[j]  = c.getVariables()[j];
             }
             nt[i] = c.getExpressionManager().makeNode(solver, new Constraint[]{c},ev);
         }

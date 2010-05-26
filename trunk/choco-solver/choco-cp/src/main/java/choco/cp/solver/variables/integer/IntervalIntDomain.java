@@ -35,7 +35,7 @@ import choco.kernel.solver.propagation.PropagationEngine;
 import java.util.Random;
 
 public class IntervalIntDomain extends AbstractIntDomain {
-    private static final int eventBitMask = IntVarEvent.BOUNDSbitvector + IntVarEvent.REMVALbitvector;
+    private static final int eventBitMask = IntVarEvent.BOUNDS_MASK + IntVarEvent.REMVAL_MASK;
     /**
      * A random generator for random value from the domain
      */

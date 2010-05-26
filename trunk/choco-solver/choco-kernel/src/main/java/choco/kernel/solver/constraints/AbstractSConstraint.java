@@ -118,7 +118,7 @@ public abstract class AbstractSConstraint<V extends Var> extends Propagator impl
 		cIndices = new int[vars.length];
 	}
 
-	private final boolean rangeCheck(int i) {
+	private boolean rangeCheck(int i) {
 		return i >= 0 && i < vars.length;
 	}
 	/**

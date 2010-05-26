@@ -281,7 +281,7 @@ public class FastRegular extends AbstractLargeIntSConstraint {
 
     public int getFilteredEventMask(int idx)
     {
-        return IntVarEvent.REMVALbitvector;
+        return IntVarEvent.REMVAL_MASK;
     }
 
 

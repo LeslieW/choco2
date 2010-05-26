@@ -51,7 +51,7 @@ public class SoftIntSConstraint extends AbstractLargeIntSConstraint {
     int[] tupleCons;
 
     public static IntDomainVar[] makeTableVar(IntDomainVar bool, AbstractIntSConstraint cons) {
-        HashSet<IntDomainVar> consV = new HashSet<IntDomainVar>();
+        HashSet<IntDomainVar> consV = new HashSet<IntDomainVar>(cons.getNbVars());
         for (int i = 0; i < cons.getNbVars(); i++)
             consV.add(cons.getVar(i));
         consV.add(bool);
@@ -124,9 +124,9 @@ public class SoftIntSConstraint extends AbstractLargeIntSConstraint {
     @Override
     public int getFilteredEventMask(int idx) {
         if (vars[idx].hasEnumeratedDomain()) {
-            return IntVarEvent.REMVALbitvector;
+            return IntVarEvent.REMVAL_MASK;
         } else {
-            return IntVarEvent.BOUNDSbitvector;
+            return IntVarEvent.BOUNDS_MASK;
         }
     }
 
@@ -189,7 +189,7 @@ public class SoftIntSConstraint extends AbstractLargeIntSConstraint {
     }
 
     public String pretty() {
-        StringBuffer sb = new StringBuffer("( ");
+        StringBuilder sb = new StringBuilder("( ");
         sb.append(vars[0].getName()).append(" =0 ");
         sb.append("<=>").append(cons.pretty()).append(" )");
         return sb.toString();

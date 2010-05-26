@@ -65,9 +65,9 @@ public final class Lex extends AbstractLargeIntSConstraint {
     @Override
     public int getFilteredEventMask(int idx) {
         if(vars[idx].hasEnumeratedDomain()){
-            return IntVarEvent.REMVALbitvector;
+            return IntVarEvent.REMVAL_MASK;
         }else{
-            return IntVarEvent.INSTINTbitvector+IntVarEvent.BOUNDSbitvector;
+            return IntVarEvent.INSTINT_MASK +IntVarEvent.BOUNDS_MASK;
         }
     }
 

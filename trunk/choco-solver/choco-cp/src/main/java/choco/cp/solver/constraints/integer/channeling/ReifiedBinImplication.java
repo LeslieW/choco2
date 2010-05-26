@@ -46,7 +46,7 @@ public final class ReifiedBinImplication extends AbstractTernIntSConstraint {
     }
 
     public int getFilteredEventMask(int idx) {
-        return IntVarEvent.INSTINTbitvector;
+        return IntVarEvent.INSTINT_MASK;
     }
 
     private boolean updateOnV0(int val) throws ContradictionException {

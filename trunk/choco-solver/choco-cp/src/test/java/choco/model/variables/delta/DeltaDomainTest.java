@@ -124,7 +124,7 @@ public class DeltaDomainTest {
     public void test2(){
         final Solver s = new CPSolver();
         final IntDomainVar v = s.createBoundIntVar("v", 1, 10);
-        v.getEvent().addPropagatedEvents(IntVarEvent.BOUNDSbitvector + IntVarEvent.REMVALbitvector);
+        v.getEvent().addPropagatedEvents(IntVarEvent.BOUNDS_MASK + IntVarEvent.REMVAL_MASK);
         final AbstractIntDomain dom = (AbstractIntDomain)v.getDomain();
 
         dom.updateInf(3);
@@ -155,7 +155,7 @@ public class DeltaDomainTest {
     public void test3(){
         final Solver s = new CPSolver();
         final IntDomainVar v = s.createBooleanVar("v");
-        //v.getEvent().addPropagatedEvents(IntVarEvent.BOUNDSbitvector + IntVarEvent.REMVALbitvector);
+        //v.getEvent().addPropagatedEvents(IntVarEvent.BOUNDS_MASK + IntVarEvent.REMVAL_MASK);
         final AbstractIntDomain dom = (AbstractIntDomain)v.getDomain();
 
         dom.restrict(1);

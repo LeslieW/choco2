@@ -35,7 +35,7 @@ public abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint
 
 	protected final static int SET_EVENTMASK = SetVarEvent.INSTSETEVENT + SetVarEvent.KEREVENT + SetVarEvent.ENVEVENT;
 
-	protected final static int INT_EVENTMASK = IntVarEvent.INSTINTbitvector + IntVarEvent.BOUNDSbitvector;
+	protected final static int INT_EVENTMASK = IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK;
 
 	protected final Integer defaultValueEmptySet;
 

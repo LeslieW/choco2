@@ -156,7 +156,7 @@ public abstract class AbstractMixedSetIntSConstraint extends AbstractSConstraint
 
     @Override
     public SConstraintType getConstraintType() {
-        return SConstraintType.INT_SET;
+        return SConstraintType.MIXED;
     }
 
     /**

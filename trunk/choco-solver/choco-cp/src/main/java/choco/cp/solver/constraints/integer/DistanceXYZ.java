@@ -63,7 +63,7 @@ public final class DistanceXYZ extends AbstractTernIntSConstraint {
 
     @Override
     public int getFilteredEventMask(int idx) {
-        return IntVarEvent.BOUNDSbitvector;
+        return IntVarEvent.BOUNDS_MASK;
     }
 
     //*************************************************************//

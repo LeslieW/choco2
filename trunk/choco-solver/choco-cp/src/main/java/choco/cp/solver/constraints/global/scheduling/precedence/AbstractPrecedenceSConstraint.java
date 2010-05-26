@@ -23,7 +23,7 @@ implements IPrecedence {
 
 	@Override
 	public int getFilteredEventMask(int idx) {
-		return idx == 0 ? IntVarEvent.INSTINTbitvector : IntVarEvent.INSTINTbitvector + IntVarEvent.BOUNDSbitvector;
+		return idx == 0 ? IntVarEvent.INSTINT_MASK : IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK;
 	}
 
 

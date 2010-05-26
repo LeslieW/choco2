@@ -328,7 +328,49 @@ public final class ChocoLogging {
 		}
 	}
 
-	/**
+    /**
+     * Set verbosity to SILENT <i>(syntaxic sugar)</i>
+     */
+    public static void toSilent(){
+        setVerbosity(Verbosity.SILENT);
+    }
+
+    /**
+     * Set verbosity to QUIET <i>(syntaxic sugar)</i>
+     */
+    public static void toQuiet(){
+        setVerbosity(Verbosity.QUIET);
+    }
+
+    /**
+     * Set verbosity to DEFAULT <i>(syntaxic sugar)</i>
+     */
+    public static void toDefault(){
+        setVerbosity(Verbosity.DEFAULT);
+    }
+
+    /**
+     * Set verbosity to SILENT <i>(syntaxic sugar)</i>
+     */
+    public static void toVerbose(){
+        setVerbosity(Verbosity.VERBOSE);
+    }
+
+    /**
+     * Set verbosity to SOLUTION <i>(syntaxic sugar)</i>
+     */
+    public static void toSolution(){
+        setVerbosity(Verbosity.SOLUTION);
+    }
+
+    /**
+     * Set verbosity to SEARCH <i>(syntaxic sugar)</i>
+     */
+    public static void toSearch(){
+        setVerbosity(Verbosity.SEARCH);
+    }
+
+    /**
 	 * set the choco verbosity level
 	 * @param verbosity the new verbosity level
 	 */

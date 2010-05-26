@@ -22,11 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.reified.leaves.bool;
 
-import choco.cp.solver.constraints.integer.channeling.ReifiedIntSConstraint;
+import choco.cp.solver.constraints.reified.ReifiedFactory;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.constraints.reified.BoolNode;
 import choco.kernel.solver.constraints.reified.INode;
 import choco.kernel.solver.constraints.reified.NodeType;
@@ -40,7 +39,7 @@ public abstract class AbstractBoolNode extends INode implements BoolNode {
     @Override
     public IntDomainVar extractResult(Solver s) {
         IntDomainVar var = s.createBooleanVar(StringUtils.randomName());
-        s.post(new ReifiedIntSConstraint(var, (AbstractIntSConstraint) extractConstraint(s), s));
+        s.post(ReifiedFactory.builder(var, extractConstraint(s), s));
         return var;
     }
 

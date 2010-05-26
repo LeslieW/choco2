@@ -25,19 +25,14 @@ package choco.cp.model.managers.constraints.global;
 import choco.Options;
 import choco.cp.model.managers.MixedConstraintManager;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.integer.channeling.ReifiedIntSConstraint;
-import choco.cp.solver.constraints.set.ReifiedIntSetSConstraint;
+import choco.cp.solver.constraints.reified.ReifiedFactory;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.constraints.SConstraintType;
-import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 
-import java.text.MessageFormat;
 import java.util.Set;
 
 /**
@@ -60,21 +55,14 @@ public final class ReifiedManager extends MixedConstraintManager {
     public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, Set<String> options) {
         if(solver instanceof CPSolver){
             Constraint[] constraints = (Constraint[])((Object[])parameters)[1];
+            SConstraint[] cons = new SConstraint[2];
             if(constraints.length == 1){
                 Constraint c = constraints[0];
                 boolean decomp = false;
                 if (c.getOptions().contains(Options.E_DECOMP)) {
                     decomp = true;
                 }
-                SConstraint[] ct = ((CPSolver)solver).makeSConstraintAndOpposite(c, decomp);
-                switch (switcher(ct[0], ct[1])) {
-                    case INT:
-                        return new ReifiedIntSConstraint(solver.getVar((IntegerVariable)variables[0]), (AbstractIntSConstraint)ct[0], (AbstractIntSConstraint)ct[1]);
-                    case OTHER:
-                        return new ReifiedIntSetSConstraint(solver.getVar((IntegerVariable)variables[0]), (AbstractSConstraint)ct[0], (AbstractSConstraint)ct[1]);
-                    default:
-                        throw new UnsupportedOperationException(MessageFormat.format("{0} or {1} can not be reified", ct[0].pretty(), ct[1].pretty()));
-                }
+                cons = ((CPSolver)solver).makeSConstraintAndOpposite(c, decomp);
             }else{
                 Constraint c = constraints[0];
                 Constraint oppc = constraints[1];
@@ -82,35 +70,12 @@ public final class ReifiedManager extends MixedConstraintManager {
                 if (c.getOptions().contains(Options.E_DECOMP)) {
                     decomp = true;
                 }
-                SConstraint ct = ((CPSolver)solver).makeSConstraint(c, decomp);
-                SConstraint oppct = ((CPSolver)solver).makeSConstraint(oppc, decomp);
-                switch (switcher(ct, oppct)) {
-                    case INT:
-                        return new ReifiedIntSConstraint(solver.getVar((IntegerVariable)variables[0]), (AbstractIntSConstraint)ct, (AbstractIntSConstraint)oppct);
-                    case OTHER:
-                        return new ReifiedIntSetSConstraint(solver.getVar((IntegerVariable)variables[0]), (AbstractSConstraint)ct, (AbstractSConstraint)oppct);
-                    default:
-                        throw new UnsupportedOperationException(MessageFormat.format("{0} or {1} can not be reified", ct.pretty(), oppct.pretty()));
-                }
+                cons[0] = ((CPSolver)solver).makeSConstraint(c, decomp);
+                cons[1] = ((CPSolver)solver).makeSConstraint(oppc, decomp);
             }
+            return ReifiedFactory.builder(solver.getVar((IntegerVariable)variables[0]), cons[0], cons[1], solver);
         }
         throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
     }
 
-    private enum Reif {
-        INT, REAL, OTHER
-    }
-
-    private static Reif switcher(SConstraint cons, SConstraint oppcons){
-        SConstraintType c_int = cons.getConstraintType();
-        SConstraintType oc_int = oppcons.getConstraintType();
-        if(c_int.canBeReified() && oc_int.canBeReified()){
-            if(c_int.equals(SConstraintType.INTEGER)
-                    && c_int.equals(SConstraintType.INTEGER)  ){
-                return Reif.INT;
-            }
-            return Reif.OTHER;
-        }
-        return Reif.REAL;
-    }
 }

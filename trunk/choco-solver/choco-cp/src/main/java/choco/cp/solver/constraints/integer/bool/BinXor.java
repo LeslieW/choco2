@@ -24,6 +24,8 @@ package choco.cp.solver.constraints.integer.bool;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -34,17 +36,18 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 * Since : Choco 2.1.1
 * Update : Choco 2.1.1
 *
-* b0 XOR b1
+* maintain v1 XOR v2 where v1 and v2 are boolean variables
+ * i.e variables of domain {0,1}
 */
 public final class BinXor extends AbstractBinIntSConstraint {
 
-    public BinXor(IntDomainVar b0, IntDomainVar b1) {
+    BinXor(IntDomainVar b0, IntDomainVar b1) {
         super(b0, b1);
     }
 
     @Override
     public int getFilteredEventMask(int idx) {
-        return IntVarEvent.INSTINTbitvector;
+        return IntVarEvent.INSTINT_MASK;
     }
 
 
@@ -85,4 +88,13 @@ public final class BinXor extends AbstractBinIntSConstraint {
 		else return null;
 	}
 
+    /**
+     * Get the opposite constraint
+     *
+     * @return the opposite constraint  @param solver
+     */
+    @Override
+    public AbstractSConstraint<IntDomainVar> opposite(final Solver solver) {
+        return BooleanFactory.xnor(vars);
+    }
 }

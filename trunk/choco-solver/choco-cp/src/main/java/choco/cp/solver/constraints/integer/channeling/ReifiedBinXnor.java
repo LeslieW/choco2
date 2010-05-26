@@ -44,7 +44,7 @@ public final class ReifiedBinXnor extends AbstractTernIntSConstraint {
     }
 
     public int getFilteredEventMask(int idx) {
-        return IntVarEvent.INSTINTbitvector;
+        return IntVarEvent.INSTINT_MASK;
     }
 
     public void propagate() throws ContradictionException {
