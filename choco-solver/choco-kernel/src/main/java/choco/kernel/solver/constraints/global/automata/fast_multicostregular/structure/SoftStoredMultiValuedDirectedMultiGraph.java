@@ -4,7 +4,7 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.global.automata.common.StoredIndexedBipartiteSetWithOffset;
-import choco.kernel.solver.constraints.global.automata.fast_multicostregular.algo.FastPathFinder;
+import choco.kernel.solver.constraints.global.automata.fast_multicostregular.algo.SoftPathFinder;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.TIntHashSet;
@@ -38,7 +38,7 @@ public int nbR;
 
 StoredIndexedBipartiteSetWithOffset[] supports;
 public StoredIndexedBipartiteSetWithOffset[] layers;
-FastPathFinder pf;
+public SoftPathFinder pf;
 public BitSet inStack;
 private IntDomainVar[] y;
 
@@ -160,6 +160,11 @@ public SoftStoredMultiValuedDirectedMultiGraph(IEnvironment environment, Abstrac
         }
 
         Set<Node> nodes = graph.vertexSet();
+
+
+        System.err.println("NB ARCS IN LAYERED GRAPH : "+arcs.size());
+        System.err.println("NB NODES IN LAYERED GRAPH : "+nodes.size());
+
         GNodes.outArcs = new StoredIndexedBipartiteSetWithOffset[nodes.size()];
         GNodes.inArcs = new StoredIndexedBipartiteSetWithOffset[nodes.size()];
         GNodes.layers = new int[nodes.size()];
