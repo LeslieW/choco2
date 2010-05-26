@@ -3626,6 +3626,11 @@ public class Choco {
 		return new ComponentConstraint(ConstraintType.SOFTMULTICOSTREGULAR, new Object[]{vars.length,counters.length,pfunction,auto,copy}, ArrayUtils.append(vars,counters,penaltyVars,new IntegerVariable[]{globalPenalty}));
 	}
 
+        public static Constraint softMultiCostRegular(IntegerVariable[] vars, IntegerVariable[] counters, IntegerVariable[] penaltyVars, IntegerVariable globalPenalty, PenaltyFunction[] pfunction ,FiniteAutomaton auto, int[][][][] costs,int... sumDimension){
+                int[][][][] copy = ArrayUtils.swallowCopy(costs);
+		return new ComponentConstraint(ConstraintType.SOFTMULTICOSTREGULAR, new Object[]{vars.length,counters.length,sumDimension,pfunction,auto,copy}, ArrayUtils.append(vars,counters,penaltyVars,new IntegerVariable[]{globalPenalty}));
+	}
+
 
 
 

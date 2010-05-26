@@ -8,7 +8,6 @@ import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.constraints.automaton.penalty.IsoPenaltyFunction;
-import choco.kernel.model.constraints.automaton.penalty.NullPenaltyFunction;
 import choco.kernel.model.constraints.automaton.penalty.PenaltyFunction;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.global.automata.fast_multicostregular.algo.SoftPathFinder;
@@ -24,10 +23,7 @@ import gnu.trove.TIntStack;
 import gnu.trove.TObjectIntHashMap;
 import org.jgrapht.graph.DirectedMultigraph;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -64,6 +60,9 @@ int[][][][] costs;
 
 /** Attached solver */
 CPSolver solver;
+
+/** Index r which sum(z_r) = Z */
+TIntHashSet indexes;
 
 /** Stored Directed multi valued multi graph */
 SoftStoredMultiValuedDirectedMultiGraph graph;
@@ -111,7 +110,7 @@ int Zidx;
 private static final double PRECISION = Math.pow(10,Constant.MCR_PRECISION);
 
 
-public SoftMultiCostRegular(IntDomainVar[] x, IntDomainVar[] y, IntDomainVar[] z, IntDomainVar Z, PenaltyFunction[] f, FiniteAutomaton pi, int[][][][] costs, CPSolver solver)
+public SoftMultiCostRegular(IntDomainVar[] x, IntDomainVar[] y, IntDomainVar[] z, IntDomainVar Z, int[] indexes, PenaltyFunction[] f, FiniteAutomaton pi, int[][][][] costs, CPSolver solver)
 {
         super(ArrayUtils.append(x,y,z,new IntDomainVar[]{Z}));
         this.x  = x;
@@ -121,6 +120,7 @@ public SoftMultiCostRegular(IntDomainVar[] x, IntDomainVar[] y, IntDomainVar[] z
         this.f = f;
         this.pi = pi;
         this.costs = costs;
+        this.indexes = new TIntHashSet(indexes);
         this.solver = solver;
 
         this.toRemove = new TIntStack();
@@ -356,6 +356,7 @@ public void initGraph()
 private void makePathFinder()
 {
         this.path = new SoftPathFinder(this.graph);
+        this.graph.pf = path;
 }
 
 
@@ -363,7 +364,8 @@ public boolean updateViolationLB() throws ContradictionException
 {
         boolean modbound = false;
         double[] lambda = new double[y.length];
-        //Arrays.fill(lambda,0);
+        Arrays.fill(lambda,0);
+      //  lambda[0] = 1.0;
         double step;
         int k=0;
         int[] sp;
@@ -401,7 +403,7 @@ public boolean updateViolationLB() throws ContradictionException
                         }
                 }
 
-        } while (k++ < 10 && modif);
+        } while (k++ < 0 && modif);
 
         this.lastSp = sp;
         this.lastSpValue = value;
@@ -423,7 +425,10 @@ private double ghatSP(double[] lambda)
         final int R = lambda.length;
         for (int r = 0 ; r < R ; r++)
         {
-                ghat+= f[r].getMinGHat(lambda[r],y[r]);
+                if (indexes.contains(r))
+                        ghat+= f[r].getMinGHat(lambda[r],y[r]);
+                else
+                        ghat+= -lambda[r] *  ((lambda[r] > 0) ? y[r].getSup() : y[r].getInf());
         }
         return ghat;
 }
@@ -471,7 +476,7 @@ public boolean updateViolationUB() throws ContradictionException
                         }
                 }
 
-        } while (k++ < 10 && modif);
+        } while (k++ < 0 && modif);
         this.lastLp = lp;
         this.lastLpValue = value;
         return modBound;
@@ -490,7 +495,10 @@ private double ghatLP(double[] lambda)
         final int R = lambda.length;
         for (int r = 0 ; r < R ; r++)
         {
-                ghat+= f[r].getMaxGHat(lambda[r],y[r]);
+                if (indexes.contains(r))
+                        ghat+= f[r].getMaxGHat(lambda[r],y[r]);
+                else
+                        ghat+= -lambda[r] *  ((lambda[r] < 0) ? y[r].getSup() : y[r].getInf());
         }
         return ghat;
 }
@@ -521,10 +529,6 @@ public void makeTableConstraints() throws ContradictionException
                         int fact = ((IsoPenaltyFunction)f[i]).getFactor();
                         table = (AbstractIntSConstraint) solver.eq(solver.mult(fact,y[i]),z[i]);
                 }
-                else if (f[i] instanceof NullPenaltyFunction)
-                {
-                        table = (AbstractIntSConstraint) solver.eq(z[i],z[i]);
-                }
                 else
                 {
                         LOGGER.severe("Cannot create table constraint! domain is too big.");
@@ -539,11 +543,17 @@ public void makeTableConstraints() throws ContradictionException
 
 private void makeRedondantSumConstraint()
 {
-        solver.post(solver.eq(solver.sum(z),Z));
+        IntDomainVar[] summed = new IntDomainVar[indexes.size()];
+        int idx = 0;
+        for (TIntIterator it = indexes.iterator() ; it.hasNext();)
+        {
+                summed[idx++] = z[it.next()];
+        }
+        solver.post(solver.eq(solver.sum(summed),Z));
 }
 
 
-protected void checkWorld() throws ContradictionException
+public void checkWorld() throws ContradictionException
 {
         int currentworld = solver.getEnvironment().getWorldIndex();
         int currentbt = solver.getBackTrackCount();
@@ -571,7 +581,7 @@ protected void checkWorld() throws ContradictionException
 public void awake() throws ContradictionException
 {
         makeTableConstraints();
-      //  makeRedondantSumConstraint();
+       // makeRedondantSumConstraint();
         //  solver.post(solver.eq(x[0],0));
         //  solver.post(solver.eq(x[2],0));
 
@@ -847,6 +857,10 @@ public SoftStoredMultiValuedDirectedMultiGraph getGraph()
 {
         return this.graph;
 }
+
+public int getMinPathCostForAssignment(int col, int val, int... resources) { return this.graph.getMinPathCostForAssignment(col, val, resources); }
+public int[] getMinMaxPathCostForAssignment(int col, int val, int... resources) { return this.graph.getMinMaxPathCostForAssignment(col, val, resources); }
+public int getMinPathCost(int... resources) { return this.graph.getMinPathCost(resources); }
 
 
 

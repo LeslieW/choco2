@@ -54,6 +54,7 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
     private final StoredBoolTrail boolTrail;
     private final StoredVectorTrail vectorTrail;
     private final StoredIntVectorTrail intVectorTrail;
+    private final StoredLongVectorTrail longVectorTrail;
     private final StoredDoubleVectorTrail doubleVectorTrail;
     private final StoredDoubleTrail doubleTrail;
 
@@ -76,12 +77,13 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 		intTrail = new StoredIntTrail(this, MaxHist, maxWorld);
 		vectorTrail = new StoredVectorTrail(this, MaxHist, maxWorld);
 		intVectorTrail = new StoredIntVectorTrail(this, MaxHist, maxWorld);
+                longVectorTrail = new StoredLongVectorTrail(this,MaxHist,maxWorld);
 		doubleVectorTrail = new StoredDoubleVectorTrail(this, MaxHist, maxWorld);
 		doubleTrail = new StoredDoubleTrail(this, MaxHist, maxWorld);
 		longTrail = new StoredLongTrail(this, MaxHist, maxWorld);
 		btreeTrail = new StoredBinaryTreeTrail(this, MaxHist, maxWorld);
 		trails = new ITrailStorage[]{
-				boolTrail,intTrail,vectorTrail, intVectorTrail,
+				boolTrail,intTrail,vectorTrail, intVectorTrail, longVectorTrail,
 				doubleVectorTrail, doubleTrail,longTrail,btreeTrail
 		};
 	}
@@ -93,6 +95,7 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 		boolTrail.worldPush();
 		vectorTrail.worldPush();
 		intVectorTrail.worldPush();
+                longVectorTrail.worldPush();
 		doubleVectorTrail.worldPush();
 		doubleTrail.worldPush();
 		longTrail.worldPush();
@@ -111,6 +114,7 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 		boolTrail.worldPop();
 		vectorTrail.worldPop();
 		intVectorTrail.worldPop();
+                longVectorTrail.worldPop();
 		doubleVectorTrail.worldPop();
 		doubleTrail.worldPop();
 		longTrail.worldPop();
@@ -128,6 +132,7 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 		boolTrail.worldCommit();
 		vectorTrail.worldCommit();
 		intVectorTrail.worldCommit();
+                longVectorTrail.worldCommit();
 		doubleVectorTrail.worldCommit();
 		doubleTrail.worldCommit();
 		longTrail.worldCommit();
@@ -170,6 +175,21 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 	public IStateIntVector makeIntVector(final int[] entries) {
 		return new StoredIntVector(this, entries);
 	}
+        @Override
+	public IStateLongVector makeLongVector() {
+		return new StoredLongVector(this);
+	}
+
+	@Override
+	public IStateLongVector makeLongVector(final int size, final long initialValue) {
+		return new StoredLongVector(this, size, initialValue);
+	}
+
+	@Override
+	public IStateLongVector makeLongVector(final long[] entries) {
+		return new StoredLongVector(this, entries);
+	}
+
 
 	@Override
     public IStateDoubleVector makeDoubleVector() {
@@ -309,6 +329,9 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 	 */
 	public void savePreviousState(final StoredIntVector v, final int index, final int oldValue, final int oldStamp) {
 		intVectorTrail.savePreviousState(v, index, oldValue, oldStamp);
+	}
+	public void savePreviousState(final StoredLongVector v, final int index, final long oldValue, final int oldStamp) {
+		longVectorTrail.savePreviousState(v, index, oldValue, oldStamp);
 	}
 
 	public <E> void savePreviousState(final StoredVector<E> v, final int index, final E oldValue, final int oldStamp) {

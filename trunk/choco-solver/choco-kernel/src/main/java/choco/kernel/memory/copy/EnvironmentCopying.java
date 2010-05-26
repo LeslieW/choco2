@@ -23,9 +23,10 @@
 package choco.kernel.memory.copy;
 
 import choco.kernel.memory.*;
-import static choco.kernel.memory.copy.RecomputableElement.NB_TYPE;
 
 import java.util.Stack;
+
+import static choco.kernel.memory.copy.RecomputableElement.NB_TYPE;
 
 public class EnvironmentCopying extends AbstractEnvironment {
 
@@ -141,10 +142,13 @@ public class EnvironmentCopying extends AbstractEnvironment {
 		return new RcBool(this,initialValue);
 	}
 
-    @Override
+
+        @Override
 	public IStateIntVector makeIntVector() {
 		return new RcIntVector(this);
 	}
+
+
 
     @Override
 	public IStateIntVector makeIntVector(int size, int initialValue) {
@@ -154,6 +158,20 @@ public class EnvironmentCopying extends AbstractEnvironment {
     @Override
 	public IStateIntVector makeIntVector(int[] entries) {
 		return new RcIntVector(this,entries);
+	}
+ @Override
+	public IStateLongVector makeLongVector(int size, long initialValue) {
+		return new RcLongVector(this,size,initialValue);
+	}
+
+    @Override
+	public IStateLongVector makeLongVector(long[] entries) {
+		return new RcLongVector(this,entries);
+	}
+
+       @Override
+	public IStateLongVector makeLongVector() {
+		return new RcLongVector(this);
 	}
 
     @Override

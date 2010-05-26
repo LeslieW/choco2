@@ -138,6 +138,34 @@ public interface IEnvironment {
 
     IStateIntVector makeIntVector(int[] entries);
 
+
+    /**
+     * Factory pattern: new IStateIntVector objects are created by the environment.
+     * Creates an empty vector
+     * @return IStateIntVector
+     */
+
+    IStateLongVector makeLongVector();
+
+    /**
+     * Factory pattern: new IStateIntVector objects are created by the environment
+     *
+     * @param size         the number of entries in the vector
+     * @param initialValue the common initial value for all entries (backtrackable integers)
+     * @return IStateIntVector
+     */
+
+    IStateLongVector makeLongVector(int size, long initialValue);
+
+    /**
+     * Factory pattern: new IStateIntVector objects are created by the environment
+     *
+     * @param entries an array to be copied as set of initial contents of the vector
+     * @return IStateIntVector
+     */
+
+    IStateLongVector makeLongVector(long[] entries);
+
     /**
      * Factory pattern: new IStateDoubleVector objects are created by the environment.
      * Creates an empty vector

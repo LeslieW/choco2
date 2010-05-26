@@ -3,6 +3,7 @@ package choco.cp.model.managers.constraints.global;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.automata.fast_multicostregular.SoftMultiCostRegular;
+import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.constraints.automaton.penalty.PenaltyFunction;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -39,13 +40,26 @@ public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Ob
 
         IntDomainVar Z = allVars[xl+2*yl];
 
-        PenaltyFunction[] penalty  = (PenaltyFunction[]) param[2];
-        FiniteAutomaton pi = (FiniteAutomaton) param[3];
+        int offset;
+        int[] indexes;
+        if (param.length <= 5)
+        {
+                indexes = ArrayUtils.zeroToN(y.length);
+                offset = 0;
+        }
+        else
+        {
+                indexes = (int[])param[2];
+                offset = 1;
+        }
+
+        PenaltyFunction[] penalty  = (PenaltyFunction[]) param[offset+2];
+        FiniteAutomaton pi = (FiniteAutomaton) param[offset+3];
 
 
-        int[][][][] costs = (int[][][][]) param[4];
+        int[][][][] costs = (int[][][][]) param[offset+4];
 
-        return new SoftMultiCostRegular(x,y,z,Z,penalty,pi,costs,(CPSolver)solver);
+        return new SoftMultiCostRegular(x,y,z,Z,indexes,penalty,pi,costs,(CPSolver)solver);
 
 
 
