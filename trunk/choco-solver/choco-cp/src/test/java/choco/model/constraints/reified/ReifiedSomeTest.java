@@ -23,7 +23,6 @@
 package choco.model.constraints.reified;
 
 import choco.Choco;
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.model.managers.operators.SqrtManager;
@@ -39,7 +38,6 @@ import choco.kernel.model.Model;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintType;
-import static choco.kernel.model.constraints.ConstraintType.*;
 import choco.kernel.model.variables.Operator;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
@@ -54,11 +52,14 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.junit.*;
-import static org.junit.Assert.*;
 
-import static java.text.MessageFormat.format;
 import java.util.*;
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
+import static choco.kernel.model.constraints.ConstraintType.*;
+import static java.text.MessageFormat.format;
+import static org.junit.Assert.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -175,7 +176,7 @@ public class ReifiedSomeTest {
     }
 
     @Test
-//    @Ignore
+    @Ignore
     public void test5() {
         LOGGER.info("ReifiedSomeTest.test5");
         s1 = makeSetVar("s1", 1, 3);
@@ -1845,7 +1846,7 @@ public class ReifiedSomeTest {
 
     @Test
     public void test_syndaegy1() {
-        ChocoLogging.toSearch();
+//        ChocoLogging.toSearch();
         int NV = 3;
                                                                             
         Model m = new CPModel();
@@ -1865,4 +1866,4 @@ public class ReifiedSomeTest {
         s.solveAll();
     }
 
-}
+    }

@@ -5,7 +5,6 @@ package common;
 
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.solver.Configuration;
 import choco.kernel.solver.ResolutionPolicy;
 import org.junit.BeforeClass;
@@ -31,7 +30,7 @@ public class TestStrategyMed {
 
 	@BeforeClass
 	public static void setUp() {
-		ChocoLogging.setVerbosity(Verbosity.VERBOSE);
+		ChocoLogging.toVerbose();
 		CONFIG.putFalse(STOP_AT_FIRST_SOLUTION);
 		CONFIG.putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
 		CONFIG.putInt(RESTART_BASE, 1);//many restarts, bad performance but good testing !

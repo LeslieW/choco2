@@ -23,16 +23,15 @@
 package choco.model.constraints.reified;
 
 import choco.Choco;
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.Solver;
 import org.junit.Test;
+
+import static choco.Choco.*;
 
 /**
  * User : cprudhom<br/>
@@ -58,7 +57,7 @@ public class ReifiedSetSomeTest {
         m.addConstraint(Choco.reifiedConstraint(bool, eq(vars[0], vars[1]), neq(vars[0], vars[1])));
 
         s.read(m);
-        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+//        ChocoLogging.toSolution();
         s.solveAll();
     }
 
@@ -78,7 +77,7 @@ public class ReifiedSetSomeTest {
         m.addConstraint(Choco.reifiedConstraint(bool, isIncluded(vars[0], vars[1]), isNotIncluded(vars[0], vars[1])));
 
         s.read(m);
-        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+//        ChocoLogging.toSolution();
         s.solveAll();
     }
 
@@ -97,7 +96,7 @@ public class ReifiedSetSomeTest {
         m.addConstraint(Choco.implies(eq(vars[0], vars[1]), neq(vars[1], vars[2])));
 
         s.read(m);
-        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+//        ChocoLogging.toSolution();
         s.solveAll();
     }
 
@@ -121,7 +120,7 @@ public class ReifiedSetSomeTest {
 
 
         s.read(m);
-        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+//        ChocoLogging.toSolution();
         s.solveAll();
     }
 }
