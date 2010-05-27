@@ -26,11 +26,13 @@ import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.branch.Extension;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
-import choco.kernel.solver.propagation.listener.IntPropagator;
+import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.PropagationEngine;
+import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-
-import java.util.HashSet;
+import gnu.trove.THashSet;
 
 /**
  * A constraint that allows to reify another constraint into a boolean value.
@@ -40,7 +42,10 @@ import java.util.HashSet;
  * cons and oppositeCons do not need to be really the constraint and its
  * opposite, it can be two different constraints as well
  */
-public class ReifiedIntSConstraint extends ReifiedSConstraint<IntDomainVar, AbstractIntSConstraint> implements IntPropagator {
+public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint{
+
+    AbstractIntSConstraint cons;
+    AbstractIntSConstraint oppositeCons;
 
     //scopeCons[i] = j means that the i-th variable of cons is the j-th in reifiedIntConstraint
     protected int[] scopeCons;
@@ -48,9 +53,9 @@ public class ReifiedIntSConstraint extends ReifiedSConstraint<IntDomainVar, Abst
     protected int[] scopeOCons;
 
     @SuppressWarnings({"unchecked"})
-    public static IntDomainVar[] makeTableVar(IntDomainVar bool,
+    private static IntDomainVar[] makeTableVar(IntDomainVar bool,
                                               AbstractIntSConstraint cons, AbstractIntSConstraint oppcons) {
-        HashSet<IntDomainVar> consV = new HashSet<IntDomainVar>(cons.getNbVars() + oppcons.getNbVars()+1);
+        THashSet<IntDomainVar> consV = new THashSet<IntDomainVar>(cons.getNbVars() + oppcons.getNbVars()+1);
         for (int i = 0; i < cons.getNbVars(); i++){
             consV.add(cons.getVar(i));
         }
@@ -80,9 +85,7 @@ public class ReifiedIntSConstraint extends ReifiedSConstraint<IntDomainVar, Abst
      * @param solver
      */
     ReifiedIntSConstraint(final IntDomainVar bool, final AbstractIntSConstraint cons, final Solver solver) {
-        super(makeTableVar(bool, cons, (AbstractIntSConstraint) cons.opposite(solver)),
-                bool, cons, (AbstractIntSConstraint) cons.opposite(solver));
-        init();
+        this(bool, cons, (AbstractIntSConstraint) cons.opposite(solver));
     }
 
     /**
@@ -97,12 +100,26 @@ public class ReifiedIntSConstraint extends ReifiedSConstraint<IntDomainVar, Abst
      * @param oppositeCons the opposite reified constraint
      */
     ReifiedIntSConstraint(final IntDomainVar bool, final AbstractIntSConstraint cons, final AbstractIntSConstraint oppositeCons) {
-        super(makeTableVar(bool, cons, oppositeCons),
-                bool, cons, oppositeCons);
+        super(makeTableVar(bool, cons, oppositeCons));
+        this.cons = cons;
+        this.oppositeCons = oppositeCons;
         init();
     }
 
-    final void init() {
+    /**
+     * Adds a new extension.
+     *
+     * @param extensionNumber should use the number returned by getAbstractSConstraintExtensionNumber
+     */
+    @Override
+    public void addExtension(final int extensionNumber) {
+        super.addExtension(extensionNumber);
+        final Extension ext = extensions[extensionNumber];
+        cons.setExtension(ext, extensionNumber);
+        oppositeCons.setExtension(ext, extensionNumber);
+    }
+
+    void init() {
         tupleCons = new int[cons.getNbVars()];
         tupleOCons = new int[oppositeCons.getNbVars()];
         scopeCons = new int[cons.getNbVars()];
@@ -127,6 +144,25 @@ public class ReifiedIntSConstraint extends ReifiedSConstraint<IntDomainVar, Abst
         }
     }
 
+    //assume that the boolean is known
+    void filterReifiedConstraintFromBool() throws ContradictionException {
+        if (vars[0].isInstantiatedTo(1)) {
+            cons.awake();
+        } else {
+            oppositeCons.awake();
+        }
+    }
+
+    public void filterReifiedConstraintFromCons() throws ContradictionException {
+        Boolean isEntailed = cons.isEntailed();
+        if (isEntailed != null) {
+            if (isEntailed) {
+                vars[0].instantiate(1, this, false);
+            } else {
+                vars[0].instantiate(0, this, true);
+            }
+        }
+    }
 
     @Override
     public final int getFilteredEventMask(final int idx) {
@@ -137,6 +173,17 @@ public class ReifiedIntSConstraint extends ReifiedSConstraint<IntDomainVar, Abst
         }
     }
 
+    public final void filter() throws ContradictionException {
+        if (vars[0].isInstantiated()) {
+            filterReifiedConstraintFromBool();
+        } else {
+            filterReifiedConstraintFromCons();
+        }
+    }
+
+    public final void propagate() throws ContradictionException {
+        filter();
+    }
 
     public final void awakeOnInf(final int idx) throws ContradictionException {
         filter();
@@ -160,6 +207,61 @@ public class ReifiedIntSConstraint extends ReifiedSConstraint<IntDomainVar, Abst
 
     public final void awakeOnBounds(final int varIndex) throws ContradictionException {
         filter();
+    }
+
+    public void awake() throws ContradictionException {
+        filter();
+    }
+
+    void addListener(final AbstractIntSConstraint thecons) {
+        if (thecons instanceof ReifiedIntSConstraint) {
+            final ReifiedIntSConstraint rcons = (ReifiedIntSConstraint) thecons;
+            addListener(rcons.cons);
+            addListener(rcons.oppositeCons);
+        }
+        final int n = thecons.getNbVars();
+        for (int i = 0; i < n; i++) {
+            thecons.setConstraintIndex(i, getIndex((AbstractVar) thecons.getVar(i)));
+        }
+    }
+
+    int getIndex(final AbstractVar v) {
+        for (int i = 0; i < vars.length; i++) {
+            if (vars[i] == v) return cIndices[i];
+        }
+        return -1; //should never go there !
+    }
+
+    public void addListener(final boolean dynamicAddition) {
+        super.addListener(dynamicAddition);
+        addListener(cons);
+        addListener(oppositeCons);
+    }
+
+    /**
+     * Define the propagation engine within the constraint.
+     * Mandatory to throw {@link choco.kernel.solver.ContradictionException}.
+     *
+     * @param propEng the current propagation engine
+     */
+    @Override
+    public void setPropagationEngine(final PropagationEngine propEng) {
+        super.setPropagationEngine(propEng);
+        cons.setPropagationEngine(propEng);
+        oppositeCons.setPropagationEngine(propEng);
+    }
+
+    public String pretty() {
+        final StringBuilder sb = new StringBuilder("(");
+        sb.append(" 1");
+        sb.append("<=>").append(cons.pretty());
+        if (oppositeCons != null) {
+            sb.append(" -- 0");
+            sb.append("<=>").append(oppositeCons.pretty());
+        }
+        sb.append(')');
+        sb.append('~').append(vars[0].pretty());
+        return sb.toString();
     }
 
     //temporary data to store tuples

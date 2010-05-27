@@ -25,12 +25,17 @@ package choco.cp.solver.constraints.reified;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.branch.Extension;
 import choco.kernel.solver.constraints.AbstractSConstraint;
+import choco.kernel.solver.constraints.SConstraintType;
+import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.propagation.listener.IntPropagator;
 import choco.kernel.solver.propagation.listener.RealPropagator;
 import choco.kernel.solver.propagation.listener.SetPropagator;
+import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import gnu.trove.THashSet;                                                       
 
 /**
  * A constraint that allows to reify another constraint into a boolean value.
@@ -40,8 +45,33 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * cons and oppositeCons do not need to be really the constraint and its
  * opposite, it can be two different constraints as well
  */
-public class ReifiedAllSConstraint extends ReifiedSConstraint<Var, AbstractSConstraint> 
-        implements IntPropagator, SetPropagator, RealPropagator {
+public class ReifiedAllSConstraint extends AbstractSConstraint implements IntPropagator, SetPropagator, RealPropagator {
+
+    protected final AbstractSConstraint cons;
+    protected final AbstractSConstraint oppositeCons;
+
+    private final IntDomainVar bool;
+
+    @SuppressWarnings({"unchecked"})
+    public static <C extends AbstractSConstraint> Var[] makeTableVar(IntDomainVar bool, C cons, C oppcons) {
+        THashSet<Var> consV = new THashSet<Var>(cons.getNbVars() + oppcons.getNbVars()+1);
+        for (int i = 0; i < cons.getNbVars(); i++){
+            consV.add(cons.getVar(i));
+        }
+        for (int i = 0; i < oppcons.getNbVars(); i++){
+            consV.add(oppcons.getVar(i));
+        }
+        consV.add(bool);
+        Var[] vars = new Var[consV.size()];
+        consV.remove(bool);
+        vars[0] = bool;
+        int i = 1;
+        for (Var var: consV) {
+            vars[i] = var;
+            i++;
+        }
+        return vars;
+    }
 
     /**
      * A constraint that allows to reify another constraint into a boolean value.
@@ -54,7 +84,7 @@ public class ReifiedAllSConstraint extends ReifiedSConstraint<Var, AbstractSCons
      * @param solver
      */
     ReifiedAllSConstraint(final IntDomainVar bool, final AbstractSConstraint cons, final Solver solver) {
-        super(bool, cons, cons.opposite(solver));
+        this(bool, cons, cons.opposite(solver));
     }
 
     /**
@@ -70,7 +100,55 @@ public class ReifiedAllSConstraint extends ReifiedSConstraint<Var, AbstractSCons
      */
     ReifiedAllSConstraint(final IntDomainVar bool, final AbstractSConstraint cons,
                                  final AbstractSConstraint oppositeCons) {
-        super(bool, cons, oppositeCons);
+        super(makeTableVar(bool, cons, oppositeCons));
+        this.cons = cons;
+        this.oppositeCons = oppositeCons;
+        this.bool = bool;
+    }
+
+    /**
+     * Adds a new extension.
+     *
+     * @param extensionNumber should use the number returned by getAbstractSConstraintExtensionNumber
+     */
+    @Override
+    public final void addExtension(final int extensionNumber) {
+        super.addExtension(extensionNumber);
+        Extension ext = extensions[extensionNumber];
+        cons.setExtension(ext, extensionNumber);
+        oppositeCons.setExtension(ext, extensionNumber);
+    }
+
+    //assume that the boolean is known
+    public final void filterReifiedConstraintFromBool() throws ContradictionException {
+        if (bool.isInstantiatedTo(1)) {
+            cons.awake();
+        } else {
+            oppositeCons.awake();
+        }
+    }
+
+    public void filterReifiedConstraintFromCons() throws ContradictionException {
+        Boolean isEntailed = cons.isEntailed();
+        if (isEntailed != null) {
+            if (isEntailed) {
+                bool.instantiate(1, this, false);
+            } else {
+                bool.instantiate(0, this, true);
+            }
+        }
+    }
+
+    public final void filter() throws ContradictionException {
+        if (vars[0].isInstantiated()) {
+            filterReifiedConstraintFromBool();
+        } else {
+            filterReifiedConstraintFromCons();
+        }
+    }
+
+    public final void propagate() throws ContradictionException {
+        filter();
     }
 
     /**
@@ -139,6 +217,93 @@ public class ReifiedAllSConstraint extends ReifiedSConstraint<Var, AbstractSCons
     @Override
     public void awakeOnEnvRemovals(final int sIdx, final DisposableIntIterator deltaDomain) throws ContradictionException {
         filter();
+    }
+
+    /**
+     * tests if the constraint is consistent with respect to the current state of domains
+     *
+     * @return wether the constraint is consistent
+     */
+    @Override
+    public final boolean isConsistent() {
+        return Boolean.TRUE.equals(isEntailed());
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public final void addListener(AbstractSConstraint thecons) {
+        if (thecons instanceof ReifiedAllSConstraint) {
+            ReifiedAllSConstraint rcons = (ReifiedAllSConstraint) thecons;
+            addListener(rcons.cons);
+            addListener(rcons.oppositeCons);
+        }
+        int n = thecons.getNbVars();
+        for (int i = 0; i < n; i++) {
+            thecons.setConstraintIndex(i, getIndex((AbstractVar) thecons.getVar(i)));
+        }
+    }
+
+    public final int getIndex(AbstractVar v) {
+        for (int i = 0; i < vars.length; i++) {
+            if (vars[i] == v) return cIndices[i];
+        }
+        return -1; //should never go there !
+    }
+
+    public final void addListener(boolean dynamicAddition) {
+        super.addListener(dynamicAddition);
+        addListener(cons);
+        addListener(oppositeCons);
+    }
+
+    /**
+     * Define the propagation engine within the constraint.
+     * Mandatory to throw {@link choco.kernel.solver.ContradictionException}.
+     *
+     * @param propEng the current propagation engine
+     */
+    @Override
+    public final void setPropagationEngine(PropagationEngine propEng) {
+        super.setPropagationEngine(propEng);
+        cons.setPropagationEngine(propEng);
+        oppositeCons.setPropagationEngine(propEng);
+    }
+
+    public final String pretty() {
+        StringBuilder sb = new StringBuilder("(");
+        sb.append(" 1");
+        sb.append("<=>").append(cons.pretty());
+        if (oppositeCons != null) {
+            sb.append(" -- 0");
+            sb.append("<=>").append(oppositeCons.pretty());
+        }
+        sb.append(')');
+        sb.append('~').append(vars[0].pretty());
+        return sb.toString();
+    }
+
+    /**
+     * <i>Semantic:</i>
+     * Testing if the constraint is satisfied.
+     * Note that all variables involved in the constraint must be
+     * instantiated when this method is called.
+     *
+     * @return true if the constraint is satisfied
+     */
+    @Override
+    public boolean isSatisfied() {
+        if(isCompletelyInstantiated()){
+            if(bool.isInstantiatedTo(1)){
+                return cons.isSatisfied();
+            }else{
+                return oppositeCons.isSatisfied();
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public SConstraintType getConstraintType() {
+        return SConstraintType.MIXED;
     }
 
     @Override
