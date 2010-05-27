@@ -862,6 +862,6 @@ public int getMinPathCostForAssignment(int col, int val, int... resources) { ret
 public int[] getMinMaxPathCostForAssignment(int col, int val, int... resources) { return this.graph.getMinMaxPathCostForAssignment(col, val, resources); }
 public int getMinPathCost(int... resources) { return this.graph.getMinPathCost(resources); }
 
-
+public double[] getInstantiatedLayerCosts(int layer) { return this.graph.getInstantiatedLayerCosts(layer);}
 
 }

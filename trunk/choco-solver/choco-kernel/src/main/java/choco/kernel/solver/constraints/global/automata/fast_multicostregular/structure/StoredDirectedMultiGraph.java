@@ -693,6 +693,18 @@ public int[] getMinMaxPathCostForAssignment(int layer, int value, int... resourc
 	return minmax;
 }
 
+public double[] getInstantiatedLayerCosts(int layer)
+{
+        StoredIndexedBipartiteSetWithOffset couche = layers[layer];
+        DisposableIntIterator it = couche.getIterator();
+        int node = it.next();
+        it.dispose();
+        it = GNodes.outArcs[node].getIterator();
+        int arcId = it.next();
+        it.dispose();
+        return GArcs.originalCost[arcId];
+}
+
 public int getMinPathCost(int... resources)
 {
 	int result  = 0;
