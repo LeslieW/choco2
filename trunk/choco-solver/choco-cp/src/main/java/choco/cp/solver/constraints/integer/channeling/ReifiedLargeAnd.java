@@ -140,9 +140,9 @@ public final class ReifiedLargeAnd  extends AbstractLargeIntSConstraint {
     }
 
     private void filter() throws ContradictionException {
-        int toZero = toONE.get();
+        int toONE = this.toONE.get();
         int n = vars.length-1;
-        if(toZero == n){
+        if(toONE == n){
             vars[0].instantiate(1, this, false);
             setEntailed();
         }else if(vars[0].isInstantiatedTo(0)){

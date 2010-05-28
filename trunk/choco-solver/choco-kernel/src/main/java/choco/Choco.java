@@ -3776,9 +3776,65 @@ public class Choco {
     public static Constraint reifiedAnd(IntegerVariable binVar, IntegerVariable... literals){
         IntegerVariable[] vars = ArrayUtils.append(new IntegerVariable[]{binVar}, literals);
         for(IntegerVariable var : vars){
-            if(!var.isBoolean())throw new ModelException("reifiedOr constraint must be used with boolean variables");
+            if(!var.isBoolean())throw new ModelException("reifiedAnd constraint must be used with boolean variables");
         }
         return new ComponentConstraint(ConstraintType.REIFIEDAND, null, vars);
+    }
+
+    /**
+     * A constraint for logical conjunction between boolean variables
+     * lit1 NAND lit2 NAND ... NAND litn
+     * @param literals list of boolean variables
+     * @return Constraint
+     */
+    public static Constraint nand(IntegerVariable... literals){
+        for(IntegerVariable lit : literals){
+            if(!lit.isBoolean())throw new ModelException("NAND constraint must be used with boolean variables");
+        }
+        return new ComponentConstraint(ConstraintType.NAND, null, literals);
+    }
+
+    /**
+     * A reified constraint for logical conjunction between boolean variables
+     * binVar = lit1 NAND lit2 NAND ... NAND litn
+     * @param binVar reified variable
+     * @param literals list of boolean variables
+     * @return Constraint
+     */
+    public static Constraint reifiedNand(IntegerVariable binVar, IntegerVariable... literals){
+        IntegerVariable[] vars = ArrayUtils.append(new IntegerVariable[]{binVar}, literals);
+        for(IntegerVariable var : vars){
+            if(!var.isBoolean())throw new ModelException("reifiedNand constraint must be used with boolean variables");
+        }
+        return new ComponentConstraint(ConstraintType.REIFIEDNAND, null, vars);
+    }
+
+    /**
+     * A constraint for logical conjunction between boolean variables
+     * lit1 NOR lit2 NOR ... NOR litn
+     * @param literals list of boolean variables
+     * @return Constraint
+     */
+    public static Constraint nor(IntegerVariable... literals){
+        for(IntegerVariable lit : literals){
+            if(!lit.isBoolean())throw new ModelException("NOR constraint must be used with boolean variables");
+        }
+        return new ComponentConstraint(ConstraintType.NOR, null, literals);
+    }
+
+    /**
+     * A reified constraint for logical conjunction between boolean variables
+     * binVar = lit1 NOR lit2 NOR ... NOR litn
+     * @param binVar reified variable
+     * @param literals list of boolean variables
+     * @return Constraint
+     */
+    public static Constraint reifiedNor(IntegerVariable binVar, IntegerVariable... literals){
+        IntegerVariable[] vars = ArrayUtils.append(new IntegerVariable[]{binVar}, literals);
+        for(IntegerVariable var : vars){
+            if(!var.isBoolean())throw new ModelException("reifiedNor constraint must be used with boolean variables");
+        }
+        return new ComponentConstraint(ConstraintType.REIFIEDNOR, null, vars);
     }
 
     /**
@@ -4203,8 +4259,16 @@ public class Choco {
 		return new MetaConstraint<Constraint>(ConstraintType.IMPLIES, n1, n2);
 	}
 
+    public static Constraint nand(Constraint... n) {
+		return new MetaConstraint<Constraint>(ConstraintType.NAND, n);
+	}
+
 	public static Constraint not(Constraint n) {
 		return new MetaConstraint<Constraint>(ConstraintType.NOT, n);
+	}
+
+    public static Constraint nor(Constraint... n) {
+		return new MetaConstraint<Constraint>(ConstraintType.NOR, n);
 	}
 
 	public static Constraint or(Constraint... n) {

@@ -66,31 +66,31 @@ public final class ReifiedLargeNor extends AbstractLargeIntSConstraint {
     }
 
     public void propagate() throws ContradictionException {
-        if (vars[0].isInstantiatedTo(0)) {
-            for (int i = 1; i < vars.length; i++) {
+        if(vars[0].isInstantiatedTo(1)){
+            for(int i = 1 ; i < vars.length; i++){
                 vars[i].instantiate(0, this, false);
             }
             setEntailed();
-        } else {
+        }else{
             int toZERO = 0;
             int lastIdx = 0;
-            for (int i = 1; i < vars.length; i++) {
-                if (vars[i].isInstantiatedTo(1)) {
-                    vars[0].instantiate(1, this, false);
+            for(int i = 1; i < vars.length; i++){
+                if(vars[i].isInstantiatedTo(1)){
+                    vars[0].instantiate(0, this, false);
                     setEntailed();
                     return;
-                } else if (vars[i].isInstantiatedTo(0)) {
+                }else if(vars[i].isInstantiatedTo(0)){
                     toZERO++;
-                } else {
+                }else{
                     lastIdx = i;
                 }
             }
-            if (toZERO == vars.length - 1) {
-                vars[0].instantiate(0, this, false);
+            if(toZERO == vars.length-1){
+                vars[0].instantiate(1, this, false);
                 setEntailed();
                 return;
-            } else if ((toZERO == vars.length - 2)
-                    && (vars[0].isInstantiatedTo(1))) {
+            }else if((toZERO == vars.length - 2)
+                    && (vars[0].isInstantiatedTo(1))){
                 vars[lastIdx].instantiate(1, this, false);
                 setEntailed();
                 return;
@@ -103,32 +103,32 @@ public final class ReifiedLargeNor extends AbstractLargeIntSConstraint {
     @Override
     public void awakeOnInst(int idx) throws ContradictionException {
         int val = vars[idx].getVal();
-        switch (idx) {
-            case 1:
-                switch (val) {
-                    case 0:
-                        for (int i = 1; i < vars.length; i++) {
+        switch (idx){
+            case 0:
+                switch (val){
+                    case 1:
+                        for(int i = 1 ; i < vars.length; i++){
                             vars[i].instantiate(0, this, false);
                         }
                         setEntailed();
                         break;
-                    case 1:
-                        if (toZERO.get() >= vars.length - 2) {
+                    case 0:
+                        if(toZERO.get()>= vars.length-2){
                             filter();
                         }
                         break;
                 }
                 break;
             default:
-                switch (val) {
-                    case 0:
-                        vars[0].instantiate(1, this, false);
+                switch (val){
+                    case 1:
+                        vars[0].instantiate(0, this, false);
                         setEntailed();
                         break;
-                    case 1:
+                    case 0:
                         toZERO.add(1);
                         // traitement de bool = 1 et 1 var inconnue
-                        if (toZERO.get() >= vars.length - 2) {
+                        if(toZERO.get()>= vars.length-2){
                             filter();
                         }
                         break;
@@ -140,20 +140,20 @@ public final class ReifiedLargeNor extends AbstractLargeIntSConstraint {
 
     private void filter() throws ContradictionException {
         int toZero = toZERO.get();
-        int n = vars.length - 1;
-        if (toZero == n) {
-            vars[0].instantiate(0, this, false);
+        int n = vars.length-1;
+        if(toZero == n){
+            vars[0].instantiate(1, this, false);
             setEntailed();
-        } else if (vars[0].isInstantiatedTo(1)) {
-            for (int i = n; i > 0; i--) {
-                if (!vars[i].isInstantiated()) {
+        }else if(vars[0].isInstantiatedTo(0)){
+            for(int i = n; i > 0; i--){
+                if(!vars[i].isInstantiated()){
                     vars[i].instantiate(1, this, false);
                     setEntailed();
                     break;
                 }
                 // speed up
-                else if (!vars[n + 1 - i].isInstantiated()) {
-                    vars[n + 1 - i].instantiate(1, this, false);
+                else if(!vars[n+1-i].isInstantiated()){
+                    vars[n+1-i].instantiate(1, this, false);
                     setEntailed();
                     break;
                 }
@@ -193,21 +193,26 @@ public final class ReifiedLargeNor extends AbstractLargeIntSConstraint {
     }
 
     public Boolean isEntailed() {
-        if(vars[0].isInstantiatedTo(0)){
-            for (int i = 1; i < vars.length; i++) {
-                if (vars[i].isInstantiatedTo(1)){
-                    return Boolean.TRUE;
+        if(vars[0].isInstantiated()){
+            int val = vars[0].getVal();
+            if(val == 1){
+                for (int i = 1; i < vars.length; i++) {
+                   if (vars[i].isInstantiatedTo(1)){
+                        return Boolean.FALSE;
+                   }
                 }
-            }
-            return null;
-        }else{
-            for (int i = 1; i < vars.length; i++) {
-                if (vars[i].isInstantiatedTo(1)){
-                    return Boolean.FALSE;
+                return Boolean.TRUE;
+            }else{
+                for (int i = 1; i < vars.length; i++) {
+                   if (vars[i].isInstantiatedTo(1)){
+                        return Boolean.TRUE;
+                   }
                 }
+                return Boolean.FALSE;
+
             }
-            return Boolean.TRUE;
         }
+        return null;
     }
 
 }

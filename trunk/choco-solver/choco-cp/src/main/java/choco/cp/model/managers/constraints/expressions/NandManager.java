@@ -57,7 +57,7 @@ public class NandManager extends IntConstraintManager{
     public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
         if (solver instanceof CPSolver) {
                 if (parameters == null) {
-                    BooleanFactory.nand(solver.getEnvironment(), solver.getVar(variables));
+                    return BooleanFactory.nand(solver.getEnvironment(), solver.getVar(variables));
                 }
             }
             throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");

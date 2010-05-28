@@ -57,7 +57,7 @@ public class NorManager extends IntConstraintManager{
     public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
         if (solver instanceof CPSolver) {
                 if (parameters == null) {
-                    BooleanFactory.nor(solver.getVar(variables));
+                    return BooleanFactory.nor(solver.getVar(variables));
                 }
             }
             throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
