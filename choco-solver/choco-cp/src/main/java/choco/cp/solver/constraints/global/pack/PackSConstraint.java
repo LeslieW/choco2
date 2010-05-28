@@ -23,7 +23,6 @@
 package choco.cp.solver.constraints.global.pack;
 
 import choco.cp.solver.SettingType;
-import static choco.cp.solver.SettingType.DYNAMIC_LB;
 import choco.cp.solver.constraints.BitFlags;
 import choco.kernel.common.opres.nosum.NoSumList;
 import choco.kernel.common.opres.pack.LowerBoundFactory;
@@ -40,6 +39,8 @@ import gnu.trove.TIntArrayList;
 import gnu.trove.TIntProcedure;
 
 import java.util.Arrays;
+
+import static choco.cp.solver.SettingType.DYNAMIC_LB;
 
 /**
  * <b>{@link Pack} which maintains a primal-dual packing model.</b><br>
@@ -266,10 +267,12 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 	protected final void checkEnveloppes() throws ContradictionException {
 		for (int bin = 0; bin < svars.length; bin++) {
 			int inf;
+            //TODO : check if enveloppe is empty, to avoid infinite loop
 			while( (inf = svars[bin].getEnveloppeInf())<0) {
 				svars[bin].remFromEnveloppe(inf, this, false);
 			}
 			int sup;
+            // TODO: check if enveloppe is empty, to avoid infinite loop
 			while( (sup = svars[bin].getEnveloppeSup()) > bins.length-1) {
 				svars[bin].remFromEnveloppe(sup, this, false);
 			}

@@ -55,7 +55,7 @@ public final class AndManager extends IntConstraintManager {
     public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
         if (solver instanceof CPSolver) {
                 if (parameters == null) {
-                    BooleanFactory.and(solver.getVar(variables));
+                    return BooleanFactory.and(solver.getVar(variables));
                 }
             }
             throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");

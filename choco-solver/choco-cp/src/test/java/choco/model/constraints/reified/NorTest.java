@@ -25,7 +25,7 @@ package choco.model.constraints.reified;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.EqualXC;
-import choco.cp.solver.constraints.integer.channeling.ReifiedLargeAnd;
+import choco.cp.solver.constraints.integer.channeling.ReifiedLargeNor;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
@@ -50,11 +50,11 @@ import static choco.Choco.*;
 * Since : Choco 2.1.1
 * Update : Choco 2.1.1
 */
-public class AndTest {
+public class NorTest {
 
     @Test
     public void test1(){
-        for(int i = 0; i < 50; i++){
+        for(int i = 0; i < 100; i++){
             Model m1 = new CPModel();
             Model m2 = new CPModel();
             Solver s1 = new CPSolver();
@@ -62,9 +62,9 @@ public class AndTest {
 
             IntegerVariable[] bool = makeBooleanVarArray("b", 2);
 
-            m1.addConstraint(and(bool));
+            m1.addConstraint(nor(bool));
 
-            m2.addConstraint(and(eq(bool[0],1), eq(bool[1], 1)));
+            m2.addConstraint(nor(eq(bool[0],1), eq(bool[1], 1)));
 
             s1.read(m1);
             s2.read(m2);
@@ -85,7 +85,7 @@ public class AndTest {
     @Test
     public void test2(){
         Random r;
-        for(int i = 0; i < 50; i++){
+        for(int i = 0; i < 100; i++){
             r = new Random(i);
             Model m1 = new CPModel();
             Model m2 = new CPModel();
@@ -94,14 +94,14 @@ public class AndTest {
 
             IntegerVariable[] bool = makeBooleanVarArray("b", 5+r.nextInt(5));
 
-            m1.addConstraint(and(bool));
+            m1.addConstraint(nor(bool));
 
             Constraint[] cs = new Constraint[bool.length];
             for(int j = 0; j < bool.length; j++){
                 cs[j] = eq(bool[j],1);
             }
 
-            m2.addConstraint(and(cs));
+            m2.addConstraint(nor(cs));
 
             s1.read(m1);
             s2.read(m2);
@@ -122,7 +122,7 @@ public class AndTest {
     @Test
     public void test3(){
         Random r;
-        for(int i = 0; i < 50; i++){
+        for(int i = 0; i < 200; i++){
             r = new Random(i);
             Model m1 = new CPModel();
             Model m2 = new CPModel();
@@ -130,9 +130,9 @@ public class AndTest {
             Solver s2 = new CPSolver();
 
             IntegerVariable bin = makeBooleanVar("bin");
-            IntegerVariable[] bool = makeBooleanVarArray("b", 1+r.nextInt(20));
+            IntegerVariable[] bool = makeBooleanVarArray("b", 1+r.nextInt(10));
 
-            Constraint c = reifiedAnd(bin, bool);
+            Constraint c = reifiedNor(bin, bool);
 
             m1.addConstraint(c);
             m1.addConstraint(eq(bin,0));
@@ -152,6 +152,7 @@ public class AndTest {
 
 
             s1.solveAll();
+
             s2.solveAll();
             int nbSol = (int)Math.pow(2,bool.length)-1;
 
@@ -163,11 +164,11 @@ public class AndTest {
     @Test
     public void test4(){
         Random r;
-        for(int i = 1; i< 100; i++){
+        for(int i = 1; i< 200; i++){
             r = new Random(i);
             Model m1 = new CPModel();
             IntegerVariable[] bool = makeBooleanVarArray("b", 3);
-            Constraint c = reifiedAnd(bool[0], bool[1],bool[2]);
+            Constraint c = reifiedNor(bool[0], bool[1],bool[2]);
             m1.addConstraint(c);
             int nbSol = 4;
             int ad = r.nextInt(7);
@@ -217,7 +218,7 @@ public class AndTest {
             IntegerVariable[] bin = makeBooleanVarArray("bin", 1);
             IntegerVariable[] bool = makeBooleanVarArray("b", 1+r.nextInt(10));
             IntegerVariable[] bools = ArrayUtils.append(bin, bool);
-            Constraint c = reifiedAnd(bin[0], bool);
+            Constraint c = reifiedNor(bin[0], bool);
             m1.addConstraint(c);
             int idx = r.nextInt(bools.length);
             int val = r.nextInt(2);
@@ -242,17 +243,17 @@ public class AndTest {
         }
     }
 
-    private static class AndChecker extends TuplesTest {
+    private static class NorChecker extends TuplesTest {
         public boolean checkTuple(int[] tuple) {
-            int size = tuple.length-1;
             int bin = tuple[0];
             int sum = 0;
             int i  = 1 ;
-            while (i <  tuple.length) {
+            while (i<  tuple.length) {
                 sum += tuple[i];
                 i++;
+                if(sum>0)break;
             }
-            return (bin == 1 && sum == size)||(bin == 0 && sum < size);
+            return (bin == 1 && sum == 0)||(bin == 0 && sum == 1);
         }
     }
 
@@ -267,8 +268,8 @@ public class AndTest {
             IntegerVariable[] bin = makeBooleanVarArray("bin", 1);
             IntegerVariable[] bool = makeBooleanVarArray("b", 1+r.nextInt(10));
             IntegerVariable[] bools = ArrayUtils.append(bin, bool);
-            Constraint c1 = reifiedAnd(bin[0], bool);
-            Constraint c2 = relationTupleAC(bools, new AndChecker());
+            Constraint c1 = reifiedNor(bin[0], bool);
+            Constraint c2 = relationTupleAC(bools, new NorChecker());
 
             m1.addConstraint(c1);
             m2.addConstraint(c2);
@@ -310,10 +311,10 @@ public class AndTest {
     public void test7(){
         Solver s = new CPSolver();
         IntDomainVar a  = s.createEnumIntVar("a", 1, 1);
-        IntDomainVar b  = s.createEnumIntVar("b", 1, 1);
-        IntDomainVar c  = s.createEnumIntVar("c", 1, 1);
+        IntDomainVar b  = s.createEnumIntVar("b", 0, 0);
+        IntDomainVar c  = s.createEnumIntVar("c", 0, 0);
 
-        s.post(new ReifiedLargeAnd(new IntDomainVar[]{a,b,c}, s.getEnvironment()));
+        s.post(new ReifiedLargeNor(new IntDomainVar[]{a,b,c}, s.getEnvironment()));
 
         s.solveAll();
 
@@ -334,7 +335,7 @@ public class AndTest {
         IntDomainVar h  = s.createEnumIntVar("h", 0, 0);
 
         s.post(new EqualXC(b, 0));
-        s.post(new ReifiedLargeAnd(new IntDomainVar[]{a,b,c, d, e, f, g, h}, s.getEnvironment()));
+        s.post(new ReifiedLargeNor(new IntDomainVar[]{a,b,c, d, e, f, g, h}, s.getEnvironment()));
 
         s.setVarIntSelector(new StaticVarOrder(s, new IntDomainVar[]{a,b ,c, d, e, f, g, h}));
         s.solveAll();
