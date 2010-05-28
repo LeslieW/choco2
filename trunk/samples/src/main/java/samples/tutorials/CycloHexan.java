@@ -28,7 +28,6 @@
 // **************************************************
 package samples.tutorials;
 
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.real.Equation;
@@ -46,8 +45,10 @@ import choco.kernel.solver.variables.real.RealInterval;
 import choco.kernel.solver.variables.real.RealIntervalConstant;
 
 import java.text.MessageFormat;
-import static java.text.MessageFormat.format;
 import java.util.List;
+
+import static choco.Choco.*;
+import static java.text.MessageFormat.format;
 
 public class CycloHexan extends PatternExample {
 
@@ -56,7 +57,7 @@ public class CycloHexan extends PatternExample {
 
     @Override
     public void buildModel() {
-        _m = new CPModel();
+        model = new CPModel();
 
         x = makeRealVar("x", Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
         y = makeRealVar("y", -1.0e8, 1.0e8);
@@ -76,44 +77,44 @@ public class CycloHexan extends PatternExample {
         c2 = eq(exp2, -13);
         c3 = eq(exp3, -13);
 
-        _m.addConstraints(c1, c2, c3);
+        model.addConstraints(c1, c2, c3);
     }
 
     @Override
     public void buildSolver() {
-        _s = new CPSolver();
-        _s.setPrecision(1e-8);
-        _s.read(_m);
+        solver = new CPSolver();
+        solver.setPrecision(1e-8);
+        solver.read(model);
 
 
-        Equation eq1 = (Equation) _s.getCstr(c1);
-        eq1.addBoxedVar(_s.getVar(y));
-        eq1.addBoxedVar(_s.getVar(z));
+        Equation eq1 = (Equation) solver.getCstr(c1);
+        eq1.addBoxedVar(solver.getVar(y));
+        eq1.addBoxedVar(solver.getVar(z));
 
-        Equation eq2 = (Equation) _s.getCstr(c2);
-        eq2.addBoxedVar(_s.getVar(x));
-        eq2.addBoxedVar(_s.getVar(z));
+        Equation eq2 = (Equation) solver.getCstr(c2);
+        eq2.addBoxedVar(solver.getVar(x));
+        eq2.addBoxedVar(solver.getVar(z));
 
-        Equation eq3 = (Equation) _s.getCstr(c3);
-        eq3.addBoxedVar(_s.getVar(x));
-        eq3.addBoxedVar(_s.getVar(y));
+        Equation eq3 = (Equation) solver.getCstr(c3);
+        eq3.addBoxedVar(solver.getVar(x));
+        eq3.addBoxedVar(solver.getVar(y));
 
     }
 
     @Override
     public void solve() {
         boolean first = false;
-        _s.setFirstSolution(first);
-        _s.generateSearchStrategy();
-        _s.addGoal(new AssignInterval(new CyclicRealVarSelector(_s), new RealIncreasingDomain()));
-        _s.launch();
+        solver.setFirstSolution(first);
+        solver.generateSearchStrategy();
+        solver.addGoal(new AssignInterval(new CyclicRealVarSelector(solver), new RealIncreasingDomain()));
+        solver.launch();
     }
 
     @Override
     public void prettyOut() {
-        packSolutions(_s, _m);
+        packSolutions(solver, model);
         StringBuffer st = new StringBuffer(24);
-        List solutions = _s.getSearchStrategy().getStoredSolutions();
+        List solutions = solver.getSearchStrategy().getStoredSolutions();
         st.append("The CycloHexane problem consists in finding the 3D configuration of a cyclohexane molecule." +
                 "It is decribed with a system of three non linear equations : \n" +
                 " y^2 * (1 + z^2) + z * (z - 24 * y) = -13 \n" +
@@ -123,7 +124,7 @@ public class CycloHexan extends PatternExample {
         st.append(MessageFormat.format("{0} solutions : \n", solutions.size()));
         for (Object solution1 : solutions) {
             Solution solution = (Solution) solution1;
-            for (int v = 0; v < _m.getNbRealVars(); v++) {
+            for (int v = 0; v < model.getNbRealVars(); v++) {
                 st.append(format("var nb {0} in {1}\n", v, solution.getRealValue(v)));
             }
             st.append('\n');
