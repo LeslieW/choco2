@@ -190,6 +190,8 @@ private final Solver solver;
 public int lastWorld = -1;
 public int lastNbOfBacktracks = -1;
 public int lastNbOfRestarts = -1;
+private TIntHashSet boundUpdate;
+private boolean computed;
 
 /**
  * Constructs a multi-cost-regular constraint propagator
@@ -268,6 +270,7 @@ public FastMultiCostRegular(final IntDomainVar[] vars, final IntDomainVar[] CR, 
                 this.toUpdateLeft[i] = new TIntStack();
                 this.toUpdateRight[i] = new TIntStack();
         }
+        this.boundUpdate = new TIntHashSet();
 
 
         LOGGER.finest("NB STATES : "+auto.getNbStates());
@@ -748,7 +751,7 @@ protected void checkWorld() throws ContradictionException
         int currentbt = solver.getBackTrackCount();
         int currentrestart = solver.getRestartCount();
         //System.err.println("TIME STAMP : "+currentbt+"   BT COUNT : "+solver.getBackTrackCount());
-       // assert (currentbt == solver.getBackTrackCount());
+        // assert (currentbt == solver.getBackTrackCount());
         if (currentworld < lastWorld || currentbt != lastNbOfBacktracks || currentrestart > lastNbOfRestarts)
         {
 
@@ -763,8 +766,8 @@ protected void checkWorld() throws ContradictionException
 
 
                 this.getGraph().getPathFinder().computeShortestAndLongestPath(toRemove,z);
-//                assert(toRemove.size() == 0); // PAS SUR DE L'ASSERT
-                //  this.delayedGraphUpdate();
+                computed = true;
+                //assert(toRemove.size() == 0); // PAS SUR DE L'ASSERT
                 // this.graph.toUpdateLeft.reset();
                 //this.graph.toUpdateRight.reset();
         }
@@ -785,36 +788,36 @@ protected void delayedGraphUpdate() throws ContradictionException {
 
         boolean needUpdate=false;
         try {
-        do
-        //while (toRemove.size() > 0)
-        {
-                while (toRemove.size() > 0)
-               {
-                        int n = toRemove.pop();
-                        needUpdate = this.graph.removeArc(n, toRemove,toUpdateLeft,toUpdateRight);
-                       // modifiedBound[0] = modifiedBound[1]  = true;
-                }
-               // if (needUpdate)
-                for (int k = 0 ; k <= nbR ; k++)
+                do
+                //while (toRemove.size() > 0)
                 {
-                        while (this.toUpdateLeft[k].size() > 0)
+                        while (toRemove.size() > 0)
                         {
-                                this.graph.updateLeft(this.toUpdateLeft[k],toRemove,k,modifiedBound);
-                                if (toRemove.size() > 0) break;
+                                int n = toRemove.pop();
+                                needUpdate = this.graph.removeArc(n, toRemove,toUpdateLeft,toUpdateRight);
+                                // modifiedBound[0] = modifiedBound[1]  = true;
                         }
-                        while(this.toUpdateRight[k].size() > 0)
+                        // if (needUpdate)
+                        for (int k = 0 ; k <= nbR ; k++)
                         {
-                                this.graph.updateRight(this.toUpdateRight[k],toRemove,k,modifiedBound);
-                                if (toRemove.size() > 0) break;
+                                while (this.toUpdateLeft[k].size() > 0)
+                                {
+                                        this.graph.updateLeft(this.toUpdateLeft[k],toRemove,k,modifiedBound);
+                                        if (toRemove.size() > 0) break;
+                                }
+                                while(this.toUpdateRight[k].size() > 0)
+                                {
+                                        this.graph.updateRight(this.toUpdateRight[k],toRemove,k,modifiedBound);
+                                        if (toRemove.size() > 0) break;
+                                }
                         }
-                }
 
 
 
 
-        } while (toRemove.size() > 0) ;
+                } while (toRemove.size() > 0) ;
         } catch (ArrayIndexOutOfBoundsException ignored) {}
-       // System.err.println("MAX : "+max);
+        // System.err.println("MAX : "+max);
         //  this.prefilter();
 }
 
@@ -887,16 +890,24 @@ public void awakeOnRem(final int idx, final int val) throws ContradictionExcepti
 
 public final void awakeOnInst(final int idx)
 {
-        this.constAwake(false);
+        boundChange(idx);
 }
 
 public final void awakeOnSup(final int idx)
 {
-        this.constAwake(false);
+        boundChange(idx);
+
 }
 
 public final void awakeOnInf(final int idx)
 {
+        boundChange(idx);
+}
+
+public void boundChange(final int idx)
+{
+        boundUpdate.add(idx-vs.length);
+        computed =false;
         this.constAwake(false);
 }
 
@@ -932,6 +943,7 @@ public void awake() throws ContradictionException
 public void propagate() throws ContradictionException
 {
         checkWorld();
+        this.delayedBoundUpdate();
         this.delayedGraphUpdate();
         this.modifiedBound[0] = true;
         this.modifiedBound[1] = true;
@@ -941,6 +953,17 @@ public void propagate() throws ContradictionException
 
         assert(check());
         assert(isGraphConsistent());
+}
+
+private void delayedBoundUpdate() throws ContradictionException
+{
+        if (!computed && boundUpdate.size() > 0)
+        {
+
+                //this.slp.computeShortestAndLongestPath(toRemove,z);
+                this.getGraph().delayedBoundUpdate(toRemove,z,boundUpdate.toArray());
+                boundUpdate.clear();
+        }
 }
 
 public void rebuildCostRegInfo() throws ContradictionException
@@ -1108,5 +1131,5 @@ public int[] getMinMaxPathCostForAssignment(int col, int val, int... resources) 
 public int getMinPathCost(int... resources) { return this.graph.getMinPathCost(resources); }
 
 public double[] getInstantiatedLayerCosts(int layer) { return this.graph.getInstantiatedLayerCosts(layer);}
- 
+
 }

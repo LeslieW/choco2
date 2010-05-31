@@ -248,6 +248,37 @@ public final StoredIndexedBipartiteSetWithOffset getSupport(int i, int j)
 }
 
 
+public void delayedBoundUpdate(TIntStack toRemove, IntDomainVar[] z, int... dim)
+{
+        for (int i = 0 ; i < offsets.length ; i++)
+        {
+                DisposableIntIterator iter = this.layers[i].getIterator();
+                while (iter.hasNext())
+                {
+                        int n = iter.next();
+                        DisposableIntIterator it = this.GNodes.outArcs[n].getIterator();
+                        while(it.hasNext())
+                        {
+                                int arc = it.next();
+                                int val = this.GArcs.values[arc];
+                                int orig = this.GArcs.origs[arc];
+                                int dest = this.GArcs.dests[arc];
+                                for (int k : dim)
+                                {
+                                        if (GNodes.spfsI[orig][k] + GArcs.originalCost[arc][k] + GNodes.spftI[dest][k] > z[k].getSup() ||
+                                             GNodes.lpfsI[orig][k] + GArcs.originalCost[arc][k] + GNodes.lpftI[dest][k] < z[k].getInf())
+                                        {
+                                                toRemove.push(arc);
+                                        }
+                                }
+                        }
+                        it.dispose();
+                }
+                iter.dispose();
+        }
+}
+
+
 public boolean removeArc(int arcId, TIntStack toRemove, TIntStack[] updateLeft, TIntStack[] updateRight) throws ContradictionException
 {
         inStack.clear(arcId);
