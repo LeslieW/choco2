@@ -10,20 +10,21 @@ import choco.kernel.model.constraints.pack.PackModeler;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.visu.components.chart.ChocoChartFactory;
-import static choco.visu.components.chart.ChocoChartFactory.createCumulativeChart;
-import static choco.visu.components.chart.ChocoChartFactory.createDeviationLineChart;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.xy.YIntervalSeries;
 import org.jfree.data.xy.YIntervalSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
-import samples.tutorials.pack.BinPackingExample;
-import samples.tutorials.pack.CPpack;
+import samples.tutorials.scheduling.pack.BinPackingExample;
+import samples.tutorials.scheduling.pack.CPpack;
 
 import java.awt.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static choco.visu.components.chart.ChocoChartFactory.createCumulativeChart;
+import static choco.visu.components.chart.ChocoChartFactory.createDeviationLineChart;
 
 public final class ChocoDemo {
 
