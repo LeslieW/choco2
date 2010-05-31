@@ -107,6 +107,10 @@ int xOff;
 int yOff;
 int zOff;
 int Zidx;
+
+private TIntHashSet boundUpdate;
+private boolean computed;
+
 private static final double PRECISION = Math.pow(10,Constant.MCR_PRECISION);
 
 
@@ -141,6 +145,8 @@ public SoftMultiCostRegular(IntDomainVar[] x, IntDomainVar[] y, IntDomainVar[] z
         {
                 this.map.put(x[i],i);
         }
+
+        this.boundUpdate = new TIntHashSet();
 
 
 }
@@ -365,7 +371,7 @@ public boolean updateViolationLB() throws ContradictionException
         boolean modbound = false;
         double[] lambda = new double[y.length];
         Arrays.fill(lambda,0);
-      //  lambda[0] = 1.0;
+        //  lambda[0] = 1.0;
         double step;
         int k=0;
         int[] sp;
@@ -569,6 +575,7 @@ public void checkWorld() throws ContradictionException
                 this.toRemove.reset();
                 this.graph.inStack.clear();
                 path.computeShortestAndLongestPath(toRemove,y,tableConstraints);
+                computed = true;
                 // this.delayedGraphUpdate();
 
         }
@@ -581,7 +588,7 @@ public void checkWorld() throws ContradictionException
 public void awake() throws ContradictionException
 {
         makeTableConstraints();
-       // makeRedondantSumConstraint();
+        // makeRedondantSumConstraint();
         //  solver.post(solver.eq(x[0],0));
         //  solver.post(solver.eq(x[2],0));
 
@@ -631,6 +638,8 @@ public void awakeOnRem(final int idx, final int val) throws ContradictionExcepti
         else if (idx < zOff)
         {
                 tableConstraints[idx-yOff].awakeOnRem(0,val);
+                boundChange(idx);
+
         }
         else if (idx < Zidx)
         {
@@ -642,11 +651,12 @@ public void awakeOnRem(final int idx, final int val) throws ContradictionExcepti
 public void awakeOnInst(int idx) throws ContradictionException
 {
         checkWorld();
-        if (idx > yOff)
+        if (idx >= yOff)
         {
                 if (idx < zOff)
                 {
                         tableConstraints[idx-yOff].awakeOnInst(0);
+                        boundChange(idx);
                 }
                 else if (idx < Zidx)
                 {
@@ -661,11 +671,13 @@ public void awakeOnInst(int idx) throws ContradictionException
 public void awakeOnSup(int idx) throws ContradictionException
 {
         checkWorld();
-        if (idx > yOff)
+        if (idx >= yOff)
         {
                 if (idx < zOff)
                 {
                         tableConstraints[idx-yOff].awakeOnSup(0);
+                        boundChange(idx);
+
                 }
                 else if (idx < Zidx)
                 {
@@ -678,11 +690,13 @@ public void awakeOnSup(int idx) throws ContradictionException
 public void awakeOnInf(int idx) throws ContradictionException
 {
         checkWorld();
-        if (idx > yOff)
+        if (idx >= yOff)
         {
                 if (idx < zOff)
                 {
                         tableConstraints[idx-yOff].awakeOnInf(0);
+                        boundChange(idx);
+
                 }
                 else if (idx < Zidx)
                 {
@@ -690,6 +704,12 @@ public void awakeOnInf(int idx) throws ContradictionException
                 }
         }
         this.constAwake(false);
+}
+
+public void boundChange(final int idx)
+{
+        boundUpdate.add(idx-yOff);
+        computed =false;
 }
 
 
@@ -700,10 +720,8 @@ public void propagate() throws ContradictionException
 {
         count++;
         checkWorld();
-        if (count ==  7)
-                System.err.print("");
         //this.delayedGraphUpdate();
-
+        this.delayedBoundUpdate();
         boolean b = this.delayedGraphUpdate();
         b|=  this.updateViolationLB();
         b|= this.updateViolationUB();
@@ -720,6 +738,17 @@ public void propagate() throws ContradictionException
 
 //        this.updateViolationUB();
 
+}
+
+private void delayedBoundUpdate() throws ContradictionException
+{
+        if (!computed && boundUpdate.size() > 0)
+        {
+
+                //this.slp.computeShortestAndLongestPath(toRemove,z);
+                this.getGraph().delayedBoundUpdate(toRemove,y,boundUpdate.toArray());
+                boundUpdate.clear();
+        }
 }
 
 /**
