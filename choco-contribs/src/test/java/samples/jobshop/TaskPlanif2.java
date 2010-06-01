@@ -43,38 +43,38 @@ public class TaskPlanif2 extends PatternExample {
 
 	@Override
 	public void buildModel() {
-		_m = new CPModel();
+		model = new CPModel();
 		//variables
 		durations =  Choco.makeIntVarArray("d", nbTasks,5, 55, Options.V_ENUM);
 		tasks = Choco.makeTaskVarArray("t", 0, horizon, durations);
 		for (TaskVariable t : tasks) t.start().addOption(Options.V_ENUM);
 		sumDurations = Choco.makeIntVar("sumDur", nbTasks * MIN_DURATION, nbTasks * MAX_DURATION);
-		_m.addVariables(tasks);
+		model.addVariables(tasks);
 		//constraints
-		_m.addConstraint(Choco.eq(sumDurations, Choco.sum(durations)));
+		model.addConstraint(Choco.eq(sumDurations, Choco.sum(durations)));
 		for (int i = 0; i < nbTasks; i++) {
-			_m.addConstraint( Choco.nth(tasks[i].start(), durationIfStartAt, tasks[i].duration()));
+			model.addConstraint( Choco.nth(tasks[i].start(), durationIfStartAt, tasks[i].duration()));
 		}
 		for (int i = 1; i < nbTasks; i++) {
-			_m.addConstraint( Choco.startsAfterEnd(tasks[i], tasks[i-1]));
+			model.addConstraint( Choco.startsAfterEnd(tasks[i], tasks[i-1]));
 		}
 
 	}
 
 	@Override
 	public void buildSolver() {
-		_s = new CPSolver();
-		_s.read(_m);
-		final IntDomainVar[] v = { _s.getVar(sumDurations)};
-		_s.attachGoal( new AssignOrForbidIntVarVal(new StaticVarOrder(_s, v), new MinVal()));
-		_s.addGoal( new AssignVar(new MinDomain(_s, _s.getVar(durations)), new MinVal()));
-		_s.addGoal( new IncompleteAssignvar(_s.getVar(tasks)));
+		solver = new CPSolver();
+		solver.read(model);
+		final IntDomainVar[] v = { solver.getVar(sumDurations)};
+		solver.attachGoal( new AssignOrForbidIntVarVal(new StaticVarOrder(solver, v), new MinVal()));
+		solver.addGoal( new AssignVar(new MinDomain(solver, solver.getVar(durations)), new MinVal()));
+		solver.addGoal( new IncompleteAssignvar(solver.getVar(tasks)));
 	}
 
 	@Override
 	public void prettyOut() {
 		if( LOGGER.isLoggable(Level.INFO)) {
-			LOGGER.info( StringUtils.pretty( _s.getVar(tasks)));
+			LOGGER.info( StringUtils.pretty( solver.getVar(tasks)));
 		}
 
 	}
@@ -94,9 +94,9 @@ public class TaskPlanif2 extends PatternExample {
 	@Override
 	public void solve() {
 		//ChocoLogging.setVerbosity(Verbosity.VERBOSE);
-		_s.generateSearchStrategy();
-		_s.setTimeLimit(120*1000);
-		_s.minimize(_s.getVar(sumDurations), false);
+		solver.generateSearchStrategy();
+		solver.setTimeLimit(120*1000);
+		solver.minimize(solver.getVar(sumDurations), false);
 	}
 
 
@@ -104,7 +104,7 @@ public class TaskPlanif2 extends PatternExample {
 
 		public IncompleteAssignvar(TaskVar[] tasks) {
 			super(
-					new StaticVarOrder(_s, VariableUtils.getStartVars(tasks)),
+					new StaticVarOrder(solver, VariableUtils.getStartVars(tasks)),
 					new MinVal()
 			);
 		}

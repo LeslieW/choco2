@@ -13,8 +13,8 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.data.general.Dataset;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
-import samples.tutorials.pack.BinPackingExample;
-import samples.tutorials.pack.CPpack;
+import samples.tutorials.scheduling.pack.BinPackingExample;
+import samples.tutorials.scheduling.pack.CPpack;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;

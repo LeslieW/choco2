@@ -1,13 +1,14 @@
 package samples;
 
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
-import samples.tutorials.MagicSquare;
 import samples.tutorials.PatternExample;
+import samples.tutorials.trunk.MagicSquare;
+
+import static choco.Choco.*;
 
 /**
  * A set n distinct numbers taken from the interval [1,n^2] form a magic series if their sum is the nth magic constant M_n=n*(n^2+1)/2
@@ -31,25 +32,25 @@ public class MagicSeries extends PatternExample {
 
 	@Override
 	public void buildModel() {
-		_m = new CPModel();
+		model = new CPModel();
 		magicSerie = makeIntVarArray("s", n, 1, n*n, Options.V_ENUM);
 		magicSumConstraint = eq ( sum(magicSerie), magicSum);
-		_m.addConstraint( magicSumConstraint);
+		model.addConstraint( magicSumConstraint);
 		for (int i = 1; i < magicSerie.length; i++) {
-			_m.addConstraint( lt(magicSerie[i-1], magicSerie[i]));
+			model.addConstraint( lt(magicSerie[i-1], magicSerie[i]));
 		}
 	}
 
 	@Override
 	public void buildSolver() {
-		_s = new CPSolver();
-		_s.read(_m);
+		solver = new CPSolver();
+		solver.read(model);
 
 	}
 
 	@Override
 	public void prettyOut() {
-		LOGGER.info( _s.getCstr(magicSumConstraint).pretty());
+		LOGGER.info( solver.getCstr(magicSumConstraint).pretty());
 
 	}
 
@@ -61,7 +62,7 @@ public class MagicSeries extends PatternExample {
 
 	@Override
 	public void solve() {
-		_s.solveAll();
+		solver.solveAll();
 	}
 
 	public static void main(String[] args) {
