@@ -97,15 +97,15 @@ public class Transportation extends PatternExample {
 
 	@Override
 	public void buildModel() {
-		_m = new CPModel();
+		model = new CPModel();
 		shipping = Choco.makeIntVarArray("s", n, m, 0, MathUtils.max(stocks), Options.V_BOUND);
 		for (int i = 0; i < n; i++) {
 			//The total amount shipped from origin i must be equals to the sum of amount going from it to all destinations
-			_m.addConstraint( Choco.eq( Choco.sum(shipping[i]), stocks[i]));
+			model.addConstraint( Choco.eq( Choco.sum(shipping[i]), stocks[i]));
 		}
 		for (int i = 0; i < m; i++) {
 			//The total amount received at destination i must be equals to the sum of amount shipped to it from all origins.
-			_m.addConstraint( Choco.eq( Choco.sum( ArrayUtils.getColumn(shipping, i)), demands[i]));
+			model.addConstraint( Choco.eq( Choco.sum( ArrayUtils.getColumn(shipping, i)), demands[i]));
 		}
 		//objective function
 		objective = Choco.makeIntVar("total_cost", 0, MathUtils.max(costs) * totalStockOrDemand, Options.V_OBJECTIVE,
@@ -114,23 +114,23 @@ public class Transportation extends PatternExample {
 		for (int i = 0; i < n; i++) {
 			objExp = Choco.plus(objExp, Choco.scalar(shipping[i], costs[i]));
 		}
-		_m.addConstraint( Choco.eq(objective, objExp));
+		model.addConstraint( Choco.eq(objective, objExp));
 	}
 
 	@Override
 	public void buildSolver() {
 		CPSolver solver = new CPSolver();
-		_s = solver;
-		_s.read(_m);
-		//System.out.println(_s.pretty());
+		solver = solver;
+		solver.read(model);
+		//System.out.println(solver.pretty());
 		//Naive Search Strategy: sort the variables shipping_ij accroding to their increasing costs
 		//Select shipping with minimal cost and assign its maximal value
 		final IntDomainVar[] dvars = solver.getIntDecisionVars();
 		final IntDomainVar[] sdvars = new IntDomainVar[dvars.length];
 		final IPermutation permutation = PermutationUtils.getSortingPermuation( ArrayUtils.flatten(costs));
 		permutation.applyPermutation(dvars, sdvars);
-		_s.setVarIntSelector(new StaticVarOrder(_s, sdvars));
-		_s.setValIntSelector(new MaxVal());
+		solver.setVarIntSelector(new StaticVarOrder(solver, sdvars));
+		solver.setValIntSelector(new MaxVal());
 	}
 
 	@Override
@@ -139,7 +139,7 @@ public class Transportation extends PatternExample {
 			StringBuilder b = new StringBuilder(32);
 			for (int i = 0; i < shipping.length; i++) {
 				for (int j = 0; j < shipping[i].length; j++) {
-					final int v = _s.getVar(shipping[i][j]).getVal();
+					final int v = solver.getVar(shipping[i][j]).getVal();
 					if(v > 0) {
 						b.append(i).append(" -> ").append(j);
 						b.append(": ").append(v).append('\n');
@@ -152,8 +152,8 @@ public class Transportation extends PatternExample {
 
 	@Override
 	public void solve() {
-		//System.out.println(_s.pretty());
-		_s.minimize(false);
+		//System.out.println(solver.pretty());
+		solver.minimize(false);
 
 	}
 
@@ -166,7 +166,7 @@ public class Transportation extends PatternExample {
 		int s = 0;
 		for (int i = 1; i < 4; i++) {
 				tr.execute(new int[]{13, 3, i});
-				s += tr._s.getTimeCount();
+				s += tr.solver.getTimeCount();
 			}
 			System.out.println(s+" ms");
 	}

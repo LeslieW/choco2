@@ -23,7 +23,6 @@
 package choco.visu;
 
 import choco.Choco;
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -39,17 +38,19 @@ import choco.kernel.solver.Configuration;
 import choco.kernel.solver.ResolutionPolicy;
 import choco.kernel.solver.Solver;
 import choco.visu.components.panels.VarChocoPanel;
-import static choco.visu.components.papplets.ChocoPApplet.*;
 import choco.visu.papplet.*;
 import gnu.trove.TIntObjectHashMap;
 import gnu.trove.TObjectIntHashMap;
 import org.junit.Before;
 import org.junit.Test;
-import samples.tutorials.Picross;
-import static samples.tutorials.seminar.ExDonaldGeraldRobert.*;
+import samples.tutorials.trunk.Picross;
 
 import java.awt.*;
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
+import static choco.visu.components.papplets.ChocoPApplet.*;
+import static samples.tutorials.seminar.ExDonaldGeraldRobert.*;
 
 /*
  * Created by IntelliJ IDEA.
