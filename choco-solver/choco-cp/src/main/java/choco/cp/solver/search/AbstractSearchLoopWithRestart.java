@@ -186,7 +186,7 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 			//Other variables should be fixed by propagation or remained not instantiated 
 			searchStrategy.nextMove = moveAfterSolution; //set the next move (backtrack, restart or stop)
 			stop = true; //a solution has been found, we should run the loop again to find another solution
-			searchStrategy.recordSolution(); //record the solution (could change the nextMove)
+                        searchStrategy.recordSolution(); //record the solution (could change the nextMove)
 		} catch (ContradictionException e) {
 			searchStrategy.nextMove = e.getContradictionMove();
 		}

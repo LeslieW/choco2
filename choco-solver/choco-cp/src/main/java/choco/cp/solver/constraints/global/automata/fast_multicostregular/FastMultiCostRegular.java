@@ -1132,4 +1132,9 @@ public int getMinPathCost(int... resources) { return this.graph.getMinPathCost(r
 
 public double[] getInstantiatedLayerCosts(int layer) { return this.graph.getInstantiatedLayerCosts(layer);}
 
+public void forcePathRecomputation() throws ContradictionException
+{
+   lastWorld = Integer.MAX_VALUE;
+        checkWorld();
+}
 }
