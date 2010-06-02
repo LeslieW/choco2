@@ -268,7 +268,11 @@ public void delayedBoundUpdate(TIntStack toRemove, IntDomainVar[] z, int... dim)
                                         if (GNodes.spfsI[orig][k] + GArcs.originalCost[arc][k] + GNodes.spftI[dest][k] > z[k].getSup() ||
                                              GNodes.lpfsI[orig][k] + GArcs.originalCost[arc][k] + GNodes.lpftI[dest][k] < z[k].getInf())
                                         {
-                                                toRemove.push(arc);
+                                                if (!isInStack(arc))
+                                                {
+                                                        setInStack(arc);
+                                                        toRemove.push(arc);
+                                                }
                                         }
                                 }
                         }
