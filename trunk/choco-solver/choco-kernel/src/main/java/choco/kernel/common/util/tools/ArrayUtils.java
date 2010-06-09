@@ -375,7 +375,30 @@ public final class ArrayUtils {
 
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+public static int[] zeroToNShuffle(int nb)
+{
+        return zeroToNShuffle(nb,System.nanoTime());
+}
+public static int[] zeroToNShuffle(int nb, long seed)
+{
+        Random r = new Random(seed);
+        int[] ret = new int[nb];
+        ArrayList<Integer> tmp = new ArrayList<Integer>();
+        for (int i =  0; i < nb ; i++) tmp.add(i);
+
+        for (int i = 0 ; i < nb ; i++)
+        {
+                int idx = r.nextInt(tmp.size());
+                ret[i] = tmp.get(idx);
+                System.err.println(ret[i]);
+                System.err.println(tmp.remove(idx));
+        }
+
+        return ret;
+
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
