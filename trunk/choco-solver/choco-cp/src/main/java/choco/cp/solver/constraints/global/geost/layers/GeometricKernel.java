@@ -11,15 +11,17 @@ import choco.cp.solver.constraints.global.geost.geometricPrim.Region;
 import choco.cp.solver.constraints.global.geost.internalConstraints.*;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.objects.Pair;
+import choco.kernel.memory.IStateInt;
 import choco.kernel.model.variables.geost.ShiftedBox;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import static java.text.MessageFormat.format;
 import java.util.*;
 import java.util.logging.Logger;
+
+import static java.text.MessageFormat.format;
 
 class MemoStore {
     public boolean active;
@@ -673,24 +675,25 @@ public final class GeometricKernel {
      * @param oIDs   The list of object IDs
      * @param ectrs  The list of external constraints
      * @param ctrlVs The list of controlling vectors
+     * @param idxLastFreeObject
      * @return It return true if we can fix all the objects. Otherwise it returns false.
      */
-    public boolean fixAllObjs(int k, int[] oIDs, List<ExternalConstraint> ectrs, List<int[]> ctrlVs) throws ContradictionException {
+    public boolean fixAllObjs(int k, int[] oIDs, List<ExternalConstraint> ectrs, List<int[]> ctrlVs, IStateInt idxLastFreeObject) throws ContradictionException {
         //LOGGER.info("FixallObjs");
         for (int i = 0; i < ectrs.size(); i++) {
             ectrs.get(i).setFrame(externalLayer.InitFrameExternalConstraint(ectrs.get(i), oIDs));
 
         }
         int nbOfCtrlV = ctrlVs.size();
-        for (int i = 0; i < oIDs.length; i++) {
+        int lastIdx = idxLastFreeObject.get();
+        for (int i = 0; i < lastIdx; i++) {
             Obj o = stp.getObject(oIDs[i]);
-            if (o.coordInstantiated()) {
-                continue;
-            }
+
             int m = i % nbOfCtrlV;
 
             //long tmpTimeFixObj = System.nanoTime() / ONE_MILLION;
             boolean b = fixObj(k, oIDs[i], ctrlVs.get(m));
+
             //stp.opt.timeFixObj += ((System.nanoTime() / ONE_MILLION) - tmpTimeFixObj);
 
             if (!b) {
@@ -706,6 +709,11 @@ public final class GeometricKernel {
                                 .getRelatedExternalConstraints().get(j), oIDi).getRelForbidRegions(oIDs[i]));
                     }
                 }
+                // swap ids between new fixed object and last free object
+                int tmp = oIDs[i];
+                oIDs[i--] = oIDs[--lastIdx];
+                oIDs[lastIdx] = tmp;
+                idxLastFreeObject.add(-1);
             }
         }
         return true;
@@ -769,7 +777,7 @@ public final class GeometricKernel {
     }
 
 
-    public boolean fixAllObjs_incr(int k, int[] oIDs, List<ExternalConstraint> ectrs, List<int[]> ctrlVs) throws ContradictionException {
+    public boolean fixAllObjs_incr(int k, int[] oIDs, List<ExternalConstraint> ectrs, List<int[]> ctrlVs, IStateInt idxLastFreeObject) throws ContradictionException {
 
         Integer sid_prime = null;
         int[][] domain_prime = null;
@@ -780,12 +788,10 @@ public final class GeometricKernel {
         }
 
         int nbOfCtrlV = ctrlVs.size();
-        for (int i = 0; i < oIDs.length; i++) {
+        int lastIdx = idxLastFreeObject.get();
+        for (int i = 0; i < lastIdx; i++) {
             Obj o = stp.getObject(oIDs[i]);
             //LOGGER.info("Object "+oIDs[i]+" "+o);
-            if (o.coordInstantiated()) {
-                continue;
-            }
             int m = i % nbOfCtrlV;
 
             int[] ctrlV = ctrlVs.get(m);
@@ -861,6 +867,11 @@ public final class GeometricKernel {
                 } catch (java.lang.ClassCastException e) {/*Reached only if internal constraint is not an outbox*/}
             }
             ICTRS.addAll(incr_ICTRS);
+            // swap ids between new fixed object and last free object
+            int tmp = oIDs[i];
+            oIDs[i--] = oIDs[--lastIdx];
+            oIDs[lastIdx] = tmp;
+            idxLastFreeObject.add(-1);
 
         }
         return true;
@@ -959,9 +970,7 @@ public final class GeometricKernel {
      */
     boolean pruneFix(Obj o, int k, int[] ctrlV, List<InternalConstraint> ictrs) throws ContradictionException {
         stp.opt.PruneFixCalled++;
-        if (o.coordInstantiated()) {
-            return true;
-        }
+
         boolean printit = false;
 
         if (printit) {

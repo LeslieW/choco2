@@ -9,6 +9,7 @@ It handles geometrical constraints (non-overlapping, distance, etc.) between pol
 %The \texttt{geost}$(K, O, S, C)$ constraint is given set of parameters which will define the environment of \texttt{geost}. The parameters are as follows:
 The parameters of \texttt{geost}$(dim, objects, shiftedBoxes, eCtrs)$ are respectively:
 the space dimension, the list of geometrical objects, the set of boxes that compose the shapes of the objects, the set of geometrical constraints.
+The greedy mode should be used without external constraints to have safe results, because it excludes external constraints from its exploration and look for instanciation of variables involved in geost which respect the geost constraint.
 \end{notedef}
 
 \begin{itemize}

@@ -1,26 +1,25 @@
-
 /* * * * * * * * * * * * * * * * * * * * * * * * *
- *          _       _                            *
- *         |  °(..)  |                           *
- *         |_  J||L _|        CHOCO solver       *
- *                                               *
- *    Choco is a java library for constraint     *
- *    satisfaction problems (CSP), constraint    *
- *    programming (CP) and explanation-based     *
- *    constraint solving (e-CP). It is built     *
- *    on a event-based propagation mechanism     *
- *    with backtrackable structures.             *
- *                                               *
- *    Choco is an open-source software,          *
- *    distributed under a BSD licence            *
- *    and hosted by sourceforge.net              *
- *                                               *
- *    + website : http://choco.emn.fr            *
- *    + support : choco@emn.fr                   *
- *                                               *
- *    Copyright (C) F. Laburthe,                 *
- *                  N. Jussien    1999-2008      *
- * * * * * * * * * * * * * * * * * * * * * * * * */
+*          _       _                            *
+*         |  °(..)  |                           *
+*         |_  J||L _|        CHOCO solver       *
+*                                               *
+*    Choco is a java library for constraint     *
+*    satisfaction problems (CSP), constraint    *
+*    programming (CP) and explanation-based     *
+*    constraint solving (e-CP). It is built     *
+*    on a event-based propagation mechanism     *
+*    with backtrackable structures.             *
+*                                               *
+*    Choco is an open-source software,          *
+*    distributed under a BSD licence            *
+*    and hosted by sourceforge.net              *
+*                                               *
+*    + website : http://choco.emn.fr            *
+*    + support : choco@emn.fr                   *
+*                                               *
+*    Copyright (C) F. Laburthe,                 *
+*                  N. Jussien    1999-2008      *
+* * * * * * * * * * * * * * * * * * * * * * * * */
 
 package choco.model.constraints.global;
 
@@ -35,6 +34,7 @@ import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.constraints.geost.GeostOptions;
 import choco.kernel.model.constraints.geost.externalConstraints.IExternalConstraint;
 import choco.kernel.model.constraints.geost.externalConstraints.NonOverlappingModel;
 import choco.kernel.model.variables.geost.GeostObject;
@@ -47,8 +47,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 
@@ -469,92 +468,199 @@ public class GeostTest {
         }
     }
 
-	public static int[][] domOrigins = { { 0, 1, 0, 1 }, { 0, 1, 0, 1 },
-			{ 0, 1, 0, 3 }, };
+    public static int[][] domOrigins = {{0, 1, 0, 1}, {0, 1, 0, 1},
+            {0, 1, 0, 3},};
 
-	public static int[][] domShapes = { { 0, 1 }, { 2, 2 }, { 3, 3 } };
+    public static int[][] domShapes = {{0, 1}, {2, 2}, {3, 3}};
 
-	public static int[][] shBoxes = { { 0, 0, 0, 1, 3 }, { 0, 0, 0, 2, 1 },
-			{ 1, 0, 0, 2, 1 }, { 1, 1, 0, 1, 3 }, { 2, 0, 0, 2, 1 },
-			{ 2, 1, 0, 1, 3 }, { 2, 0, 2, 2, 1 }, { 3, 0, 0, 2, 1 }, };
+    public static int[][] shBoxes = {{0, 0, 0, 1, 3}, {0, 0, 0, 2, 1},
+            {1, 0, 0, 2, 1}, {1, 1, 0, 1, 3}, {2, 0, 0, 2, 1},
+            {2, 1, 0, 1, 3}, {2, 0, 2, 2, 1}, {3, 0, 0, 2, 1},};
 
     @Test
-	public void exp2D2Test() {
+    public void exp2D2Test() {
 
         dim = 2;
         int nbOfObj = 3;
 
-		// create the choco problem
-		Model m = new CPModel();
+        // create the choco problem
+        Model m = new CPModel();
 
-		// Create Objects
-		List<GeostObject> objects = new ArrayList<GeostObject>();
+        // Create Objects
+        List<GeostObject> objects = new ArrayList<GeostObject>();
 
-		for (int i = 0; i < nbOfObj; i++) {
-			IntegerVariable shapeId = Choco.makeIntVar("sid_" +i,  domShapes[i][0], domShapes[i][1]);
-			IntegerVariable coords[] = new IntegerVariable[dim];
-			coords[0] = Choco.makeIntVar("x_" +i, domOrigins[i][0], domOrigins[i][1]);
-			coords[1] = Choco.makeIntVar("y_" +i, domOrigins[i][2], domOrigins[i][3]);
+        for (int i = 0; i < nbOfObj; i++) {
+            IntegerVariable shapeId = Choco.makeIntVar("sid_" + i, domShapes[i][0], domShapes[i][1]);
+            IntegerVariable coords[] = new IntegerVariable[dim];
+            coords[0] = Choco.makeIntVar("x_" + i, domOrigins[i][0], domOrigins[i][1]);
+            coords[1] = Choco.makeIntVar("y_" + i, domOrigins[i][2], domOrigins[i][3]);
 
-			// ++ Modification
-			// Additional Constraint
-			m.addConstraint(Choco.geq(coords[0], 1));
-			// -- Modification
+            // ++ Modification
+            // Additional Constraint
+            m.addConstraint(Choco.geq(coords[0], 1));
+            // -- Modification
 
-			IntegerVariable start = Choco.makeIntVar("start", 0, 0);
-			IntegerVariable duration = Choco.makeIntVar("duration", 1, 1);
-			IntegerVariable end = Choco.makeIntVar("end", 1, 1);
-			objects.add(new GeostObject(dim, i, shapeId, coords, start, duration, end));
-		}
+            IntegerVariable start = Choco.makeIntVar("start", 0, 0);
+            IntegerVariable duration = Choco.makeIntVar("duration", 1, 1);
+            IntegerVariable end = Choco.makeIntVar("end", 1, 1);
+            objects.add(new GeostObject(dim, i, shapeId, coords, start, duration, end));
+        }
 
-		// create shiftedboxes and add them to corresponding shapes
-		List<ShiftedBox> sb =
-		    new ArrayList<ShiftedBox>();
+        // create shiftedboxes and add them to corresponding shapes
+        List<ShiftedBox> sb =
+                new ArrayList<ShiftedBox>();
 
-		for (int i = 0; i < shBoxes.length; i++) {
-			int[] offset = { shBoxes[i][1], shBoxes[i][2] };
-			int[] sizes = { shBoxes[i][3], shBoxes[i][4] };
-			sb.add(new ShiftedBox(shBoxes[i][0], offset, sizes));
-		}
+        for (int i = 0; i < shBoxes.length; i++) {
+            int[] offset = {shBoxes[i][1], shBoxes[i][2]};
+            int[] sizes = {shBoxes[i][3], shBoxes[i][4]};
+            sb.add(new ShiftedBox(shBoxes[i][0], offset, sizes));
+        }
 
-		// Create the external constraints vecotr
-		List<IExternalConstraint> ectr = new ArrayList<IExternalConstraint>();
+        // Create the external constraints vecotr
+        List<IExternalConstraint> ectr = new ArrayList<IExternalConstraint>();
 
-		// create the list of dimensions for the external constraint
-		int[] ectrDim = new int[dim];
-		for (int d = 0; d < dim; d++)
-			ectrDim[d] = d;
+        // create the list of dimensions for the external constraint
+        int[] ectrDim = new int[dim];
+        for (int d = 0; d < dim; d++)
+            ectrDim[d] = d;
 
-		// create the list of object ids for the external constraint
-		int[] objOfEctr = new int[nbOfObj];
-		for (int d = 0; d < nbOfObj; d++) {
-			objOfEctr[d] = objects.get(d).getObjectId();
-		}
+        // create the list of object ids for the external constraint
+        int[] objOfEctr = new int[nbOfObj];
+        for (int d = 0; d < nbOfObj; d++) {
+            objOfEctr[d] = objects.get(d).getObjectId();
+        }
 
-		// create the external constraint of non overlapping type
-		NonOverlappingModel n = new NonOverlappingModel(Constants.NON_OVERLAPPING,
-				ectrDim, objOfEctr);
-		// add the external constraint to the ectr vector
-		ectr.add(n);
+        // create the external constraint of non overlapping type
+        NonOverlappingModel n = new NonOverlappingModel(Constants.NON_OVERLAPPING,
+                ectrDim, objOfEctr);
+        // add the external constraint to the ectr vector
+        ectr.add(n);
 
-		// create the geost constraint
-		Constraint geost = Choco.geost(dim, objects, sb, ectr);
+        // create the geost constraint
+        Constraint geost = Choco.geost(dim, objects, sb, ectr);
 
-		// post the geost constraint to the choco problem
-		m.addConstraint(geost);
+        // post the geost constraint to the choco problem
+        m.addConstraint(geost);
 
-		// build a solver
-		Solver s = new CPSolver();
-		// read the problem
-		s.read(m);
+        // build a solver
+        Solver s = new CPSolver();
+        // read the problem
+        s.read(m);
 
-		// solve the probem
-		s.solve();
+        // solve the probem
+        s.solve();
 
         Assert.assertSame("No solution expected", Boolean.FALSE, s.isFeasible());
 
-		// print the solution
-		LOGGER.info(s.pretty());
-	}
+        // print the solution
+        LOGGER.info(s.pretty());
+    }
+
+    @Test
+    public void test_ajdvries() {
+        for(int nbO = 4; nbO < 257; nbO*=4){
+            boolean inc = true;
+            do{
+                int width = nbO * 5;
+                int height = nbO * 5;
+                int maxX = width - 5;
+                int maxY = height - 5;
+
+                CPModel m = new CPModel();
+
+                List<GeostObject> geosts = new Vector<GeostObject>();
+                List<ShiftedBox> sb = new Vector<ShiftedBox>();
+
+                List<IntegerVariable> x = new ArrayList<IntegerVariable>();
+                List<IntegerVariable> y = new ArrayList<IntegerVariable>();
+                for (int a = 0; a < 16; a++) {
+                    IntegerVariable varX = Choco.makeIntVar("img_" + a + "_x", 0, maxX);
+                    IntegerVariable varY = Choco.makeIntVar("img_" + a + "_y", 0, maxY);
+                    x.add(varX);
+
+                    y.add(varY);
+                    IntegerVariable coordinates[] = new IntegerVariable[]{varX, varY};
+
+                    geosts.add(new GeostObject(2, a, Choco.constant(a), coordinates, Choco.constant(0), Choco.constant(1),
+                            Choco.constant(1)));
+
+                    sb.add(new ShiftedBox(a, new int[]{0, 0}, new int[]{5, 5}));
+                }
+
+                Vector<IExternalConstraint> ectr = new Vector();
+
+                int[] ectrDim = new int[]{0, 1};
+                int[] objOfEctr = new int[geosts.size()];
+                for (int i = 0; i < geosts.size(); i++) {
+                    objOfEctr[i] = geosts.get(i).getObjectId();
+                }
+
+                NonOverlappingModel n = new NonOverlappingModel(Constants.NON_OVERLAPPING, ectrDim, objOfEctr);
+                ectr.add(n);
+
+                Vector<int[]> ctrlVs = new Vector<int[]>();
+                int[] v0 = {1, -3, -2};
+                ctrlVs.add(v0);
+
+                // Definition of the GEOST constraint
+                GeostOptions.increment = inc;
+                Constraint geost = Choco.geost(2, geosts, sb, ectr, ctrlVs);
+                m.addConstraint(geost);
+
+                Solver solver = new CPSolver();
+                solver.read(m);
+                Assert.assertTrue(solver.solve());
+                inc ^=true;
+            }while(!inc);
+        }
+
+    }
+
+    @Test
+    public void testNonOverlap() {
+        CPModel model = new CPModel();
+
+        List<GeostObject> geosts = new ArrayList<GeostObject>();
+        Map<Integer, ShiftedBox> boxesById = new HashMap<Integer, ShiftedBox>();
+
+        // Blocks to be placed
+        int currentShapeId = 0;
+        ShiftedBox block = new ShiftedBox(currentShapeId, new int[]{0, 0}, new int[]{20, 1});
+        boxesById.put(currentShapeId, block);
+
+        IntegerVariable[] fixedCoordinates = new IntegerVariable[]{Choco.constant(0), Choco.constant(0)};
+        IntegerVariable[] variableCoordinates = new IntegerVariable[]{Choco.makeIntVar("variable", 0, 0), Choco.constant(0)};
+
+
+        geosts.add(new GeostObject(2, 0, Choco.constant(currentShapeId), fixedCoordinates, Choco.constant(0),
+                Choco.constant(1), Choco.constant(1)));
+
+        geosts.add(new GeostObject(2, 1, Choco.constant(currentShapeId), fixedCoordinates, Choco.constant(0),
+                Choco.constant(1), Choco.constant(1)));
+
+        List<IExternalConstraint> ectr = new ArrayList<IExternalConstraint>();
+
+        int[] ectrDim = new int[]{0, 1};
+        int[] objOfEctr = new int[geosts.size()];
+
+        NonOverlappingModel n = new NonOverlappingModel(Constants.NON_OVERLAPPING, ectrDim, objOfEctr);
+        ectr.add(n);
+
+        List<int[]> ctrlVs = new ArrayList<int[]>();
+        int[] v0 = {1, -3, -2};
+        // int[] v1 = { 1, -2, 2 };
+        // ctrlVs.add(v1);
+        ctrlVs.add(v0);
+
+        // Definition of the GEOST constraint
+        Constraint geost = Choco.geost(2, geosts, new ArrayList<ShiftedBox>(boxesById.values()), ectr, ctrlVs);
+        model.addConstraint(geost);
+
+        CPSolver solver = new CPSolver();
+        solver.read(model);
+
+        Assert.assertFalse(solver.solve());
+    }
+
 }
 
