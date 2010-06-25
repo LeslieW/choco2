@@ -37,7 +37,7 @@ import choco.kernel.solver.variables.set.SetVar;
 // *     for Research and Education                 *
 // **************************************************
 
-public final class AssignSetVar extends AbstractSetBranchingStrategy {
+public class AssignSetVar extends AbstractSetBranchingStrategy {
 
 	VarSelector<SetVar> varselector;
 	ValSelector<SetVar> valselector;

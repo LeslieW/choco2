@@ -25,7 +25,7 @@ package choco.cp.solver.search.integer.valiterator;
 import choco.kernel.solver.search.ValIterator;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-public final class IncreasingDomain implements ValIterator<IntDomainVar> {
+public class IncreasingDomain implements ValIterator<IntDomainVar> {
 
   /**
    * testing whether more branches can be considered after branch i, on the alternative associated to variable x

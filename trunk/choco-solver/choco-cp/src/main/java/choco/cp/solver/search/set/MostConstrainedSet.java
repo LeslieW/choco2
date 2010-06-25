@@ -34,7 +34,7 @@ import choco.kernel.solver.variables.set.SetVar;
 // *     for Research and Education                 *
 // **************************************************
 
-public final class MostConstrainedSet extends AbstractSetVarSelector {
+public class MostConstrainedSet extends AbstractSetVarSelector {
 
     public MostConstrainedSet(Solver solver, SetVar[] decisionvs) {
         super(solver, decisionvs);

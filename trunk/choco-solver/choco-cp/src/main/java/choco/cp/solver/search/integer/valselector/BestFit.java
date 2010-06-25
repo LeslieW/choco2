@@ -32,7 +32,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * @since 7 déc. 2008 version 2.0.1</br>
  * @version 2.0.1</br>
  */
-public final class BestFit implements ValSelector<IntDomainVar> {
+public class BestFit implements ValSelector<IntDomainVar> {
 
 	public final PackSConstraint pack;
 

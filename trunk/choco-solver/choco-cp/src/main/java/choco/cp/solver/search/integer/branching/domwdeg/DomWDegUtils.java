@@ -28,19 +28,20 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.Extension;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
-import static choco.kernel.solver.constraints.SConstraintType.INTEGER;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.Iterator;
+
+import static choco.kernel.solver.constraints.SConstraintType.INTEGER;
 /**
  * computation of the weighted degrees of variables and number of failures of constraints
  * @author Arnaud Malapert</br> 
  * @since 24 mars 2010 version 2.1.1</br>
  * @version 2.1.1</br>
  */
-public final class DomWDegUtils {
+public class DomWDegUtils {
 
 
 	//*****************************************************************//

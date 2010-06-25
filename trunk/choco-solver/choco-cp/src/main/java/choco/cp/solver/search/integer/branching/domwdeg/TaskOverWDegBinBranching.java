@@ -31,15 +31,15 @@ import choco.kernel.solver.constraints.global.scheduling.IPrecedence;
 import choco.kernel.solver.search.IntBranchingDecision;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-public final class TaskOverWDegBinBranching extends AbstractDomOverWDegBinBranching {
-	
+public class TaskOverWDegBinBranching extends AbstractDomOverWDegBinBranching {
+
 	private final OrderingValSelector precValSelector;
-	
+
 	public TaskOverWDegBinBranching(Solver solver, IPrecedenceRatio[] varRatios, OrderingValSelector valHeuri, Number seed) {
 		super(solver, varRatios, seed);
 		this.precValSelector = valHeuri;
 	}
-		
+
 	public void setFirstBranch(final IntBranchingDecision decision) {
 		final IPrecedence brObj =  (IPrecedence) decision.getBranchingObject();
 		decision.setBranchingValue(precValSelector.getBestVal( brObj));
@@ -54,7 +54,7 @@ public final class TaskOverWDegBinBranching extends AbstractDomOverWDegBinBranch
 		super.setNextBranch(decision);
 	}
 
-	
+
 
 	@Override
 	public void goDownBranch(final IntBranchingDecision decision) throws ContradictionException {
@@ -74,5 +74,5 @@ public final class TaskOverWDegBinBranching extends AbstractDomOverWDegBinBranch
 		return best == null ? null :  ( (IPrecedenceRatio) best).getPrecedence();
 	}
 
-	
+
 }

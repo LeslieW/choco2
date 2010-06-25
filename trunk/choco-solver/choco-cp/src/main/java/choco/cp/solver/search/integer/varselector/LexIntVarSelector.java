@@ -35,7 +35,7 @@ import java.util.List;
  *   a first heuristic is applied finding the best constraint
  *   ties are broken with the second heuristic
  */
-public final class LexIntVarSelector implements VarSelector<IntDomainVar> {
+public class LexIntVarSelector implements VarSelector<IntDomainVar> {
 	
 	TiedIntVarSelector h1;
 	

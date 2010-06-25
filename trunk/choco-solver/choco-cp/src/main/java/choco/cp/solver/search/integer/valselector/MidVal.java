@@ -25,7 +25,7 @@ package choco.cp.solver.search.integer.valselector;
 import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-public final class MidVal implements ValSelector<IntDomainVar> {
+public class MidVal implements ValSelector<IntDomainVar> {
     /**
      * selecting a value in the middle of the domain
      *

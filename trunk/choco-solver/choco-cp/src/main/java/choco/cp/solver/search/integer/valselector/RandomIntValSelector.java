@@ -28,7 +28,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.Random;
 
-public final class RandomIntValSelector implements ValSelector<IntDomainVar> {
+public class RandomIntValSelector implements ValSelector<IntDomainVar> {
 	protected Random random;
 
 	/**

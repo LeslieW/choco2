@@ -34,7 +34,7 @@ import choco.kernel.solver.variables.real.RealVar;
  * <p/>
  * Created by: Guillaume on 2 nov. 2004
  */
-public final class RealIncreasingDomain implements ValIterator<RealVar> {
+public class RealIncreasingDomain implements ValIterator<RealVar> {
 
     /**
      * testing whether more branches can be considered after branch i, on the alternative associated to variable x

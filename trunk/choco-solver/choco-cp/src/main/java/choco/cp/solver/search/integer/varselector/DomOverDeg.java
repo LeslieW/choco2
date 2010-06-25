@@ -33,7 +33,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * @deprecated @see {@link BranchingFactory}
  */
 @Deprecated
-public final class DomOverDeg extends DoubleHeuristicIntVarSelector {
+public class DomOverDeg extends DoubleHeuristicIntVarSelector {
   public DomOverDeg(Solver solver) {
     super(solver);
 
