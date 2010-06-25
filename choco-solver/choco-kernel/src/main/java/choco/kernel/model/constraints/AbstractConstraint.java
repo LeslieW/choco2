@@ -83,11 +83,6 @@ public abstract class AbstractConstraint extends ModelObject implements Constrai
 		return type;
 	}
 
-	@Override
-	public final void setType(final ConstraintType type) {
-		this.type = type;
-	}
-
 
 	/**
 	 * get rid of the constants within the returned scopes !
