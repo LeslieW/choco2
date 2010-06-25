@@ -26,7 +26,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.integer.IntHeuristicIntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-public final class MinValueDomain extends IntHeuristicIntVarSelector {
+public class MinValueDomain extends IntHeuristicIntVarSelector {
 	public MinValueDomain(Solver solver) {
 		super(solver);
 	}

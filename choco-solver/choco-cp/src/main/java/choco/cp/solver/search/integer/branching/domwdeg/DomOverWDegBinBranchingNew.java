@@ -29,7 +29,7 @@ import choco.kernel.solver.search.IntBranchingDecision;
 import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-public final class DomOverWDegBinBranchingNew extends AbstractDomOverWDegBinBranching {
+public class DomOverWDegBinBranchingNew extends AbstractDomOverWDegBinBranching {
 
 	// L'heuristique pour le valeurs
 	protected final ValSelector valSelector;

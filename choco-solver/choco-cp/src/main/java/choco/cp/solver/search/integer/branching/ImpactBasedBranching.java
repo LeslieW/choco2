@@ -39,7 +39,7 @@ import java.util.*;
  * <p/>
  * Written by Guillaumme on 17 may 2008
  */
-public final class ImpactBasedBranching extends AbstractLargeIntBranchingStrategy {
+public class ImpactBasedBranching extends AbstractLargeIntBranchingStrategy {
 	Solver _solver;
 	IntDomainVar[] _vars;
 	AbstractImpactStrategy _ibs;

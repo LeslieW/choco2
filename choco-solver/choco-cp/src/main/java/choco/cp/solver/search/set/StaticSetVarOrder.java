@@ -35,7 +35,7 @@ import choco.kernel.solver.variables.set.SetVar;
 // *     for Research and Education                 *
 // **************************************************
 
-public final class StaticSetVarOrder extends AbstractSetVarSelector {
+public class StaticSetVarOrder extends AbstractSetVarSelector {
 
 	private final IStateInt last;
 

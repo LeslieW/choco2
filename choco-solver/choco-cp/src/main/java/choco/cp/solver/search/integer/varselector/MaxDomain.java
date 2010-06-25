@@ -26,7 +26,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.integer.IntHeuristicIntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-public final class MaxDomain extends IntHeuristicIntVarSelector {
+public class MaxDomain extends IntHeuristicIntVarSelector {
 	public MaxDomain(Solver solver) {
 		super(solver);
 	}

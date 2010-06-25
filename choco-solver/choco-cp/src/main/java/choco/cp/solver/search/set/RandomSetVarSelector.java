@@ -30,7 +30,7 @@ import choco.kernel.solver.variables.set.SetVar;
 import java.util.ArrayList;
 import java.util.Random;
 
-public final class RandomSetVarSelector extends AbstractSetVarSelector {
+public class RandomSetVarSelector extends AbstractSetVarSelector {
     protected ArrayList<SetVar> list = new ArrayList<SetVar>(10);
     protected Random random;
 

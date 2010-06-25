@@ -35,7 +35,7 @@ import choco.kernel.solver.variables.real.RealVar;
  * A binary branching assigning interval to subinterval.
  */
 
-public final class AssignInterval extends AbstractIntBranchingStrategy {
+public class AssignInterval extends AbstractIntBranchingStrategy {
 
 	protected VarSelector<RealVar> varSelector;
 	protected ValIterator valIterator;

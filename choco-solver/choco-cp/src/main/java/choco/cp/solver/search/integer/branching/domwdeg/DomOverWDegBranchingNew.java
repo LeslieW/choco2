@@ -37,7 +37,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * WARNING ! This implementation suppose that the variables will not change. It copies all variables in an array
  * at the beginning !!
  */
-public final class DomOverWDegBranchingNew extends AbstractDomOverWDegBranching {
+public class DomOverWDegBranchingNew extends AbstractDomOverWDegBranching {
 
 	private final ValIterator valIterator;
 

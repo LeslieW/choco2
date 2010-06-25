@@ -30,7 +30,7 @@ import choco.kernel.solver.variables.real.RealVar;
  * A cyclic variable selector : since a dichotomy algorithm is used, cyclic assiging is nedded for instantiate
  * a real interval variable.
  */
-public final class CyclicRealVarSelector extends AbstractRealVarSelector{
+public class CyclicRealVarSelector extends AbstractRealVarSelector{
     protected int current;
 
     //protected double precision = 1.e-6;

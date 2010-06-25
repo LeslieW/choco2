@@ -34,7 +34,7 @@ import choco.kernel.solver.variables.set.SetVar;
 // *     for Research and Education                 *
 // **************************************************
 
-public final class MinEnv implements ValSelector<SetVar> {
+public class MinEnv implements ValSelector<SetVar> {
 
 	
   public int getBestVal(SetVar v) {

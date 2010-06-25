@@ -35,7 +35,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * a first heuristic is appled for selecting a constraint.
  * from that constraint a second heuristic is applied for selecting the variable
  */
-public final class CompositeIntVarSelector implements VarSelector<IntDomainVar> {
+public class CompositeIntVarSelector implements VarSelector<IntDomainVar> {
     protected ConstraintSelector cs;
     protected HeuristicIntVarSelector cvs;
 

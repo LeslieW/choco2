@@ -38,7 +38,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * @since 7 déc. 2008 version 2.0.1</br>
  * @version 2.0.1</br>
  */
-public final class PackDynRemovals extends AssignVar {
+public class PackDynRemovals extends AssignVar {
 
 	public final PackSConstraint pack;
 

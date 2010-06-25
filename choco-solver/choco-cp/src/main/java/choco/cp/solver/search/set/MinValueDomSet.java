@@ -34,7 +34,7 @@ import choco.kernel.solver.variables.set.SetVar;
 // *     for Research and Education                 *
 // **************************************************
 
-public final class MinValueDomSet extends AbstractSetVarSelector {
+public class MinValueDomSet extends AbstractSetVarSelector {
 
 	
     public MinValueDomSet(Solver solver, SetVar[] vars) {

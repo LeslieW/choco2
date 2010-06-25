@@ -29,7 +29,7 @@ import choco.kernel.solver.variables.set.SetVar;
 import java.util.Random;
 import java.util.Vector;
 
-public final class RandomSetValSelector implements ValSelector<SetVar> {
+public class RandomSetValSelector implements ValSelector<SetVar> {
   protected Random random;
 
   /**
