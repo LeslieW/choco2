@@ -171,7 +171,7 @@ public class ShavingTools {
 		try {
 			objM.postIncFloorBound();
 		} catch (ContradictionException e) {
-			throw new SolverException("Destructive Lower Bound: Invalid bounds");
+			throw new SolverException("Destructive Lower Bound: Invalid bounds : "+objM.getObjectiveFloor());
 		}
 		try {
 			solver.propagate();

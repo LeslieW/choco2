@@ -23,7 +23,6 @@
 package choco.kernel.common.util.disposable;
 
 import choco.kernel.common.logging.ChocoLogging;
-import gnu.trove.TObjectIntHashMap;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
@@ -47,8 +46,6 @@ public abstract class Disposable {
      * MANDATORY to avoid multiple call to dispose()!
      */
     protected boolean disposable = true;
-
-    static TObjectIntHashMap<String> classes = new TObjectIntHashMap<String>();
 
     /**
      * This method allows to declare that an object is not used anymore. It
