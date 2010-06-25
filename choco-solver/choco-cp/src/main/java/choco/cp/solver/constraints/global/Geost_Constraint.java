@@ -12,6 +12,7 @@ import choco.cp.solver.constraints.global.geost.layers.IntermediateLayer;
 import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.objects.Pair;
+import choco.kernel.memory.IStateInt;
 import choco.kernel.model.variables.geost.ShiftedBox;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solution;
@@ -24,7 +25,16 @@ import java.util.List;
 
 public final class Geost_Constraint extends AbstractLargeIntSConstraint {
 
-	int[] oIDs;
+    /**
+     * Array of objects ids.
+     * initial order is not preserved in greedy mode, due to iteration over fixed objects.
+     */
+    int[] oIDs;
+    /**
+     * Index of the last non fixed object id (used with greedy mode)
+     */
+    IStateInt lastNonFixedO;
+
 	Constants cst;
 	Setup stp;
 	ExternalLayer externalLayer;
@@ -65,9 +75,10 @@ public final class Geost_Constraint extends AbstractLargeIntSConstraint {
 
 		//this should be changed and be provided globally to the system
 		oIDs = new int[stp.getNbOfObjects()];
-		for(int i = 0; i< stp.getNbOfObjects(); i++)
+		for(int i = 0; i< stp.getNbOfObjects(); i++){
 			oIDs[i] = objects.get(i).getObjectId();
-
+        }
+        lastNonFixedO = solver.getEnvironment().makeInt(oIDs.length);
 
         this.s = solver;
         this.greedyMode = 1;
@@ -106,9 +117,10 @@ public final class Geost_Constraint extends AbstractLargeIntSConstraint {
 
 		//this should be changed and be provided globally to the system
 		oIDs = new int[stp.getNbOfObjects()];
-		for(int i = 0; i< stp.getNbOfObjects(); i++)
+		for(int i = 0; i< stp.getNbOfObjects(); i++){
 			oIDs[i] = objects.get(i).getObjectId();
-
+        }
+        lastNonFixedO = solver.getEnvironment().makeInt(oIDs.length);
 
         this.s = solver;
 
@@ -117,7 +129,6 @@ public final class Geost_Constraint extends AbstractLargeIntSConstraint {
     public void filter() throws ContradictionException{
       if(this.greedyMode == 0)  {
 		  filterWithoutGreedyMode();
-
       }
 	  else {          
         long tmpTime = (System.nanoTime() / 1000000);
@@ -134,12 +145,12 @@ public final class Geost_Constraint extends AbstractLargeIntSConstraint {
 
         if (!increment) {
             long tmpTimeFixAllObj = System.nanoTime() / 1000000;
-            result=geometricKernel.fixAllObjs(cst.getDIM(), oIDs, stp.getConstraints(), this.ctrlVs);
+            result=geometricKernel.fixAllObjs(cst.getDIM(), oIDs, stp.getConstraints(), this.ctrlVs, lastNonFixedO);
             stp.opt.timeFixAllObj += ((System.nanoTime() / 1000000) - tmpTimeFixAllObj);
         }
         else {
             long tmpTimeFixAllObj = System.nanoTime() / 1000000;
-            result=geometricKernel.fixAllObjs_incr(cst.getDIM(), oIDs, stp.getConstraints(), this.ctrlVs);
+            result=geometricKernel.fixAllObjs_incr(cst.getDIM(), oIDs, stp.getConstraints(), this.ctrlVs, lastNonFixedO);
             stp.opt.timeFixAllObj += ((System.nanoTime() / 1000000) - tmpTimeFixAllObj);
         }
         if (!result){
@@ -287,5 +298,12 @@ public final class Geost_Constraint extends AbstractLargeIntSConstraint {
         return o.getRelatedInternalConstraints();
     }
 
+    public void setGreedy(boolean greedy){
+        this.greedyMode = greedy?1:0;
+    }
+
+    public boolean isGreedy(){
+        return greedyMode != 0;
+    }
 
 }
