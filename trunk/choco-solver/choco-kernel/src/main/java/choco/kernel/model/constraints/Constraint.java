@@ -22,14 +22,14 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.constraints;
 
-import java.util.logging.Logger;
-
 import choco.IPretty;
 import choco.kernel.common.IIndex;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.IFindManager;
 import choco.kernel.model.IOptions;
 import choco.kernel.model.IVariableArray;
+
+import java.util.logging.Logger;
 
 /*
  * Created by IntelliJ IDEA.
@@ -43,8 +43,6 @@ public interface Constraint extends IPretty, IIndex,IVariableArray, IFindManager
     final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
     public ConstraintType getConstraintType();
-    
-    public void setType(ConstraintType type);
 
     String getName();
     
