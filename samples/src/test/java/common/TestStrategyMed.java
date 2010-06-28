@@ -30,7 +30,6 @@ public class TestStrategyMed {
 
 	@BeforeClass
 	public static void setUp() {
-		ChocoLogging.toVerbose();
 		CONFIG.putFalse(STOP_AT_FIRST_SOLUTION);
 		CONFIG.putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
 		CONFIG.putInt(RESTART_BASE, 1);//many restarts, bad performance but good testing !
