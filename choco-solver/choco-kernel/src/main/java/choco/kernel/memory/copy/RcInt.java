@@ -40,7 +40,7 @@ public class RcInt implements IStateInt, RecomputableElement {
     private int timeStamp;
 
     public RcInt(EnvironmentCopying env) {
-        this(env,UNKNOWN_INT);
+        this(env,0);
     }
 
     public RcInt(EnvironmentCopying env, int i ) {
