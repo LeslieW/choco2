@@ -23,12 +23,12 @@
 package samples.tutorials.scheduling.pert;
 
 import choco.Choco;
-import static choco.Choco.eq;
-import static choco.Choco.nth;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import static choco.Choco.*;
 
 
 public class ProbabilisticPert extends DeterministicPert {
@@ -46,7 +46,7 @@ public class ProbabilisticPert extends DeterministicPert {
 		{1,2,3}
 	};
 
-	protected final int[][] durations;
+	protected int[][] intialDurations;
 
 	public final static int OPTIMISTIC=0;
 	public final static int LIKELY=1;
@@ -54,26 +54,36 @@ public class ProbabilisticPert extends DeterministicPert {
 	public final static int EXPECTED=3;
 	public final static int NB_ESTIMATION=4;
 
-	protected final IntegerVariable estimation;
+	protected IntegerVariable estimation;
 
     protected Constraint c;
 
 	protected final CPSolver[] estimated=new CPSolver[NB_ESTIMATION];
 
-	protected double[] expected = new double[NB_TASKS];
+	protected double[] expected;
 
-	public ProbabilisticPert(int horizon, int[][] durations) {
-		super(horizon, createDurationVariables(durations));
+    @Override
+    public void setUp(Object parameters) {
+        Object[] params = (Object[]) parameters;
+        this.horizon = (Integer) params[0];
+        this.nb_tasks = (Integer) params[1];
+        this.activities = (String[]) params[2];
+        this.intialDurations = (int[][]) params[3];
+        this.temporalconstraints = (int[][]) params[4];
+
+        this.expected =  new double[nb_tasks];
+
+        this.durations = createDurationVariables(this.nb_tasks, this.intialDurations);
 		this.estimation= Choco.makeIntVar("estimatio", 0, NB_ESTIMATION);
         c = eq(estimation, LIKELY);
         model.addConstraint(c);
-		this.durations=durations;
-		for (int i = 0; i < NB_TASKS; i++) {
-			model.addConstraint(nth(estimation, durations[i], tasks[i].duration()));
+		this.intialDurations = intialDurations;
+		for (int i = 0; i < this.nb_tasks; i++) {
+			model.addConstraint(nth(estimation, intialDurations[i], tasks[i].duration()));
 		}
-	}
+    }
 
-	public final static int[][] addExpectedTime(int[][] durations) {
+    public final static int[][] addExpectedTime(int[][] durations) {
 		if(durations[0].length!=3){
 			throw new ArrayIndexOutOfBoundsException("the argument should have three columns");
 		}
@@ -89,18 +99,18 @@ public class ProbabilisticPert extends DeterministicPert {
 	}
 
 	public double getStandardDeviation(int i) {
-		final double r= durations[i][PESSIMISTIC] - durations[i][OPTIMISTIC];
+		final double r= intialDurations[i][PESSIMISTIC] - intialDurations[i][OPTIMISTIC];
 		return r/6;
 	}
 
 	public void computeAllCPM() {
 		//compute CPM for each estimation
 		for (int i = 0; i < NB_ESTIMATION; i++) {
-			model.remove(c);
+			model.removeConstraint(c);
             c = eq(estimation, i);
             model.addConstraint(c);
 			this.criticalPathMethod();
-			this.estimated[i]=this.solver;
+			this.estimated[i]=(CPSolver)this.solver;
 		}
 	}
 
@@ -125,6 +135,14 @@ public class ProbabilisticPert extends DeterministicPert {
 		return b;
 	}
 
+
+    protected static IntegerVariable[] createDurationVariables(int nb_tasks, int[][] durations) {
+        IntegerVariable[] vars = new IntegerVariable[nb_tasks];
+        for (int i = 0; i < vars.length; i++) {
+            vars[i] = makeIntVar("p-" + i, durations[i]);
+        }
+        return vars;
+    }
 
 
 }

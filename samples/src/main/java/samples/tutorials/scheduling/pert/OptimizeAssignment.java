@@ -23,7 +23,6 @@
 package samples.tutorials.scheduling.pert;
 
 import choco.Choco;
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.constraints.Constraint;
@@ -32,6 +31,8 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static choco.Choco.*;
 
 public class OptimizeAssignment extends DeterministicPert {
 
@@ -66,26 +67,39 @@ public class OptimizeAssignment extends DeterministicPert {
 
     private Constraint c = eq(costPerDay, 0);
 
-	protected final int[][] durations;
+	protected int[][] durations;
 
-	protected final int[][] costs;
+	protected int[][] costs;
 
-	protected final int nbAlternatives;
+	protected int nbAlternatives;
 
-	protected final IntegerVariable[] assignments;
+	protected IntegerVariable[] assignments;
 
-	protected final IntegerVariable[] vcosts;
+	protected IntegerVariable[] vcosts;
 
-	protected final IntegerVariable objective;
+	protected IntegerVariable objective;
 
 	public OptimizeAssignment(int horizon, int[][] durations,int[][] costs) {
-		super(horizon,createDurationVariables(durations));
+
+	}
+
+    @Override
+    public void setUp(Object parameters) {
+        Object[] params = (Object[]) parameters;
+        this.horizon = (Integer) params[0];
+        this.nb_tasks = (Integer) params[1];
+        this.activities = (String[]) params[2];
+        this.durations = (int[][]) params[3];
+        this.temporalconstraints = (int[][]) params[4];
+
+        super.durations = createDurationVariables(this.nb_tasks, this.durations);
+
 		this.nbAlternatives=durations[0].length;
 		this.durations=durations;
 		this.costs=costs;
-		this.assignments = makeIntVarArray("assignment", NB_TASKS, 0, nbAlternatives-1, Options.V_NO_DECISION);
-		this.vcosts=new IntegerVariable[NB_TASKS];
-		for (int i = 0; i < NB_TASKS; i++) {
+		this.assignments = makeIntVarArray("assignment", nb_tasks, 0, nbAlternatives-1, Options.V_NO_DECISION);
+		this.vcosts=new IntegerVariable[nb_tasks];
+		for (int i = 0; i < nb_tasks; i++) {
 			//costs are the only decision variable
 			tasks[i].start().addOption(Options.V_NO_DECISION);
 			tasks[i].end().addOption(Options.V_NO_DECISION);
@@ -97,13 +111,13 @@ public class OptimizeAssignment extends DeterministicPert {
 			);
 		}
 		//objective
-		objective=makeIntVar("objective", 0, NB_TASKS*1000, Options.V_BOUND, Options.V_OBJECTIVE); //max cost should be lower than 1000
+		objective=makeIntVar("objective", 0, nb_tasks*1000, Options.V_BOUND, Options.V_OBJECTIVE); //max cost should be lower than 1000
 		model.addConstraint(eq(objective,plus(sum(vcosts),mult(costPerDay,Choco.makeIntVar("makespan", 0, Integer.MAX_VALUE, Options.V_BOUND, Options.V_MAKESPAN)))));
         model.addConstraint(c);
-	}
 
+    }
 
-	protected String printVariable(IntDomainVar v) {
+    protected String printVariable(IntDomainVar v) {
 		return v.isInstantiated() ? Integer.toString(v.getVal()) : v.getDomain().toString();
 	}
 
@@ -126,7 +140,7 @@ public class OptimizeAssignment extends DeterministicPert {
 	public void computeAll() {
 		LOGGER.info("\n%%%%%%%%%%%%%%% OPTIMIZATION PROBLEM %%%%%%%%%%%%%%%%%%%");
 		LOGGER.info("MIN Cmax SOLUTION");
-		model.remove(c);
+//		model.remove(c);
         c = eq(costPerDay, 0);
         model.addConstraint(c);
         this.costPerDay = constant(0);
@@ -158,7 +172,7 @@ public class OptimizeAssignment extends DeterministicPert {
 		LOGGER.info("Cmax = F(cost)");
 		LOGGER.info("#cost/day Cmax");
 		for (int i = 0; i < 21; i++) {
-            model.remove(c);
+//            model.remove(c);
             c = eq(costPerDay, i);
             model.addConstraint(c);
 			this.minimize();
@@ -189,6 +203,14 @@ public class OptimizeAssignment extends DeterministicPert {
 		return new String(b);
 	}
 
+
+    protected static IntegerVariable[] createDurationVariables(int nb_tasks, int[][] durations) {
+        IntegerVariable[] vars = new IntegerVariable[nb_tasks];
+        for (int i = 0; i < vars.length; i++) {
+            vars[i] = makeIntVar("p-" + i, durations[i]);
+        }
+        return vars;
+    }
 
 
 }
