@@ -1,7 +1,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * *
- *          _       _                            *
- *         |  �(..)  |                           *
- *         |_  J||L _|        CHOCO solver       *
+ *           _      _                            *
+ *          |  (..)  |                           *
+ *          |_ J||L _|       CHOCO solver        *
  *                                               *
  *    Choco is a java library for constraint     *
  *    satisfaction problems (CSP), constraint    *

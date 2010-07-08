@@ -33,7 +33,7 @@ import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.Solver;
-import samples.tutorials.scheduling.pack.CPpack;
+import samples.tutorials.scheduling.pack.binpacking.CPpack;
 
 import java.util.Random;
 import java.util.logging.Logger;
@@ -200,19 +200,20 @@ public class ExBinPacking {
 
     public void binPacking3(int n, int capaBin, int seed) {
         int[] instance = getRandomPackingPb(n, capaBin, seed);
-        CPpack pack = new CPpack(instance, capaBin, -1);
+        CPpack pack = new CPpack();
+        pack.setUp(new Object[]{instance, capaBin, -1});
         pack.cpPack();
         
     }
     
     public static void main(String[] args) {
     	ExBinPacking tp2 = new ExBinPacking();
-        LOGGER.info("************** Modèle Booléen **************");
+        LOGGER.info("************** Boolean model **************");
         tp2.binPacking1(10, 13, 1);
         LOGGER.info("");
-        LOGGER.info("************** Modèle Cumulatif ***************");
+        LOGGER.info("************** Cumulative model ***************");
         tp2.binPacking2(10, 13, 1);
-        LOGGER.info("************** Modèle Pack ***************");
+        LOGGER.info("************** Pack model ***************");
         tp2.binPacking3(10, 13, 1);
     }
 }
