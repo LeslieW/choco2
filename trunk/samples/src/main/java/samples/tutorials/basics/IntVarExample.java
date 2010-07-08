@@ -12,7 +12,7 @@ import static choco.Choco.*;
  * User: njussien
  * Date: 27 avr. 2010
  * Time: 14:45:58
- * To change this template use File | Settings | File Templates.
+ * TODO: rename to fill with IntegerVariable...
  */
 
 

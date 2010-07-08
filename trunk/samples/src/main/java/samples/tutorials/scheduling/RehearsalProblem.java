@@ -11,6 +11,8 @@ import choco.kernel.model.variables.scheduling.TaskVariable;
 import gnu.trove.TIntArrayList;
 import samples.tutorials.PatternExample;
 
+
+// TODO : a little bit long...
 public class RehearsalProblem extends PatternExample {
 
 	public final static int[] CSPLIB_DURATIONS = {2, 4, 1, 3, 3, 2, 5, 7, 6};
