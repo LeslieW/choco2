@@ -22,8 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package common;
 
-import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.model.Model;
 import org.junit.Test;
 import samples.tutorials.scheduling.pert.DeterministicPert;
 import scheduling.SchedUtilities;
@@ -38,7 +38,7 @@ import java.util.Random;
  */
 public class TestPrecedences {
 
-    public CPModel m;
+    public Model m;
 
     public CPSolver s;
 
@@ -57,47 +57,46 @@ public class TestPrecedences {
     @Test
     public void testIlogExample1() {
         DeterministicPert ex = new DeterministicPert(17);
-        m = ex.getModel();
+        ex.buildModel();
+        m = ex.model;
         solve(0);
     }
 
     @Test
     public void testIlogExample2() {
-        DeterministicPert ex = new DeterministicPert(17);
-
-        ex = new DeterministicPert(18);
-        m = ex.getModel();
+        DeterministicPert ex = new DeterministicPert(18);
+        ex.buildModel();
+        m = ex.model;
         solve(154);
 
     }
 
     @Test
     public void testIlogExample3() {
-        DeterministicPert ex = new DeterministicPert(17);
-
-        ex = new DeterministicPert(19);
-        m = ex.getModel();
+        DeterministicPert ex = new DeterministicPert(19);
+        ex.buildModel();
+        m = ex.model;
         solve(1764);
 
     }
 
     @Test
     public void testIlogExample4() {
-        DeterministicPert ex = new DeterministicPert(17);
+        DeterministicPert ex = new DeterministicPert(28);
 
-        ex = new DeterministicPert(28);
+        ex.buildModel();
         ex.requireUnaryResource();
-        m = ex.getModel();
+        m = ex.model;
         solve(0);
 
     }
 
     @Test
     public void testIlogExample5() {
-        DeterministicPert ex = new DeterministicPert(17);
-        ex = new DeterministicPert(29);
+        DeterministicPert ex = new DeterministicPert(29);
+        ex.buildModel();
         ex.requireUnaryResource();
-        m = ex.getModel();
+        m = ex.model;
         solve(112);
     }
 }

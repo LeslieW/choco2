@@ -44,8 +44,6 @@ import choco.kernel.solver.search.ValSelector;
 import gnu.trove.TIntArrayList;
 import samples.tutorials.PatternExample;
 
-import java.io.File;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
@@ -75,13 +73,24 @@ public class CPpack extends PatternExample{
 
 	//////////////// COMPUTATIONS /////////////////
 	/** the number of bins of the optimal solution */
-	public int optimum;
+	public int optimum = 25; // default value, for example
 
 	/** the sizes of the items sorted according to non increasing order*/
-	public int[] sizes;
+	public int[] sizes = new int[]{
+                    99, 99, 96, 96, 92,
+                    92, 91, 88, 87, 86,
+                    85, 76, 74, 72, 69,
+                    67, 67, 62, 61, 56,
+                    52, 51, 49, 46, 44,
+                    42, 40, 40, 33, 33,
+                    30, 30, 29, 28, 28,
+                    27, 25, 24, 23, 22,
+                    21, 20, 17, 14, 13,
+                    11, 10, 7, 7, 3
+                }; // default value, for example
 
 	/** the capacity of the bins*/
-	public int capacity;
+	public int capacity = 100; // default value, for example
 
 	/** Initial lower bound */
 	protected int ilb;
@@ -104,21 +113,23 @@ public class CPpack extends PatternExample{
     public void printDescription() {
 		final StringBuilder msg=new StringBuilder();
 		msg.append("solving class:").append(this.getClass().getSimpleName());
-		msg.append("\n1BP instance:\n\tOptimum=").append(optimum>-1?optimum:"??");
-		msg.append(" bins\n\tCapacity=").append(capacity).append("\n\tnbItems=").append(sizes.length);
-		msg.append("\n\titems= ").append(Arrays.toString(sizes));
+		msg.append("\n1BP instance:\n\tOptimum = ").append(optimum>-1?optimum:"??");
+		msg.append(" bins\n\tCapacity = ").append(capacity).append("\n\tnbItems = ").append(sizes.length);
+		msg.append("\n\titems : ").append(Arrays.toString(sizes));
 		msg.append('\n');
 		LOGGER.info(msg.toString());
 	}
 
     public void setUp(Object parameters){
-        Object[] params = (Object[])parameters;
-        this.sizes = (int[])params[0];
-        this.capacity = (Integer)params[1];
-        if(params.length == 3){
-            this.optimum = (Integer)params[2];
-        }else{
-            this.optimum = -1;
+        if(parameters != null){
+            Object[] params = (Object[])parameters;
+            this.sizes = (int[])params[0];
+            this.capacity = (Integer)params[1];
+            if(params.length == 3){
+                this.optimum = (Integer)params[2];
+            }else{
+                this.optimum = -1;
+            }
         }
         iub=computeHeuristicSolution();
 		ilb=computeLowerBound();
@@ -246,14 +257,9 @@ public class CPpack extends PatternExample{
 
 
     public static void main(String[] args) {
-        // Load instance
-        BinPackingFileParser parser = new BinPackingFileParser();
-        URL url = CPpack.class.getResource("/N1C1W1_A.BPP");
-        parser.loadInstance(new File(url.getPath()));
-        parser.parse(false);
         // Solve the loaded instance
         CPpack pack = new CPpack();
-        pack.execute(parser.getParameters());
+        pack.execute();
     }
 }
 
