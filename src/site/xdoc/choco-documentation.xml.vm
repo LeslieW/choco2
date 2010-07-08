@@ -10,17 +10,22 @@
 
             <p>
                 You can download the current
-                <a href="./tex/choco.pdf" class="externalLink" target="_blank">documentation of
+                <a href="./tex/choco-doc.pdf" class="externalLink" target="_blank">documentation of
                     <tt>choco</tt>
                 </a>
-                in PDF format
+                in PDF format.
             </p>
             <p>
-                In this documentation, we ensure that code parts are up-to-date but not the other part. If you want to
-                participate, or
-                find some typos, please mail us at
-                <A HREF="mailto:choco@emn.fr?subject=[DOC]">documentation of <TT>choco</TT></A>
+                In this documentation, we ensure that code parts are up-to-date. If you find some typos, please submit to the
+                <A HREF="issue-tracking.html">issue tracking system</A>
                 .
+            </p>
+	    <p>
+                You can also download the current
+                <a href="./tex/choco-tut.pdf" class="externalLink" target="_blank">tutorials of
+                    <tt>choco</tt>
+                </a>
+                in PDF format.
             </p>
             <p>
                 For further more informations, you can read the

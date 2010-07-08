@@ -16,8 +16,8 @@ import org.jfree.data.xy.YIntervalSeries;
 import org.jfree.data.xy.YIntervalSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
-import samples.tutorials.scheduling.pack.BinPackingExample;
-import samples.tutorials.scheduling.pack.CPpack;
+import samples.tutorials.scheduling.pack.binpacking.BinPackingExample;
+import samples.tutorials.scheduling.pack.binpacking.CPpack;
 
 import java.awt.*;
 import java.util.logging.Level;
@@ -37,11 +37,12 @@ public final class ChocoDemo {
 
 
 	public static void packDemo1() {
-		CPpack cppack = new CPpack(BinPackingExample.N1C1W1_N,BinPackingExample.CAPACITY_N,BinPackingExample.OPT_N);
+		CPpack cppack = new CPpack();
+        cppack.setUp(new Object[]{BinPackingExample.N1C1W1_N,BinPackingExample.CAPACITY_N, BinPackingExample.OPT_N});
 		cppack.setTimelimit(TIME_LIMIT);
 		cppack.cpPack();
 		final String title = "Bin Packing Constraint Visualization 1";
-		ChocoDemo.demo(title,ChocoChartFactory.createPackChart(title, cppack.getSolver(),cppack.getModeler()));
+		ChocoDemo.demo(title,ChocoChartFactory.createPackChart(title, cppack.solver,cppack.getModeler()));
 	}
 
 	public static void packDemo2() {
@@ -132,10 +133,10 @@ public final class ChocoDemo {
 	}
 
 	public static void main(String[] args) {
-		//packDemo1();
+		packDemo1();
 		//packDemo2();
 		//unaryDemo();
 		//deviationDemo();
-		cumulativeDemo();
+//		cumulativeDemo();
 	}
 }

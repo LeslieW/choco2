@@ -13,8 +13,8 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.data.general.Dataset;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
-import samples.tutorials.scheduling.pack.BinPackingExample;
-import samples.tutorials.scheduling.pack.CPpack;
+import samples.tutorials.scheduling.pack.binpacking.BinPackingExample;
+import samples.tutorials.scheduling.pack.binpacking.CPpack;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
@@ -253,7 +253,8 @@ public class ChocoChartPanel extends JPanel implements TreeSelectionListener {
 			}
 		}
 
-		CPpack cppack = new CPpack(BinPackingExample.N1C1W1_N,BinPackingExample.CAPACITY_N,BinPackingExample.OPT_N);
+		CPpack cppack = new CPpack();
+        cppack.setUp(new Object[]{BinPackingExample.N1C1W1_N,BinPackingExample.CAPACITY_N, BinPackingExample.OPT_N});
 		cppack.setTimelimit(5);
 		cppack.cpPack();
 		//Create and set up the window.
@@ -261,7 +262,7 @@ public class ChocoChartPanel extends JPanel implements TreeSelectionListener {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		//Add content to the window.
-		frame.add(new ChocoChartPanel(cppack.getSolver()));
+		frame.add(new ChocoChartPanel(cppack.solver));
 
 		//Display the window.
 		frame.pack();
