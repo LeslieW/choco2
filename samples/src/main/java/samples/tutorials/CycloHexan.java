@@ -50,6 +50,8 @@ import java.util.List;
 import static choco.Choco.*;
 import static java.text.MessageFormat.format;
 
+
+//TODO : redundant
 public class CycloHexan extends PatternExample {
 
     RealVariable x, y, z;

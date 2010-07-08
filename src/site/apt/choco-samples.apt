@@ -1,0 +1,78 @@
+	---
+	Samples
+	---
+	CHOCO Development Team
+	---
+	08/07/2010
+
+Samples
+
+* Requirements
+
+    * JDK 6+
+
+    * a version of <choco-X.x.x> (at least 2.1.1) -- <see {{{choco-download.html}Download page}}>
+
+    * a terminal
+
+* Run a sample
+
+   To run a sample, simply execute the following command in a terminal :
+
+---
+$ java -cp choco-X.x.x.jar path.to.the.Sample
+---
+
+    where <path.to.the.Sample> should be set to one of the following :
+
+    * samples.tutorials.basics.IntVarExample
+
+    * samples.tutorials.basics.RealVarExample
+
+~~Commented out: ne marche pas  * samples.tutorials.basics.SetVarExample
+
+    * samples.tutorials.basics.TaskVarExample
+
+
+    * samples.tutorials.continuous.CycloHexan
+
+~~Commented out: ˆ virer + doublon  * samples.tutorials.CycloHexan
+
+    * samples.tutorials.puzzles.Candles
+
+~~Commented out: en doublon   * samples.tutorials.puzzles.HowOldAmI
+
+    * samples.tutorials.scheduling.CumulativeWebEx
+
+    * samples.tutorials.scheduling.DisjunctiveWebEx
+
+~~Commented out: ˆ corriger    * samples.tutorials.scheduling.pack.binpacking.CPpack
+
+    * samples.tutorials.scheduling.pert.DeterministicPert
+
+~~Commented out: super long!    * samples.tutorials.scheduling.RehearsalProblem
+
+    * samples.tutorials.trunk.Arm
+
+    * samples.tutorials.trunk.Distance
+
+    * samples.tutorials.trunk.GolombRuler
+
+    * samples.tutorials.trunk.MagicSquare
+
+    * samples.tutorials.trunk.MinimumEdgeDeletion
+
+    * samples.tutorials.trunk.Queen
+
+    * samples.tutorials.trunk.SendMoreMoney
+
+    * samples.tutorials.trunk.SteinerSystem
+
+~~Commented out: oula la trace est pourrie!!
+
+    * samples.tutorials.trunk.U2planning
+
+    * samples.tutorials.trunk.WolfGoatCabbage1
+
+
+    Samples description can be found in {{{choco-documentation.html}Documentation page}}.

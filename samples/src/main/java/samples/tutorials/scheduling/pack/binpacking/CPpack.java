@@ -53,6 +53,8 @@ import static choco.Choco.*;
  * @author Arnaud Malapert</br>
  * @since 7 déc. 2008 version 2.0.1</br>
  * @version 2.0.1</br>
+ *
+ * TODO: this example is not enough complex, heuristic find the optimal solution...
  */
 public class CPpack extends PatternExample{
 

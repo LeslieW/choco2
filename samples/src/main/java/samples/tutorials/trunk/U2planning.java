@@ -151,6 +151,7 @@ public class U2planning extends PatternExample {
 
     @Override
     public void prettyOut() {
+        //TODO: is there anything more interesting to print out?
         LOGGER.info(solver.pretty());
     }
 

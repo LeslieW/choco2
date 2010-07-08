@@ -14,7 +14,8 @@ import java.text.MessageFormat;
  * User: njussien
  * Date: 8 mai 2010
  * Time: 13:15:02
- * To change this template use File | Settings | File Templates.
+ *
+ * //TODO : does not work
  */
 public class SetVarExample extends PatternExample {
 

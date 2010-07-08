@@ -35,6 +35,8 @@ import static choco.Choco.*;
 * Date : 9 janv. 2009
 * Since : Choco 2.0.1
 * Update : Choco 2.0.1
+*
+* TODO: redundant with IntVarExample
 */
 public class HowOldAmI extends PatternExample {
 
