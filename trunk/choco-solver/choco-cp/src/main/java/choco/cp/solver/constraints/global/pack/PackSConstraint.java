@@ -267,15 +267,14 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 	protected final void checkEnveloppes() throws ContradictionException {
 		for (int bin = 0; bin < svars.length; bin++) {
 			int inf;
-            //TODO : check if enveloppe is empty, to avoid infinite loop
-			while( (inf = svars[bin].getEnveloppeInf())<0) {
-				svars[bin].remFromEnveloppe(inf, this, false);
-			}
+            // check if enveloppe is empty, to avoid infinite loop
+			while( (inf = svars[bin].getEnveloppeInf())<0
+                    && svars[bin].remFromEnveloppe(inf, this, false)) {
+            }
 			int sup;
-            // TODO: check if enveloppe is empty, to avoid infinite loop
-			while( (sup = svars[bin].getEnveloppeSup()) > bins.length-1) {
-				svars[bin].remFromEnveloppe(sup, this, false);
-			}
+            // check if enveloppe is empty, to avoid infinite loop
+			while( (sup = svars[bin].getEnveloppeSup()) > bins.length-1
+                    && svars[bin].remFromEnveloppe(sup, this, false) ) {}
 		}
 	}
 	@Override

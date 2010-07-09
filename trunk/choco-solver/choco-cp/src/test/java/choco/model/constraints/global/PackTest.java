@@ -22,22 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.model.constraints.global;
 
-import static choco.Choco.constantArray;
-import static choco.Choco.eq;
-import static choco.Choco.geq;
-import static choco.Choco.leq;
-import static choco.Choco.pack;
-import static org.junit.Assert.assertEquals;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.junit.Ignore;
-import org.junit.Test;
-
 import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -48,15 +32,28 @@ import choco.cp.solver.search.integer.valselector.BestFit;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.MathUtils;
+import choco.kernel.model.Model;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.pack.PackModeler;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
-import choco.kernel.solver.ContradictionException;
+import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.Solver;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static choco.Choco.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  *
@@ -428,4 +425,48 @@ public class PackTest {
 		assertEquals(Boolean.TRUE, s.solve());
 	}
 
+
+    // avoid infinite loop
+    @Test
+    public void testFabien1(){
+        int nb  = 5;
+        SetVariable[] itemSets = Choco.makeSetVarArray("itemSets", nb, -5, -1);
+        IntegerVariable[] loads = Choco.makeIntVarArray("loads", nb, 0, 5);
+        IntegerVariable[] bins = Choco.makeIntVarArray("bins", nb, 0, 5);
+        int[] _sizes = new int[nb];
+        Arrays.fill(_sizes, 5);
+        IntegerConstantVariable[] sizes = constantArray(_sizes);
+
+
+        Constraint cc = Choco.pack(itemSets, loads, bins, sizes);
+        Model m = new CPModel();
+        m.addConstraint(cc);
+
+        Solver s= new CPSolver();
+        s.read(m);
+
+		assertEquals(Boolean.FALSE, s.solve());
+    }
+
+    // avoid infinite loop
+    @Test
+    public void testFabien2(){
+        int nb  = 5;
+        SetVariable[] itemSets = Choco.makeSetVarArray("itemSets", nb, 100, 102);
+        IntegerVariable[] loads = Choco.makeIntVarArray("loads", nb, 0, 5);
+        IntegerVariable[] bins = Choco.makeIntVarArray("bins", nb, 0, 5);
+        int[] _sizes = new int[nb];
+        Arrays.fill(_sizes, 5);
+        IntegerConstantVariable[] sizes = constantArray(_sizes);
+
+
+        Constraint cc = Choco.pack(itemSets, loads, bins, sizes);
+        Model m = new CPModel();
+        m.addConstraint(cc);
+
+        Solver s= new CPSolver();
+        s.read(m);
+
+		assertEquals(Boolean.FALSE, s.solve());
+    }
 }
