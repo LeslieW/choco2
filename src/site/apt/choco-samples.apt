@@ -1,17 +1,21 @@
 	---
-	Samples
+	Samples of CHOCO programs
 	---
 	CHOCO Development Team
 	---
 	08/07/2010
 
-Samples
+Samples of CHOCO programs
+
+    Some well-known CP examples are available within <choco.jar>. They can be easily run, executing a simple command
+
+    in a terminal.
 
 * Requirements
 
     * JDK 6+
 
-    * a version of <choco-X.x.x> (at least 2.1.1) -- <see {{{choco-download.html}Download page}}>
+    * a jar of <see {{{choco-download.html}choco}}>
 
     * a terminal
 
