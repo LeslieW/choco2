@@ -51,5 +51,5 @@
 \contentsline {subsubsection}{Motivation and functionality description.}{34}{section*.12}
 \contentsline {subsubsection}{Implementation.}{36}{section*.13}
 \contentsline {subsubsection}{Second example.}{36}{section*.14}
-\contentsline {section}{\numberline {5.2}Scheduling and use of the cumulative constraint}{38}{section.5.2}
-\contentsline {part}{Bibliography}{43}{figure.5.6}
+\contentsline {section}{\numberline {5.2}Scheduling and use of the cumulative constraint}{37}{section.5.2}
+\contentsline {part}{Bibliography}{41}{figure.5.6}
