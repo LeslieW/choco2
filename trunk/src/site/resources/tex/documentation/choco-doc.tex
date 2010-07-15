@@ -17,7 +17,7 @@
 \fancypagestyle{plain}{\fancyhf{}
     \fancyhead[LE]{\slshape \leftmark} 
     \fancyhead[RO]{\slshape \rightmark} 
-    \lfoot{\footnotesize\emph{CHOCO Tutorials \\GNU Free Documentation License \number\year}}
+    \lfoot{\footnotesize\emph{CHOCO solver documentation \\BSD licence \number\year}}
     \cfoot{\footnotesize\textsf{-\thepage/\pageref{LastPage}-}}
     \rfoot{\footnotesize\emph{\number\day/\number\month/\number\year}}}
 %    \renewcommand{\headrulewidth}{0pt}}
@@ -109,7 +109,7 @@
 
 \begin{document}
 
-\input{title-tut}
+\input{title-doc}
 
 \tableofcontents
 
@@ -117,15 +117,15 @@
 
 \mainmatter
 
-\input{content-tut}
+\input{content-doc}
 
 \backmatter
 
 \addcontentsline{toc}{part}{Bibliography}
 \bibliographystyle{apalike}
-\bibliography{choco-tut}
+\bibliography{choco-doc}
 
-\input{licence}
+\input{../shared/licence}
 
 \end{document}
 
