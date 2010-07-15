@@ -53,3 +53,16 @@
 \contentsline {subsubsection}{Second example.}{36}{section*.14}
 \contentsline {section}{\numberline {5.2}Scheduling and use of the cumulative constraint}{37}{section.5.2}
 \contentsline {part}{Bibliography}{41}{figure.5.6}
+\contentsline {chapter}{GNU Free Documentation License}{43}{section*.17}
+\contentsline {section}{1. APPLICABILITY AND DEFINITIONS}{43}{section*.18}
+\contentsline {section}{2. VERBATIM COPYING}{44}{section*.19}
+\contentsline {section}{3. COPYING IN QUANTITY}{44}{section*.20}
+\contentsline {section}{4. MODIFICATIONS}{45}{section*.21}
+\contentsline {section}{5. COMBINING DOCUMENTS}{46}{section*.22}
+\contentsline {section}{6. COLLECTIONS OF DOCUMENTS}{46}{section*.23}
+\contentsline {section}{7. AGGREGATION WITH INDEPENDENT WORKS}{46}{section*.24}
+\contentsline {section}{8. TRANSLATION}{47}{section*.25}
+\contentsline {section}{9. TERMINATION}{47}{section*.26}
+\contentsline {section}{10. FUTURE REVISIONS OF THIS LICENSE}{47}{section*.27}
+\contentsline {section}{11. RELICENSING}{48}{section*.28}
+\contentsline {section}{ADDENDUM: How to use this License for your documents}{48}{section*.29}
