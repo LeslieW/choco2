@@ -60,7 +60,7 @@ See Section \hyperlink{ch:vars}{Variables} for details:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CONSTANT VARIABLE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Constants}\label{model:constants}\hypertarget{model:constants}{}
-A constant is a variable with a fixed domain. \hyperlink{integervariable}{\tt IntegerVariable} declared with a unique value are automatically set as constant. A constant declared twice or more is only stored once in a model.
+A constant is a variable with a fixed domain. An \hyperlink{integervariable}{\tt IntegerVariable} declared with a unique value is automatically set as constant. A constant declared twice or more is only stored once in a model.
 
 \lstinputlisting{java/mconstant.j2t}
 
@@ -86,9 +86,8 @@ Note that these operators are not considered as constraints: they do not return 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% MULTIPLE VARIABLE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{MultipleVariables}\label{model:multiplevariables}\hypertarget{model:multiplevariables}{}
-These are syntaxic sugar. To make their declaration easier, \hyperlink{tree:treeconstraint}{\tt tree}, \hyperlink{geost:geostconstraint}{\tt geost} and scheduling constraints require to use {\tt MultipleVariables}, like \texttt{TreeParametersObject}, \texttt{GeostObject} or \hyperlink{taskvariable}{\tt TaskVariable}.
-
-  \todo{link to an example of user-defined MultipleVariables}
+These are syntaxic sugar. To make their declaration easier, \hyperlink{tree:treeconstraint}{\tt tree}, \hyperlink{geost:geostconstraint}{\tt geost}, and scheduling constraints allow or require to use multiple variables, like \texttt{TreeParametersObject}, \texttt{GeostObject} or \hyperlink{taskvariable}{\tt TaskVariable}.
+See also the code examples for these constraints.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% OPTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -105,9 +104,7 @@ Each of these options can also be set within a single instruction for a group of
 \lstinputlisting{java/mnodecision2.j2t}
 
 \begin{note}
-  \begin{itemize}
-  \item The declaration of a \hyperlink{solver:searchstrategy}{search strategy} will erase setting \hyperlink{vnodecision:vnodecisionoptions}{\tt Options.V\_NO\_DECISION}.
-  \end{itemize}
+ The declaration of a \hyperlink{solver:searchstrategy}{search strategy} will erase setting \hyperlink{vnodecision:vnodecisionoptions}{\tt Options.V\_NO\_DECISION}.
 \end{note}
   \todo{more precise: user-defined/pre-defined, variable and/or value heuristics ?}
 
@@ -131,9 +128,9 @@ A constraint is stated into the model by using the following methods available f
 
 \lstinputlisting{java/mconstraintdeclaration1.j2t}
 
-\begin{notedef}\
+\begin{note}\
 Adding a constraint automatically adds its variables to the model (explicit declaration of variables addition is not mandatory).
-\end{notedef}
+\end{note}
 
 
 \subsubsection{Example:} adding a difference (disequality) constraint between two variables of the model
@@ -352,38 +349,140 @@ Conversely, an expression should be decomposed as soon as it involves a large nu
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% GLOBAL CONSTRAINT  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Global constraints}\label{model:advancedconstraints}\hypertarget{model:advancedconstraints}{}
-Choco includes several \href{http://www.emn.fr/x-info/sdemasse/gccat/}{global constraints}, such as:
-\begin{notedef}\tt
-\hyperlink{alldifferent:alldifferentconstraint}{allDifferent}, 
-\hyperlink{globalcardinality:globalcardinalityconstraint}{globalCardinality}, 
-\hyperlink{atmostnvalue:atmostnvalueconstraint}{atMostNValue},
-\hyperlink{cumulative:cumulativeconstraint}{cumulative}, 
-\hyperlink{lex:lexconstraint}{lex}, 
-\hyperlink{regular:regularconstraint}{regular},
- \hyperlink{tree:treeconstraint}{tree},
-\hyperlink{geost:geostconstraint}{geost}, etc.
-\end{notedef}
-Those constraints offer dedicated filtering algorithms which are able to make deductions where a decomposed model would not.
+Choco includes several \href{http://www.emn.fr/x-info/sdemasse/gccat/}{global constraints}. Those constraints accept any number of variables and offer dedicated filtering algorithms which are able to make deductions where a decomposed model would not.
 For instance, constraint \texttt{alldifferent}$(a,b,c,d)$ with $a,b\in[1,4]$ and $c,d\in[3,4]$ allows to deduce that $a$ and $b$ cannot be instantiated to $3$ or $4$; such rule cannot be inferred by simple binary constraints. 
 
 The up-to-date list of global constraints available in Choco can be found within the Javadoc API.
-Most of these global constraints are also described in Section \hyperlink{ch:constraints}{Constraints}.
+Most of these global constraints are listed below according to their application fields.
+Details and examples can be found in Section \hyperlink{ch:constraints}{Elements of Choco/Constraints}.
+\subsubsection{Value constraints}\label{model:valueconstraints}\hypertarget{model:valueconstraints}{}
+Constraints that put a restriction on how values can be assigned to usually one or several collections of variables.
+See also in Global Constraint Catalog: \href{http://www.emn.fr/x-info/sdemasse/gccat/Kvalue_constraint.html}{value constraint}.
 
-\subsection{Scheduling constraints}\label{model:schedulingconstraints}\hypertarget{model:schedulingconstraints}{}
-See also \hyperlink{schedulinganduseofthecumulative:schedulinganduseofthecumulativeconstraint}{scheduling application}.
-\begin{notedef}\tt
-\hyperlink{cumulative:cumulativeconstraint}{cumulative}, 
-\hyperlink{disjunctive:disjunctiveconstraint}{disjunctive}, 
+\vspace{1em}\noindent\begin{notedef}\tt
+  \begin{itemize}
+  \item counting distinct values: 
+\hyperlink{alldifferent:alldifferentconstraint}{allDifferent}, 
+\hyperlink{atmostnvalue:atmostnvalueconstraint}{atMostNValue},
+\hyperlink{increasingnvalue:increasingnvalueconstraint}{increasingnvalue},
+  \item counting values: 
+\hyperlink{occurrence:occurrenceconstraint}{occurrence},
+\hyperlink{occurrencemax:occurrencemaxconstraint}{occurrenceMax},
+\hyperlink{occurrencemin:occurrenceminconstraint}{occurrenceMin},
+\hyperlink{globalcardinality:globalcardinalityconstraint}{globalCardinality},
+  \item indexing values: 
+\hyperlink{nth:nthconstraint}{nth} (element),
+\hyperlink{max:maxconstraint}{max},
+\hyperlink{min:minconstraint}{min},
+  \item ordering: 
+\hyperlink{sorting:sortingconstraint}{sorting},
+\hyperlink{increasingnvalue:increasingnvalueconstraint}{increasingnvalue},
+\hyperlink{lex:lexconstraint}{lex}, 
+\hyperlink{lexeq:lexeqconstraint}{lexeq},
+\hyperlink{leximin:leximinconstraint}{leximin},
+\hyperlink{lexchain:lexchainconstraint}{lexChain},
+\hyperlink{lexchaineq:lexchaineqconstraint}{lexChainEq},
+  \item tuple matching: 
+\hyperlink{feastupleac:feastupleacconstraint}{feasTupleAC},
+\hyperlink{feastuplefc:feastuplefcconstraint}{feasTupleFC},
+\hyperlink{infeastupleac:infeastupleacconstraint}{infeasTupleAC},
+\hyperlink{infeastuplefc:infeastuplefcconstraint}{infeasTupleFC},
+\hyperlink{relationtupleac:relationtupleacconstraint}{relationTupleAC},
+\hyperlink{relationtuplefc:relationtuplefcconstraint}{relationTupleFC},
+  \item pattern matching: 
+\hyperlink{regular:regularconstraint}{regular},
+\hyperlink{costregular:costregularconstraint}{costRegular},
+\hyperlink{multicostregular:multicostregularconstraint}{multiCostRegular}, 
+\hyperlink{stretchcyclic:stretchcyclicconstraint}{stretchCyclic}, 
+\hyperlink{stretchpath:stretchpathconstraint}{stretchPath}, 
+\hyperlink{tree:treeconstraint}{tree},
+  \end{itemize}
+\end{notedef}
+
+\subsubsection{Boolean constraints}\label{model:logicconstraints}\hypertarget{model:logicconstraints}{}
+Logical operations on boolean expressions.
+See also in Global Constraint Catalog: \href{http://www.emn.fr/x-info/sdemasse/gccat/KBoolean_constraint.html}{boolean constraint}.
+
+\vspace{1em}\noindent\begin{notedef}\tt
+\hyperlink{and:andconstraint}{and},
+\hyperlink{or:orconstraint}{or},
+\hyperlink{clause:clauseconstraint}{clause},
+\end{notedef}
+
+\subsubsection{Channelling constraints}\label{model:channellingconstraints}\hypertarget{model:channellingconstraints}{}
+Constraints linking two collections of variables (many-to-many) or indexing one among many variables (one-to-many).
+See also in Global Constraint Catalog: \href{http://www.emn.fr/x-info/sdemasse/gccat/Kchannelling_constraint.html}{channelling constraint}.
+
+ \vspace{1em}\noindent\begin{notedef}\tt
+   \begin{itemize}
+   \item one-to-many: 
+ \hyperlink{domainconstraint:domainconstraintconstraint}{domainConstraint},
+ \hyperlink{nth:nthconstraint}{nth} (element),
+ \hyperlink{max:maxconstraint}{max},
+ \hyperlink{min:minconstraint}{min},
+   \item many-to-many: 
+ \hyperlink{inversechanneling:inversechannelingconstraint}{inverseChanneling},
+ \hyperlink{inverseset:inversesetconstraint}{inverseset},
+ \hyperlink{sorting:sortingconstraint}{sorting},
+ \end{itemize}
+ \end{notedef}
+
+\subsubsection{Optimization constraints}\label{model:optimizationconstraints}\hypertarget{model:optimizationconstraints}{}
+Constraints channelling a variable to the sum of the weights of a collection of variable-value assignments.
+See also in Global Constraint Catalog: \href{http://www.emn.fr/x-info/sdemasse/gccat/Kcost_filtering_constraint.html}{cost-filtering constraint}.
+\vspace{1em}\noindent\begin{notedef}\tt
+ \begin{itemize}
+  \item one cost: 
+\hyperlink{occurrence:occurrenceconstraint}{occurrence},
+\hyperlink{occurrencemax:occurrencemaxconstraint}{occurrenceMax},
+\hyperlink{occurrencemin:occurrenceminconstraint}{occurrenceMin},
+\hyperlink{knapsackproblem:knapsackproblemconstraint}{knapsackProblem},
+\hyperlink{equation:equationconstraint}{equation},
+\hyperlink{costregular:costregularconstraint}{costRegular},
+\hyperlink{tree:treeconstraint}{tree},
+ \item several costs:
+\hyperlink{globalcardinality:globalcardinalityconstraint}{globalCardinality},
+\hyperlink{multicostregular:multicostregularconstraint}{multiCostRegular}, 
+ \end{itemize}
+\end{notedef}
+
+\subsubsection{Packing constraints (capacitated resources)}\label{model:packingconstraints}\hypertarget{model:packingconstraints}{}
+Constraints involving items to be packed in bins without overlapping. More generaly, any constraints modelling the concurrent assignment of objects to one or several capacitated resources.
+See also in Global Constraint Catalog: \href{http://www.emn.fr/x-info/sdemasse/gccat/Kresource_constraint.html}{resource constraint}.
+
+\vspace{1em}\noindent\begin{notedef}\tt
+   \begin{itemize}
+   \item packing problems: 
+\hyperlink{equation:equationconstraint}{equation},
+\hyperlink{knapsackproblem:knapsackproblemconstraint}{knapsackProblem},
+\hyperlink{pack:packconstraint}{pack} (bin-packing),
+   \item geometric placement problems: 
 \hyperlink{geost:geostconstraint}{geost}, 
-\hyperlink{pack:packconstraint}{pack}, 
+   \item scheduling problems: 
+\hyperlink{disjunctive:disjunctiveconstraint}{disjunctive}, 
+\hyperlink{cumulative:cumulativeconstraint}{cumulative}, 
+   \item timetabling problems: 
+\hyperlink{costregular:costregularconstraint}{costRegular},
+\hyperlink{multicostregular:multicostregularconstraint}{multiCostRegular}, 
+ \end{itemize}
+\end{notedef}
+
+\subsubsection{Scheduling constraints (time assignment)}\label{model:schedulingconstraints}\hypertarget{model:schedulingconstraints}{}
+Constraints involving tasks to be scheduled over a time horizon.
+See also \hyperlink{schedulinganduseofthecumulative:schedulinganduseofthecumulativeconstraint}{scheduling application} and in Global Constraint Catalog: \href{http://www.emn.fr/x-info/sdemasse/gccat/Kscheduling_constraint.html}{scheduling constraint}.
+
+\vspace{1em}\noindent\begin{notedef}\tt
+   \begin{itemize}
+   \item temporal constraints: 
 \hyperlink{preceding:precedingconstraint}{preceding}, 
 \hyperlink{precedencedisjoint:precedencedisjointconstraint}{precedenceDisjoint}, 
 \hyperlink{precedenceimplied:precedenceimpliedconstraint}{precedenceImplied}, 
-\hyperlink{precedencereified:precedencereifiedconstraint}{precedenceReified}.
+\hyperlink{precedencereified:precedencereifiedconstraint}{precedenceReified},
+\hyperlink{forbiddeninterval:forbiddenintervalconstraint}{forbiddenInterval},
+\hyperlink{tree:treeconstraint}{tree},
+   \item resource constraints: 
+\hyperlink{cumulative:cumulativeconstraint}{cumulative}, 
+\hyperlink{disjunctive:disjunctiveconstraint}{disjunctive}, 
+\hyperlink{geost:geostconstraint}{geost}, 
+ \end{itemize}
 \end{notedef}
-
-\subsection{Sequencing constraints}\label{model:theregularconstraint}\hypertarget{model:theregularconstraint}{}
-\begin{notedef}\tt
-  \hyperlink{multicostregular:multicostregularconstraint}{multiCostRegular}, \hyperlink{regular:regularconstraint}{regular}, \hyperlink{stretchcyclic:stretchcyclicconstraint}{stretchCyclic}, \hyperlink{stretchpath:stretchpathconstraint}{stretchPath}, 
-\end{notedef}
-
