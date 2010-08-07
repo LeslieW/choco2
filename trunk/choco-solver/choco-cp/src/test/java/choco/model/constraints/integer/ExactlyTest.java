@@ -93,7 +93,7 @@ public class ExactlyTest {
                     m.addConstraint(Choco.eq(Choco.sum(bools), N));
                     break;
                 case 1:
-                m.addConstraint(Choco.exactly(N, vars, value));
+                m.addConstraint(Choco.occurrence(N, vars, value));
                 break;
             }
             ms[i] = m;
@@ -118,7 +118,7 @@ public class ExactlyTest {
 
         int value = 0;
         int N = 2;
-        Constraint among =Choco.exactly(N, vars, value);
+        Constraint among =Choco.occurrence(N, vars, value);
 
         m.addConstraint(among);
         Solver s = new CPSolver();

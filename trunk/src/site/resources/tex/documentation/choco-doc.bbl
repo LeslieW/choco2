@@ -8,6 +8,11 @@ Beldiceanu, N. and Carlsson, M. (2002).
   Constraint Programming (CP'02)}, volume 2470 of {\em LNCS}, pages 63--79.
   Springer-Verlag.
 
+\bibitem[Beldiceanu et~al., 2005]{BeldiceanuC05}
+Beldiceanu, N., Carlsson, M., Debruyne, R., and Petit, T. (2005).
+\newblock Reformulation of global constraints based on constraint checkers.
+\newblock {\em Constraints}, 10(4):339--362.
+
 \bibitem[Beldiceanu et~al., 2008]{beldiceanuCONSTRAINTS08}
 Beldiceanu, N., Flener, P., and Lorca, X. (2008).
 \newblock Combining tree partitioning, precedence, and incomparability

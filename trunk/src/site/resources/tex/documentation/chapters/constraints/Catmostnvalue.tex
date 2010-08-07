@@ -4,12 +4,12 @@
 
 \section{atMostNValue (constraint)}\label{atmostnvalue:atmostnvalueconstraint}\hypertarget{atmostnvalue:atmostnvalueconstraint}{}
 \begin{notedef}
-\texttt{atMostNValue}$(x,z)$ states that the number of different values occurring in the array of variables $x$ is at most \emph{z}:
-$$z\ge|\{x_1,\ldots,x_n\}|$$  
+\texttt{atMostNValue}$(z, \collec{x_1}{x_n})$ states that the number of distinct values occurring in collection $x$ is at most $z$:
+$$z\ge|\collec{x_1}{x_n}|$$  
 \end{notedef}
 
 \begin{itemize}
-	\item \textbf{API} : \mylst{atMostNValue(IntegerVariable[] x, IntegerVariable z)}
+	\item \textbf{API} : \mylst{atMostNValue(IntegerVariable z, IntegerVariable[] x)}
 	\item \textbf{return type} : \texttt{Constraint}
 	\item \textbf{options} : \emph{n/a}
 	\item \textbf{favorite domain} : \emph{n/a}

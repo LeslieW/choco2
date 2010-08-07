@@ -3,12 +3,11 @@
 \hypertarget{samesign}{}
 
 \section{sameSign (constraint)}\label{samesign:samesignconstraint}\hypertarget{samesign:samesignconstraint}{}
-\todo{verify case 0}
-
 \begin{notedef}
   \texttt{sameSign}$(x,y)$ states that the two arguments have the same sign:
 $$xy\ge 0$$
 \end{notedef}
+Note that $0$ has both signs then constraint holds if $x$ or $y$ is equal to 0.
 
 \begin{itemize}
 	\item \textbf{API} : \mylst{sameSign(IntegerExpressionVariable x, IntegerExpressionVariable y)}

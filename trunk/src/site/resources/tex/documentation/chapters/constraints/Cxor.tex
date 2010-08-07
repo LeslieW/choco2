@@ -4,12 +4,12 @@
 
 \section{xor (constraint)}\label{xor:xorconstraint}\hypertarget{xor:xorconstraint}{}
 \begin{notedef}
-    \texttt{xor}$(b_1,b_2)$ states that the 0-1 variables in arguments take distinct value:
-$$ (b_1=1 \land b_2=0) \lor (b_1=0 \land b_2=1)$$
+    \texttt{xor}$(b_1,b_2)$ states that two booleans are the one true and the other one false:
+$$ (b_1=1)\quad \iff\quad (b_2=0)$$
 \end{notedef}
 
 \begin{itemize}
-    \item \textbf{API} : \mylst{xor(IntegerVariable... b)}
+    \item \textbf{API} : \mylst{xor(IntegerVariable b_1, IntegerVariable b_2)}
 	\item \textbf{return type} : \texttt{Constraint}
 	\item \textbf{options} : \emph{n/a}
 	\item \textbf{favorite domain} : \emph{n/a}

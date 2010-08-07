@@ -3,6 +3,8 @@
 \hypertarget{cumulative}{}
 
 \section{cumulative (constraint)}\label{cumulative:cumulativeconstraint}\hypertarget{cumulative:cumulativeconstraint}{}
+\todo{to be cleaned.}
+
 \begin{notedef}
   \texttt{cumulative(start,duration,height,capacity)} states that a set of tasks (defined by their starting times, finishing dates, durations and heights (or consumptions)) are executed on a cumulative resource of limited capacity. That is, the total height of the tasks which are executed at any time $t$ does not exceed the capacity of the resource:
 $$\sum_{\{i\ |\ \mathtt{start}[i]\le t < \mathtt{start}[i]+\mathtt{duration}[i]\}} \mathtt{height}[i] \le \mathtt{capacity},\quad (\forall \text{ time } t)$$
@@ -11,7 +13,8 @@ $$\sum_{\{i\ |\ \mathtt{start}[i]\le t < \mathtt{start}[i]+\mathtt{duration}[i]\
 The notion of task does not exist yet in Choco. The \texttt{cumulative} takes therefore as input, several arrays of integer variables (of same size $n$) denoting the starting, duration, and height of each task. When the array of finishing times is also specified, the constraint ensures that \texttt{start[i] + duration[i] = end[i]} for all task $i$.
 As usual, a task is executed in the interval \texttt{[start,end-1]}.
 
-A tutorial on the use of this constraint is available \hyperlink{schedulinganduseofthecumulative:schedulinganduseofthecumulativeconstraint}{here}
+For further informations, see the section devoted to this constraint in the Choco Tutorial document. 
+%A tutorial on the use of this constraint is available \hyperlink{schedulinganduseofthecumulative:schedulinganduseofthecumulativeconstraint}{here}
 
 \begin{itemize}
 	\item \textbf{API} :

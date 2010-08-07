@@ -7,9 +7,9 @@
 Several APIs are available: 
 \begin{notedef}
 \begin{itemize}
-\item \texttt{nth}$(i,x,y)$ ensures that $x[i]=y$
-\item \texttt{nth}$(i,x,y,o)$ ensures that $x[i+o]=y$ ($o$ is an \emph{offset} for shifting values)
-\item \texttt{nth}$(i,j,x,y)$ ensures that $x[i][j]=y$
+\item \texttt{nth}$(i,\collec{x_1}{x_n},y)$ states that $x_i=y$
+\item \texttt{nth}$(i,\collec{x_1}{x_n},y,o)$ ensures that $x_{i+o}=y$ ($o$ is an \emph{offset} for shifting values)
+\item \texttt{nth}$(i,j,\coll{x_{i,j}},y)$ ensures that $x_{i,j}=y$
 \end{itemize}
 \end{notedef}
 

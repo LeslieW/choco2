@@ -118,7 +118,7 @@ public class ExtConstraintFactory extends ObjectFactory {
                         else
                             extct[0] = relationTupleAC("cp:ac"+algorithmAC, intvars, prel.getLrel());
                     } else {
-                        extct[0] = regular(dfa, intvars);
+                        extct[0] = regular(intvars, dfa);
                     }
                 }
             }

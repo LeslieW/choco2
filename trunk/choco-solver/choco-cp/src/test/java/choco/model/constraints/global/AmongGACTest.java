@@ -136,7 +136,7 @@ public class AmongGACTest {
         Model mr = new CPModel();
         IntegerVariable[] bools = Choco.makeBooleanVarArray("bools", vars.length);
         for(int j = 0; j < bools.length; j++){
-            mr.addConstraint(Choco.reifiedConstraint(bools[j], Choco.among(vars[j], values)));
+            mr.addConstraint(Choco.reifiedConstraint(bools[j], Choco.member(vars[j], values)));
         }
         mr.addConstraint(Choco.eq(Choco.sum(bools), N));
         Solver sr = new CPSolver();

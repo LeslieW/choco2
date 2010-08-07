@@ -137,7 +137,7 @@ public class CarSeqModel extends CPModel {
             auto.fill(inter,alphabet);
 
 
-            Constraint cons = multiCostRegular(vs,z,auto,csts);
+            Constraint cons = multiCostRegular(z, vs, auto,csts);
             this.addConstraint(cons);
         }
         else
@@ -149,7 +149,7 @@ public class CarSeqModel extends CPModel {
                 {
                     FiniteAutomaton tomate = new FiniteAutomaton();
                     tomate.fill(a,alphabet);
-                    Constraint cons = multiCostRegular(vs,z,tomate,csts);
+                    Constraint cons = multiCostRegular(z, vs, tomate,csts);
                     this.addConstraint(cons);
 
                     i++;

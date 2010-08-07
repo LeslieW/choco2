@@ -24,7 +24,7 @@ package choco.model.constraints.global;
 
 import static choco.Choco.allDifferent;
 import static choco.Choco.lex;
-import static choco.Choco.lexeq;
+import static choco.Choco.lexEq;
 import static choco.Choco.leximin;
 import static choco.Choco.makeIntVar;
 import static choco.Choco.makeIntVarArray;
@@ -70,7 +70,7 @@ public class LexTest {
 				vs1[i] = makeIntVar("" + i, 0, k);
 				vs2[i] = makeIntVar("" + i, 0, k);
 			}
-			pb.addConstraint(lexeq(vs1, vs2));
+			pb.addConstraint(lexEq(vs1, vs2));
 			CPSolver s = new CPSolver();
 			s.read(pb);
 			s.setVarIntSelector(new RandomIntVarSelector(s, seed));
@@ -137,9 +137,9 @@ public class LexTest {
 		Constraint c1 = lex(new IntegerVariable[]{v1, v2}, new IntegerVariable[]{v1, v3});
 		Constraint c2 = lex(new IntegerVariable[]{v1, v2}, new IntegerVariable[]{v1, v2});
 		Constraint c3 = lex(new IntegerVariable[]{v1, v2}, new IntegerVariable[]{v1, v1});
-		Constraint c4 = lexeq(new IntegerVariable[]{v1, v2}, new IntegerVariable[]{v1, v3});
-		Constraint c5 = lexeq(new IntegerVariable[]{v1, v2}, new IntegerVariable[]{v1, v2});
-		Constraint c6 = lexeq(new IntegerVariable[]{v1, v2}, new IntegerVariable[]{v1, v1});
+		Constraint c4 = lexEq(new IntegerVariable[]{v1, v2}, new IntegerVariable[]{v1, v3});
+		Constraint c5 = lexEq(new IntegerVariable[]{v1, v2}, new IntegerVariable[]{v1, v2});
+		Constraint c6 = lexEq(new IntegerVariable[]{v1, v2}, new IntegerVariable[]{v1, v1});
 		pb.addConstraints(c1, c2, c3, c4, c5, c6);
 		CPSolver s = new CPSolver();
 		s.read(pb);

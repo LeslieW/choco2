@@ -1163,7 +1163,7 @@ public class ReifiedSearchTest {
 		IntegerVariable bo = Choco.makeBooleanVar("bo");
 		IntegerVariable X = Choco.makeIntVar("cible", 0, n);
 		IntegerVariable[] vars = Choco.makeIntVarArray("vars", m, 0, n);
-		Constraint c = Choco.occurrence(2, X, vars);
+		Constraint c = Choco.occurrence(X, vars, 2);
 
 		Model m1 = new CPModel();
 		m1.addConstraint(reifiedConstraint(bo, c));
@@ -1196,7 +1196,7 @@ public class ReifiedSearchTest {
 
 		Model m2  = new CPModel();
 		IntegerVariable Y = Choco.makeIntVar("oppcible", 0, n);
-		Constraint c2 = occurrence(2, Y, vars);
+		Constraint c2 = occurrence(Y, vars, 2);
 		m2.addConstraint(c2);
 		m2.addConstraints(reifiedConstraint(bo, eq(X,Y), neq(X,Y)));
 		Solver s2 = new CPSolver();

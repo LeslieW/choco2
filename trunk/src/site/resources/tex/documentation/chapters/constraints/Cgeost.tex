@@ -3,6 +3,8 @@
 \hypertarget{geost}{}
 
 \section{geost (constraint)}\label{geost:geostconstraint}\hypertarget{geost:geostconstraint}{}
+\todo{to be cleaned}
+
 \begin{notedef}
 \texttt{geost} is a global constraint that generically handles a variety of geometrical placement problems. 
 It handles geometrical constraints (non-overlapping, distance, etc.) between polymorphic objects (ex: polymorphism can be used for representing rotation) in any dimension.
@@ -10,6 +12,8 @@ It handles geometrical constraints (non-overlapping, distance, etc.) between pol
 The parameters of \texttt{geost}$(dim, objects, shiftedBoxes, eCtrs)$ are respectively:
 the space dimension, the list of geometrical objects, the set of boxes that compose the shapes of the objects, the set of geometrical constraints.
 The greedy mode should be used without external constraints to have safe results, because it excludes external constraints from its exploration and look for instanciation of variables involved in geost which respect the geost constraint.
+For further informations, see the section devoted to this constraint in the Choco Tutorial document. 
+%visit the following \hyperlink{geostdescription:placementanduseofthegeostconstraint}{page}.
 \end{notedef}
 
 \begin{itemize}
@@ -67,10 +71,6 @@ attribute &type &description \\
  \emph{dimensions} &\texttt{int[]} &list of dimensions that the external constraint is active for\\
  \emph{objectIdentifiers} &\texttt{int[]} &list of object ids that this external constraint affects.\\[1em]
 \end{tabular}}
-
-\begin{notedef}
-For further informations, visit the following \hyperlink{geostdescription:placementanduseofthegeostconstraint}{page}.
-\end{notedef}
 
 \textbf{Example}:
 \lstinputlisting{java/cgeost.j2t}

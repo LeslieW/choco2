@@ -134,7 +134,7 @@ public class FilteringTest {
                 z[i] = makeIntVar("z_"+i,0,rand.nextInt(max*n), Options.V_BOUND);
             m.addVariables(z);
 
-            Constraint c = multiCostRegular(vars,z,a,csts);
+            Constraint c = multiCostRegular(z, vars, a,csts);
 
             m.addConstraint(c);
 
@@ -344,7 +344,7 @@ public class FilteringTest {
 
                 m.addVariables(z);
 
-                Constraint c = multiCostRegular(vars,z,a,csts);
+                Constraint c = multiCostRegular(z, vars, a,csts);
 
                 m.addConstraint(c);
 

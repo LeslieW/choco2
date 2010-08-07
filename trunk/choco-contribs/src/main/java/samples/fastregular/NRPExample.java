@@ -113,8 +113,8 @@ public class NRPExample {
 
         for (int i  = 0 ;i < pl ; i++)
         {
-            m.addConstraint(regular(usable,vars[i]));
-            m.addConstraint(occurrence(0,makeIntVar("_",2,6),vars[i]));
+            m.addConstraint(regular(vars[i], usable));
+            m.addConstraint(occurrence(makeIntVar("_",2,6),vars[i], 0));
 
         }
 
@@ -122,7 +122,7 @@ public class NRPExample {
         {
 
             IntegerVariable[] v = ArrayUtils.getColumn(vars,i);
-            m.addConstraint(occurrence(2,makeIntVar("_",1,1),v));
+            m.addConstraint(occurrence(makeIntVar("_",1,1),v, 2));
         }
 
 

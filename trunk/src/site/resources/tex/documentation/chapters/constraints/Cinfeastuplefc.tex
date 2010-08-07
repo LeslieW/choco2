@@ -4,8 +4,8 @@
 
 \section{infeasTupleFC (constraint)}\label{infeastuplefc:infeastuplefcconstraint}\hypertarget{infeastuplefc:infeastuplefcconstraint}{}
 \begin{notedef}
-  \texttt{infeasTupleFC}$(x,feasTuples)$ states an extensional constraint on $(x_1,\ldots,x_n)$ defined by the table $infeasTuples$ of compatible tuples of values, and then performs Forward Checking:
-      $$\forall \text{ tuple } i\ |\quad (x_1,\ldots,x_n)\neq infeasTuples[i]$$
+  \texttt{infeasTupleFC}$(\collec{x_1}{x_n},feasTuples)$ states an extensional constraint on \collec{x_1}{x_n} defined by the table $infeasTuples$ of compatible tuples of values, and then performs Forward Checking:
+      $$\forall \text{ tuple } i\ |\quad \collec{x_1}{x_n}\neq infeasTuples[i]$$
 \end{notedef}
 
 \begin{itemize}

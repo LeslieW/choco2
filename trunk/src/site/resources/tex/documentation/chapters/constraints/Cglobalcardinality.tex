@@ -4,23 +4,24 @@
 
 \section{globalCardinality (constraint)}\label{globalcardinality:globalcardinalityconstraint}\hypertarget{globalcardinality:globalcardinalityconstraint}{}
 \begin{notedef}
-  \texttt{globalCardinality}$(x,low, up)$ states bounds on the occurrence numbers of any value $v$ in $x$ (here, offset $min$ is the minimum value over all variables in $x$) :
-$$low[v-min]\le|\{i\ |\ x_i=v\}|\le up[v-min],\quad\forall \text{ value } v$$   
+  \texttt{globalCardinality}$(\collec{x_1}{x_n},\collec{l_0}{l_{m-1}}, \collec{u_0}{u_{m-1}}, o)$ states lower bounds $l$ and upper bounds $u$ on the occurrence numbers of the values in collection $x$ according to offset $o$: 
+$$l_{j-o}\ \le\ |\{i=1..n\ |\ x_i=j\}|\ \le\ u_{j-o},\quad\forall j=0..m-1$$   
+  \texttt{globalCardinality}$(\collec{x_1}{x_n},\collec{z_0}{z_{m-1}}, o)$ states that $z$ are the occurrence numbers of the values in collection $x$ according to offset $o$: 
+$$z_{j-o} = \{i=1..n\ |\ x_i=j\}|,\quad\forall j=0..m-1$$   
 \end{notedef}
+Note that offset $o$ should be set to the minimum possible value over all variables $x$ and that the bound table length $m$ should be set to the maximum possible value plus $o+1$.
 
-Mulitple APIs exist:
+%offset is the minimum value over all variables in $x$
+Several APIs exist:
 \begin{itemize}
-%	\item \emph{bounds on cardinalities:} Given an array of variables $x$, $min$ the minimal value over all variables, and $max$ the maximal value over all variables, the constraint ensures that the number of occurrences of value $v$ among the variables is between $low[v-min]$ and $up[v-min]$. Note that the length of $low$ and $up$ should be $max - min + 1$. Use the propagator of \cite{QuimperCP03}.
-	\item Given an array of variables $x$ and an $offset$, the constraint ensures that the number of occurrences of the value $v$ in $x$ is between $low[v-offset]$ and $up[v-offset]$. Use the propagator of \cite{QuimperCP03}.
-	\item \emph{variable cardinalities:} Given an array of variables $x$, an array of variables $card$ to represent the cardinalities and an $offset$, the constraint ensures that the number of occurrences of the value $v$ among the variables is equal to $card[v-offset]$. This constraint:
+	\item \emph{constant bounds on cardinalities} \collec{l_0}{l_{m-1}} and \collec{u_0}{u_{m-1}}: use the propagator of \cite{ReginAAAI96} or of \cite{QuimperCP03} depending on the set options and the nature of the domain variables.
+	\item \emph{variable cardinalities} \collec{z_0}{z_{m-1}}: use the propagator of \cite{QuimperCP03} that:      
       \begin{itemize}
-      \item enforces Bound Consistency over $x$ regarding the lower and upper bounds of $card$, 
-      \item maintains the upper bounds of $card$ by counting the number of variables in which each value can occur, 
-      \item maintains the lower bounds of $card$ by counting the number of variables instantiated to each value, 
-      \item enforces $card[0] + \cdots + card[m] = n$, where \emph{n} is the number of variables and \emph{m} the number of values.
+      \item enforces Bound Consistency over $x$ regarding the lower and upper bounds of $z$, 
+      \item maintains the upper bound of $z_j$ by counting the variables that may be instantiated to $j$, 
+      \item maintains the lower bound of $z_j$ by counting the variables instantiated to $j$, 
+      \item enforces $z_0 + \cdots + z_{m-1} = n$
       \end{itemize}
-	Use the propagator of \cite{QuimperCP03}.      
-
 \end{itemize}
 
 The APIs are duplicated to define options. 
@@ -35,11 +36,12 @@ The APIs are duplicated to define options.
 	\item \textbf{return type} : \texttt{Constraint}
 	\item \textbf{options}:
 	\begin{itemize}
-		\item \emph{no option} :
+		\item \emph{no option}: 
+          if $x$ have \emph{bounded} domains or if the cardinalities are variable $z$, use the propagator of~\cite{QuimperCP03} for BC, otherwise use the propagator of \cite{ReginAAAI96};
 		\item \hyperlink{cgccac:cgccacoptions}{\tt Options.C\_GCC\_AC} : for \cite{ReginAAAI96} implementation of arc consistency
 		\item \hyperlink{cgccbc:cgccbcoptions}{\tt Options.C\_GCC\_BC} : for  \cite{QuimperCP03} implementation of bound consistency
 	\end{itemize}
-	\item \textbf{favorite domain} : \emph{to complete}
+	\item \textbf{favorite domain} : \emph{enumerated} for arc consistency, \emph{bounded} for bound consistency.
 	\item \textbf{references} :
       \begin{itemize}
       \item \cite{ReginAAAI96}: \emph{Generalized arc consistency for global cardinality constraint},
@@ -56,7 +58,7 @@ The APIs are duplicated to define options.
 \lstinputlisting{java/cglobalcardinality1.j2t}
 
 \begin{itemize}
-	\item example2
+	\item example2:
 \end{itemize}
 
 \lstinputlisting{java/cglobalcardinality2.j2t}

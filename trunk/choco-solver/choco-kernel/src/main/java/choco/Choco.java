@@ -1620,12 +1620,28 @@ public class Choco {
      * @param values array of int
      * @return AMONG constraint
      */
+    public static Constraint member(IntegerVariable var, int[] values){
+        if(values.length == 0){
+            throw new ModelException("AMONG requirement : |values| > 0");
+        }
+        return new ComponentConstraint(ConstraintType.AMONG, values, new IntegerVariable[]{var});
+    }
+
+    /**
+     * VAR takes it value in VALUES
+     * @param var int variable
+     * @param values array of int
+     * @return AMONG constraint
+     * @deprecated use member
+     */
+    @Deprecated
     public static Constraint among(IntegerVariable var, int[] values){
         if(values.length == 0){
             throw new ModelException("AMONG requirement : |values| > 0");
         }
         return new ComponentConstraint(ConstraintType.AMONG, values, new IntegerVariable[]{var});
     }
+
 
     /**
      * NVAR is the number of variables of the collection VARIABLES that take their value in VALUES.
@@ -1678,23 +1694,13 @@ public class Choco {
     }
 
     /**
-     * Exactly N variables of the VARIABLES collection are assigned to value VALUE.
-     * @param n counter
-     * @param variables collection of variables
-     * @param value int
-     * @return EXACTLY constraint
+     * VAR takes it value out of VALUES
+     * @param var int variable
+     * @param values array of int
+     * @return DISJOINT constraint
      */
-    public static Constraint exactly(int n, IntegerVariable[] variables, int value){
-        if(n<0){
-            throw new ModelException("EXACTLY requirement: n >=0 ");
-        }
-        if(n > variables.length){
-            throw new ModelException("EXACTLY requirement : nvar <= |variables|");
-        }
-        if(variables.length == 0){
-            throw new ModelException("EXACTLY requirement : |variables| > 0");
-        }
-        return new ComponentConstraint(ConstraintType.EXACTLY, new int[]{n, value},variables);
+    public static Constraint notMember(IntegerVariable var, int[] values){
+        return new ComponentConstraint(ConstraintType.DISJOINT, values, new IntegerVariable[]{var});
     }
 
     /**
@@ -1702,7 +1708,9 @@ public class Choco {
      * @param var int variable
      * @param values array of int
      * @return DISJOINT constraint
+     * @deprecated rename as notMember
      */
+    @Deprecated
     public static Constraint disjoint(IntegerVariable var, int[] values){
         return new ComponentConstraint(ConstraintType.DISJOINT, values, new IntegerVariable[]{var});
     }
@@ -2014,7 +2022,7 @@ public class Choco {
 	 * Ensures that the occurrence variable contains the number of occurrences of the given value in the list of
 	 * variables
 	 *
-	 * @param value : the observed value
+	 * @param value     the observed value
 	 * @param vars       List of variables where the value can appear
 	 * @param occurrence The variable that should contain the occurence number
 	 * @return Constraint
@@ -2028,11 +2036,26 @@ public class Choco {
 		return new ComponentConstraint(ConstraintType.OCCURRENCE, 0, variables);
 	}
 
+    /**
+     * Ensures that the occurrence variable contains the number of occurrences of the given value in the list of
+     * variables
+     *
+     * @param vars       List of variables where the value can appear
+     * @param occurrence The variable that should contain the occurrence number
+     * @param value     the observed value
+     * @return Constraint
+     */
+
+    public static Constraint occurrence(IntegerVariable occurrence, IntegerVariable[] vars, int value) {
+        return occurrence(value, occurrence, vars);
+    }
+
 	/**
 	 * Ensures that the lower bound of occurrence is at most equal to the number of occurrences
-	 * size{forall v in vars | v = value} >= occurence
+	 * size{forall v in vars | v = value} >= occurrence
+     *
 	 * @param value the observed value
-	 * @param occurrence the variable that should contain the occurence numbre
+	 * @param occurrence the variable that should contain the occurrence number
 	 * @param vars list of variable where the value can appear
 	 * @return Constraint
 	 */
@@ -2044,11 +2067,25 @@ public class Choco {
 		return new ComponentConstraint(ConstraintType.OCCURRENCE, -1, variables);
 	}
 
+    /**
+     * Ensures that the lower bound of occurrence is at most equal to the number of occurrences
+     * size{forall v in vars | v = value} >= occurrence
+     *
+     * @param occurrence the variable that should contain the occurrence number
+     * @param vars list of variable where the value can appear
+     * @param value the observed value
+     * @return Constraint
+     */
+    public static Constraint occurrenceMin(IntegerVariable occurrence, IntegerVariable[] vars, int value) {
+        return occurrenceMin(value, occurrence, vars);
+    }
+
 	/**
 	 * Ensures that the upper bound of occurrence is at least equal to the number of occurrences
-	 * size{forall v in vars | v = value} <= occurence
+	 * size{forall v in vars | v = value} <= occurrence
+     *
 	 * @param value the observed value
-	 * @param occurrence the variable that should contain the occurence numbre
+	 * @param occurrence the variable that should contain the occurrence number
 	 * @param vars list of variable where the value can appear
 	 * @return Constraint
 	 */
@@ -2059,6 +2096,54 @@ public class Choco {
 		arraycopy(vars, 0, variables, 2, vars.length);
 		return new ComponentConstraint(ConstraintType.OCCURRENCE, 1, variables);
 	}
+
+    /**
+     * Ensures that the upper bound of occurrence is at least equal to the number of occurrences
+     * size{forall v in vars | v = value} <= occurrence
+     *
+     * @param occurrence the variable that should contain the occurence number
+     * @param vars list of variable where the value can appear
+     * @param value the observed value
+     * @return Constraint
+     */
+    public static Constraint occurrenceMax(IntegerVariable occurrence, IntegerVariable[] vars, int value) {
+        return occurrenceMax(value, occurrence, vars);
+    }
+
+    /**
+     * Ensures that N variables of the VARIABLES collection are assigned to value VALUE.
+     * @param occurrence counter
+     * @param variables collection of variables
+     * @param value int
+     * @return EXACTLY constraint
+     */
+    public static Constraint occurrence(int occurrence, IntegerVariable[] variables, int value){
+        if(occurrence<0){
+            throw new ModelException("EXACTLY requirement: n >=0 ");
+        }
+        if(occurrence > variables.length){
+            throw new ModelException("EXACTLY requirement : nvar <= |variables|");
+        }
+        if(variables.length == 0){
+            throw new ModelException("EXACTLY requirement : |variables| > 0");
+        }
+        return new ComponentConstraint(ConstraintType.EXACTLY, new int[]{occurrence, value},variables);
+    }
+
+    /**
+     * Ensures that N variables of the VARIABLES collection are assigned to value VALUE.
+     * @param occurrence counter
+     * @param variables collection of variables
+     * @param value int
+     * @return EXACTLY constraint
+     * @deprecated see among
+     */
+    @Deprecated
+    public static Constraint exactly(int occurrence, IntegerVariable[] variables, int value){
+        return occurrence(occurrence, variables, value);
+    }
+
+
 
 	/**
 	 * subscript constraint: accessing an array with a variable index
@@ -2203,13 +2288,27 @@ public class Choco {
      * @param b 0-1 variables for potential values
      * @return DomainConstraint
 	 */
-	public static Constraint domainConstraint(IntegerVariable x, IntegerVariable[] b) {
+	public static Constraint domainChanneling(IntegerVariable x, IntegerVariable[] b) {
 		return new ComponentConstraint(
 				ConstraintType.DOMAIN_CHANNELING, ConstraintType.DOMAIN_CHANNELING, 
 				ArrayUtils.append(b, new IntegerVariable[]{x}));
 	}
-	
-	
+
+    /**
+     * state a channeling between the domain of the variable x and the array of boolean variables b which enforce:
+     * x = i <=> b[i] = 1
+     * @param x  domain variable
+     * @param b 0-1 variables for potential values
+     * @return DomainConstraint
+     * @deprecated see domainChannelling
+     */
+    @Deprecated
+    public static Constraint domainConstraint(IntegerVariable x, IntegerVariable[] b) {
+        return new ComponentConstraint(
+                ConstraintType.DOMAIN_CHANNELING, ConstraintType.DOMAIN_CHANNELING,
+                ArrayUtils.append(b, new IntegerVariable[]{x}));
+    }
+
 
     /**
 	 * All different constraints with a global filtering :
@@ -2472,18 +2571,6 @@ public class Choco {
     /**
      * The variables of the collection VARIABLES are increasing.
      * In addition, NVAL is the number of distinct values taken by the variables of the collection VARIABLES.
-     * @param nval number of distinct values
-     * @param vars collection of variables
-     * @return increasing n value constraint
-     */
-    public static Constraint increasing_nvalue(IntegerVariable nval, IntegerVariable[] vars){
-        return new ComponentConstraint(ConstraintType.INCREASINGNVALUE, null,
-                ArrayUtils.append(new IntegerVariable[]{nval},vars));
-    }
-
-    /**
-     * The variables of the collection VARIABLES are increasing.
-     * In addition, NVAL is the number of distinct values taken by the variables of the collection VARIABLES.
      * @param option  Available options are:
 	 * <ul>
 	 * <li><b>cp:atleast</b>: filter on lower bound only</li>
@@ -2494,10 +2581,53 @@ public class Choco {
      * @param vars collection of variables
      * @return increasing n value constraint
      */
-    public static Constraint increasing_nvalue(String option, IntegerVariable nval, IntegerVariable[] vars){
-        Constraint c = increasing_nvalue(nval, vars);
+    public static Constraint increasingNValue(String option, IntegerVariable nval, IntegerVariable[] vars){
+        Constraint c = increasingNValue(nval, vars);
         c.addOption(option);
         return c;
+    }
+
+    /**
+     * The variables of the collection VARIABLES are increasing.
+     * In addition, NVAL is the number of distinct values taken by the variables of the collection VARIABLES.
+     * @param nval number of distinct values
+     * @param vars collection of variables
+     * @return increasing n value constraint
+     */
+    public static Constraint increasingNValue(IntegerVariable nval, IntegerVariable[] vars){
+        return new ComponentConstraint(ConstraintType.INCREASINGNVALUE, null,
+                ArrayUtils.append(new IntegerVariable[]{nval},vars));
+    }
+
+    /**
+     * The variables of the collection VARIABLES are increasing.
+     * In addition, NVAL is the number of distinct values taken by the variables of the collection VARIABLES.
+     * @param nval number of distinct values
+     * @param vars collection of variables
+     * @deprecated use increasingNValue
+     */
+    @Deprecated
+    public static Constraint increasing_nvalue(IntegerVariable nval, IntegerVariable[] vars){
+        return Choco.increasingNValue(nval, vars);
+    }
+
+    /**
+     * The variables of the collection VARIABLES are increasing.
+     * In addition, NVAL is the number of distinct values taken by the variables of the collection VARIABLES.
+     * @param option  Available options are:
+     * <ul>
+     * <li><b>cp:atleast</b>: filter on lower bound only</li>
+     * <li><b>cp:atmost</b>:  filter on upper bound only</li>
+     * <li><b>cp:both</b>: (default value) filter on lower bound and upper bound</li>
+     * </ul>
+     * @param nval number of distinct values
+     * @param vars collection of variables
+     * @return increasing n value constraint
+     * @deprecated use increasingNValue
+     */
+    @Deprecated
+    public static Constraint increasing_nvalue(String option, IntegerVariable nval, IntegerVariable[] vars){
+        return Choco.increasingNValue(option, nval, vars);
     }
 
 
@@ -3049,10 +3179,25 @@ public class Choco {
 	 * @param v2 the second array of variables
 	 * @return Constraint
 	 */
-	public static Constraint lexeq(IntegerVariable[] v1, IntegerVariable[] v2) {
+	public static Constraint lexEq(IntegerVariable[] v1, IntegerVariable[] v2) {
 		int offset = v1.length;
 		return new ComponentConstraint(ConstraintType.LEX, new Object[]{ConstraintType.LEXEQ, offset}, ArrayUtils.append(v1, v2));
 	}
+
+    /**
+     * Enforce a lexicographic ordering on two vectors of integer
+     * variables x <_lex y with x = <x_0, ..., x_n>, and y = <y_0, ..., y_n>.
+     * ref : Global Constraints for Lexicographic Orderings (Frisch and al)
+     * @param v1 the first array of variables
+     * @param v2 the second array of variables
+     * @return Constraint
+     * @deprecated see lexEq
+     */
+    @Deprecated
+    public static Constraint lexeq(IntegerVariable[] v1, IntegerVariable[] v2) {
+        int offset = v1.length;
+        return new ComponentConstraint(ConstraintType.LEX, new Object[]{ConstraintType.LEXEQ, offset}, ArrayUtils.append(v1, v2));
+    }
 
 	/**
 	 * Enforce a strict lexicographic ordering on two vectors of integer
@@ -3166,16 +3311,31 @@ public class Choco {
 
 	/**
 	 * Enforce the number of distinct values among vars to be less than nvalue;
-	 * @param vars list of variables
 	 * @param nvalue number of distinct values
+	 * @param vars list of variables
 	 * @return Constraint
 	 */
-	public static Constraint atMostNValue(IntegerVariable[] vars, IntegerVariable nvalue) {
+	public static Constraint atMostNValue(IntegerVariable nvalue, IntegerVariable[] vars) {
 		IntegerVariable[] tmp = new IntegerVariable[vars.length + 1];
 		arraycopy(vars, 0, tmp, 0, vars.length);
 		tmp[tmp.length - 1] = nvalue;
 		return new ComponentConstraint(ConstraintType.ATMOSTNVALUE, null, tmp);
 	}
+
+    /**
+     * Enforce the number of distinct values among vars to be less than nvalue;
+     * @param vars list of variables
+     * @param nvalue number of distinct values
+     * @return Constraint
+     * @deprecated reorder parameters
+     */
+    @Deprecated
+    public static Constraint atMostNValue(IntegerVariable[] vars, IntegerVariable nvalue) {
+        IntegerVariable[] tmp = new IntegerVariable[vars.length + 1];
+        arraycopy(vars, 0, tmp, 0, vars.length);
+        tmp[tmp.length - 1] = nvalue;
+        return new ComponentConstraint(ConstraintType.ATMOSTNVALUE, null, tmp);
+    }
 
 	// ------------- Constraints over sets -------------------------------
 	/**
@@ -3442,51 +3602,103 @@ public class Choco {
 	}
 
 
-	/**
-	 * Create a Regular constraint that enforce the sequence of variables to be a word
-	 * recognized by the dfa auto.
-	 * For example regexp = "(1|2)(3*)(4|5)";
-	 * The same dfa can be used for different propagators.
-	 *
-	 * @param auto the DFA
-	 * @param vars the variables of the constraint
-	 * @return the new constraint
-	 */
-	public static Constraint regular(DFA auto, IntegerVariable[] vars) {
-		return new ComponentConstraint(ConstraintType.REGULAR,
-				auto, vars);
-	}
-
     /**
 	 * Create a Regular constraint that enforce the sequence of variables to be a word
 	 * recognized by the dfa auto.
 	 * For example regexp = "(1|2)(3*)(4|5)";
 	 * The same dfa can be used for different propagators.
 	 *
-	 * @param auto the DFA
 	 * @param vars the variables of the constraint
+	 * @param auto the DFA
 	 * @return the new constraint
 	 */
-	public static Constraint regular(FiniteAutomaton auto, IntegerVariable[] vars) {
+	public static Constraint regular(IntegerVariable[] vars, FiniteAutomaton auto) {
 		return new ComponentConstraint(ConstraintType.FASTREGULAR,
 				auto, vars);
 	}
 
 
 
+    /**
+     * Create a Regular constraint that enforce the sequence of variables to be a word
+     * recognized by the dfa auto.
+     * For example regexp = "(1|2)(3*)(4|5)";
+     * The same dfa can be used for different propagators.
+     *
+     * @param vars the variables of the constraint
+     * @param auto the DFA
+     * @return the new constraint
+     */
+    public static Constraint regular(IntegerVariable[] vars, DFA auto) {
+        return new ComponentConstraint(ConstraintType.REGULAR,
+                auto, vars);
+    }
+
 	/**
 	 * Create a Regular constraint that enforce the sequence of variables to match the regular
 	 * expression.
 	 *
-	 * @param regexp a regexp for the DFA
 	 * @param vars   the variables of the constraint
+	 * @param regexp a regexp for the DFA
 	 * @return the new constraint
 	 */
-	public static Constraint regular(String regexp, IntegerVariable[] vars) {
+	public static Constraint regular(IntegerVariable[] vars, String regexp) {
 		//return new Regular2Constraint(vars, regexp);
 		return new ComponentConstraint(ConstraintType.REGULAR,
 				regexp, vars);
 	}
+
+    /**
+     * Create a Regular constraint that enforce the sequence of variables to be a word
+     * recognized by the dfa auto.
+     * For example regexp = "(1|2)(3*)(4|5)";
+     * The same dfa can be used for different propagators.
+     *
+     * @param auto the DFA
+     * @param vars the variables of the constraint
+     * @return the new constraint
+     * @deprecated reorder parameters
+     */
+    @Deprecated
+    public static Constraint regular(DFA auto, IntegerVariable[] vars) {
+        return new ComponentConstraint(ConstraintType.REGULAR,
+                auto, vars);
+    }
+
+    /**
+     * Create a Regular constraint that enforce the sequence of variables to be a word
+     * recognized by the dfa auto.
+     * For example regexp = "(1|2)(3*)(4|5)";
+     * The same dfa can be used for different propagators.
+     *
+     * @param auto the DFA
+     * @param vars the variables of the constraint
+     * @return the new constraint
+     * @deprecated reorder parameters
+     */
+    @Deprecated
+    public static Constraint regular(FiniteAutomaton auto, IntegerVariable[] vars) {
+        return new ComponentConstraint(ConstraintType.FASTREGULAR,
+                auto, vars);
+    }
+
+
+
+    /**
+     * Create a Regular constraint that enforce the sequence of variables to match the regular
+     * expression.
+     *
+     * @param regexp a regexp for the DFA
+     * @param vars   the variables of the constraint
+     * @return the new constraint
+     * @deprecated reorder parameters
+     */
+    @Deprecated
+    public static Constraint regular(String regexp, IntegerVariable[] vars) {
+        //return new Regular2Constraint(vars, regexp);
+        return new ComponentConstraint(ConstraintType.REGULAR,
+                regexp, vars);
+    }
 
 	/**
 	 * A Regular constraint based on a DFA which is built from a list of FEASIBLE tuples.
@@ -3526,100 +3738,163 @@ public class Choco {
 				new Object[]{tuples, min, max}, vars);
 	}
 
-	/**
-	 * Constructs a new CostRegular constraint
-	 * This constraint ensures that the sequence of variables values
-	 * will follow a pattern defined by a DFA and that this sequence has a cost bounded by the cost variable
-	 * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
-	 * @param cvar the cost variable
-	 * @param auto  the automaton describing the regular language
-	 * @param costs the cost of taking value j for the variable i
-	 * @return  a instance of the constraint
-	 */
-	public static Constraint costRegular(IntegerVariable[] vars, IntegerVariable cvar, FiniteAutomaton auto, int[][] costs){
+    /**
+     * costRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
+     * and that the sum of the costs associated to each assignment is bounded by the cost variable.
+     * @param costVar the cost variable
+     * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
+     * @param auto  the automaton defining the regular language
+     * @param costs the assignment costs: costs[i][j] is the cost associated to the assignment of variable i to value j
+     * @return an instance of the costRegular constraint
+     */
+    public static Constraint costRegular(IntegerVariable costVar, IntegerVariable[] vars, FiniteAutomaton auto, int[][] costs){
 		return new ComponentConstraint(ConstraintType.COSTREGULAR, new Object[]{auto, costs},
-				ArrayUtils.append(vars, new IntegerVariable[]{cvar}));
+				ArrayUtils.append(vars, new IntegerVariable[]{costVar}));
 	}
 
     /**
-	 * Constructs a new CostRegular constraint
-	 * This constraint ensures that the sequence of variables values
-	 * will follow a pattern defined by a DFA and that this sequence has a cost bounded by the cost variable
-	 * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
-	 * @param cvar the cost variable
-	 * @param auto  the automaton describing the regular language
-	 * @param costs the cost of taking value j for the variable i
-	 * @return  a instance of the constraint
-	 */
-	public static Constraint costRegular(IntegerVariable[] vars, IntegerVariable cvar, FiniteAutomaton auto, int[][][] costs){
+     * costRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
+     * and that the sum of the costs associated to each assignment is bounded by the cost variable.
+     * This version allows to specify different costs according to the automaton state at which the assignment occurs (i.e. the transition starts)
+     * @param costVar the cost variable
+     * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
+     * @param auto  the automaton defining the regular language
+     * @param costs the assignment costs: costs[i][j][s] is the cost associated to the assignment of variable i to value j at state s
+     * @return an instance of the costRegular constraint
+     */
+	public static Constraint costRegular(IntegerVariable costVar, IntegerVariable[] vars, FiniteAutomaton auto, int[][][] costs){
 		return new ComponentConstraint(ConstraintType.FASTCOSTREGULAR, new Object[]{auto, costs},
-				ArrayUtils.append(vars, new IntegerVariable[]{cvar}));
+				ArrayUtils.append(vars, new IntegerVariable[]{costVar}));
 	}
 
     /**
-	 * Constructs a new CostRegular constraint
-	 * This constraint ensures that the sequence of variables values
-	 * will follow a pattern defined by a DFA and that this sequence has a cost bounded by the cost variable
-	 * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
-	 * @param cvar the cost variable
-	 * @param graph  a layered directed multigraph
-	 * @param source the source node of the graph
-	 * @return  a instance of the constraint
-	 */
-	public static Constraint costRegular(IntegerVariable[] vars, IntegerVariable cvar, DirectedMultigraph<Node, Arc> graph, Node source){
+     * costRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
+     * and that the sum of the costs associated to each assignment is bounded by the cost variable.
+     * In this version, the specified DFA is already unfolded as a layered multi-graph so as it recognizes only words of fixed length vars.length
+     * @param costVar the cost variable
+     * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
+     * @param graph  a layered directed multigraph
+     * @param source the source node of the graph
+     * @return an instance of the costRegular constraint
+     */
+	public static Constraint costRegular(IntegerVariable costVar, IntegerVariable[] vars, DirectedMultigraph<Node, Arc> graph, Node source){
 		return new ComponentConstraint(ConstraintType.FASTCOSTREGULAR, new Object[]{graph, source},
-				ArrayUtils.append(vars, new IntegerVariable[]{cvar}));
+				ArrayUtils.append(vars, new IntegerVariable[]{costVar}));
 	}
 
     /**
-     * Construct a knapsack problem constraint with an underlying costregular constraint.
-     * It simulates M. Triks dynamic programming approach.
-     * @param vars Object variables
-     * @param cVar1 First dimension cost variable
-     * @param cVar2 Second dimension cost variable
-     * @param costs1 First dimension cost function
-     * @param costs2 Second dimension cost function
+     * costRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
+     * and that the sum of the costs associated to each assignment is bounded by the cost variable.
+     * @param costVar the cost variable
+     * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
+     * @param auto  the automaton defining the regular language
+     * @param costs the assignment costs: costs[i][j] is the cost associated to the assignment of variable i to value j
+     * @return an instance of the costRegular constraint
+     * @deprecated reorder parameters
+     */
+    @Deprecated
+    public static Constraint costRegular(IntegerVariable[] vars, IntegerVariable costVar, FiniteAutomaton auto, int[][] costs){
+        return new ComponentConstraint(ConstraintType.COSTREGULAR, new Object[]{auto, costs},
+                ArrayUtils.append(vars, new IntegerVariable[]{costVar}));
+    }
+
+    /**
+     * costRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
+     * and that the sum of the costs associated to each assignment is bounded by the cost variable.
+     * This version allows to specify different costs according to the automaton state at which the assignment occurs (i.e. the transition starts)
+     * @param costVar the cost variable
+     * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
+     * @param auto  the automaton defining the regular language
+     * @param costs the assignment costs: costs[i][j][s] is the cost associated to the assignment of variable i to value j at state s
+     * @return an instance of the costRegular constraint
+     * @deprecated reorder parameters
+     */
+    @Deprecated
+    public static Constraint costRegular(IntegerVariable[] vars, IntegerVariable costVar, FiniteAutomaton auto, int[][][] costs){
+        return new ComponentConstraint(ConstraintType.FASTCOSTREGULAR, new Object[]{auto, costs},
+                ArrayUtils.append(vars, new IntegerVariable[]{costVar}));
+    }
+
+    /**
+     * costRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
+     * and that the sum of the costs associated to each assignment is bounded by the cost variable.
+     * In this version, the specified DFA is already unfolded as a layered multi-graph so as it recognizes only words of fixed length vars.length
+     * @param costVar the cost variable
+     * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
+     * @param graph  a layered directed multigraph
+     * @param source the source node of the graph
+     * @return an instance of the costRegular constraint
+     * @deprecated reorder parameters
+     */
+    @Deprecated
+    public static Constraint costRegular(IntegerVariable[] vars, IntegerVariable costVar, DirectedMultigraph<Node, Arc> graph, Node source){
+        return new ComponentConstraint(ConstraintType.FASTCOSTREGULAR, new Object[]{graph, source},
+                ArrayUtils.append(vars, new IntegerVariable[]{costVar}));
+    }
+
+    /**
+     * The knapsack problem constraint ensures that costVar is the sum of the vars weighted by the costs and that weightVar is the sum of vars weighted by the weights
+     * Based on costRegular, it simulates Tricks's dynamic programming approach.
+     * @param costVar cost variable
+     * @param weightVar weight variable
+     * @param vars item variables
+     * @param costs cost coefficients
+     * @param weights weight coefficients
      * @return an instance of a knapsack problem constraint.
      */
-    public static Constraint knapsackProblem(IntegerVariable[] vars, IntegerVariable cVar1, IntegerVariable cVar2, int[] costs1, int[] costs2)
+    public static Constraint knapsackProblem(IntegerVariable costVar, IntegerVariable weightVar, IntegerVariable[] vars, int[] costs, int[] weights)
     {
-       return new ComponentConstraint(ConstraintType.COSTKNAPSACK,new Object[]{costs1,costs2},
-              ArrayUtils.append(vars,new IntegerVariable[]{cVar1,cVar2}));
+       return new ComponentConstraint(ConstraintType.COSTKNAPSACK,new Object[]{costs,weights},
+              ArrayUtils.append(vars,new IntegerVariable[]{costVar,weightVar}));
+    }
+
+    /**
+     * The knapsack problem constraint ensures that costVar is the sum of the vars weighted by the costs and that weightVar is the sum of vars weighted by the weights
+     * Based on costRegular, it simulates Tricks's dynamic programming approach.
+     * @param vars item variables
+     * @param costVar cost variable
+     * @param weightVar weight variable
+     * @param costs cost coefficients
+     * @param weights weight coefficients
+     * @return an instance of a knapsack problem constraint.
+     * @deprecated reorder parameters
+     */
+    @Deprecated
+    public static Constraint knapsackProblem(IntegerVariable[] vars, IntegerVariable costVar, IntegerVariable weightVar, int[] costs, int[] weights)
+    {
+        return new ComponentConstraint(ConstraintType.COSTKNAPSACK,new Object[]{costs,weights},
+                ArrayUtils.append(vars,new IntegerVariable[]{costVar,weightVar}));
     }
 
 
-
-
 	/**
-	 * Constructs a new CostRegular constraint
-	 * This constraint ensures that the sequence of variables values
-	 * will follow a pattern defined by a DFA and that this sequence has a cost bounded by the cost variable
-	 * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
-	 * @param cvar the cost variable
-	 * @param auto  the automaton describing the regular language
-	 * @param costs the cost of taking value j for the variable i
-	 * @return  a instance of the constraint
+	 * multiCostRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
+	 * and that the sum of the cost vectors associated to each assignment is bounded by the cost variable vector
+	 * @param costVars the cost variable vector
+     * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
+	 * @param auto  the automaton defining the regular language
+	 * @param costs the assignment cost vectors: costs[i][j][k] is the k-th element of the cost vector associated to the assignment of variable i to value j
+	 * @return an instance of the multiCostRegular constraint
 	 */
-	public static Constraint multiCostRegular(IntegerVariable[] vars, IntegerVariable[] cvar, FiniteAutomaton auto, int[][][] costs){
+	public static Constraint multiCostRegular(IntegerVariable[] costVars, IntegerVariable[] vars, FiniteAutomaton auto, int[][][] costs){
 		return new ComponentConstraint(ConstraintType.MULTICOSTREGULAR, new Object[]{vars.length,auto,costs},
-				ArrayUtils.append(vars, cvar));
+				ArrayUtils.append(vars, costVars));
 	}
     /**
-	 * Constructs a new CostRegular constraint
-	 * This constraint ensures that the sequence of variables values
-	 * will follow a pattern defined by a DFA and that this sequence has a cost bounded by the cost variable
-	 * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
-	 * @param cvar the cost variable
-	 * @param auto  the automaton describing the regular language
-	 * @param costs the cost of taking value j for the variable i at state s;
-	 * @return  a instance of the constraint
-	 */
-	public static Constraint multiCostRegular(IntegerVariable[] vars, IntegerVariable[] cvar, FiniteAutomaton auto, int[][][][] costs){
+     * multiCostRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
+     * and that the sum of the cost vectors associated to each assignment is bounded by the cost variable vector.
+     * This version allows to specify different costs according to the automaton state at which the assignment occurs (i.e. the transition starts)
+     * @param costVars the cost variable vector
+     * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
+     * @param auto  the automaton defining the regular language
+     * @param costs the assignment cost vectors: costs[i][j][k][s] is the k-th element of the cost vector associated to the assignment of variable i to value j at state s of the DFA
+     * @return an instance of the multiCostRegular constraint
+     */
+	public static Constraint multiCostRegular(IntegerVariable[] costVars, IntegerVariable[] vars, FiniteAutomaton auto, int[][][][] costs){
                 int[][][][] copy = ArrayUtils.swallowCopy(costs);
 		return new ComponentConstraint(ConstraintType.MULTICOSTREGULAR, new Object[]{vars.length,auto,copy},
-				ArrayUtils.append(vars, cvar));
+				ArrayUtils.append(vars, costVars));
 	}
-
 
 	public static Constraint softMultiCostRegular(IntegerVariable[] vars, IntegerVariable[] counters, IntegerVariable[] penaltyVars, IntegerVariable globalPenalty, PenaltyFunction[] pfunction ,FiniteAutomaton auto, int[][][][] costs){
                 int[][][][] copy = ArrayUtils.swallowCopy(costs);
@@ -3651,15 +3926,81 @@ public class Choco {
 	/**
 	 * State a constraint to enforce GAC on Sum_i coeffs[i] * vars[i] = val.
 	 * It is using the regular to state a "knapsack" constraint.
+	 * @param val    : the value to reach
 	 * @param vars   : a table of variables
 	 * @param coeffs : a table of coefficients
-	 * @param val    : the value to reach
 	 * @return a constraint
 	 */
-	public static Constraint equation(IntegerVariable[] vars,int[] coeffs, int val) {
+	public static Constraint equation(int val, IntegerVariable[] vars, int[] coeffs) {
 		return new ComponentConstraint(ConstraintType.REGULAR,
-				new int[][]{coeffs,new int[]{val}}, vars);
+				new int[][]{coeffs, new int[]{val}}, vars);
 	}
+
+    /**
+     * State a constraint to enforce GAC on Sum_i coeffs[i] * vars[i] = z.
+     * It is using the regular to state a "knapsack" constraint.
+     * @param z    : the result variable
+     * @param vars   : a table of variables
+     * @param coeffs : a table of coefficients
+     * @return a constraint
+     */
+    public static Constraint equation(IntegerVariable z, IntegerVariable[] vars, int[] coeffs) {
+        IntegerVariable[] v = new IntegerVariable[vars.length+1];
+        System.arraycopy(v, 0, vars, 0, vars.length);
+        v[vars.length] = z;
+        int[] c = new int[coeffs.length+1];
+        System.arraycopy(c, 0, coeffs, 0, coeffs.length);
+        c[coeffs.length] = -1;
+        return Choco.equation(0, v, c);
+    }
+
+    /**
+     * State constraint Sum_i coeffs[i] * vars[i] = val.
+     * The option can be set to either :
+     * <ul>
+     * <li><b> cp:ac</b> for using regular
+     * <li><b> cp:bc</b> for using linear equation
+     * </ul>
+     * @param val    : the value to reach
+     * @param vars   : a table of variables
+     * @param coeffs : a table of coefficients
+     * @return a constraint
+     */
+    public static Constraint equation(String option, int val, IntegerVariable[] vars, int[] coeffs) {
+        return (option.equals("cp:bc")) ? Choco.eq(val, Choco.scalar(coeffs, vars)) : Choco.equation(val, vars, coeffs);
+    }
+
+    /**
+     * State constraint Sum_i coeffs[i] * vars[i] = z.
+     * The option can be set to either :
+     * <ul>
+     * <li><b> cp:ac</b> for using regular
+     * <li><b> cp:bc</b> for using linear equation
+     * </ul>
+     * @param option : the consistency level to achieve
+     * @param z    : the result variable
+     * @param vars   : a table of variables
+     * @param coeffs : a table of coefficients
+     * @return a constraint
+     */
+    public static Constraint equation(String option, IntegerVariable z, IntegerVariable[] vars, int[] coeffs) {
+            return (option.equals("cp:bc")) ? Choco.eq(z, Choco.scalar(coeffs, vars)) : Choco.equation(z, vars, coeffs);
+    }
+
+    /**
+     * State a constraint to enforce GAC on Sum_i coeffs[i] * vars[i] = val.
+     * It is using the regular to state a "knapsack" constraint.
+     * @param vars   : a table of variables
+     * @param coeffs : a table of coefficients
+     * @param val    : the value to reach
+     * @return a constraint
+     * @deprecated reorder parameters
+     */
+    @Deprecated
+    public static Constraint equation(IntegerVariable[] vars,int[] coeffs, int val) {
+        return new ComponentConstraint(ConstraintType.REGULAR,
+                new int[][]{coeffs,new int[]{val}}, vars);
+    }
 
 	public static Constraint sameSign(IntegerExpressionVariable n1, IntegerExpressionVariable n2) {
 		return new ComponentConstraint(ConstraintType.SIGNOP, true, new Variable[]{n1, n2});

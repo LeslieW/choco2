@@ -4,19 +4,27 @@
 
 \section{equation (constraint)}\label{equation:equationconstraint}\hypertarget{equation:equationconstraint}{}
 \begin{notedef}
-  \texttt{equation}$(x,c,z)$ states a linear equation:
+  \texttt{equation}$(z, \collec{x_1}{x_n},\collec{c_1}{c_n})$ states that $z$ is the weighted sum of $x$ by $c$:
 $$c_1x_1+c_2x_2+...+c_nx_n = z$$
 \end{notedef}
-It enforces GAC using \hyperlink{regular:regularconstraint}{regular} to state a \emph{knapsack} constraint.
+See also \hyperlink{knapsackproblem:knapsackproblemconstraint}{knapsackProblem}.
 
 \begin{itemize}
 	\item \textbf{API} :
 	\begin{itemize}
-		\item equation(IntegerVariable[] x, int[] c, int z)
+		\item equation(int z, IntegerVariable[] x, int[] c)
+		\item equation(String option, int z, IntegerVariable[] x, int[] c)
+		\item equation(IntegerVariable z, IntegerVariable[] x, int[] c)
+		\item equation(String option, IntegerVariable z, IntegerVariable[] x, int[] c)
 	\end{itemize}
 	\item \textbf{return type} : \texttt{Constraint}
-	\item \textbf{options} : \emph{n/a}
+	\item \textbf{options} :
+	\begin{itemize}
+		\item \emph{no option} or \texttt{"cp:ac"}: to enforce GAC  using \hyperlink{regular}{\texttt{regular}}
+		\item \texttt{"cp:bc"}: to enforce bound consistency using \hyperlink{eq}{\texttt{eq}}$(z,$\hyperlink{scalar}{\texttt{scalar}}$(x,c))$
+	\end{itemize}
 	\item \textbf{favorite domain} : \emph{to complete}
+	\item \textbf{global constraint catalog} : \href{http://www.emn.fr/z-info/sdemasse/gccat/Cscalar_product.html}{scalar\_product}
 \end{itemize}
 
 \textbf{Example}:

@@ -239,7 +239,7 @@ public class ASAPCPModel extends CPModel {
 
             
 
-            Constraint cons = multiCostRegular(v,z,a,csts);
+            Constraint cons = multiCostRegular(z, v, a,csts);
             this.addConstraint(cons);
         }
 
@@ -312,7 +312,7 @@ public class ASAPCPModel extends CPModel {
                         for (int idx :idxs)
                         {
                             IntegerVariable[] subset = makeSubSet(emp,v[idx]);
-                            this.addConstraint(occurrenceMin(handler.map.get(sh.getID()),makeIntVar("occ",min,Integer.MAX_VALUE/100, Options.V_BOUND),subset));
+                            this.addConstraint(occurrenceMin(makeIntVar("occ",min,Integer.MAX_VALUE/100, Options.V_BOUND),subset,handler.map.get(sh.getID())));
                         }
                     }
                     if (max != null)
@@ -320,7 +320,7 @@ public class ASAPCPModel extends CPModel {
                         for (int idx :idxs)
                         {
                             IntegerVariable[] subset = makeSubSet(emp,v[idx]);
-                            this.addConstraint(occurrenceMax(handler.map.get(sh.getID()),makeIntVar("occ",0,max, Options.V_BOUND),subset));
+                            this.addConstraint(occurrenceMax(makeIntVar("occ",0,max, Options.V_BOUND),subset,handler.map.get(sh.getID())));
                         }
                     }
                     if (pre != null)
@@ -328,7 +328,7 @@ public class ASAPCPModel extends CPModel {
                         for (int idx :idxs)
                         {
                             IntegerVariable[] subset = makeSubSet(emp,v[idx]);
-                            this.addConstraint(occurrence(handler.map.get(sh.getID()),constant(pre),subset));
+                            this.addConstraint(occurrence(constant(pre),subset, handler.map.get(sh.getID())));
                         }
                     }
                 }

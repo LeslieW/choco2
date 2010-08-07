@@ -8,6 +8,6 @@
             vs1[i] = makeIntVar("" + i, 0, k);
             vs2[i] = makeIntVar("" + i, 0, k);
         }
-        m.addConstraint(lexeq(vs1, vs2));
+        m.addConstraint(lexEq(vs1, vs2));
         s.read(m);
         s.solve();

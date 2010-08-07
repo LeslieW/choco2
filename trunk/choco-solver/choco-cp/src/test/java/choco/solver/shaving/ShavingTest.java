@@ -46,12 +46,12 @@ public class ShavingTest {
         for (int i = 0; i < pos.length; i++) {
             pos[i] = Choco.makeIntVar("VM" + i + "on ?", 0, 4);
             IntegerVariable [] bools = Choco.makeBooleanVarArray("VM" + i + "on ", 6);
-            m.addConstraint(Choco.domainConstraint(pos[i], bools));
+            m.addConstraint(Choco.domainChanneling(pos[i], bools));
             m.addConstraint(Choco.neq(pos[i], 3));
             m.addConstraint(Choco.neq(pos[i], 4));
         }
         IntegerVariable nbNodes = Choco.makeIntVar("nbNodes", 3, 3, Options.V_OBJECTIVE);
-        m.addConstraint(Choco.atMostNValue(pos,nbNodes));
+        m.addConstraint(Choco.atMostNValue(nbNodes, pos));
         Solver s = new CPSolver();
         s.read(m);
         s.minimize(s.getVar(nbNodes), false);
@@ -64,12 +64,12 @@ public class ShavingTest {
         for (int i = 0; i < pos.length; i++) {
             pos[i] = Choco.makeIntVar("VM" + i + "on ?", 0, 0);
             IntegerVariable [] bools = Choco.constantArray(new int[]{0,0,0,0,0,0});
-            m.addConstraint(Choco.domainConstraint(pos[i], bools));
+            m.addConstraint(Choco.domainChanneling(pos[i], bools));
             m.addConstraint(Choco.neq(pos[i], 3));
             m.addConstraint(Choco.neq(pos[i], 4));
         }
         IntegerVariable nbNodes = Choco.makeIntVar("nbNodes", 3, 3, Options.V_OBJECTIVE);
-        m.addConstraint(Choco.atMostNValue(pos,nbNodes));
+        m.addConstraint(Choco.atMostNValue(nbNodes, pos));
         Solver s = new CPSolver();
         s.read(m);
         s.minimize(s.getVar(nbNodes), false);

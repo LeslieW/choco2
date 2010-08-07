@@ -4,7 +4,7 @@
 
 \section{notMember (constraint)}\label{notmember:notmemberconstraint}\hypertarget{notmember:notmemberconstraint}{}
 \begin{notedef}
-\texttt{notMember}$(x,s)$ states that integer $x$ is not contained in set $s$:
+\texttt{notMember}$(x,s)$ states that integer $x$ does not belong to $s$:
 $$x\not\in s$$  
 \end{notedef}
 
@@ -15,6 +15,7 @@ $$x\not\in s$$
 		\item \mylst{notMember(SetVariable s, int x)}
 		\item \mylst{notMember(SetVariable s, IntegerVariable x)}
 		\item \mylst{notMember(IntegerVariable x, SetVariable s)}
+		\item \mylst{notMember(IntegerVariable x, int[] s)}
 	\end{itemize}
 	\item \textbf{return type} : \texttt{Constraint}
 	\item \textbf{options} :\emph{n/a}
@@ -22,4 +23,12 @@ $$x\not\in s$$
 \end{itemize}
 
 \textbf{Example}:
+\begin{itemize}
+\item with a set variable
+\end{itemize}
 \lstinputlisting{java/cnotmember.j2t}
+
+\begin{itemize}
+\item with a collection of values
+\end{itemize}
+\lstinputlisting{java/cdisjoint1.j2t}

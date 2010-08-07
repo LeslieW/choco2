@@ -101,7 +101,7 @@ public class MinimumRegularSet {
         solver.clear();
         FiniteAutomaton auto = new FiniteAutomaton();
         auto.fill(current,alpha);
-        in = regular(auto,vs);
+        in = regular(vs, auto);
         model.addConstraint(in);
         solver.read(model);
 
@@ -243,7 +243,7 @@ public class MinimumRegularSet {
 
         IntegerVariable[] vs = makeIntVarArray("x",n,0,2, Options.V_ENUM);
 
-        m.addConstraint(regular(a,vs));
+        m.addConstraint(regular(vs, a));
 
 
         s.read(m);

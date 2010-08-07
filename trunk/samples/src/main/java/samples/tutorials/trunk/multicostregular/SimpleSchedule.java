@@ -163,7 +163,7 @@ public class SimpleSchedule extends CPModel
 
         this.addVariables(sequence);
         this.addVariables(bounds);
-        this.addConstraint(multiCostRegular(sequence,bounds,auto,costMatrix));
+        this.addConstraint(multiCostRegular(bounds, sequence, auto,costMatrix));
     }
 
 

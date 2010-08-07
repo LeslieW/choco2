@@ -4,7 +4,7 @@
         IntegerVariable[] vars = makeIntVarArray("v", n, 0, 5);
         //2- add the constraint
         String regexp = "(1|2)(3*)(4|5)";
-        m.addConstraint(regular(regexp, vars));
+        m.addConstraint(regular(vars, regexp));
         //3- Create the solver, read the model and solve it
         Solver s = new CPSolver();
         s.read(m);

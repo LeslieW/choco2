@@ -264,7 +264,7 @@ public class LexChainTest {
 
 
             m.addConstraint(lexChainEq(array[0], array[1]));
-            m2.addConstraint(lexeq(array[0], array[1]));
+            m2.addConstraint(lexEq(array[0], array[1]));
             m3.addConstraint(lexChain(array[0], array[1]));
             m4.addConstraint(lex(array[0], array[1]));
 

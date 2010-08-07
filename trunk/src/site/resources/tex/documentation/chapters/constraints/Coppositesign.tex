@@ -7,13 +7,9 @@
 
 \begin{notedef}
   \texttt{oppositeSign}$(x,y)$ states that the two arguments have opposite signs:
-$$xy\le 0$$
+$$xy<0$$
 \end{notedef}
-
-\begin{notedef}
-  0 is considered as both sign, if one argument is equal to 0, the constraint is not satisfied.
-\end{notedef}
-
+Note that $0$ has both signs then constraint fails if $x$ or $y$ is equal to 0.
 
 \begin{itemize}
 	\item \textbf{API} : \mylst{oppositeSign(IntegerExpressionVariable x, IntegerExpressionVariable y)}

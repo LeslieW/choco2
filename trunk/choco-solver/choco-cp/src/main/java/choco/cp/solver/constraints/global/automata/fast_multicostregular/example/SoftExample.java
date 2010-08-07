@@ -67,7 +67,7 @@ public static void main2(String[] args)
                                 }
                 }
 
-                Constraint cons = multiCostRegular(x,ArrayUtils.append(new IntegerVariable[]{Z},y),fa,cst);
+                Constraint cons = multiCostRegular(ArrayUtils.append(new IntegerVariable[]{Z},y), x, fa,cst);
 
                 m.addConstraint(cons);
         m.addConstraint(eq(sum(y),Z));

@@ -301,7 +301,7 @@ public class RuleModel extends CPModel {
 
         for (int i  = 0 ;i < 8 ; i++)
         {
-            Constraint mr = multiCostRegular(vs[i],cvs[i],auto,csts);
+            Constraint mr = multiCostRegular(cvs[i], vs[i], auto,csts);
 
             this.addConstraint(mr);
 

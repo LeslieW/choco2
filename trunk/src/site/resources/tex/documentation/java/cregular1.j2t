@@ -19,7 +19,7 @@
         //4- Build the DFA
         DFA auto = new DFA(t, fs, n);
         //5- add the constraint
-        m.addConstraint(regular(auto, vars));
+        m.addConstraint(regular(vars, auto));
         //6- create the solver, read the model and solve it
         Solver s = new CPSolver();
         s.read(m);

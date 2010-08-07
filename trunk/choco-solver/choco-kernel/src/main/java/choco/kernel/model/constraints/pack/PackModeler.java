@@ -167,7 +167,7 @@ public final class PackModeler {
 	 */
 	public final Constraint[] getNbNonEmptyBinsRC() {
 		return new Constraint[]{
-				occurrence(0, nbEmpty, loads),
+				occurrence(nbEmpty, loads, 0),
 				eq(plus(nbEmpty,nbNonEmpty),nbBins)
 		};
 	}

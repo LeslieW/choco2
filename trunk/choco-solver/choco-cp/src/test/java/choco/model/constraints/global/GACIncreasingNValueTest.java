@@ -78,7 +78,7 @@ public class GACIncreasingNValueTest {
             vars = new IntegerVariable[nbVars + 1];
             System.arraycopy(gen.getVars(), 0, vars, 1, gen.getVars().length);
             vars[0] = gen.getOcc();
-            m.addConstraint(Options.C_INCREASING_NVALUE_BOTH, Choco.increasing_nvalue(gen.getOcc(), gen.getVars()));
+            m.addConstraint(Options.C_INCREASING_NVALUE_BOTH, Choco.increasingNValue(gen.getOcc(), gen.getVars()));
         }
 
         public Model generateSpecificModel(int idx, int val) {
@@ -94,7 +94,7 @@ public class GACIncreasingNValueTest {
             mvars[idx] = Choco.makeIntVar(mvars[idx].getName(), val, val, Options.V_ENUM);
             IntegerVariable[] vvars = new IntegerVariable[nbVars];
             System.arraycopy(mvars, 1, vvars, 0, vvars.length);
-            mm.addConstraint(Options.C_INCREASING_NVALUE_BOTH, Choco.increasing_nvalue(mvars[0], vvars));
+            mm.addConstraint(Options.C_INCREASING_NVALUE_BOTH, Choco.increasingNValue(mvars[0], vvars));
             return mm;
         }
 

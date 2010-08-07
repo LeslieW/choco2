@@ -4,13 +4,13 @@
 
 \section{lexChainEq (constraint)}\label{lexchaineq:lexchaineqconstraint}\hypertarget{lexchaineq:lexchaineqconstraint}{}
 \begin{notedef}
-\texttt{lexChainEq}$(x^1 ,x^2 ,x^3,\ldots)$ enforces a lexicographic ordering on a chain of integer vectors:
-$$x^1 \le_{lex} x^2 \le_{lex} x^3 \le_{lex}\cdots$$
+  \texttt{lexChainEq}$(\collec{x^1_1}{x^1_n},\ldots,\collec{x^p_1}{x^p_n})$ states a lexicographic ordering on a chain of $p$ integer vectors:
+$$x^1 \le_{lex} x^2 \le_{lex}\cdots\le_{lex} x^p$$
 %where $X^1$ contains up to $n$ variables. 
 \end{notedef}
 
 \begin{itemize}
-	\item \textbf{API} : \mylst{lexChainEq(IntegerVariable[]... arrayOfVectors)}
+	\item \textbf{API} : \mylst{lexChainEq(IntegerVariable[]... x)}
 	\item \textbf{return type} : \texttt{Constraint}
 	\item \textbf{options} : \emph{n/a}
 	\item \textbf{favorite domain} : \emph{to complete}

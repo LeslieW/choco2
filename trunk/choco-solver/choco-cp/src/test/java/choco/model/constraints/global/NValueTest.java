@@ -57,7 +57,7 @@ public class NValueTest {
             int n = 5;
             IntegerVariable[] vars = makeIntVarArray("v", n, 1, 3);
             IntegerVariable v = makeIntVar("nvalue", 2, 2);
-            pb.addConstraint(atMostNValue(vars, v));
+            pb.addConstraint(atMostNValue(v, vars));
             CPSolver s = new CPSolver();
             s.read(pb);
             s.setVarIntSelector(new RandomIntVarSelector(s, k));
@@ -78,7 +78,7 @@ public class NValueTest {
             IntegerVariable v = makeIntVar("nvalue", 2, 2);
             pb.addVariables(Options.V_BOUND, vars);
             pb.addVariable(Options.V_BOUND, v);
-            pb.addConstraint(atMostNValue(vars, v));
+            pb.addConstraint(atMostNValue(v, vars));
             CPSolver s = new CPSolver();
             s.read(pb);
             s.setVarIntSelector(new RandomIntVarSelector(s, k));
@@ -132,7 +132,7 @@ public class NValueTest {
             }
         }
         // une seule contrainte
-        s.addConstraint(atMostNValue(vars, v));
+        s.addConstraint(atMostNValue(v, vars));
         //s.setTimeLimit(30000);
         s.solve();
         LOGGER.info("noeud : " + s.getNodeCount());
@@ -178,8 +178,8 @@ public class NValueTest {
         IntegerVariable v3 = makeIntVar("v3", 3, 3);
         IntegerVariable v4 = makeIntVar("v4", 4, 4);
         IntegerVariable n = makeIntVar("n", 3, 3);
-        Constraint c1 = atMostNValue(new IntegerVariable[]{v1, v2, v3}, n);
-        Constraint c2 = atMostNValue(new IntegerVariable[]{v1, v2, v3, v4}, n);
+        Constraint c1 = atMostNValue(n, new IntegerVariable[]{v1, v2, v3});
+        Constraint c2 = atMostNValue(n, new IntegerVariable[]{v1, v2, v3, v4});
         pb.addConstraints(c1, c2);
         CPSolver s = new CPSolver();
         s.read(pb);
