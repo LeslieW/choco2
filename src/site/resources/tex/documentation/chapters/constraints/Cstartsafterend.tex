@@ -1,7 +1,7 @@
 \section{startsAfterEnd (constraint)}\label{startsafterend:startsafterendconstraint}\hypertarget{startsafterend:startsafterendconstraint}{}
 \begin{notedef}
-  \texttt{startsAfterEnd}$(t_1,t_2,c)$ states that the task variable $t_1$ starts after the end of $t_2$ minus $c$:
-  $$s_{t_{1}} \le e_{t_{2}} - c$$
+\texttt{startsAfterEnd}$(T_1,T_2,c)$  states that task $T_1$ starts after the end time of $T_2$ minus $c$:
+  $$T_{1}.start \ge T_{2}.end - c$$
 \end{notedef}
 
 \begin{itemize}

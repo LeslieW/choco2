@@ -142,7 +142,7 @@ public class ChannelingTest {
 	public void test5() {
 		int n = 5;
 		IntegerVariable[] bv = Choco.makeBooleanVarArray("b", n);
-		m.addConstraint( Choco.domainConstraint(Choco.makeIntVar("v", 0, n, Options.V_ENUM), bv));
+		m.addConstraint( Choco.domainChanneling(Choco.makeIntVar("v", 0, n, Options.V_ENUM), bv));
 		CPModel m1 = new CPModel();
 		IntegerVariable iv = Choco.makeIntVar("v", 0, n-1, Options.V_ENUM);
 		for (int i = 0; i < n; i++) {
@@ -174,7 +174,7 @@ public class ChannelingTest {
             final int n = 5;
             final IntegerVariable[] bv = Choco.makeBooleanVarArray("n", n+1, Options.V_NO_DECISION);
             final IntegerVariable vm = Choco.makeIntVar("vm", 0, n, Options.V_ENUM);
-            m.addConstraint( Choco.domainConstraint(vm, bv));
+            m.addConstraint( Choco.domainChanneling(vm, bv));
             m.addConstraint( Choco.eq(vm, n-1));
             s.read(m);
             BranchingFactory.randomSearch(s, s.getVar(new IntegerVariable[]{vm}), i);
@@ -207,7 +207,7 @@ public class ChannelingTest {
         for (i = 0; i < nbVMs; i++) {
             model.addConstraint(Choco.neq(assigns[i], 4));
             model.addConstraint(Choco.neq(assigns[i], 5));
-            model.addConstraint(Choco.domainConstraint(assigns[i], bools[i]));
+            model.addConstraint(Choco.domainChanneling(assigns[i], bools[i]));
         }
         CPSolver solver = new CPSolver();
         for (int j = 0; j < nbNodes; j++) {

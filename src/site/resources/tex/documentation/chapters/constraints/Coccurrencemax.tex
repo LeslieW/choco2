@@ -7,10 +7,14 @@
   \texttt{occurrenceMax}$(v,z,x)$ states that $z$ is at least equal to the number of elements in $x$ with value $v$:
 $$z\ge|\{i\ |\ x_i=v\}|$$   
 \end{notedef}
-  This is a specialization of the \texttt{globalCardinality} constraint.
+  See also \hyperlink{occurrence:occurrenceconstraint}{\tt occurrence}.
 
 \begin{itemize}
-	\item \textbf{API}: \mylst{occurrenceMax(int v, IntegerVariable z, IntegerVariable... x)}
+	\item \textbf{API}:
+      \begin{itemize}
+      \item \mylst{occurrenceMax(IntegerVariable z, IntegerVariable[] x, int v)}
+      \item \mylst{occurrenceMax(int v, IntegerVariable z, IntegerVariable... x)}
+      \end{itemize}
 	\item \textbf{return type} : \texttt{Constraint}
 	\item \textbf{options} :\emph{n/a}
 	\item \textbf{favorite domain} : \emph{to complete}

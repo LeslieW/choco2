@@ -129,7 +129,7 @@ public class Code4Doc5 {
         //4- Build the DFA
         DFA auto = new DFA(t, fs, n);
         //5- add the constraint
-        m.addConstraint(regular(auto, vars));
+        m.addConstraint(regular(vars, auto));
         //6- create the solver, read the model and solve it
         Solver s = new CPSolver();
         s.read(m);
@@ -181,7 +181,7 @@ public class Code4Doc5 {
         IntegerVariable[] vars = makeIntVarArray("v", n, 0, 5);
         //2- add the constraint
         String regexp = "(1|2)(3*)(4|5)";
-        m.addConstraint(regular(regexp, vars));
+        m.addConstraint(regular(vars, regexp));
         //3- Create the solver, read the model and solve it
         Solver s = new CPSolver();
         s.read(m);

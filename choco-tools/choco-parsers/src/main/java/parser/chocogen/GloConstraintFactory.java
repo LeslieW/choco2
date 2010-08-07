@@ -301,7 +301,7 @@ public class GloConstraintFactory extends ObjectFactory {
 				}
 			}
 		}
-		return new Constraint[]{lexeq(vars1, vars2)};
+		return new Constraint[]{lexEq(vars1, vars2)};
 	}
 	
 	public static Constraint[] makeGlobalConstraint(PGlobalConstraint pgc) {

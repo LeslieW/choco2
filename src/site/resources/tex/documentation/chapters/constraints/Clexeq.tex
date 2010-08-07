@@ -2,14 +2,14 @@
 \label{lexeq}
 \hypertarget{lexeq}{}
 
-\section{lexeq (constraint)}\label{lexeq:lexeqconstraint}\hypertarget{lexeq:lexeqconstraint}{}
+\section{lexEq (constraint)}\label{lexeq:lexeqconstraint}\hypertarget{lexeq:lexeqconstraint}{}
 \begin{notedef}
-  \texttt{lexeq}$(x,y)$ enforces a lexicographic ordering  $x \le_{lex} y$ between two arrays of same size $n$:
-$$\exists\ j\in\{1,\ldots,n\}\ |\qquad x_j\le y_j\quad \land\quad x_i=y_i\ (\forall\  i<j)$$
+  \texttt{lexEq}$(\collec{x_1}{x_n},\collec{y_1}{y_n})$ states a lexicographic ordering  $x \le_{lex} y$:
+$$\exists\ j=1..n\ |\qquad x_j\le y_j\quad \land\quad x_i=y_i\ (\forall\  i<j)$$
 \end{notedef}
 
 \begin{itemize}
-	\item \textbf{API} : \mylst{lexeq(IntegerVariable[] x, IntegerVariable[] y)}
+	\item \textbf{API} : \mylst{lexEq(IntegerVariable[] x, IntegerVariable[] y)}
 	\item \textbf{return type} : \texttt{Constraint}
 	\item \textbf{options} :\emph{n/a}
 	\item \textbf{favorite domain} : \emph{to complete}

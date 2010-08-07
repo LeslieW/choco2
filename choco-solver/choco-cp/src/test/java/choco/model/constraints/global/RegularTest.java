@@ -284,7 +284,7 @@ public class RegularTest {
         fs.add(0);
         DFA auto = new DFA(t, fs, n);
         // post the constraint
-        m.addConstraint(regular(auto, vars));
+        m.addConstraint(regular(vars, auto));
         s.read(m);
         s.setValIntSelector(new RandomIntValSelector(122));
         s.setVarIntSelector(new RandomIntVarSelector(s, 10));
@@ -315,7 +315,7 @@ public class RegularTest {
         fs.add(3);
         DFA auto = new DFA(t, fs, n);
         // post the constraint
-        m.addConstraint(regular(auto, vars));
+        m.addConstraint(regular(vars, auto));
         s.read(m);
         s.solveAll();
         LOGGER.info("ExpectedSolutions 16 - nbSol " + s.getNbSolutions());
@@ -346,7 +346,7 @@ public class RegularTest {
 
         DFA auto = new DFA(t, fs, n);
         // post the constraint
-        m.addConstraint(regular(auto, vars));
+        m.addConstraint(regular(vars, auto));
         s.read(m);
         s.solveAll();
         LOGGER.info("ExpectedSolutions 5 - nbSol " + s.getNbSolutions());
@@ -389,7 +389,7 @@ public class RegularTest {
         }
         String regexp = "(1|2)(3*)(4|5)";
         // post the constraint
-        m.addConstraint(regular(regexp, vars));
+        m.addConstraint(regular(vars, regexp));
         s.read(m);
         s.solve();
         if (s.isFeasible()) {
@@ -414,7 +414,7 @@ public class RegularTest {
         }
         String regexp = "(<100>|2)(<39>*)(<4>|5)";
         // post the constraint
-        m.addConstraint(regular(regexp, vars));
+        m.addConstraint(regular(vars, regexp));
         s.read(m);
         s.solve();
         if (s.isFeasible()) {
@@ -628,7 +628,7 @@ public class RegularTest {
         IntegerVariable[] vs = new IntegerVariable[n];
         System.arraycopy(vars, 0, vs, 0, n - 1);
         vs[n - 1] = charge;
-        knap = regular(auto, vs);
+        knap = regular(vs, auto);
         return knap;
     }
 
@@ -711,7 +711,7 @@ public class RegularTest {
             }
             String regexp = "(1|2|3|4|5|6|7|8|9)(0|1|2|3|4|5|6|7|8|9)(0)(" + k + ")";
             // post the constraint
-            m.addConstraint(regular(regexp, vars));
+            m.addConstraint(regular(vars, regexp));
             s.read(m);
             s.solve();
             int tour = 0;
@@ -754,7 +754,7 @@ public class RegularTest {
                 coefs[i] = rand.nextInt(10);
             }
 
-            Constraint knapsack = Choco.equation(bvars, coefs, charge);
+            Constraint knapsack = Choco.equation(charge, bvars, coefs);
             m.addConstraint(knapsack);
             s.read(m);
             s.setVarIntSelector(new RandomIntVarSelector(s, seed));
@@ -785,7 +785,7 @@ public class RegularTest {
                 coefs[i] = rand.nextInt(10);
             }
 
-            Constraint knapsack = Choco.equation(bvars, coefs, charge);
+            Constraint knapsack = Choco.equation(charge, bvars, coefs);
             m.addConstraint(knapsack);
             s.read(m);
             s.setVarIntSelector(new RandomIntVarSelector(s, seed));
@@ -804,7 +804,7 @@ public class RegularTest {
     public void testAnotherAComplexeDFA() {
         int n = 3;
         IntegerVariable[] vars = Choco.makeIntVarArray("a",7,0,16);
-        regular(makeHadrienNSPAutomaton(n),vars);
+        regular(vars, makeHadrienNSPAutomaton(n));
     }
 
     public static DFA makeHadrienNSPAutomaton(int nbs) {
@@ -863,7 +863,7 @@ public class RegularTest {
 
 
         String regexp = "(1|2)(3*)(2|4|5)";
-        m.addConstraint(Choco.regular(regexp, vars));
+        m.addConstraint(Choco.regular(vars, regexp));
         //m.addConstraint(Choco.eq(vars[0],3));
 
         Solver s = new CPSolver();

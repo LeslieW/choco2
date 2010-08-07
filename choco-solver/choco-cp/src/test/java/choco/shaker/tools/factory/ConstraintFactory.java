@@ -160,7 +160,7 @@ public class ConstraintFactory {
             case LEXLESS:
                 return Choco.lex(of.make(5, r), of.make(5, r));
             case LEXLESSEQ:
-                return Choco.lexeq(of.make(5, r), of.make(5, r));
+                return Choco.lexEq(of.make(5, r), of.make(5, r));
             case LT:
                 return Choco.lt(of.make(r), of.make(r));
             case MAX_1:

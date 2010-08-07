@@ -1,7 +1,6 @@
         //1- Create the problem
         
         CPModel pb = new CPModel();
-        pb.setPrecision(1e-8);
 
         //2- Create the variable
         RealVariable x = Choco.makeRealVar("x", -1.0e8, 1.0e8);
@@ -28,6 +27,7 @@
 
         //4- Search for all solution
         CPSolver s = new CPSolver();
+        s.getConfiguration().putDouble(Configuration.REAL_PRECISION, 1e-8);
         s.read(pb);
         s.setVarRealSelector(new CyclicRealVarSelector(s));
         s.setValRealIterator(new RealIncreasingDomain());

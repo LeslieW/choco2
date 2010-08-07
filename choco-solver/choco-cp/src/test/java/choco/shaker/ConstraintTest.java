@@ -157,7 +157,7 @@ public class ConstraintTest {
         vars[8] = Choco.makeBooleanVar("b9");
         vars[9] = Choco.makeIntVar("v10", 2, 4);
 
-        m.addConstraint(Choco.lexeq(new IntegerVariable[]{vars[0], vars[1], vars[2], vars[3], vars[4]},
+        m.addConstraint(Choco.lexEq(new IntegerVariable[]{vars[0], vars[1], vars[2], vars[3], vars[4]},
                 new IntegerVariable[]{vars[5], vars[6], vars[7], vars[8], vars[9]}));
 
         checker(new Random(50));

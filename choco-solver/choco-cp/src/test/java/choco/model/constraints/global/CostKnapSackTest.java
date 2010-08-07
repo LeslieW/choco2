@@ -71,7 +71,7 @@ public class CostKnapSackTest {
         IntegerVariable poid = makeIntVar("gain",min,max, Options.V_ENUM);
         IntegerVariable profit = makeIntVar("profit",0,Integer.MAX_VALUE/1000, Options.V_BOUND);
 
-        m.addConstraint(knapsackProblem(vars,poid,profit,poids,profits));
+        m.addConstraint(knapsackProblem(poid, profit, vars, poids,profits));
 
         s.read(m);
 

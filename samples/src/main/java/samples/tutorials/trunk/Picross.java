@@ -180,11 +180,11 @@ public class Picross extends CPModel {
         Constraint[] cons = new Constraint[X+Y];
 
         for (int i = 0 ; i < X ; i++) {
-            cons[i] = regular(dfas[i],myvars[i]);
+            cons[i] = regular(myvars[i], dfas[i]);
         }
 
         for (int i = 0 ; i < Y ; i++) {
-            cons[i+X] = regular(dfas[i+X],dualmyvars[i]);
+            cons[i+X] = regular(dualmyvars[i], dfas[i+X]);
         }
         
         for (Constraint c : cons)

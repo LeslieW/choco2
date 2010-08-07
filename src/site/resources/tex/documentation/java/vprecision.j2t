@@ -1,2 +1,2 @@
-        Model m = new CPModel();
-        m.setPrecision(0.01);        
+        Solver m = new CPSolver();
+        m.setPrecision(0.01);

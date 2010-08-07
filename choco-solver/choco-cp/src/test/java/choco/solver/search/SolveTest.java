@@ -66,7 +66,6 @@ import choco.cp.solver.search.integer.valiterator.DecreasingDomain;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
@@ -496,7 +495,7 @@ public class SolveTest {
 
         //3- add the constraint
         String regexp = "(1|2)(3*)(1|4|5)";
-        m.addConstraint(regular(regexp, vars));
+        m.addConstraint(regular(vars, regexp));
         m.addConstraint(neq(vars[0], vars[5]));
         m.addConstraint(eq(scalar(new int[]{2,3,1,-2,8,10}, vars), obj));
 
@@ -742,12 +741,12 @@ public class SolveTest {
          for (int i = 0; i < pos.length; i++) {
              pos[i] = Choco.makeIntVar("VM" + i + "on-?", 0, 4);
              IntegerVariable [] bools = Choco.makeBooleanVarArray("VM" + i + "on", 6);
-             m.addConstraint(Choco.domainConstraint(pos[i], bools));
+             m.addConstraint(Choco.domainChanneling(pos[i], bools));
              m.addConstraint(Choco.neq(pos[i], 3));
              m.addConstraint(Choco.neq(pos[i], 4));
          }
          IntegerVariable nbNodes = Choco.makeIntVar("nbNodes", 3, 3, Options.V_OBJECTIVE);
-         m.addConstraint(Choco.atMostNValue(pos,nbNodes));
+         m.addConstraint(Choco.atMostNValue(nbNodes, pos));
          Solver s = new CPSolver();
          s.getConfiguration().putTrue(Configuration.INIT_SHAVING);
          s.read(m);

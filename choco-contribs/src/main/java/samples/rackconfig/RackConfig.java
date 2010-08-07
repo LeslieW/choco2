@@ -130,7 +130,7 @@ public class RackConfig extends CPModel
             }
         for (int i = 0 ; i < flatcard.length ; i++)
         {
-            this.addConstraint(domainConstraint(flatcard[i],count[i]));
+            this.addConstraint(domainChanneling(flatcard[i],count[i]));
         }
 
         IntegerVariable[][] csum = ArrayUtils.transpose(count);

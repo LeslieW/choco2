@@ -25,6 +25,7 @@ package choco.cp.model.managers.constraints.global;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.automata.fast_multicostregular.FastMultiCostRegular;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -50,31 +51,55 @@ public final class MultiCostRegularManager extends IntConstraintManager
 
             IntDomainVar[] all = solver.getVar((IntegerVariable[]) variables);
 
-int n;
-
             Object[] param = (Object[]) parameters;
-            if (param.length == 3)
+            if (param.length == 3 && param[2] instanceof Object[][][])
             {
-                int sz = (Integer) param[0];
+                int nVars = (Integer) param[0]; // the first nVars variables in 'all' must be the sequence variables
+                int nCounters = all.length - nVars;  // the last nCounters variables in 'all' must be the counter variables
                 FiniteAutomaton pi = (FiniteAutomaton) param[1];
-                IntDomainVar[] vs = new IntDomainVar[sz];
-                IntDomainVar[] z = new IntDomainVar[all.length-sz];
-                System.arraycopy(all, 0, vs, 0, vs.length);
-                System.arraycopy(all, vs.length, z, 0, all.length - vs.length);
+                Object[][][] costs = (Object[][][])param[2];
 
-                if (param[2] instanceof int[][][])
-                {
+                // try to check whether vars and costVars has been inverted when posting the constraint
+                boolean inverted = (nVars != nCounters) ? costs.length == nCounters
+                                    : !all[0].hasEnumeratedDomain() && all[nVars].hasEnumeratedDomain();
+                if (nVars == nCounters && !(all[0].hasEnumeratedDomain() && !all[nVars].hasEnumeratedDomain())) {
+                    for (int i=0; !inverted && i< nVars; i++) {
+                        if (all[i].getSup() > costs[i].length) {
+                            inverted = true;
+                        }
+                    }
+                }
+                IntDomainVar[] vs;
+                IntDomainVar[] z;
+                if (!inverted) {
+                    vs = new IntDomainVar[nVars];
+                    z = new IntDomainVar[nCounters];
+                    System.arraycopy(all, 0, vs, 0, nVars);
+                    System.arraycopy(all, nVars, z, 0, nCounters);
+                } else {
+                    nCounters = nVars;
+                    nVars = costs.length;
+                    vs = new IntDomainVar[nVars];
+                    z = new IntDomainVar[nCounters];
+                    System.arraycopy(all, 0, z, 0, nCounters);
+                    System.arraycopy(all, nCounters, vs, 0, nVars);
+                }
+
+                // check arguments
+                if (vs.length != costs.length && z.length != costs[0][0].length)
+                    throw new ModelException("length of arrays are invalid");
+
+
+                if (param[2] instanceof int[][][]) {
                     int[][][] csts = (int[][][]) param[2];
                     return new FastMultiCostRegular(vs,z,pi,csts, solver);
-                }
-                else if (param[2] instanceof int[][][][])
-                {
+                } else {
                     int[][][][] csts = (int[][][][]) param[2];
                     return new FastMultiCostRegular(vs,z,pi,csts, solver);
                 }
             }
         }
-        return null;
+        throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
     }
 
 }

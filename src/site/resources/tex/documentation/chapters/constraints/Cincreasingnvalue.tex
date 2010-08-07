@@ -2,17 +2,22 @@
 \label{increasingnvalue}
 \hypertarget{increasingnvalue}{}
 
-\section{increasingnvalue (constraint)}\label{increasingnvalue:increasingnvalueconstraint}\hypertarget{increasingnvalue:increasingnvalueconstraint}{}
+\section{increasingNValue (constraint)}\label{increasingnvalue:increasingnvalueconstraint}\hypertarget{increasingnvalue:increasingnvalueconstraint}{}
 \begin{notedef}
-  \texttt{increasing\_nvalue}$(nval, variables)$ states that $variables$ are increasing. In addition, $nval$ is the number of distinct values taken by $variables$.
+  \texttt{increasingNValue}$(z, \collec{x_1}{x_n})$ states that \collec{x_1}{x_n} is sorted in increasing order and that $z$ is the number of distinct values occurring in $x$.
+$$z=|\{x_1,\ldots,x_n\}|\quad\land\quad x_i\le x_{i+1},\ \forall i=1..n.$$  
 \end{notedef}
 
 \begin{itemize}
-	\item \textbf{API} : \mylst{increasing\_nvalue(IntegerVariable nval, IntegerVariable[] variables)}
+	\item \textbf{API} : 
+      \begin{itemize}
+      \item \mylst{increasingNValue(IntegerVariable z, IntegerVariable[] x)}
+      \item \mylst{increasingNValue(String option, IntegerVariable z, IntegerVariable[] x)}
+      \end{itemize}
 	\item \textbf{return type} : \texttt{Constraint}
 	\item \textbf{options} :
 	\begin{itemize}
-		\item \emph{no option} filter on lower bound and on lower bound
+		\item \emph{no option} filter on lower bound and on upper bound
 		\item \hyperlink{cinvatleast:cinvatleastoptions}{\tt Options.C\_INCREASING\_NVALUE\_ATLEAST} filter on lower bound only
 		\item \hyperlink{cinvatmost:cinvatmostoptions}{\tt Options.C\_INCREASING\_NVALUE\_ATMOST} filter on upper bound only
 		\item \hyperlink{cinvboth:cinvbothoptions}{\tt Options.C\_INCREASING\_NVALUE\_BOTH} \textit{--default value--} filter on lower bound and on upper bound

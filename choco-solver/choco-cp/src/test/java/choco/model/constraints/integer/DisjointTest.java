@@ -73,7 +73,7 @@ public class DisjointTest {
             IntegerVariable v = makeIntVar("v", low, up);
 
             Model m1 = new CPModel();
-            Constraint disjoint = disjoint(v, values);
+            Constraint disjoint = notMember(v, values);
 
             m1.addConstraint(disjoint);
 
@@ -109,7 +109,7 @@ public class DisjointTest {
             IntegerVariable v = makeIntVar("v", low, up);
 
             Model m1 = new CPModel();
-            Constraint disjoint = disjoint(v, values);
+            Constraint disjoint = notMember(v, values);
 
             m1.addConstraint(disjoint);
 
@@ -136,7 +136,7 @@ public class DisjointTest {
             IntegerVariable v = makeIntVar("v", low, up);
 
             Model m1 = new CPModel();
-            Constraint disjoint = disjoint(v, values);
+            Constraint disjoint = notMember(v, values);
             m1.addConstraint(disjoint);
 
             Model m2 = new CPModel();

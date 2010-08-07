@@ -4,12 +4,12 @@
 
 \section{leximin (constraint)}\label{leximin:leximinconstraint}\hypertarget{leximin:leximinconstraint}{}
 
-\emph{TODO: verify the specifications of the implemented version.}
+\todo{check the specifications of the implemented version.}
 
 \begin{notedef}
-Let $x = (x_1,\ldots, x_n)$ and $y = (y_1,\ldots, y_n)$ be two vectors of $n$ integers, and let $x'$ and $y'$ be respectively permutations of vectors $x$ and $y$ sorted by increasing order of the components.
-Constraint \texttt{leximin(x, y)} holds if and only if $x'<_{lex} y'$:
-$$\exists\ j\in\{1,\ldots,n\}\ |\qquad x'_j<y'_j\quad \land\quad x'_i=y'_i\ (\forall\  i<j)$$
+\texttt{leximin}(\collec{x_1}{x_n}, \collec{y_1}{y_n}) states a strict lexicographic ordering $x'<_{lex} y'$, where $x'$ and $y'$ are the permutations of $x$ and $y$ respectively sorted in increasing order.
+$$\hyperlink{sorting}{\texttt{sorting}}(\collec{x_1}{x_n},\collec{x'_1}{x'_n})\ \land\ \hyperlink{sorting}{\texttt{sorting}}(\collec{y_1}{y_n},\collec{y'_1}{y'_n})\ \land\ \hyperlink{lex}{\texttt{lex}}(\collec{x'_1}{x'_n},\collec{y'_1}{y'_n})$$
+
   \end{notedef}
 
 \begin{itemize}

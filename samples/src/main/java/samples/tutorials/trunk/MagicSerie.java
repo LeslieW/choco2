@@ -29,7 +29,7 @@ public class MagicSerie {
             vs[i] = makeIntVar("" + i, 0, n - 1);
         }
         for (int i = 0; i < n; i++) {
-            pb.addConstraint(occurrence(i, vs[i], vs));
+            pb.addConstraint(occurrence(vs[i], vs, i));
         }
         pb.addConstraint(eq(sum(vs), n));     // contrainte redondante 1
         int[] coeff2 = new int[n - 1];

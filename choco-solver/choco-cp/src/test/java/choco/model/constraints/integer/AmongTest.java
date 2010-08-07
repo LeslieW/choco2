@@ -71,7 +71,7 @@ public class AmongTest {
             IntegerVariable v = makeIntVar("v", low, up);
 
             Model m1 = new CPModel();
-            Constraint among = among(v, values);
+            Constraint among = member(v, values);
 
             m1.addConstraint(among);
 
@@ -105,7 +105,7 @@ public class AmongTest {
             IntegerVariable v = makeIntVar("v", low, up);
 
             Model m1 = new CPModel();
-            Constraint among = among(v, values);
+            Constraint among = member(v, values);
 
             m1.addConstraint(among);
 
@@ -133,7 +133,7 @@ public class AmongTest {
             IntegerVariable v = makeIntVar("v", low, up);
 
             Model m1 = new CPModel();
-            Constraint among = among(v, values);
+            Constraint among = member(v, values);
             m1.addConstraint(among);
 
             Model m2 = new CPModel();

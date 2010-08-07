@@ -3,25 +3,9 @@
 
 \section{disjoint (constraint)}\label{disjoint:disjointconstraint}\hypertarget{disjoint:disjointconstraint}{}
 
-\subsection{disjoint values}\label{disjoint:disjointvalues}\hypertarget{disjoint:disjointvalues}{}
-
 \begin{notedef}
-  \texttt{disjoint}$(x, V)$ states that the variable $x$ takes its value out of $V$:
- $$x \cup V = \emptyset$$  
-\end{notedef}
-
-\begin{itemize}
-	\item \textbf{API}: \mylst{disjoint(IntegerVariable x, int[] v)}
-	\item \textbf{return type}: \texttt{Constraint}
-\end{itemize}
-
-\textbf{Example}:
-\lstinputlisting{java/cdisjoint1.j2t}
-
-\subsection{disjoint tasks}\label{disjoint:disjointtasks}\hypertarget{disjoint:disjointtasks}{}
-\begin{notedef}
-  \texttt{disjoint}$(t1, t2)$ states that each tasks $t_1$ should not overlap anu tasks $t_2$:
- $$x \cup V = \emptyset$$  
+  \texttt{disjoint}$(\collec{T^1_1}{T^1_n}, \collec{T^2_1}{T^2_m})$ states that each pair of tasks $(T^1_i, T^2_j)$ is in disjunction i.e., the processings of the two tasks do not overlap in time:
+ $$T^1_i.end \le T^2_j.start\quad\lor\quad  T^2_j.end \le T^1_i.start,\quad \forall i=1..n, j=1..m $$  
 \end{notedef}
 
 CHOCO only provides a decomposition with reified precedences because the coloured cumulative is not available.

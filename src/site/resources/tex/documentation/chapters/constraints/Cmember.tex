@@ -5,9 +5,8 @@
 \section{member (constraint)}\label{member:memberconstraint}\hypertarget{member:memberconstraint}{}
 
 \begin{notedef}
-  \texttt{member}$(x,s)$ states that integer $x$ is contained in set
-  $s$:
-$$x\in s.$$
+  \texttt{member}$(x,s)$ states that integer $x$ belongs to set $s$:
+$$x\in s$$
 \end{notedef}
 
 \begin{itemize}
@@ -17,6 +16,7 @@ $$x\in s.$$
 		\item \mylst{member(SetVariable s, int x)}
 		\item \mylst{member(SetVariable s, IntegerVariable x)}
 		\item \mylst{member(IntegerVariable x, SetVariable s)}
+		\item \mylst{member(IntegerVariable x, int[] s)}
 	\end{itemize}
 	\item \textbf{return type} : \texttt{Constraint}
 	\item \textbf{options} :\emph{n/a}
@@ -25,5 +25,9 @@ $$x\in s.$$
       global constraint catalog: \href{http://www.emn.fr/x-info/sdemasse/gccat/Cin_set.html}{in\_set}
 \end{itemize}
 
-\textbf{Example}:
+\textbf{Examples}:
+1. using a set variable
 \lstinputlisting{java/cmember.j2t}
+
+2. using an array of integers
+\lstinputlisting{java/camong1.j2t}

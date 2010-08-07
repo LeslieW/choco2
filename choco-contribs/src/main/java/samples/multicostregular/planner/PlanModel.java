@@ -177,7 +177,7 @@ for (int i = 3 ; i < nbAct+3 ; i++)
 
 
 
-        main = multiCostRegular(shifts,costs,auto,csts);
+        main = multiCostRegular(costs, shifts, auto,csts);
 
         m.addConstraint(main);
 
@@ -235,7 +235,7 @@ private static int[][][] make3dim(int[][] cost, int dim)
 
 
 
-main = costRegular(shifts,z,auto,make3dim(csts,auto.getNbStates()));
+main = costRegular(z, shifts, auto,make3dim(csts,auto.getNbStates()));
                 //for (int i = 0 ; i < 96  ;i++)
         //if (i < 44 || i > 56) m.addConstraint(neq(shifts[i],InstanceMaker.L));
 
@@ -293,7 +293,7 @@ main = costRegular(shifts,z,auto,make3dim(csts,auto.getNbStates()));
         int[][] csts = new int[shifts.length][nbAct+3];
         IntegerVariable zz = makeIntVar("dummy",0,0);
         m.addVariable(zz);
-        main = costRegular(shifts,zz,auto,csts);
+        main = costRegular(zz, shifts, auto,csts);
         m.addConstraint(main);
 
         //element constraint to handle the cost funciton...

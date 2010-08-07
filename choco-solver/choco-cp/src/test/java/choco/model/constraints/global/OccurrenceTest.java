@@ -173,7 +173,7 @@ public class OccurrenceTest {
             vs[i] = makeIntVar("" + i, 0, n - 1);
         }
         for (int i = 0; i < n; i++) {
-            pb.addConstraint(occurrence(i, vs[i], vs));
+            pb.addConstraint(occurrence(vs[i], vs, i));
         }
         pb.addConstraint(eq(sum(vs), n));     // contrainte redondante 1
         int[] coeff2 = new int[n - 1];
@@ -244,7 +244,7 @@ public class OccurrenceTest {
                 if (gac) {
                     mod.addConstraint(getTableForOccurence(vs, ivc, val, sizeDom));
                 } else {
-                    mod.addConstraint(occurrence(val, ivc, vs));
+                    mod.addConstraint(occurrence(ivc, vs, val));
                 }
             }
             mod.addConstraint(eq(plus(vars[0], vars[3]), vars[6]));
@@ -314,7 +314,7 @@ public class OccurrenceTest {
         IntegerVariable y = makeIntVar("y", new int[]{2, 3});
         IntegerVariable z = makeIntVar("z", 0, 3);
         IntegerVariable[] tab = new IntegerVariable[]{x, y};
-        m.addConstraint(occurrence(1, z, tab));
+        m.addConstraint(occurrence(z, tab, 1));
         CPSolver s = new CPSolver();
         s.read(m);
         s.solveAll();
@@ -393,7 +393,7 @@ public class OccurrenceTest {
             }
         }
         for (int c = 0; c < cubeVars; c++) {
-            model.addConstraint(implies(eq(cube[c], 1) , occurrenceMin(c, one, table)));
+            model.addConstraint(implies(eq(cube[c], 1) , occurrenceMin(one, table, c)));
         }
         Solver solver = new CPSolver();
         solver.read(model);
@@ -452,7 +452,7 @@ public class OccurrenceTest {
         Model m = new CPModel();
         serie = makeIntVarArray("", n, 0, n - 1);
         for (int i = 0; i < n; i++) {
-            m.addConstraint(occurrence(i, serie[i], serie));
+            m.addConstraint(occurrence(serie[i], serie, i));
         }
         return m;
     }

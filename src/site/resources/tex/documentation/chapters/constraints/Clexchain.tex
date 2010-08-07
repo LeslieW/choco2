@@ -4,13 +4,13 @@
 
 \section{lexChain (constraint)}\label{lexchain:lexchainconstraint}\hypertarget{lexchain:lexchainconstraint}{}
 \begin{notedef}
-\texttt{lexChain}$(x^1 ,x^2 ,x^3,\ldots)$ enforces a strict lexicographic ordering on a chain of integer vectors:
-$$x^1 <_{lex} x^2 <_{lex} x^3 <_{lex}\cdots$$
+  \texttt{lexChain}$(\collec{x^1_1}{x^1_n},\ldots,\collec{x^p_1}{x^p_n})$ states a strict lexicographic ordering on a chain of $p$ integer vectors:
+$$x^1 <_{lex} x^2 <_{lex}\cdots <_{lex} x^p$$
 %where $X^1$ contains up to $n$ variables. 
 \end{notedef}
 
 \begin{itemize}
-	\item \textbf{API} : \mylst{lexChain(IntegerVariable[]... arrayOfVectors)}
+	\item \textbf{API} : \mylst{lexChain(IntegerVariable[]... x)}
 	\item \textbf{return type} : \texttt{Constraint}
 	\item \textbf{options} : \emph{n/a}
 	\item \textbf{favorite domain} : \emph{to complete}

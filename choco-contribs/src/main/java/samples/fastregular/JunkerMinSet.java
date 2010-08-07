@@ -132,7 +132,7 @@ public class JunkerMinSet {
     private boolean solve(FiniteAutomaton a)
     {
         m.removeConstraint(in);
-        in = regular(a,vars);
+        in = regular(vars, a);
         m.addConstraint(in);
         s.clear();
         s.read(m);

@@ -57,7 +57,7 @@ public class Code4Doc4 {
             vs1[i] = makeIntVar("" + i, 0, k);
             vs2[i] = makeIntVar("" + i, 0, k);
         }
-        m.addConstraint(lexeq(vs1, vs2));
+        m.addConstraint(lexEq(vs1, vs2));
         s.read(m);
         s.solve();
         //totex
@@ -170,51 +170,43 @@ public class Code4Doc4 {
 
     public void cmulticostregular() {
         //totex cmulticostregular
-        //0- declare parameters
-        int DAY = 0;
-        int NIGHT = 1;
-        int REST = 2;
-        //1- create the model
         Model m = new CPModel();
+
         int nTime = 14; // 2 weeks: 14 days
-        int nAct = 3; // 3 activities: DAY, NIGHT, REST
-        int nRes = 4; // 4 resources: cost (0), #DAY (1), #NIGHT (2), #WORK (3)
-        //2- Create the schedule variables: the activity processed at each time slot
-        IntegerVariable[] sequence = makeIntVarArray("x", nTime, 0, nAct - 1, Options.V_ENUM);
-        // - create the cost variables (one for each resource)
-        IntegerVariable[] bounds = new IntegerVariable[4];
-        bounds[0] = makeIntVar("z_0", 30, 80, Options.V_BOUND); // 30 <= cost <= 80
-        bounds[1] = makeIntVar("day", 0, 7, Options.V_BOUND); // 0 <= #DAY <= 7
-        bounds[2] = makeIntVar("night", 3, 7, Options.V_BOUND); // 3 <= #NIGHT <= 7
-        bounds[3] = makeIntVar("work", 7, 9, Options.V_BOUND); // 7 <= #WORK <= 9
-        //3- Create the automaton
+        int nAct = 3; // 3 shift types:
+        int DAY = 0, NIGHT = 1, REST = 2;
+        int nCounters = 4; // cost (0), #DAY (1), #NIGHT (2), #WORK (3)
+
+        IntegerVariable[] x = makeIntVarArray("x", nTime, 0, nAct - 1, Options.V_ENUM);
+
+        IntegerVariable[] z = new IntegerVariable[4];
+        z[0] = makeIntVar("z", 30, 80, Options.V_BOUND); // 30 <= cost <= 80
+        z[1] = makeIntVar("D", 0, 7, Options.V_BOUND); // 0 <= #DAY <= 7
+        z[2] = makeIntVar("N", 3, 7, Options.V_BOUND); // 3 <= #NIGHT <= 7
+        z[3] = makeIntVar("W", 7, 9, Options.V_BOUND); // 7 <= #WORK <= 9
+
         FiniteAutomaton auto = new FiniteAutomaton();
-        // state 0: starting and accepting state
+
         int start = auto.addState();
         auto.setInitialState(start);
         auto.setFinal(start);
-        // state 1 and a transition (0,DAY,1)
         int first = auto.addState();
-        auto.addTransition(start, first, DAY);
-        // state 2 and transitions (1,DAY,2), (1,NIGHT,2), (2,REST,0), (0,NIGHT,2)
+        auto.addTransition(start, first, DAY);         // transition (0,D,1)
         int second = auto.addState();
-        auto.addTransition(first, second, DAY, NIGHT);
-        auto.addTransition(second, start, REST);
-        auto.addTransition(start, second, NIGHT);
-        //4- Declare the assignment/transition costs:
-        // csts[i][j][s][r]: cost on resource r of assigning Xi to activity j at state s
-        int[][][][] csts = new int[nTime][nAct][auto.getNbStates()][nRes];
-        for (int i = 0; i < csts.length; i++) {
-            csts[i][DAY][0] = new int[]{3, 1, 0, 1}; // costs of transition (0,DAY,1)
-            csts[i][NIGHT][0] = new int[]{8, 0, 1, 1}; // costs of transition (0,NIGHT,2)
-            csts[i][DAY][1] = new int[]{5, 1, 0, 1}; // costs of transition (1,DAY,2)
-            csts[i][NIGHT][1] = new int[]{9, 0, 1, 1}; // costs of transition (1,NIGHT,2)
-            csts[i][REST][2] = new int[]{2, 0, 0, 0}; // costs of transition (2,REST,0)
+        auto.addTransition(first, second, DAY, NIGHT); // transitions (1,D,2), (1,N,2)
+        auto.addTransition(second, start, REST);       // transition (2,R,0)
+        auto.addTransition(start, second, NIGHT);      // transition (0,N,2)
+
+        int[][][][] c = new int[nTime][nAct][nCounters][auto.getNbStates()];
+        for (int i = 0; i < c.length; i++) {
+            c[i][DAY][0] = new int[]{3, 1, 0, 1};   // costs of transition (0,D,1)
+            c[i][NIGHT][0] = new int[]{8, 0, 1, 1}; // costs of transition (0,N,2)
+            c[i][DAY][1] = new int[]{5, 1, 0, 1};   // costs of transition (1,D,2)
+            c[i][NIGHT][1] = new int[]{9, 0, 1, 1}; // costs of transition (1,N,2)
+            c[i][REST][2] = new int[]{2, 0, 0, 0};  // costs of transition (2,R,0)
         }
 
-        //5- add the constraint
-        m.addConstraint(multiCostRegular(sequence, bounds, auto, csts));
-        //6- create the solver, read the model and solve it
+        m.addConstraint(multiCostRegular(z, x, auto, c));
         Solver s = new CPSolver();
         s.read(m);
         s.solve();
@@ -316,7 +308,7 @@ public class Code4Doc4 {
         IntegerVariable x6 = makeIntVar("X6", 0, 10);
         IntegerVariable x7 = makeIntVar("X7", 0, 10);
         IntegerVariable y1 = makeIntVar("Y1", 0, 10);
-        m.addConstraint(occurrence(3, y1, new IntegerVariable[]{x1, x2, x3, x4, x5, x6, x7}));
+        m.addConstraint(occurrence(y1, new IntegerVariable[]{x1, x2, x3, x4, x5, x6, x7}, 3));
         s.read(m);
         s.solve();        
         //totex
@@ -334,7 +326,7 @@ public class Code4Doc4 {
         IntegerVariable x6 = makeIntVar("X6", 0, 10);
         IntegerVariable x7 = makeIntVar("X7", 0, 10);
         IntegerVariable y1 = makeIntVar("Y1", 0, 10);
-        m.addConstraint(occurrenceMax(3, y1, new IntegerVariable[]{x1, x2, x3, x4, x5, x6, x7}));
+        m.addConstraint(occurrenceMax(y1, new IntegerVariable[]{x1, x2, x3, x4, x5, x6, x7}, 3));
         s.read(m);
         s.solve();
         //totex
@@ -352,7 +344,7 @@ public class Code4Doc4 {
         IntegerVariable x6 = makeIntVar("X6", 0, 10);
         IntegerVariable x7 = makeIntVar("X7", 0, 10);
         IntegerVariable y1 = makeIntVar("Y1", 0, 10);
-        m.addConstraint(occurrenceMin(3, y1, new IntegerVariable[]{x1, x2, x3, x4, x5, x6, x7}));
+        m.addConstraint(occurrenceMin(y1, new IntegerVariable[]{x1, x2, x3, x4, x5, x6, x7}, 3));
         s.read(m);
         s.solve();
         //totex

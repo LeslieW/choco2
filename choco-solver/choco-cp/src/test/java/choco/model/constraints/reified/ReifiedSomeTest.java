@@ -1461,7 +1461,7 @@ public class ReifiedSomeTest {
             IntegerVariable[] tab = makeIntVarArray("x", n, 0, 3);
             IntegerVariable max = makeIntVar("max", -5, 5);
 
-            m.addConstraint(ifThenElse(geq(h, 2), Choco.occurrenceMin(2, max, tab), Choco.TRUE));
+            m.addConstraint(ifThenElse(geq(h, 2), Choco.occurrenceMin(max, tab, 2), Choco.TRUE));
             s.read(m);
             s.setVarIntSelector(new RandomIntVarSelector(s, seed));
             s.setValIntSelector(new RandomIntValSelector());
@@ -1486,7 +1486,7 @@ public class ReifiedSomeTest {
             IntegerVariable[] tab = makeIntVarArray("x", n, 0, 3);
             IntegerVariable max = makeIntVar("max", -5, 5);
 
-            m.addConstraint(ifThenElse(geq(h, 2), Choco.occurrence(3, max, tab), Choco.TRUE));
+            m.addConstraint(ifThenElse(geq(h, 2), Choco.occurrence(max, tab, 3), Choco.TRUE));
             s.read(m);
             s.setVarIntSelector(new RandomIntVarSelector(s, seed));
             s.setValIntSelector(new RandomIntValSelector());

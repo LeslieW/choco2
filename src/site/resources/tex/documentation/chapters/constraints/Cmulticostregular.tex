@@ -4,38 +4,30 @@
 
 \section{multiCostRegular (constraint)}\label{multicostregular:multicostregularconstraint}\hypertarget{multicostregular:multicostregularconstraint}{}
 \begin{notedef}
-  \texttt{multiCostRegular}$(x,z,\mathcal{L}(\Pi),c)$ states that sequence $x$ is a word belonging to the regular language $\mathcal{L}(\Pi)$,
-% recognized by a deterministic finite automaton (DFA) or a multicostregular expression $\Pi$:
-$$(x_1,\ldots,x_n)\in\mathcal{L}(\Pi)$$
-and that the bounded vector $z$ is equal to the costs of $x$ according to the assigment cost matrix $c$:
-$$\sum_{i=1}^{n} c[r][i][x_i]=z[r],\quad \forall r\in\{0,\ldots,R\}$$
+  \texttt{multiCostRegular}$(\collec{z_1}{z_p}, \collec{x_1}{x_n},\mathcal{L}(\Pi), \coll{c_{i,j,k}})$ states that sequence \collec{x_1}{x_n} is a word belonging to the regular language $\mathcal{L}(\Pi)$ and that each $z_k$ is its cost computed as the sum of the individual symbol weights $c_{i,x_i,k}$: 
+$$ \collec{x_1}{x_n} \in \mathcal{L}(\Pi)\quad\land\quad \sum_{i=1}^n c_{i,x_i,k} = z_k,\ \forall k=1..p.$$ 
 \end{notedef}
-\texttt{multiCostRegular} is a conjunction of a \hyperlink{regular}{\texttt{regular}} constraint with $R+1$ cost functions.
-It may be used in the context of personnel scheduling problems, handling complex work regulations by the mean of regular expressions, together with cardinality or financial constraints by the mean of cost functions.
-The filtering algorithm associated with \texttt{multiCostRegular} is based on lagrangian relaxation and computations of shortest/longest pathes in a layered digraph~\cite{MenanaCPAIOR09}. It typically performs more filtering than the conjunction of \texttt{costRegular} and \texttt{globalCardinality} or than multiple \texttt{costRegular}.
+\texttt{multiCostRegular} models the conjunction of $p$ \hyperlink{costregular}{\texttt{costRegular}} constraints, or the conjunction of a \hyperlink{regular}{\texttt{regular}} constraint with $p$ assignment cost functions. Like them, it is useful for modelling sequencing rules in personnel scheduling and rostering problems. Furthermore it allows to handle together several linear counters and costs on the sequence $x$. For example, one may count all the value occurrences like with a \hyperlink{globalcardinality}{\texttt{globalCardinality}} constraint. Counters can also model assignment costs in optimization problems or violation costs in over-constrained problems. For example, counting the occurrence number of a pattern allows to determine the violation cost of a soft forbidden pattern rule.
 
-The accepting language is specified by a deterministic finite automaton (DFA):
-Automaton $\Pi$ is defined on a given \emph{alphabet} $\Sigma\subseteq\Z$ by a set $Q=\{0,\ldots,m\}$ of \emph{states}, a subset $A\subseteq Q$ of \emph{final} or \emph{accepting states} and a table $\Delta\subseteq Q\!\times\!\Sigma\!\times Q$ of \emph{transitions} between states. $\Pi$ is encoded as an object of class \texttt{Automaton}, whose API contains:
-\begin{lstlisting}
-  Automaton();
-  int addState();
-  void setStartingState(int state); 
-  void setAcceptingState(int state); 
-  void addTransition(int state1, int state2, int label);
-  int getNbStates();
-\end{lstlisting}
-The cost functions are encoded as one matrix \texttt{int cost[nTime][nAct][auto.getNbStates()][nRes]} such that
-\texttt{cost[i][j][s][r]} is the cost of assigning variable $x_i$ to activity $j$ at state $s$ on dimension $r+1$.
+The filtering algorithm~\cite{MenanaCPAIOR09} of \texttt{multiCostRegular} does not achieve GAC (as it would be NP-hard) but it dominates the decompositions in \hyperlink{regular}{\texttt{regular}} or \hyperlink{costregular}{\texttt{costRegular}} constraints. 
+
+The accepting language is specified by a deterministic finite automaton (DFA) $\Pi$ encoded as an object of class \texttt{Automaton} (see \hyperlink{costregular}{\texttt{costRegular}} for a short API).
+The cost functions are vectors of weights on the transitions of $\Pi$. They are encoded as one matrix \texttt{int c[n][m][p][pi.getNbStates()]} such that
+\texttt{c[i][j][k][s]} is the cost of assigning variable $x_i$ to value $j$ at state $s$ on dimension $k$. When the transition costs are independent of their initial states, a second API allows to specify a cost matrix \texttt{int c[n][m][p]}.
 
 \begin{itemize}
-	\item \textbf{API} : \mylst{multiCostRegular(IntegerVariable[] x, IntegerVariable[] z, Automaton P, int[][][][] c)}
-	\item \textbf{return type} : \texttt{Constraint}
-	\item \textbf{options} :
+	\item \textbf{API} : 
       \begin{itemize}
-      \item \texttt{MultiCostRegular.DATA\_STRUCT} is  \texttt{MultiCostRegular.BITSET} or \texttt{MultiCostRegular.LIST}: a parameter stating which backtrable data structure to use for storing the outgoing arcs of the layered digraph. The observed behaviour is until $1000$ arcs the bipartite list is much more efficient, afterwards the memory efficiency of the bitset representation allow faster operations. 
-      \item \texttt{MultiCostRegular.U0}, \texttt{MultiCostRegular.R0}, \texttt{MultiCostRegular.MAXNONIMPROVEITER}, and \texttt{MultiCostRegular.MAXBOUNDITER} are value parameters of the subgradient algorithm used for solving the lagrangean relaxation.
-      \item \texttt{MultiCostRegular.D\_PREC} is a double parameter stating the precision of float computation. It is set by default to $10^{-5}$.
+      \item \mylst{multiCostRegular(IntegerVariable[] z, IntegerVariable[] x, FiniteAutomaton pi, int[][][] c)}
+      \item \mylst{multiCostRegular(IntegerVariable[] z, IntegerVariable[] x, FiniteAutomaton pi, int[][][][] c)}
       \end{itemize}
+	\item \textbf{return type} : \texttt{Constraint}
+	\item \textbf{options} : n/a
+%      \begin{itemize}
+%      \item \texttt{MultiCostRegular.DATA\_STRUCT} is  \texttt{MultiCostRegular.BITSET} or \texttt{MultiCostRegular.LIST}: a parameter stating which backtrable data structure to use for storing the outgoing arcs of the layered digraph. The observed behaviour is until $1000$ arcs the bipartite list is much more efficient, afterwards the memory efficiency of the bitset representation allow faster operations. 
+%      \item \texttt{MultiCostRegular.U0}, \texttt{MultiCostRegular.R0}, \texttt{MultiCostRegular.MAXNONIMPROVEITER}, and \texttt{MultiCostRegular.MAXBOUNDITER} are value parameters of the subgradient algorithm used for solving the lagrangean relaxation.
+%      \item \texttt{MultiCostRegular.D\_PREC} is a double parameter stating the precision of float computation. It is set by default to $10^{-5}$.
+%      \end{itemize}
 	\item \textbf{favorite domain} : \emph{to complete}
 	\item \textbf{references} :\\
        \cite{MenanaCPAIOR09}: \emph{Sequencing and Counting with the {\tt multicost-regular} Constraint}

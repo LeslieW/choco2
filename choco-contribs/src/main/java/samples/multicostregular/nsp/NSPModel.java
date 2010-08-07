@@ -106,9 +106,9 @@ public class NSPModel extends CPModel {
                         else if (j == k-1)
                             csts[d][j][k] = 1;
                     }
-            cauto[i] = multiCostRegular(shifts[i],cvars,auto,csts);
+            cauto[i] = multiCostRegular(cvars, shifts[i], auto,csts);
             credo[i] = globalCardinality(Options.C_GCC_BC,shifts[i],0,3,lowerBounds,upperBounds);
-            cregu[i] =  regular(makeHadrienNSPAutomaton(),shifts[i]);
+            cregu[i] =  regular(shifts[i], makeHadrienNSPAutomaton());
         }
 
 

@@ -87,7 +87,7 @@ public class Reformulation {
         }
         Constraint[] cs = new Constraint[variables.length + 1];
         for(int j = 0; j < bools.length; j++){
-            cs[j] = Choco.reifiedConstraint(bools[j], Choco.among(variables[j], values));
+            cs[j] = Choco.reifiedConstraint(bools[j], Choco.member(variables[j], values));
         }
         cs[variables.length] = Choco.eq(Choco.sum(bools), nvar);
         return cs;

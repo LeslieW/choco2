@@ -4,8 +4,8 @@
 
 \section{lex (constraint)}\label{lex:lexconstraint}\hypertarget{lex:lexconstraint}{}
 \begin{notedef}
-  \texttt{lex}$(x,y)$ enforces a strict lexicographic ordering  $x <_{lex} y$ between two arrays of same size $n$:
-$$\exists\ j\in\{1,\ldots,n\}\ |\qquad x_j<y_j\quad \land\quad x_i=y_i\ (\forall\  i<j)$$
+  \texttt{lex}$(\collec{x_1}{x_n},\collec{y_1}{y_n})$ states a strict lexicographic ordering  $x <_{lex} y$:
+$$\exists\ j=1..n\ |\qquad x_j<y_j\quad \land\quad x_i=y_i\ (\forall\  i<j)$$
 \end{notedef}
 
 \begin{itemize}

@@ -473,7 +473,7 @@ public final class PConstraint {
             int n = exps.get(0).intValue();
             IntegerVariable[] vars = exps.get(1).toIntVarArray();
             int value = exps.get(2).intValue();
-            c = exactly(n, vars, value);
+            c = occurrence(n, vars, value);
         }else
         if(name.contains(_element)){
             IntegerVariable index = exps.get(0).intVarValue();
@@ -518,7 +518,7 @@ public final class PConstraint {
         if(name.contains(_lexEq)){
             IntegerVariable[] xs = exps.get(0).toIntVarArray();
             IntegerVariable[] ys = exps.get(1).toIntVarArray();
-            c = lexeq(xs, ys);
+            c = lexEq(xs, ys);
         }else
         if(name.contains(_lex)){
             IntegerVariable[] xs = exps.get(0).toIntVarArray();

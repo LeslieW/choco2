@@ -3,13 +3,14 @@
 \hypertarget{disjunctive}{}
 
 \section{disjunctive (constraint)}\label{disjunctive:disjunctiveconstraint}\hypertarget{disjunctive:disjunctiveconstraint}{}
+\todo{to be cleaned.}
 
 \begin{notedef}
   \texttt{disjunctive(start,duration)} states that a set of tasks (defined by their starting times and durations) are executed on a ddisjunctive resource, i.e. they do not overlap in time:
 $$|\{i\ |\ \mathtt{start}[i]\le t < \mathtt{start}[i]+\mathtt{duration}[i]\}| \le 1,\quad (\forall \text{ time } t)$$
 \end{notedef}
 
-The notion of task does not exist yet in Choco. The \texttt{disjunctive} takes therefore as input arrays of integer variables (of same size $n$) denoting the starting and duration of each task. When the array of finishing times is also specified, the constraint ensures that \texttt{start[i] + duration[i] = end[i]} for all task $i$.
+\todo{The notion of task does not exist yet in Choco.} The \texttt{disjunctive} takes therefore as input arrays of integer variables (of same size $n$) denoting the starting and duration of each task. When the array of finishing times is also specified, the constraint ensures that \texttt{start[i] + duration[i] = end[i]} for all task $i$.
 As usual, a task is executed in the interval \texttt{[start,end-1]}.
 
 \begin{itemize}

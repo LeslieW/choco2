@@ -1,22 +1,19 @@
 \section{knapsackProblem (constraint)}\label{knapsackproblem:knapsackproblemconstraint}\hypertarget{knapsackproblem:knapsackproblemconstraint}{}
 \begin{notedef}
-  \texttt{knapsackProblem}$(x, W, V, w, v)$ states that :
-$$\sum_{i=1}^{n}x_{i}w_{i}=W \wedge \sum_{i=1}^{n}x_{i}v_{i}=V$$
-$x_i$ is the number of copies of the item $i$, each kind of item $i$ has a value $v_i$ and a weight $w_i$.
+  \texttt{knapsackProblem}$(z^1, z^2, \collec{x_1}{x_n}, \collec{c^1_1}{c^1_n}, \collec{c^2_1}{c^2_n})$ states that $z^1$ (respectively, $z^2$) is the sum of the $x$ weighted by the costs $c^1$ (respectively, $c^2$):
+$$\sum_{i=1}^{n}x_{i}c^1_{i}=z^1\quad \wedge\quad \sum_{i=1}^{n}x_{i}c^2_{i}=z^2$$
 \end{notedef}
-It constructs a knapsack problem constraint with an underlying costregular constraint, where it simulates M. Triks dynamic programming approach.
+The knaspack problem can be modeled using only this constraint and the objective \mylst{maximize(z1)}: $x_i$ is the number of items of type $i$ and each item of type $i$ has a value $c^1_i$ and a weight $c^2_i$.
+Based on \hyperlink{costregular:costregularconstraint}{\texttt{costRegular}}, this propagator simulates the dynamic programming approach of~\cite{TrickAOR03}.
+It dominates the filtering of the decomposition in two \hyperlink{equation}{\texttt{equation}} constraints.
 
 \begin{itemize}
-	\item \textbf{API} :\item \mylst{knapsackProblem(IntegerVariable[] vars, IntegerVariable cVar1, IntegerVariable cVar2, int[] costs1, int[] costs2)}
+	\item \textbf{API} : \mylst{knapsackProblem(IntegerVariable z1, IntegerVariable z2, IntegerVariable[] x, int[] c1, int[] c2)}
 	\item \textbf{return type} : \texttt{Constraint}
 	\item \textbf{options} : \emph{n/a}
 	\item \textbf{favorite domain} : \emph{n/a}
 	\item \textbf{references} : 
-	\begin{itemize}
-		\item \cite{DemasseyC06}: \emph{A \texttt{Cost-Regular} based hybrid column generation approach}
-		\item \cite{TrickAOR03}: \emph{A Dynamic Programming Approach for Consistency and Propagation for Knapsack Constraints}
-		\item \hyperlink{costregular:costregularconstraint}{costRegular}
-	\end{itemize}
+		\cite{TrickAOR03}: \emph{A Dynamic Programming Approach for Consistency and Propagation for Knapsack Constraints}
 \end{itemize}
 
 \textbf{Example}:

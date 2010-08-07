@@ -142,7 +142,7 @@ Available \emph{options} depend on the kind of constraint \emph{c} to add: they 
 This section presents the constraints available in the Choco API sorted by type or by domain. Related sections:
 \begin{itemize}
 \item a detailed description (with options, examples, references) of each constraint is given in Section \hyperlink{ch:constraints}{constraints}
-\item Section \hyperlink{doc:applications}{applications} shows how to apply some specific global constraints
+%\item Section \hyperlink{doc:applications}{applications} shows how to apply some specific global constraints
 \item Section \hyperlink{advanced:defineyourownconstraint}{user-defined constraint} explains how to create its own constraint.
 \end{itemize}
 
@@ -206,14 +206,26 @@ Set constraints are illustrated on the \hyperlink{model:example2:ternarysteinerc
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CHANNELING CONSTRAINT  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Channeling constraints}\label{model:channelingconstraints}\hypertarget{model:channelingconstraints}{}
-The use of a redundant model is a frequent technique to strengthen propagation or to get more freedom to design dedicated search heuristics. The following constraints allow to ensure integrity of different models:
+The use of a redundant model, based on an alternative set of decision variables, is a frequent technique to strengthen propagation or to get more freedom to design dedicated search heuristics. 
+The following constraints allow to ensure the integrity of two redundant models by linking (channeling) variable-value assignments in the first model to variable-value assignments in the second model:
 \begin{notedef}\tt
   \begin{itemize}
-  \item \hyperlink{inversechanneling:inversechannelingconstraint}{inverseChanneling}, \hyperlink{boolchanneling:boolchannelingconstraint}{boolChanneling}, \hyperlink{domainconstraint:domainconstraintconstraint}{domainConstraint}
+  \item \hyperlink{boolchanneling:boolchannelingconstraint}{boolChanneling} $b_j=1 \iff x=j$, 
+  \item \hyperlink{domainchanneling:domainchannelingconstraint}{domainChanneling} $b_j=1 \iff x=j$, $\forall j$, 
+  \item \hyperlink{inversechanneling:inversechannelingconstraint}{inverseChanneling} $y_j=i \iff x_i=j$, $\forall i, j$, 
+  \item \hyperlink{inverseset:inversesetconstraint}{inverseSet} $i\in s_j \iff x_i=j$, $\forall i,j$, 
   \end{itemize}
 \end{notedef}
-More complex channeling can be done using reified constraints (see Section \hyperlink{model:reifiedconstraints}{reification}) although they are less efficient. For example, to ensure that two variables are equal or not, one can reify the equality into a boolean variables :
+In the n-queen problem, for example, a domain variable by column indicates the row $j$ to place a queen in column $i$. To enhance the propagation, a redundant model can be stated by defining a domain variable by row indicating the column $i$. As columns and rows can be interchanged, the same set of constraints applies to both models, then constraint \hyperlink{inversechanneling:inversechannelingconstraint}{inverseChanneling} is set to propagate between the two models.
+\lstinputlisting{java/cinversechanneling.j2t}
+
+Channeling constraints are also useful to compose a model made of two parts as, for example, in a task-resources assignment problem where some constraints are set on the task set and some other constraints are set on the resource set.
+
+\hyperlink{model:reifiedconstraints}{Reification} offers an other type of channeling, between a constraint and a boolean variable representing its truth value. 
+More complex channeling can be done using reification and boolean operators although they are less effective. 
+The reified constraint below states $b=1\iff x=y$:
 \lstinputlisting{java/cchannelingreified.j2t}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% EXTENSIONS CONSTRAINT  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -228,40 +240,39 @@ Such a relation may be defined by three means:
 \end{itemize}
 On the one hand, constraints based on tables may be rather memory consuming in case of large domains, although one relation table may be shared by several constraints. On the other hand, predicate constraints require little memory as they do not cache truth values, but imply some run-time overhead for calling the feasibility test. Table constraints are thus well suited for constraints over small domains; while predicate constraints are well suited for situations with large domains. 
 
-Different levels of consistency can be enforce on constraints in extension: 
-\begin{itemize}
-\item several arc-consistency (AC) algorithms for binary relations
-\item two AC algorithms for n-ary relations dedicated either to positive or to negative tables (relation defined by the allowed or forbidden tuples)
-\item a weaker forward-checking (FC) algorithm for n-ary relations.
-\end{itemize}
-
+Different levels of consistency can be enforced on constraints in extension (when selecting an API) and, for Arc Consistency, different filtering algorithms can be used (when selecting an option)
 The Choco API for creating constraints in extension are as follows:
-\begin{notedef}\tt
+
+\begin{notedef}
   \begin{itemize}
-  \item \hyperlink{feaspairac:feaspairacconstraint}{feasPairAC}, \hyperlink{infeaspairac:infeaspairacconstraint}{infeasPairAC}, \hyperlink{relationpairac:relationpairacconstraint}{relationPairAC}
-  \item \hyperlink{feastupleac:feastupleacconstraint}{feasTupleAC}, \hyperlink{infeastupleac:infeastupleacconstraint}{infeasTupleAC}, \hyperlink{relationtupleac:relationtupleacconstraint}{relationTupleAC}
-  \item \hyperlink{feastuplefc:feastuplefcconstraint}{feasTupleFC}, \hyperlink{infeastuplefc:infeastuplefcconstraint}{infeasTupleFC}, \hyperlink{relationtuplefc:relationtuplefcconstraint}{relationTupleFC}
+  \item arc consistency (AC) for binary relations:\\
+{\tt \hyperlink{feaspairac:feaspairacconstraint}{feasPairAC}, \hyperlink{infeaspairac:infeaspairacconstraint}{infeasPairAC}, \hyperlink{relationpairac:relationpairacconstraint}{relationPairAC}}
+  \item arc consistency (AC) for n-ary relations:\\
+{\tt \hyperlink{feastupleac:feastupleacconstraint}{feasTupleAC}, \hyperlink{infeastupleac:infeastupleacconstraint}{infeasTupleAC}, \hyperlink{relationtupleac:relationtupleacconstraint}{relationTupleAC}}
+  \item weaker forward checking (FC) for n-ary relations:\\
+{\tt \hyperlink{feastuplefc:feastuplefcconstraint}{feasTupleFC}, \hyperlink{infeastuplefc:infeastuplefcconstraint}{infeasTupleFC}, \hyperlink{relationtuplefc:relationtuplefcconstraint}{relationTupleFC}}
   \end{itemize}
 \end{notedef}
 
 \subsubsection{Relations.}
 A same relation might be shared among several constraints, in this case it is highly recommended to create it first and then use the \hyperlink{relationpairac:relationpairacconstraint}{relationPairAC}, \hyperlink{relationtupleac:relationtupleacconstraint}{relationTupleAC}, or \hyperlink{relationtuplefc:relationtuplefcconstraint}{relationTupleFC} API  on the same relation for each constraint.
 
-For binary relations, the following Choco API is provided:
+For binary relations, the following Choco API is provided:\\
 \mylst{makeBinRelation(int[] min, int[] max, List<int[]>pairs, boolean feas)}
 
 It returns a \texttt{BinRelation} giving a list of compatible (\texttt{feas=true}) or incompatible (\texttt{feas=false}) pairs of values. This relation can be applied to any pair of variables $(x_1,x_2)$ whose domains are included in the \texttt{min/max} intervals, i.e. such that:
 $$\mathtt{min}[i] \le x_i.\mathtt{getInf}() \le x_i.\mathtt{getSup}() \le  \mathtt{max}[i],\quad \forall i.$$
 Bounds \texttt{min/max} are mandatory in order to allow to compute the opposite of the relation if needed.
 
-For n-ary relations, the corresponding Choco API is:
+For n-ary relations, the corresponding Choco API is:\\
 \mylst{makeLargeRelation(int[] min, int[] max, List<int[]> tuples, boolean feas);}
+
 It returns a \texttt{LargeRelation}. If \texttt{feas=true}, the returned relation matches also the \texttt{IterLargeRelation} interface which provides constant time iteration abilities over tuples (for compatibility with the GAC algorithm used over feasible tuples).
 \lstinputlisting{java/mlargerelation.j2t}
 
 Lastly, some specific relations can be defined without storing the tuples, as in the following example (\texttt{TuplesTest} extends \texttt{LargeRelation}):
 \lstinputlisting{java/mnotallequal.j2t}
-Then, a \emph{NotAllEqual} constraint can be stated within the problem by:
+Then, the \texttt{NotAllEqual} relation is stated as a constraint of a model:
 \lstinputlisting{java/mrelationtuplefc.j2t}
 %Again, for compatibility with the GAC algorithm invoked by relationTupleAC, such a relation has to match the \texttt{IterLargeRelation} interface for feasible tuples.
 
@@ -270,72 +281,76 @@ Then, a \emph{NotAllEqual} constraint can be stated within the problem by:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% REIFIED CONSTRAINT  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Reified constraints}\label{model:reifiedconstraints}\hypertarget{model:reifiedconstraints}{}
-Constraints involved in another constraint are usually called reified constraints. Typical examples of reified constraints are
- constraints combined with logical operators, such as $(x \neq y) \lor (z \le 9)$.
+The \emph{truth value} of a constraint is a boolean that is true if and only if the constraint holds.
+To \emph{reify} a constraint is to get its truth value. 
 
-%\subsubsection{To reify a constraint into a boolean variable.}\label{model:toreifyaconstraintintoabooleanvariable}\hypertarget{model:toreifyaconstraintintoabooleanvariable}{}
-Choco provides a generic constraint to reify any constraints on integer variables or set variables into a boolean variable expressing its truth value:
+This mechanism can be used for example to model a MaxCSP problem where the number of satisfied constraints has to be maximized.
+It is also intended to give the freedom to model complex constraints combining several reified constraints, using some logical operators on the truth values, such as in:
+$(x \neq y) \lor (z \le 9)$.
+
+Choco provides a generic constraint \hyperlink{reifiedconstraint:reifiedconstraintconstraint}{reifiedConstraint} to reify any constraint into a boolean variable expressing its truth value:
+\begin{lstlisting}
+  Constraint reifiedConstraint(IntegerVariable b, Constraint c);
+  Constraint reifiedConstraint(IntegerVariable b, Constraint c1, Constraint c2);
+\end{lstlisting}
+Specific API are also provided to reify boolean constraints:  
 \begin{notedef}\tt
   \begin{itemize}
-  \item \hyperlink{reifiedconstraint:reifiedconstraintconstraint}{reifiedConstraint}, \hyperlink{reifiedand:reifiedandconstraint}{reifiedAnd}, \hyperlink{reifiedleftimp:reifiedleftimpconstraint}{reifiedLeftImp}, \hyperlink{reifiednot:reifiednotconstraint}{reifiedNot}, \hyperlink{reifiedor:reifiedorconstraint}{reifiedOr}, \hyperlink{reifiedrightimp:reifiedrightimpconstraint}{reifiedRightImp}, \hyperlink{reifiedxnor:reifiedxnorconstraint}{reifiedXnor}, \hyperlink{reifiedxor:reifiedxorconstraint}{reifiedXor}
+  \item \hyperlink{reifiedconstraint:reifiedconstraintconstraint}{reifiedConstraint}, 
+   \item \hyperlink{reifiedand:reifiedandconstraint}{reifiedAnd}, \hyperlink{reifiedleftimp:reifiedleftimpconstraint}{reifiedLeftImp}, \hyperlink{reifiednot:reifiednotconstraint}{reifiedNot}, \hyperlink{reifiedor:reifiedorconstraint}{reifiedOr}, \hyperlink{reifiedrightimp:reifiedrightimpconstraint}{reifiedRightImp}, \hyperlink{reifiedxnor:reifiedxnorconstraint}{reifiedXnor}, \hyperlink{reifiedxor:reifiedxorconstraint}{reifiedXor}
   \end{itemize}
 \end{notedef}
-This mechanism can be used for example to model MaxCSP problems where the number of satisfied constraints has to be maximized.
-It is also intended to give the freedom to the user to build complex reified constraints. However, Choco provides a more simple and direct API to build complex expressions using boolean operators:
+
+
+
+\subsubsection{Handling complex expressions.}\label{model:handlingcomplexexpressions}\hypertarget{model:handlingcomplexexpressions}{}
+In order to build complex combinations of constraints, Choco also provides a more simple and direct API with the following logical meta-constraints taking constraints in arguments:
 \begin{notedef}\tt
   \begin{itemize}
-  \item \hyperlink{and:andconstraint}{and}, \hyperlink{or:orconstraint}{or}, \hyperlink{implies:impliesconstraint}{implies}, \hyperlink{ifonlyif:ifonlyifconstraint}{ifOnlyIf}, \hyperlink{ifthenelse:ifthenelseconstraint}{ifThenElse}, \hyperlink{not:notconstraint}{not}
+  \item \hyperlink{and:andconstraint}{and}, \hyperlink{or:orconstraint}{or}, \hyperlink{implies:impliesconstraint}{implies}, \hyperlink{ifonlyif:ifonlyifconstraint}{ifOnlyIf}, \hyperlink{ifthenelse:ifthenelseconstraint}{ifThenElse}, \hyperlink{not:notconstraint}{not}, nand, nor
   \end{itemize}
 \end{notedef}
-Such an expression is represented as a tree of operators. The leaves of this tree are made of variables, constants or even traditional constraints. Variables and constants can be combined as \texttt{ExpressionVariable} using \hyperlink{model:expressionvariables}{operators} (e.g, \texttt{mult(10,abs(w))}), or using simple constraints (e.g., \texttt{leq(z,9)}), or even using global constraints (e.g, \texttt{alldifferent(vars)}).
-The language available on expressions is therefore slightly richer and matches the language used in the \href{http://cpai.ucc.ie/08/}{Constraint Solver Competition 2008} of the CPAI workshop.
-
 For example, the following expression
 $$((x = 10 * |y|) \lor (z \le 9))\quad \iff\quad \texttt{alldifferent}(a,b,c)$$
-could be represented by :
+could be expressed in Choco by:
 \begin{lstlisting}
 	Constraint exp = ifOnlyIf( or( eq(x, mult(10, abs(y))), leq(z, 9) ), 
                                alldifferent(new IntegerVariable[]{a,b,c}) );
 \end{lstlisting}
+Such an expression is internally represented as a tree whose nodes are operators and leaves are variables, constants and constraints. Variables and constants can be combined as \texttt{ExpressionVariable} using \hyperlink{model:expressionvariables}{operators} (e.g, \texttt{mult(10,abs(w))}), or using simple constraints (e.g., \texttt{leq(z,9)}), or even using global constraints (e.g, \texttt{alldifferent(vars)}).
+The language available on expressions currently matches the language used in the \href{http://cpai.ucc.ie/08/}{Constraint Solver Competition 2008} of the CPAI workshop.
 
-
-\subsubsection{Handling complex expressions.}\label{model:handlingcomplexexpressions}\hypertarget{model:handlingcomplexexpressions}{}
-Expressions offer a more powerful modeling language than the one available via standard constraints. However, they 
-can not be handled as efficiently as the standard constraints that embed a dedicated propagation algorithm. We therefore
-recommend you to carefully check that you can not model the expression using the intensional constraints of Choco before using
-expressions.
-Inside the solver, expressions can be represented in two different ways that can be decided at the modeling level, using the following {\tt Model} API:
-\begin{lstlisting}
-  setDefaultExpressionDecomposition(boolean decomp);
-\end{lstlisting}
-or the option \hyperlink{edecomp:edecompoptions}{\tt Options.E\_DECOMP}.
+At the solver level, there exists two different ways to represent expressions:
 \begin{itemize}
-\item The first way (\texttt{decomp=false}) is to handle them as \hyperlink{model:arbitraryconstraintsinextension}{constraints in extension}. The expression is then used to check a tuple in a dynamic way just like a n-ary relation that is defined without listing all the possible tuples. The expression is then propagated using the GAC3rm algorithm. This is very powerful as arc-consistency is obtained on the corresponding constraints.
-\item The second way (\texttt{decomp=true}) is to decompose the expression automatically by introducing intermediate variables and eventually the generic \hyperlink{reifiedintconstraint:reifiedintconstraintconstraint}{\tt reifiedIntConstraint}. By doing so, the level of pruning decreases but expressions of larger arity involving large domains can be represented.
+\item \emph{by extension:} the first way is to handle expressions as \hyperlink{model:arbitraryconstraintsinextension}{constraints in extension}. The expression is then used to check a tuple in a dynamic way just like a n-ary relation that is defined without listing all the possible tuples. The expression is then propagated using the GAC3rm algorithm. This is very powerful as arc-consistency is achieved on the corresponding constraints.
+\item \emph{by decomposition:} the second way is to decompose the expression automatically by introducing intermediate variables and eventually the generic \hyperlink{reifiedconstraint:reifiedconstraintconstraint}{\tt reifiedConstraint}. By doing so, the level of pruning decreases but expressions of larger arity involving large domains can be represented.
 \end{itemize}
+The way to represent expressions is decided at the modeling level. Representation \emph{by extension} is the default. Representation \emph{by decomposition} can be set instead by:
+\begin{lstlisting}
+  model.setDefaultExpressionDecomposition(true);
+\end{lstlisting}
 
-%\subsubsection{Tell the solver how to consider an expression.}
-%The default representation of expressions can be enforced using the following API  on the model object: 
-%Parameter \emph{decomp} tells the solver whether expressions shoud be considered as extensional constraints (\texttt{decomp=false}) or decomposed 
-Once the default representation is chosen, one can also make exception for a particular expression using options on \texttt{addConstraint}. 
-For example, the following code tells the solver to decompose e1 and not e2 :
+Representation \emph{by decomposition} can also be decided individually for some expressions, by setting option \hyperlink{edecomp:edecompoptions}{\tt Options.E\_DECOMP} when adding the constraint.
+For example, the following code tells the solver to decompose e1 but not e2 :
 \begin{lstlisting}
 	model.setDefaultExpressionDecomposition(false);
-	IntegerVariable x = makeIntVar("x", 1, 3, Options.V_BOUND);
-	IntegerVariable y = makeIntVar("y", 1, 3, Options.V_BOUND);
-	IntegerVariable z = makeIntVar("z", 1, 3, Options.V_BOUND);
+	IntegerVariable[] x = makeIntVarArray("x", 3, 1, 3, Options.V_BOUND);
 
-	Constraint e1 = or(lt(x, y), lt(y, x));
+	Constraint e1 = or(lt(x[0], x[1]), lt(x[1], x[0]));
 	model.addConstraint(Options.E_DECOMP, e1);
 	
-	Constraint e2 = or(lt(y, z), lt(z, y));
+	Constraint e2 = or(lt(x[1], x[2]), lt(x[2], x[1]));
 	model.addConstraint(e2);
 \end{lstlisting}
 
 \subsubsection{When and how should I use expressions ?}\label{model:whenshouldiuseexpressions}\hypertarget{model:whenshouldiuseexpressions}{}
-An expression (represented in extension) should be used in the case of a complex logical relationship that involves \textbf{few different variables}, each of \textbf{small domain}, and if \textbf{arc consistency} is desired on those variables.
-In such a case, an expression can even be more powerful than a model using intermediate variables and intensional constraints.
-Imagine the following ``crazy'' example :
+Expressions offer a slightly richer modeling language than the one available via standard constraints. However, expressions 
+can not be handled as efficiently as constraints that embed a dedicated propagation algorithm. We therefore
+recommend you to carefully check that you can not model the expression using the \emph{global constraints} of Choco before using
+expressions.
+
+Expressions represented \emph{in extension} should be used in the case of complex logical relationships that involve \textbf{few different variables}, each of \textbf{small domain}, and if \textbf{arc consistency} is desired on those variables.
+In such a case, representation in extension can be much more effective than with decomposition. Imagine the following ``crazy'' example :
 \begin{lstlisting}
  or( and( eq( abs(sub(div(x,50),div(y,50))),1), eq( abs(sub(mod(x,50),mod(y,50))),2)),
      and( eq( abs(sub(div(x,50),div(y,50))),2), eq( abs(sub(mod(x,50),mod(y,50))),1)))
@@ -356,7 +371,7 @@ The up-to-date list of global constraints available in Choco can be found within
 Most of these global constraints are listed below according to their application fields.
 Details and examples can be found in Section \hyperlink{ch:constraints}{Elements of Choco/Constraints}.
 \subsubsection{Value constraints}\label{model:valueconstraints}\hypertarget{model:valueconstraints}{}
-Constraints that put a restriction on how values can be assigned to usually one or several collections of variables.
+Constraints that put a restriction on how values can be distributed among a collection of variables.
 See also in Global Constraint Catalog: \href{http://www.emn.fr/x-info/sdemasse/gccat/Kvalue_constraint.html}{value constraint}.
 
 \vspace{1em}\noindent\begin{notedef}\tt
@@ -364,8 +379,9 @@ See also in Global Constraint Catalog: \href{http://www.emn.fr/x-info/sdemasse/g
   \item counting distinct values: 
 \hyperlink{alldifferent:alldifferentconstraint}{allDifferent}, 
 \hyperlink{atmostnvalue:atmostnvalueconstraint}{atMostNValue},
-\hyperlink{increasingnvalue:increasingnvalueconstraint}{increasingnvalue},
+\hyperlink{increasingnvalue:increasingnvalueconstraint}{increasingNValue},
   \item counting values: 
+\hyperlink{among:amongconstraint}{among},
 \hyperlink{occurrence:occurrenceconstraint}{occurrence},
 \hyperlink{occurrencemax:occurrencemaxconstraint}{occurrenceMax},
 \hyperlink{occurrencemin:occurrenceminconstraint}{occurrenceMin},
@@ -376,7 +392,7 @@ See also in Global Constraint Catalog: \href{http://www.emn.fr/x-info/sdemasse/g
 \hyperlink{min:minconstraint}{min},
   \item ordering: 
 \hyperlink{sorting:sortingconstraint}{sorting},
-\hyperlink{increasingnvalue:increasingnvalueconstraint}{increasingnvalue},
+\hyperlink{increasingnvalue:increasingnvalueconstraint}{increasingNValue},
 \hyperlink{lex:lexconstraint}{lex}, 
 \hyperlink{lexeq:lexeqconstraint}{lexeq},
 \hyperlink{leximin:leximinconstraint}{leximin},
@@ -393,13 +409,13 @@ See also in Global Constraint Catalog: \href{http://www.emn.fr/x-info/sdemasse/g
 \hyperlink{regular:regularconstraint}{regular},
 \hyperlink{costregular:costregularconstraint}{costRegular},
 \hyperlink{multicostregular:multicostregularconstraint}{multiCostRegular}, 
-\hyperlink{stretchcyclic:stretchcyclicconstraint}{stretchCyclic}, 
+%\hyperlink{stretchcyclic:stretchcyclicconstraint}{stretchCyclic}, 
 \hyperlink{stretchpath:stretchpathconstraint}{stretchPath}, 
 \hyperlink{tree:treeconstraint}{tree},
   \end{itemize}
 \end{notedef}
 
-\subsubsection{Boolean constraints}\label{model:logicconstraints}\hypertarget{model:logicconstraints}{}
+\subsubsection{Boolean constraints}\label{modelglobal:logicconstraints}\hypertarget{modelglobal:logicconstraints}{}
 Logical operations on boolean expressions.
 See also in Global Constraint Catalog: \href{http://www.emn.fr/x-info/sdemasse/gccat/KBoolean_constraint.html}{boolean constraint}.
 
@@ -409,21 +425,22 @@ See also in Global Constraint Catalog: \href{http://www.emn.fr/x-info/sdemasse/g
 \hyperlink{clause:clauseconstraint}{clause},
 \end{notedef}
 
-\subsubsection{Channelling constraints}\label{model:channellingconstraints}\hypertarget{model:channellingconstraints}{}
+\subsubsection{Channeling constraints}\label{modelglobal:channelingconstraints}\hypertarget{modelglobal:channelingconstraints}{}
 Constraints linking two collections of variables (many-to-many) or indexing one among many variables (one-to-many).
-See also in Global Constraint Catalog: \href{http://www.emn.fr/x-info/sdemasse/gccat/Kchannelling_constraint.html}{channelling constraint}.
+See also Section \hyperlink{model:channelingconstraints}{Channeling} and in Global Constraint Catalog: \href{http://www.emn.fr/x-info/sdemasse/gccat/Kchannelling_constraint.html}{channelling constraint}.
 
  \vspace{1em}\noindent\begin{notedef}\tt
    \begin{itemize}
    \item one-to-many: 
- \hyperlink{domainconstraint:domainconstraintconstraint}{domainConstraint},
+ \hyperlink{domainchanneling:domainchannelingconstraint}{domainChanneling},
  \hyperlink{nth:nthconstraint}{nth} (element),
  \hyperlink{max:maxconstraint}{max},
  \hyperlink{min:minconstraint}{min},
    \item many-to-many: 
  \hyperlink{inversechanneling:inversechannelingconstraint}{inverseChanneling},
- \hyperlink{inverseset:inversesetconstraint}{inverseset},
+ \hyperlink{inverseset:inversesetconstraint}{inverseSet},
  \hyperlink{sorting:sortingconstraint}{sorting},
+\hyperlink{pack:packconstraint}{pack},
  \end{itemize}
  \end{notedef}
 
@@ -433,6 +450,7 @@ See also in Global Constraint Catalog: \href{http://www.emn.fr/x-info/sdemasse/g
 \vspace{1em}\noindent\begin{notedef}\tt
  \begin{itemize}
   \item one cost: 
+\hyperlink{among:amongconstraint}{among},
 \hyperlink{occurrence:occurrenceconstraint}{occurrence},
 \hyperlink{occurrencemax:occurrencemaxconstraint}{occurrenceMax},
 \hyperlink{occurrencemin:occurrenceminconstraint}{occurrenceMin},
@@ -459,6 +477,7 @@ See also in Global Constraint Catalog: \href{http://www.emn.fr/x-info/sdemasse/g
    \item geometric placement problems: 
 \hyperlink{geost:geostconstraint}{geost}, 
    \item scheduling problems: 
+\hyperlink{disjoint}{disjoint (tasks)} 
 \hyperlink{disjunctive:disjunctiveconstraint}{disjunctive}, 
 \hyperlink{cumulative:cumulativeconstraint}{cumulative}, 
    \item timetabling problems: 
@@ -469,12 +488,14 @@ See also in Global Constraint Catalog: \href{http://www.emn.fr/x-info/sdemasse/g
 
 \subsubsection{Scheduling constraints (time assignment)}\label{model:schedulingconstraints}\hypertarget{model:schedulingconstraints}{}
 Constraints involving tasks to be scheduled over a time horizon.
-See also \hyperlink{schedulinganduseofthecumulative:schedulinganduseofthecumulativeconstraint}{scheduling application} and in Global Constraint Catalog: \href{http://www.emn.fr/x-info/sdemasse/gccat/Kscheduling_constraint.html}{scheduling constraint}.
+%See also \hyperlink{schedulinganduseofthecumulative:schedulinganduseofthecumulativeconstraint}{scheduling application} and 
+See also in Global Constraint Catalog: \href{http://www.emn.fr/x-info/sdemasse/gccat/Kscheduling_constraint.html}{scheduling constraint}.
 
 \vspace{1em}\noindent\begin{notedef}\tt
    \begin{itemize}
-   \item temporal constraints: 
-\hyperlink{preceding:precedingconstraint}{preceding}, 
+   \item temporal constraints:
+\hyperlink{disjoint}{disjoint (tasks)} 
+\hyperlink{precedence:precedenceconstraint}{precedence}, 
 \hyperlink{precedencedisjoint:precedencedisjointconstraint}{precedenceDisjoint}, 
 \hyperlink{precedenceimplied:precedenceimpliedconstraint}{precedenceImplied}, 
 \hyperlink{precedencereified:precedencereifiedconstraint}{precedenceReified},
@@ -486,3 +507,5 @@ See also \hyperlink{schedulinganduseofthecumulative:schedulinganduseofthecumulat
 \hyperlink{geost:geostconstraint}{geost}, 
  \end{itemize}
 \end{notedef}
+
+% java ToTex ../../../../../../samples/src/main/java/samples/documentation/ ../../documentation/java/

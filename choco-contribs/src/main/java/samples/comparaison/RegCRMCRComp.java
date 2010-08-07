@@ -130,7 +130,7 @@ public class RegCRMCRComp
         CPModel m = new CPModel();
         m.addVariable(objectif);
 
-        m.addConstraint(regular(automaton,vars));
+        m.addConstraint(regular(vars, automaton));
 
         IntegerVariable[] cvar  = makeIntVarArray("c",vars.length,0,1000, Options.V_BOUND);
         IntegerVariable[] gccvar = makeIntVarArray("gcc",3,0,vars.length);
@@ -172,7 +172,7 @@ public class RegCRMCRComp
         objectif = makeIntVar("obj",0,1000*vars.length, Options.V_BOUND);
         CPModel m = new CPModel();
         m.addVariable(objectif);
-        m.addConstraint(costRegular(vars,objectif,automaton,costs));
+        m.addConstraint(costRegular(objectif, vars, automaton,costs));
 
         IntegerVariable[] gccvar = makeIntVarArray("gcc",3,0,vars.length);
         IntegerVariable nbTravail = makeIntVar("trav",6,8, Options.V_BOUND);
@@ -216,7 +216,7 @@ public class RegCRMCRComp
             }
         }
         IntegerVariable[] cvars = new IntegerVariable[]{objectif,nbTravail,nbRepos};
-        m.addConstraint(multiCostRegular(vars,cvars,automaton,csts));
+        m.addConstraint(multiCostRegular(cvars, vars, automaton,csts));
 
 
         CPSolver s = new CPSolver();

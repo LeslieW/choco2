@@ -4,8 +4,8 @@
 
 \section{feasTupleAC (constraint)}\label{feastupleac:feastupleacconstraint}\hypertarget{feastupleac:feastupleacconstraint}{}
 \begin{notedef}
-  \texttt{feasTupleAC}$(x,feasTuples)$ states an extensional constraint on $(x_1,\ldots,x_n)$ defined by the table $feasTuples$ of compatible tuples of values, and then enforces arc consistency:
-      $$\exists \text{ tuple } i\ |\quad (x_1,\ldots,x_n)=feasTuples[i]$$
+  \texttt{feasTupleAC}$(\collec{x_1}{x_n},feasTuples)$ states an extensional constraint on \collec{x_1}{x_n} defined by the table $feasTuples$ of compatible tuples of values, and then enforces arc consistency:
+      $$\exists \text{ tuple } i\ |\quad \collec{x_1}{x_n}=feasTuples[i]$$
 \end{notedef}
 
 The API is duplicated to define options.

@@ -46,6 +46,7 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.Vector;
 
@@ -111,7 +112,7 @@ public class Code4Doc2 {
         Solver s = new CPSolver();
         IntegerVariable var = makeIntVar("v1", 0, 100, Options.V_BOUND);
         int[] values = new int[]{0, 25, 50, 75, 100};
-        m.addConstraint(among(var, values));
+        m.addConstraint(member(var, values));
         s.read(m);
         s.solve();
         //totex
@@ -175,7 +176,7 @@ public class Code4Doc2 {
         IntegerVariable v3 = makeIntVar("v3", 3, 3);
         IntegerVariable v4 = makeIntVar("v4", 3, 4);
         IntegerVariable n = makeIntVar("n", 3, 3);
-        Constraint c = atMostNValue(new IntegerVariable[]{v1, v2, v3, v4}, n);
+        Constraint c = atMostNValue(n, new IntegerVariable[]{v1, v2, v3, v4});
         m.addConstraint(c);
         s.read(m);
         s.solve();
@@ -215,36 +216,80 @@ public class Code4Doc2 {
 
     public void ccostregular(){
         ////totex ccostregular
-        int n = 10;
-        IntegerVariable[] vars = makeIntVarArray("x",n,0,2, Options.V_ENUM);
-        IntegerVariable z = makeIntVar("z",3,4, Options.V_BOUND);
+        // z counts the number of 2 followed by a 0 or a 1 in sequence x
+        IntegerVariable[] vars = makeIntVarArray("x", 10, 0, 2, Options.V_ENUM);
+        IntegerVariable z = makeIntVar("z", 3, 4, Options.V_BOUND);
 
         FiniteAutomaton auto = new FiniteAutomaton();
+        // states
         int start = auto.addState();
         int end = auto.addState();
         auto.setInitialState(start);
         auto.setFinal(start);
         auto.setFinal(end);
-
-        auto.addTransition(start,start, 0,1);
-        auto.addTransition(start,end,2);
-
-        auto.addTransition(end,start,2);
-        auto.addTransition(end,start, 0,1);
-
-        int[][][] costs = new int[n][3][2];
-        for (int i = 0 ; i < costs.length ; i++)
-        {
-            costs[i][0][1] = 1;
-            costs[i][1][1] = 1;
+        // transitions
+        auto.addTransition(start, start, 0, 1);
+        auto.addTransition(start, end, 2);
+        auto.addTransition(end, start, 2);
+        auto.addTransition(end, start, 0, 1);
+        // costs
+        int[][][] costs = new int[vars.length][3][auto.getNbStates()];
+        for (int i = 0 ; i < costs.length ; i++) {
+            costs[i][0][end] = 1;
+            costs[i][1][end] = 1;
         }
 
         CPModel m = new CPModel();
-        m.addConstraint(costRegular(vars,z,auto,costs));
-
+        m.addConstraint(costRegular(z, vars, auto, costs));
         CPSolver s= new CPSolver();
         s.read(m);
         s.solveAll();
+        //totex
+    }
+
+    public void ccostregular2(){
+        ////totex ccostregular2
+        IntegerVariable[] vars = makeIntVarArray("x", 28, 0, 2, Options.V_ENUM);
+        IntegerVariable z = makeIntVar("z", 0, 100, Options.V_BOUND);
+
+        // different rules are formulated as patterns that must NOT be matched by x
+        List<String> forbiddenRegExps = new ArrayList<String>();
+        // do not end with '00' if start with '11'
+        forbiddenRegExps.add("11(0|1|2)*00");
+        // at most three consecutive 0
+        forbiddenRegExps.add("(0|1|2)*0000(0|1|2)*");
+        // no pattern '112' at position 5
+        forbiddenRegExps.add("(0|1|2){4}112(0|1|2)*");
+        // pattern '12' after a 0 or a sequence of 0
+        forbiddenRegExps.add("(0|1|2)*02(0|1|2)*");
+        forbiddenRegExps.add("(0|1|2)*01(0|1)(0|1|2)*");
+        // at most three 2 on consecutive even positions
+        forbiddenRegExps.add("(0|1|2)((0|1|2)(0|1|2))*2(0|1|2)2(0|1|2)2(0|1|2)*");
+
+        // a unique automaton is built as the complement language
+        // composed of all the forbidden patterns
+        FiniteAutomaton auto = new FiniteAutomaton();
+        for (String reg : forbiddenRegExps) {
+            FiniteAutomaton a = new FiniteAutomaton(reg);
+            auto = auto.union(a);
+            auto.minimize();
+        }
+        auto = auto.complement();
+        auto.minimize();
+        auto.toDotty("myForbiddenRules.dot");
+        System.out.println(auto.getNbStates() + " states");
+        // costs: count the number of 0 and of 1 at odd positions
+        int[][] costs = new int[vars.length][3];
+        for (int i = 1 ; i < costs.length ; i+=2) {
+            costs[i][0] = 1; costs[i][1] = 1;
+        }
+
+        CPModel m = new CPModel();
+        m.addConstraint(costRegular(z, vars, auto, costs));
+        CPSolver s= new CPSolver();
+        s.read(m);
+        s.minimize(s.getVar(z), true);
+        System.out.println(s.solutionToString());
         //totex
     }
 
@@ -363,7 +408,7 @@ public class Code4Doc2 {
         Solver s = new CPSolver();
         IntegerVariable var = makeIntVar("v1", 0, 100, Options.V_BOUND);
         int[] values = new int[]{10,20,30,40,50,60,70,80,90};
-        m.addConstraint(disjoint(var, values));
+        m.addConstraint(notMember(var, values));
         s.read(m);
         s.solve();
         //totex
@@ -381,13 +426,13 @@ public class Code4Doc2 {
         //totex
     }
 
-    public void cdomainconstraint() {
-        //totex cdomainconstraint
+    public void cdomainchanneling() {
+        //totex cdomainchanneling
         Model m = new CPModel();
         Solver s = new CPSolver();
-        IntegerVariable bVar = makeIntVar("bVar", 0, 10);
-        IntegerVariable[] values = makeBooleanVarArray("value", 10);
-        m.addConstraint(domainConstraint(bVar, values));
+        IntegerVariable x = makeIntVar("var", 0, 10);
+        IntegerVariable[] b = makeBooleanVarArray("valueIndicator", 10);
+        m.addConstraint(domainChanneling(x, b));
         s.read(m);
         s.solveAll();
         //totex
@@ -445,7 +490,7 @@ public class Code4Doc2 {
         for (int i = 0; i < coefs.length; i++) {
             coefs[i] = rand.nextInt(10);
         }
-        Constraint knapsack = equation(bvars, coefs, charge);
+        Constraint knapsack = equation(charge, bvars, coefs);
         m.addConstraint(knapsack);
         s.read(m);
         s.solveAll();

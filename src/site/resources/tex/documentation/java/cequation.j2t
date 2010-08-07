@@ -9,7 +9,7 @@
         for (int i = 0; i < coefs.length; i++) {
             coefs[i] = rand.nextInt(10);
         }
-        Constraint knapsack = equation(bvars, coefs, charge);
+        Constraint knapsack = equation(charge, bvars, coefs);
         m.addConstraint(knapsack);
         s.read(m);
         s.solveAll();
