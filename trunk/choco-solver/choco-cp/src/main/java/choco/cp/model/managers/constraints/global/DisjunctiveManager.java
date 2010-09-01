@@ -84,37 +84,4 @@ public final class DisjunctiveManager extends AbstractResourceManager {
 			}
 		}
 	}
-	
-//
-//	@Override
-//	public SConstraint makeConstraint(Solver solver, Variable[] variables,
-//			Object parameters, Set<String> options) {
-//		if (solver instanceof CPSolver) {
-//			final RscData param = (RscData) parameters;
-//			final CPSolver s = (CPSolver) solver;
-//			final TaskVar[] tasks = getTaskVar(s, variables, 0, param.getNbTasks());
-//			final IntDomainVar uppBound =  getUppBound(s, param);
-//			if( options.contains(SettingType.FORBIDDEN_INTERVALS.getOptionName()) ) {
-//				if( uppBound == null ) {
-//					throw new SolverException("you must set the makespan variable or manually set an upper bound variable");
-//				} if( param.getNbOptionalTasks() > 0 ) {
-//					throw new SolverException("no Forbidden intervals with alternative resources.");
-//				} else {
-//					s.post(new ForbiddenIntervals("ForbInt-"+param.getRscName(), tasks, uppBound));
-//				}
-//			}
-//
-//			Disjunctive cstr;
-//			if(param.getNbOptionalTasks() > 0) {
-//				IntDomainVar[] usages = getIntVar(s, variables, param.getNbTasks() , param.getNbOptionalTasks());
-//				cstr = new AltDisjunctive(param.getRscName(), tasks, usages, uppBound);
-//			}else {
-//				cstr = new Disjunctive(param.getRscName(), tasks, uppBound);
-//			}
-//			cstr.getFlags().readDisjunctiveOptions(options);
-//			return cstr;
-//		}
-//		return null;
-//	}
-
 }

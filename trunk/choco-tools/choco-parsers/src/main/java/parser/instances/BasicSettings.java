@@ -17,8 +17,16 @@ public class BasicSettings extends PreProcessConfiguration{
 	 * <br/><b>Default value</b>: 15
 	 */
 	@Default(value = "15")
-	public static final String TIME_LIMIT_PREPROCESSING = "tools.preprocessing.limit.time.value";
+	public static final String PREPROCESSING_TIME_LIMIT = "tools.preprocessing.limit.time.value";
 
+	/**
+	 * <br/><b>Goal</b>: indicates if the heuristics is applied during preprocessing.
+	 * <br/><b>Type</b>: boolean
+	 * <br/><b>Default value</b>: true
+	 */
+	@Default(value = VALUE_TRUE)
+	public static final String PREPROCESSING_HEURISTICS = "tools.preprocessing.heuristics";
+	
 	/**
 	 * <br/><b>Goal</b>: indicates that the constraint model use light propagation algorithms (for example, it decomposes some global constraints).
 	 * <br/><b>Type</b>: boolean

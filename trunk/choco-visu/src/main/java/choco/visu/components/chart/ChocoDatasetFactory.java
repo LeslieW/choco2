@@ -71,29 +71,6 @@ public final class ChocoDatasetFactory {
 		}
 		return s;
 	}
-	//	public static TaskSeriesCollection createJobsTaskCollection(BSolution bsol) {
-	//		final TaskSeriesCollection c = new TaskSeriesCollection();
-	//		for (int j = 0; j < bsol.nbJ; j++) {
-	//			final TaskSeries s = new TaskSeries("J"+j);
-	//			for (int i = 0; i < bsol.nbM; i++) {
-	//				s.add(createTask(bsol.tasks_mat[i][j]));
-	//			}
-	//			c.add(s);
-	//		}
-	//		return c;
-	//	}
-	//
-	//	public static TaskSeriesCollection createMachinesTaskCollection(BSolution bsol) {
-	//		final TaskSeriesCollection c = new TaskSeriesCollection();
-	//		for (int i = 0; i < bsol.nbM; i++) {
-	//			final TaskSeries s = new TaskSeries("M"+i);
-	//			for (int j = 0; j < bsol.nbJ; j++) {
-	//				s.add(createTask(bsol.tasks_mat[i][j]));
-	//			}	
-	//			c.add(s);
-	//		}
-	//		return c;
-	//	}
 	
 	public static TaskSeriesCollection createTaskCollection(IResource<TaskVar>... resources) {
 		TaskSeriesCollection c = new TaskSeriesCollection();

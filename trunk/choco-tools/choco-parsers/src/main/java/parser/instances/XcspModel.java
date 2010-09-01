@@ -159,7 +159,7 @@ public class XcspModel extends AbstractInstanceModel {
 	public Boolean solve() {
 		PreProcessCPSolver s = (PreProcessCPSolver) solver;
 		Boolean isFeasible = Boolean.TRUE;
-		final int timeLimitPP = defaultConf.readInt(BasicSettings.TIME_LIMIT_PREPROCESSING);
+		final int timeLimitPP = defaultConf.readInt(BasicSettings.PREPROCESSING_TIME_LIMIT);
 		//do the initial propagation to decide to do restarts or not
 		if (!s.initialPropagation()) {
 			return Boolean.FALSE;
