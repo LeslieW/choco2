@@ -4,23 +4,23 @@
 
 \section{globalCardinality (constraint)}\label{globalcardinality:globalcardinalityconstraint}\hypertarget{globalcardinality:globalcardinalityconstraint}{}
 \begin{notedef}
-  \texttt{globalCardinality}$(\collec{x_1}{x_n},\collec{l_0}{l_{m-1}}, \collec{u_0}{u_{m-1}}, o)$ states lower bounds $l$ and upper bounds $u$ on the occurrence numbers of the values in collection $x$ according to offset $o$: 
-$$l_{j-o}\ \le\ |\{i=1..n\ |\ x_i=j\}|\ \le\ u_{j-o},\quad\forall j=0..m-1$$   
-  \texttt{globalCardinality}$(\collec{x_1}{x_n},\collec{z_0}{z_{m-1}}, o)$ states that $z$ are the occurrence numbers of the values in collection $x$ according to offset $o$: 
-$$z_{j-o} = \{i=1..n\ |\ x_i=j\}|,\quad\forall j=0..m-1$$   
+  \texttt{globalCardinality}$(\collec{x_1}{x_n},\collec{l_0}{l_{M-m}}, \collec{u_0}{u_{M-m}}, m)$ states lower bounds $l$ and upper bounds $u$ on the occurrence numbers of the values in collection $x$ according to offset $m$: 
+$$l_{j-m}\ \le\ |\{i=1..n\ ,\ x_i=j\}|\ \le\ u_{j-m},\quad\forall j=m..M$$   
+  \texttt{globalCardinality}$(\collec{x_1}{x_n},\collec{z_0}{z_{M-m}}, o)$ states that $z$ are the occurrence numbers of the values in collection $x$ according to offset $m$: 
+$$z_{j-m} = |\{i=1..n\ ,\ x_i=j\}|,\quad\forall j=m..M$$   
 \end{notedef}
-Note that offset $o$ should be set to the minimum possible value over all variables $x$ and that the bound table length $m$ should be set to the maximum possible value plus $o+1$.
+Note that the length of the bound tables $l$ and $u$ are equal to $M+m-1$ where $m$, the offset, is the minimum counted value and $M$ is the maximum counted value.
 
 %offset is the minimum value over all variables in $x$
 Several APIs exist:
 \begin{itemize}
-	\item \emph{constant bounds on cardinalities} \collec{l_0}{l_{m-1}} and \collec{u_0}{u_{m-1}}: use the propagator of \cite{ReginAAAI96} or of \cite{QuimperCP03} depending on the set options and the nature of the domain variables.
-	\item \emph{variable cardinalities} \collec{z_0}{z_{m-1}}: use the propagator of \cite{QuimperCP03} that:      
+	\item \emph{constant bounds on cardinalities} \collec{l_0}{l_{M-m}} and \collec{u_0}{u_{M-m}}: use the propagator of \cite{ReginAAAI96} or of \cite{QuimperCP03} depending on the set options and the nature of the domain variables.
+	\item \emph{variable cardinalities} \collec{z_0}{z_{M-m}}: use the propagator of \cite{QuimperCP03} that:      
       \begin{itemize}
       \item enforces Bound Consistency over $x$ regarding the lower and upper bounds of $z$, 
       \item maintains the upper bound of $z_j$ by counting the variables that may be instantiated to $j$, 
       \item maintains the lower bound of $z_j$ by counting the variables instantiated to $j$, 
-      \item enforces $z_0 + \cdots + z_{m-1} = n$
+      \item enforces $z_0 + \cdots + z_{M-m} = n$
       \end{itemize}
 \end{itemize}
 

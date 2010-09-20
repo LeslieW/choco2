@@ -35,18 +35,18 @@
 \contentsline {subsection}{\numberline {2.2.2}Ternary constraints}{20}{subsection.2.2.2}
 \contentsline {subsection}{\numberline {2.2.3}Constraints involving real variables}{20}{subsection.2.2.3}
 \contentsline {subsection}{\numberline {2.2.4}Constraints involving set variables}{20}{subsection.2.2.4}
-\contentsline {subsection}{\numberline {2.2.5}Channeling constraints}{20}{subsection.2.2.5}
-\contentsline {subsection}{\numberline {2.2.6}Constraints in extension and relations}{21}{subsection.2.2.6}
+\contentsline {subsection}{\numberline {2.2.5}Channeling constraints}{21}{subsection.2.2.5}
+\contentsline {subsection}{\numberline {2.2.6}Constraints in extension and relations}{22}{subsection.2.2.6}
 \contentsline {subsubsection}{Relations.}{22}{section*.8}
 \contentsline {subsection}{\numberline {2.2.7}Reified constraints}{23}{subsection.2.2.7}
 \contentsline {subsubsection}{Handling complex expressions.}{23}{section*.9}
 \contentsline {subsubsection}{When and how should I use expressions ?}{24}{section*.10}
 \contentsline {subsection}{\numberline {2.2.8}Global constraints}{24}{subsection.2.2.8}
-\contentsline {subsubsection}{Value constraints}{24}{section*.11}
+\contentsline {subsubsection}{Value constraints}{25}{section*.11}
 \contentsline {subsubsection}{Boolean constraints}{25}{section*.12}
 \contentsline {subsubsection}{Channeling constraints}{25}{section*.13}
 \contentsline {subsubsection}{Optimization constraints}{25}{section*.14}
-\contentsline {subsubsection}{Packing constraints (capacitated resources)}{25}{section*.15}
+\contentsline {subsubsection}{Packing constraints (capacitated resources)}{26}{section*.15}
 \contentsline {subsubsection}{Scheduling constraints (time assignment)}{26}{section*.16}
 \contentsline {chapter}{\numberline {3}The solver}{27}{chapter.3}
 \contentsline {section}{\numberline {3.1}Variables reading}{27}{section.3.1}
