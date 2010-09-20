@@ -300,15 +300,10 @@ public class Code4Doc4 {
         //totex coccurrence
         Model m = new CPModel();
         Solver s = new CPSolver();
-        IntegerVariable x1 = makeIntVar("X1", 0, 10);
-        IntegerVariable x2 = makeIntVar("X2", 0, 10);
-        IntegerVariable x3 = makeIntVar("X3", 0, 10);
-        IntegerVariable x4 = makeIntVar("X4", 0, 10);
-        IntegerVariable x5 = makeIntVar("X5", 0, 10);
-        IntegerVariable x6 = makeIntVar("X6", 0, 10);
-        IntegerVariable x7 = makeIntVar("X7", 0, 10);
-        IntegerVariable y1 = makeIntVar("Y1", 0, 10);
-        m.addConstraint(occurrence(y1, new IntegerVariable[]{x1, x2, x3, x4, x5, x6, x7}, 3));
+        int n=7;
+        IntegerVariable[] x = makeIntVarArray("X", n, 0, 10);
+        IntegerVariable z = makeIntVar("Z", 0, 10);
+        m.addConstraint(occurrence(z, x, 3));
         s.read(m);
         s.solve();        
         //totex
@@ -318,15 +313,10 @@ public class Code4Doc4 {
         //totex coccurrencemax
         Model m = new CPModel();
         Solver s = new CPSolver();
-        IntegerVariable x1 = makeIntVar("X1", 0, 10);
-        IntegerVariable x2 = makeIntVar("X2", 0, 10);
-        IntegerVariable x3 = makeIntVar("X3", 0, 10);
-        IntegerVariable x4 = makeIntVar("X4", 0, 10);
-        IntegerVariable x5 = makeIntVar("X5", 0, 10);
-        IntegerVariable x6 = makeIntVar("X6", 0, 10);
-        IntegerVariable x7 = makeIntVar("X7", 0, 10);
-        IntegerVariable y1 = makeIntVar("Y1", 0, 10);
-        m.addConstraint(occurrenceMax(y1, new IntegerVariable[]{x1, x2, x3, x4, x5, x6, x7}, 3));
+        int n=7;
+        IntegerVariable[] x = makeIntVarArray("X", n, 0, 10);
+        IntegerVariable z = makeIntVar("Z", 0, 10);
+        m.addConstraint(occurrenceMax(z, x, 3));
         s.read(m);
         s.solve();
         //totex
@@ -336,15 +326,10 @@ public class Code4Doc4 {
         //totex coccurrencemin
         Model m = new CPModel();
         Solver s = new CPSolver();
-        IntegerVariable x1 = makeIntVar("X1", 0, 10);
-        IntegerVariable x2 = makeIntVar("X2", 0, 10);
-        IntegerVariable x3 = makeIntVar("X3", 0, 10);
-        IntegerVariable x4 = makeIntVar("X4", 0, 10);
-        IntegerVariable x5 = makeIntVar("X5", 0, 10);
-        IntegerVariable x6 = makeIntVar("X6", 0, 10);
-        IntegerVariable x7 = makeIntVar("X7", 0, 10);
-        IntegerVariable y1 = makeIntVar("Y1", 0, 10);
-        m.addConstraint(occurrenceMin(y1, new IntegerVariable[]{x1, x2, x3, x4, x5, x6, x7}, 3));
+        int n=7;
+        IntegerVariable[] x = makeIntVarArray("X", n, 0, 10);
+        IntegerVariable z = makeIntVar("Z", 0, 10);
+        m.addConstraint(occurrenceMin(z, x, 3));
         s.read(m);
         s.solve();
         //totex
