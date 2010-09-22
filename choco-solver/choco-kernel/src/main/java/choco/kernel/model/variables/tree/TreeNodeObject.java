@@ -22,14 +22,15 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.variables.tree;
 
-import static choco.Choco.makeIntVar;
+import choco.Options;
+import choco.kernel.model.variables.MultipleVariables;
+import choco.kernel.model.variables.Variable;
+import choco.kernel.model.variables.integer.IntegerVariable;
 
 import java.util.BitSet;
 import java.util.List;
 
-import choco.kernel.model.variables.MultipleVariables;
-import choco.kernel.model.variables.Variable;
-import choco.kernel.model.variables.integer.IntegerVariable;
+import static choco.Choco.makeIntVar;
 
 /*
  * User:    charles
@@ -60,12 +61,14 @@ public class TreeNodeObject extends MultipleVariables{
     public TreeNodeObject(int idx, int nbNodes, List<BitSet[]> graphs, List<int[][]> matrix) {
         super();
     	this.idx = idx;
-        this.successors = makeIntVar("next_" + idx, 0, nbNodes-1, "cp:enum");
+        this.successors = makeIntVar("next_" + idx, 0, nbNodes-1, Options.V_ENUM);
         for (int i = 0; i < nbNodes; i++) {
             if (!graphs.get(0)[idx].get(i)) this.successors.removeVal(i);
         }
-        this.inDegree = makeIntVar("deg_" + idx, matrix.get(0)[idx][0], matrix.get(0)[idx][1], "cp:bound");
-        this.timeWindow = makeIntVar("tw_" + idx, matrix.get(1)[idx][0], matrix.get(1)[idx][1], "cp:bound");
+        this.inDegree = makeIntVar("deg_" + idx, matrix.get(0)[idx][0], matrix.get(0)[idx][1],
+                Options.V_BOUND, Options.V_NO_DECISION);
+        this.timeWindow = makeIntVar("tw_" + idx, matrix.get(1)[idx][0], matrix.get(1)[idx][1],
+                Options.V_BOUND, Options.V_NO_DECISION);
         setVariables(new Variable[]{ this.successors, this.inDegree, this.timeWindow});
     }
 

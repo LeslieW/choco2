@@ -101,8 +101,13 @@ public final class TreeSConstraint extends AbstractLargeIntSConstraint {
         this.tree = tree;
     }
 
+    public boolean isSatisfied(int[] tuple) {
+        LOGGER.severe("TreeSConstraint#isSatisfied(int[] tuple) is not implemented and always returns true!");
+        return true;
+    }
     public boolean isSatisfied() {
-        return false;
+        LOGGER.severe("TreeSConstraint#isSatisfied() is not implemented and always returns true!");
+        return true;
     }
 
     /**
