@@ -378,7 +378,7 @@ public class IntDomainVarImpl<C extends AbstractSConstraint & IntPropagator> ext
     @Override
     @Deprecated
     public boolean updateInf(final int x, final int idx) throws ContradictionException {
-        return domain.updateInf(x, getCause(idx), (idx >= 0));
+        return domain.updateInf(x, getCause(idx), (idx < 0));
     }
 
     /**
@@ -398,7 +398,7 @@ public class IntDomainVarImpl<C extends AbstractSConstraint & IntPropagator> ext
     @Override
     @Deprecated
     public boolean updateSup(final int x, final int idx) throws ContradictionException {
-        return domain.updateSup(x, getCause(idx), (idx >= 0));
+        return domain.updateSup(x, getCause(idx), (idx < 0));
     }
 
     /**
@@ -423,7 +423,7 @@ public class IntDomainVarImpl<C extends AbstractSConstraint & IntPropagator> ext
     @Override
     @Deprecated
     public boolean removeVal(final int x, final int idx) throws ContradictionException {
-        return domain.removeVal(x, getCause(idx), (idx >= 0));
+        return domain.removeVal(x, getCause(idx), (idx < 0));
     }
 
     /**
@@ -463,7 +463,7 @@ public class IntDomainVarImpl<C extends AbstractSConstraint & IntPropagator> ext
     @Override
     @Deprecated
     public boolean instantiate(final int x, final int idx) throws ContradictionException {
-        return domain.instantiate(x, getCause(idx), (idx >= 0));
+        return domain.instantiate(x, getCause(idx), (idx < 0));
     }
 
     /**
@@ -515,7 +515,7 @@ public class IntDomainVarImpl<C extends AbstractSConstraint & IntPropagator> ext
 	 * @return a String representation of the variable
 	 */
 	public String pretty() {
-		return (this.toString() + '[' + this.domain.getSize() + ']' + this.domain.pretty());
+		return (this.toString() + '[' + this.domain.getSize() + ']' + this.domain.pretty());// +" ~ "+ Arrays.toString(this.extensions);
 	}
 
 	
