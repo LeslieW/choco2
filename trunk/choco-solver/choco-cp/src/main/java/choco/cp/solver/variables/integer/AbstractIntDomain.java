@@ -28,7 +28,6 @@ import choco.kernel.common.util.iterators.OneValueIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.PropagationEngine;
-import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.delta.IDeltaDomain;
 import choco.kernel.solver.variables.integer.IntDomain;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -93,10 +92,9 @@ public abstract class AbstractIntDomain implements IntDomain {
             boolean awake = true;
 			final int val = getInf();
 			if (getSup() == x){
-                awake = forceAwake; //TODO: remove and test, forceAwake should be forget for instantiation!
+                awake = forceAwake;// if the event has not change (promotion), keep the given awake policy
             }
 			if (val == getSup()) {
-				//instantiate(getSup(), cause);
 				restrict(val);
 				propagationEngine.postInstInt(variable, cause, awake);
 			}
@@ -157,16 +155,13 @@ public abstract class AbstractIntDomain implements IntDomain {
 
 	public boolean removeVal(final int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
 		if (_removeVal(x, cause)) {
-			// TODO : to test !!
-			//int promoteCause = variable.getEvent().getCause() == VarEvent.NOEVENT ? idx : VarEvent.NOCAUSE;
-			//int promoteCause = idx;
-			final int promoteCause = VarEvent.NOCAUSE;
-			if (getInf() == getSup())
-				propagationEngine.postInstInt(variable, cause, forceAwake);
+			// we must forget the cause when the event is promoted !
+            if (getInf() == getSup())
+				propagationEngine.postInstInt(variable, cause, true);
 			else if (x < getInf())
-				propagationEngine.postUpdateInf(variable, cause, forceAwake);
+				propagationEngine.postUpdateInf(variable, cause, true);
 			else if (x > getSup())
-				propagationEngine.postUpdateSup(variable, cause, forceAwake);
+				propagationEngine.postUpdateSup(variable, cause, true);
 			else
 				propagationEngine.postRemoveVal(variable, x, cause, forceAwake);
 			return true;
