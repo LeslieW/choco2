@@ -174,7 +174,7 @@ public class IntervalIntDomain extends AbstractIntDomain {
     public String pretty() {
         final StringBuilder ret = new StringBuilder(32);
         ret.append('[').append(this.getInf()).append(" .. ").append(this.getSup()).append(']');
-        ret.append(deltaDom.pretty());
+//        ret.append(deltaDom.pretty());
         return ret.toString();
     }
 

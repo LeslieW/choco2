@@ -744,7 +744,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
     @Override
     public String pretty() {
         StringBuilder sb = new StringBuilder();
-        sb.append("BoundGcc({");
+        sb.append("BoundGccV({");
         for (int i = 0; i < nbVars; i++) {
             if (i > 0) {
                 sb.append(", ");

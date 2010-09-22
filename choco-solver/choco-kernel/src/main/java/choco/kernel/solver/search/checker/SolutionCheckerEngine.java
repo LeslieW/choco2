@@ -47,8 +47,8 @@ public class SolutionCheckerEngine extends AbstractSolutionCheckerEngine {
      */
 	public boolean inspectVariable(final Var var) {
 		if ( ! var.isInstantiated() ) {
-			if(LOGGER.isLoggable(Level.INFO)) {
-				LOGGER.log(Level.INFO, "  FAILURE Not Instantiated: {0}",var.pretty());
+			if(LOGGER.isLoggable(Level.SEVERE)) {
+				LOGGER.log(Level.SEVERE, "  FAILURE Not Instantiated: {0}",var.pretty());
 			}
 			return false;
 		}
