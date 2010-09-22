@@ -99,31 +99,37 @@ public class SimpleSchedule extends CPModel
      */
     private void makeCostMatrix()
     {
-        int[][][][] csts = new int[14][3][this.auto.getNbStates()][4];
+        int[][][][] csts = new int[14][3][4][this.auto.getNbStates()];
         for (int i = 0 ; i < csts.length ; i++)
         {
             for (int j = 0 ;j < csts[i].length ; j++)
             {
-                for (int s = 0 ; s < csts[i][j].length ; s++)
+                for (int r = 0 ; r < csts[i][j].length ; r++)
                 {
-                    if (s == 0)
+                    if (r == 0)
                     {
                         if (j == DAY)
-                            csts[i][j][s] = new int[]{3,1,0,1};
+                            csts[i][j][r] = new int[]{3,5,0};
                         else if (j == NIGHT)
-                            csts[i][j][s] = new int[]{8,0,1,1};
+                            csts[i][j][r] = new int[]{8,9,0};
+                        else if (j == REST)
+                            csts[i][j][r] = new int[]{0,0,2};
                     }
-                    else if (s == 1)
+                    else if (r == 1)
                     {
                         if (j == DAY)
-                            csts[i][j][s] = new int[]{5,1,0,1};
-                        else if (j == NIGHT)
-                            csts[i][j][s] = new int[]{9,0,1,1};
+                            csts[i][j][r] = new int[]{1,1,0};
                     }
-                    else if (s == 2)
-                        if (j == REST)
-                            csts[i][j][s] = new int[]{2,0,0,0};
-
+                    else if (r == 2)
+                    {
+                        if (j == NIGHT)
+                            csts[i][j][r] = new int[]{1,1,0};
+                    }
+                    else if (r == 3)
+                    {
+                        if (j != REST)
+                            csts[i][j][r] = new int[]{1,1,0};
+                    }
                 }
             }
         }
@@ -197,7 +203,7 @@ public class SimpleSchedule extends CPModel
 
     public static void main(String[] args)
     {
-     
+
 
         SimpleSchedule m = new SimpleSchedule();
         CPSolver s = new CPSolver();
