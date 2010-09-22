@@ -167,7 +167,8 @@ public static void main1(String[] args)
 
 public static void main(String[] args)
 {
-        main1(args);
+//        main1(args);
+        main2(args);
 }
 
 
