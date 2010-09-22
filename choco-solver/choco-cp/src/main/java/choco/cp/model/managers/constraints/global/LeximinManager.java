@@ -31,7 +31,7 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 
-import java.util.Set;
+import java.util.List;
 
 /*
  *  ______
@@ -48,7 +48,7 @@ import java.util.Set;
  * A manager to build new Leximin constraint
  */
 public final class LeximinManager extends IntConstraintManager {
-  public SConstraint makeConstraint(Solver solver, IntegerVariable[] vars, Object parameters, Set<String> options) {
+  public SConstraint makeConstraint(Solver solver, IntegerVariable[] vars, Object parameters, List<String> options) {
     if (solver instanceof CPSolver) {
       if (parameters != null) {
         return new SemiLeximinSConstraint((int[]) parameters, solver.getVar(vars), solver.getEnvironment());

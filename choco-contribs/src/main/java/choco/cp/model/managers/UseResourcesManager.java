@@ -17,7 +17,6 @@ import choco.kernel.solver.variables.scheduling.TaskVar;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Set;
 
 
 public class UseResourcesManager extends ConstraintManager<Variable> {
@@ -25,7 +24,7 @@ public class UseResourcesManager extends ConstraintManager<Variable> {
 
 	@Override
 	public SConstraint makeConstraint(Solver solver,
-			Variable[] variables, Object parameters, Set<String> options) {
+			Variable[] variables, Object parameters, List<String> options) {
 		if (solver instanceof CPSolver) {
 			if(variables.length == 1 && variables[0] instanceof TaskVariable) {
 				//check task
@@ -83,13 +82,13 @@ public class UseResourcesManager extends ConstraintManager<Variable> {
 	}
 
 	@Override
-	public int[] getFavoriteDomains(Set<String> options) {
+	public int[] getFavoriteDomains(List<String> options) {
 		return getBCFavoriteIntDomains();
 	}
 
 	@Override
 	public SConstraint[] makeConstraintAndOpposite(Solver solver,
-			Variable[] variables, Object parameters, Set<String> options) {
+			Variable[] variables, Object parameters, List<String> options) {
 		//TODO should simply return the opposite bool sum
 		return null;
 	}

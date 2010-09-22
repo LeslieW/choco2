@@ -23,16 +23,15 @@
 package choco.cp.model.managers;
 
 import choco.kernel.model.constraints.ConstraintManager;
-import choco.kernel.model.variables.VariableType;
-import choco.kernel.model.variables.real.RealExpressionVariable;
-import choco.kernel.model.variables.real.RealVariable;
 import choco.kernel.model.variables.Variable;
+import choco.kernel.model.variables.VariableType;
+import choco.kernel.model.variables.real.RealVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.real.RealExp;
 import choco.kernel.solver.variables.real.RealVar;
 
-import java.util.Set;
+import java.util.List;
 
 /*
  * Created by IntelliJ IDEA.
@@ -49,7 +48,7 @@ public abstract class RealConstraintManager extends ConstraintManager<RealVariab
      *         by order of preference
      */
     @Override
-	public int[] getFavoriteDomains(Set<String> options) {
+	public int[] getFavoriteDomains(List<String> options) {
         return new int[]{RealVar.BOUNDS};
     }
 
@@ -85,7 +84,7 @@ public abstract class RealConstraintManager extends ConstraintManager<RealVariab
      * @return array of 2 SConstraint object, the constraint and its opposite
      */
     @Override
-    public SConstraint[] makeConstraintAndOpposite(Solver solver, RealVariable[] variables, Object parameters, Set<String> options) {
+    public SConstraint[] makeConstraintAndOpposite(Solver solver, RealVariable[] variables, Object parameters, List<String> options) {
         SConstraint c = makeConstraint(solver, variables, parameters, options);
         SConstraint opp = c.opposite(solver);
         return new SConstraint[]{c, opp};

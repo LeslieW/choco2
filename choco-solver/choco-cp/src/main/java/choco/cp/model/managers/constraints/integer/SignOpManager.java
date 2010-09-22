@@ -36,7 +36,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.reified.INode;
 
-import java.util.Set;
+import java.util.List;
 
 /*
  *  ______
@@ -53,7 +53,7 @@ import java.util.Set;
  * A manager to build new signop constraint
  */
 public final class SignOpManager extends MixedConstraintManager {
-  public SConstraint makeConstraint(Solver solver, Variable[] vars, Object parameters, Set<String> options) {
+  public SConstraint makeConstraint(Solver solver, Variable[] vars, Object parameters, List<String> options) {
     if (solver instanceof CPSolver) {
         return new SignOp(
           solver.getVar((IntegerVariable)vars[0]),

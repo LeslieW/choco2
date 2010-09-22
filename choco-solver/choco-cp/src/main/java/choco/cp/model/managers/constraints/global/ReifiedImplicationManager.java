@@ -30,7 +30,7 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 
-import java.util.Set;
+import java.util.List;
 
 /*
 * User : charles
@@ -51,7 +51,7 @@ public final class ReifiedImplicationManager extends IntConstraintManager {
      * @return SConstraint
      */
     @Override
-    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, List<String> options) {
         if (solver instanceof CPSolver) {
             if (parameters == null) {
                 return new ReifiedBinImplication(solver.getVar(variables[0]), solver.getVar(variables[1]), solver.getVar(variables[2]));

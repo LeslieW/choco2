@@ -31,7 +31,7 @@ import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -50,7 +50,7 @@ public final class DisjunctionManager extends SetConstraintManager{
      * @param options
      * @return
      */
-    public SConstraint makeConstraint(Solver solver, SetVariable[] variables, Object parameters, Set<String> options) {
+    public SConstraint makeConstraint(Solver solver, SetVariable[] variables, Object parameters, List<String> options) {
 
         if(solver instanceof CPSolver){
             if(parameters == null){

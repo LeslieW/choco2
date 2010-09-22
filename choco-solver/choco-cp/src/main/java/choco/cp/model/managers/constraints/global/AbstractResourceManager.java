@@ -25,8 +25,6 @@ package choco.cp.model.managers.constraints.global;
 import choco.cp.model.managers.MixedConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.SettingType;
-import static choco.kernel.common.util.tools.VariableUtils.getIntVar;
-import static choco.kernel.common.util.tools.VariableUtils.getTaskVar;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -35,9 +33,12 @@ import choco.kernel.solver.constraints.global.scheduling.RscData;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 
-import java.util.Set;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
+
+import static choco.kernel.common.util.tools.VariableUtils.getIntVar;
+import static choco.kernel.common.util.tools.VariableUtils.getTaskVar;
 
 
 /**
@@ -71,7 +72,7 @@ public abstract class AbstractResourceManager extends MixedConstraintManager {
 
 	@Override
 	public SConstraint makeConstraint(Solver solver, Variable[] variables,
-			Object parameters, Set<String> options) {
+			Object parameters, List<String> options) {
 		if(solver instanceof CPSolver){
 			CPSolver s = (CPSolver) solver;
 			if (parameters instanceof RscData) {
@@ -97,13 +98,13 @@ public abstract class AbstractResourceManager extends MixedConstraintManager {
 		else return new MetaSConstraint( name, constraints.toArray(new SConstraint[n]), tasks, null);
 	}
 
-	protected abstract void makeDecompositionConstraint(CPSolver solver, Variable[] variables, RscData rdata, Set<String> options);
+	protected abstract void makeDecompositionConstraint(CPSolver solver, Variable[] variables, RscData rdata, List<String> options);
 
-	protected abstract void makeGlobalConstraint(CPSolver solver, Variable[] variables, RscData rdata, Set<String> options);
+	protected abstract void makeGlobalConstraint(CPSolver solver, Variable[] variables, RscData rdata, List<String> options);
 
-	protected abstract void makeMixedConstraint(CPSolver solver, Variable[] variables, RscData rdata, Set<String> options);
+	protected abstract void makeMixedConstraint(CPSolver solver, Variable[] variables, RscData rdata, List<String> options);
 
-	protected void makeDefaultConstraint(CPSolver solver, Variable[] variables, RscData rdata, Set<String> options) {
+	protected void makeDefaultConstraint(CPSolver solver, Variable[] variables, RscData rdata, List<String> options) {
 		 makeGlobalConstraint(solver, variables, rdata, options);
 	}
 
@@ -113,10 +114,10 @@ public abstract class AbstractResourceManager extends MixedConstraintManager {
 
 
 	/**
-	 * @see choco.kernel.model.constraints.ConstraintManager#getFavoriteDomains(java.util.Set)
+	 * @see choco.kernel.model.constraints.ConstraintManager#getFavoriteDomains(java.util.List
 	 */
 	@Override
-	public int[] getFavoriteDomains(final Set<String> options) {
+	public int[] getFavoriteDomains(final List<String> options) {
 		return getBCFavoriteIntDomains();
 	}
 

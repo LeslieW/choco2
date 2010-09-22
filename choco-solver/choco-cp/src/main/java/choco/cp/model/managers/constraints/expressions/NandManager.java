@@ -35,7 +35,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.reified.INode;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * User : cprudhom<br/>
@@ -54,7 +54,7 @@ public class NandManager extends IntConstraintManager{
      * @return One SConstraint
      */
     @Override
-    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, List<String> options) {
         if (solver instanceof CPSolver) {
                 if (parameters == null) {
                     return BooleanFactory.nand(solver.getEnvironment(), solver.getVar(variables));

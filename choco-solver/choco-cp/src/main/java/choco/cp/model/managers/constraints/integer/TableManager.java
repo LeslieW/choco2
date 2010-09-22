@@ -23,7 +23,6 @@
 package choco.cp.model.managers.constraints.integer;
 
 import choco.Choco;
-import static choco.Choco.makeLargeRelation;
 import choco.Options;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.constraints.integer.extension.*;
@@ -37,7 +36,8 @@ import choco.kernel.solver.constraints.integer.extension.*;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.List;
-import java.util.Set;
+
+import static choco.Choco.makeLargeRelation;
 
 /*
  * Created by IntelliJ IDEA.
@@ -57,7 +57,7 @@ public final class TableManager extends IntConstraintManager {
      * @param options
      * @return
      */
-    public SConstraint makeConstraint(Solver solver, IntegerVariable[] vars, Object parameters, Set<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] vars, Object parameters, List<String> options) {
         Object[] ps = (Object[]) parameters;
         IntegerVariable[] vars2 = new IntegerVariable[vars.length];
         System.arraycopy(vars,0,vars2,0,vars.length);
@@ -76,7 +76,7 @@ public final class TableManager extends IntConstraintManager {
     //*************** Binairy AC ******************//    
     //*********************************************//
 
-    public SConstraint buildBinaryTable(IntDomainVar[] vs, Object parameters, Set<String> options, IEnvironment environment) {
+    public SConstraint buildBinaryTable(IntDomainVar[] vs, Object parameters, List<String> options, IEnvironment environment) {
         Object[] ps = (Object[]) parameters;
         IntDomainVar v1 = vs[0];
         IntDomainVar v2 = vs[1];
@@ -89,7 +89,7 @@ public final class TableManager extends IntConstraintManager {
         }
     }
 
-    public SConstraint buildBinaryTable(IntDomainVar v1, IntDomainVar v2, BinRelation binR, Set<String> options, IEnvironment environment) {
+    public SConstraint buildBinaryTable(IntDomainVar v1, IntDomainVar v2, BinRelation binR, List<String> options, IEnvironment environment) {
         if (options.contains(Options.C_EXT_FC)) {
             return new FCBinSConstraint(v1,v2,binR);
         } else if (options.contains(Options.C_EXT_AC3)) {
@@ -109,7 +109,7 @@ public final class TableManager extends IntConstraintManager {
         }
     }
 
-    private BinRelation makePairAC(IntDomainVar x, IntDomainVar y, Object mat, boolean feas, Set<String> options) {
+    private BinRelation makePairAC(IntDomainVar x, IntDomainVar y, Object mat, boolean feas, List<String> options) {
         int[] min = new int[]{x.getInf(), y.getInf()};
         int[] max = new int[]{x.getSup(), y.getSup()};
         if (mat instanceof List)
@@ -123,7 +123,7 @@ public final class TableManager extends IntConstraintManager {
     //*************** Nary AC *********************//    
     //*********************************************//
 
-    public SConstraint buildNaryTable(IntDomainVar[] vs, Object parameters, Set<String> options, IEnvironment environment) {
+    public SConstraint buildNaryTable(IntDomainVar[] vs, Object parameters, List<String> options, IEnvironment environment) {
         Object[] ps = (Object[]) parameters;
         if (ps[1] instanceof LargeRelation) {
             return buildNaryTable(vs, (LargeRelation) ps[1], options, environment);
@@ -134,7 +134,7 @@ public final class TableManager extends IntConstraintManager {
         }
     }
 
-    public SConstraint buildNaryTable(IntDomainVar[] vs, LargeRelation rela, Set<String> options, IEnvironment environment) {
+    public SConstraint buildNaryTable(IntDomainVar[] vs, LargeRelation rela, List<String> options, IEnvironment environment) {
         if (options.contains(Options.C_EXT_FC)) {
             return new CspLargeSConstraint(vs, rela);
         } else {
@@ -169,7 +169,7 @@ public final class TableManager extends IntConstraintManager {
      * @param feas   specify if the tuples are feasible or infeasible tuples
      * @return
      */
-    private LargeRelation makeTupleAC(IntDomainVar[] vs, List<int[]> tuples, boolean feas, Set<String> options) {
+    private LargeRelation makeTupleAC(IntDomainVar[] vs, List<int[]> tuples, boolean feas, List<String> options) {
         int[] min = new int[vs.length];
         int[] max = new int[vs.length];
         for (int i = 0; i < vs.length; i++) {
@@ -190,7 +190,7 @@ public final class TableManager extends IntConstraintManager {
     //*********************************************//
 
 
-    public int[] getFavoriteDomains(Set<String> options) {
+    public int[] getFavoriteDomains(List<String> options) {
         if (options.contains(Options.C_EXT_AC322)) {
             return new int[]{IntDomainVar.BITSET};
         } else {

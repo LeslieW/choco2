@@ -1,7 +1,5 @@
 package choco.cp.model.managers.constraints.global;
 
-import java.util.Set;
-
 import choco.cp.model.managers.MixedConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.scheduling.disjunctive.ForbiddenIntervals;
@@ -13,6 +11,8 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 
+import java.util.List;
+
 public class ForbiddenIntervalsManager extends MixedConstraintManager {
 
 
@@ -20,7 +20,7 @@ public class ForbiddenIntervalsManager extends MixedConstraintManager {
 
 	@Override
 	public SConstraint makeConstraint(Solver solver, Variable[] variables,
-			Object parameters, Set<String> options) {
+			Object parameters, List<String> options) {
 		if(solver instanceof CPSolver){
 			CPSolver s = (CPSolver) solver;
 			IntDomainVar uppBound;

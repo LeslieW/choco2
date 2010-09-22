@@ -30,13 +30,14 @@ import choco.cp.solver.constraints.global.BoundGccVar;
 import choco.cp.solver.constraints.global.matching.GlobalCardinality;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.ConstraintType;
-import static choco.kernel.model.constraints.ConstraintType.*;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.Set;
+import java.util.List;
+
+import static choco.kernel.model.constraints.ConstraintType.*;
 
 /*
  *  ______
@@ -55,7 +56,7 @@ import java.util.Set;
 public final class GlobalCardinalityManager extends IntConstraintManager {
 
 
-    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, List<String> options) {
         if(solver instanceof CPSolver){
             if(parameters instanceof Object[]){
                 Object[] params = (Object[])parameters;
@@ -110,7 +111,7 @@ public final class GlobalCardinalityManager extends IntConstraintManager {
         throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
     }
 
-    public int[] getFavoriteDomains(Set<String> options) {
+    public int[] getFavoriteDomains(List<String> options) {
         if (options.contains(Options.C_GCC_BC)) {
             return getBCFavoriteIntDomains();
         } else {

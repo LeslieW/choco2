@@ -38,7 +38,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.reified.INode;
 
-import java.util.Set;
+import java.util.List;
 
 /*
  * User:    charles
@@ -55,7 +55,7 @@ public final class NotManager extends IntConstraintManager {
      * @param options
      * @return
      */
-    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, List<String> options) {
         if(solver instanceof CPSolver){
             Constraint[] constraints = (Constraint[])((Object[])parameters)[1];
             if(constraints.length == 1){

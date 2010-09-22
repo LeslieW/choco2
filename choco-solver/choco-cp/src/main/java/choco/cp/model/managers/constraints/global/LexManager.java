@@ -27,13 +27,14 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.Lex;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.ConstraintType;
-import static choco.kernel.model.constraints.ConstraintType.LEX;
-import static choco.kernel.model.constraints.ConstraintType.LEXEQ;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 
-import java.util.Set;
+import java.util.List;
+
+import static choco.kernel.model.constraints.ConstraintType.LEX;
+import static choco.kernel.model.constraints.ConstraintType.LEXEQ;
 
 /**
  * Created by IntelliJ IDEA.
@@ -56,7 +57,7 @@ public final class LexManager extends IntConstraintManager {
      * @param options
      * @return
      */
-    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, List<String> options) {
 
         if(solver instanceof CPSolver){
             if(parameters instanceof Object[]){

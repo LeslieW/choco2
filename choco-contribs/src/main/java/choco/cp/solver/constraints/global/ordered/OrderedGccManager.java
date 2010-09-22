@@ -8,20 +8,20 @@ package choco.cp.solver.constraints.global.ordered;
  *
  */
 
-import java.util.Set;
-
 import choco.cp.model.managers.IntConstraintManager;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
+import java.util.List;
+
 public class OrderedGccManager extends IntConstraintManager {
 
 	public SConstraint makeConstraint(Solver solver,
             						  IntegerVariable[] variables,
             						  Object parameters,
-            						  Set<String> options){
+            						  List<String> options){
 		IntDomainVar[] vars = new IntDomainVar[variables.length];
 		for(int i=0; i<vars.length; i++) {
 			vars[i] = solver.getVar(variables[i]);

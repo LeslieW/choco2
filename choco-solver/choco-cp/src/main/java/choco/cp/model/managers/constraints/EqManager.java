@@ -37,7 +37,6 @@ import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintType;
-import static choco.kernel.model.constraints.ConstraintType.*;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.VariableType;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
@@ -53,7 +52,9 @@ import choco.kernel.solver.constraints.reified.INode;
 import choco.kernel.solver.variables.real.RealIntervalConstant;
 import choco.kernel.solver.variables.real.RealVar;
 
-import java.util.Set;
+import java.util.List;
+
+import static choco.kernel.model.constraints.ConstraintType.*;
 
 /*
  * User:    charles
@@ -79,7 +80,7 @@ public final class EqManager extends MixedConstraintManager {
      * @param options
      * @return
      */
-    public SConstraint makeConstraint(final Solver solver, final Variable[] variables, final Object parameters, final Set<String> options) {
+    public SConstraint makeConstraint(final Solver solver, final Variable[] variables, final Object parameters, final List<String> options) {
         if (solver instanceof CPSolver) {
             if (parameters instanceof ConstraintType) {
                 ConstraintType type = (ConstraintType) parameters;
@@ -189,7 +190,7 @@ public final class EqManager extends MixedConstraintManager {
      * @return array of 2 SConstraint object, the constraint and its opposite
      */
     @Override
-    public SConstraint[] makeConstraintAndOpposite(final Solver solver, final Variable[] variables, final Object parameters, final Set<String> options) {
+    public SConstraint[] makeConstraintAndOpposite(final Solver solver, final Variable[] variables, final Object parameters, final List<String> options) {
         SConstraint c = this.makeConstraint(solver, variables, parameters, options);
         SConstraint opp = c.opposite(solver);
         return new SConstraint[]{c, opp};

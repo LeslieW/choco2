@@ -52,7 +52,7 @@ import java.util.*;
  */
 public final class StretchPathManager extends IntConstraintManager {
 
-    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, List<String> options) {
         if (solver instanceof CPSolver) {
 
             if (parameters instanceof List) {

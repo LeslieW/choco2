@@ -111,7 +111,32 @@ public enum SettingType {
 	private final String label;
 
 	private final long mask;
-	
+
+    static {
+        //TODO : check if the categories are correct --> AMAL
+        Options.create(ADDITIONAL_RULES.optionName, 0);
+        Options.create(DYNAMIC_LB.optionName, 1);
+        Options.create(FILL_BIN.optionName, 2);
+        Options.create(LAST_BINS_EMPTY.optionName, 3);
+
+        Options.create(TASK_INTERVAL.optionName, 0);
+        Options.create(TASK_INTERVAL_SLOW.optionName, 0);
+        Options.create(VILIM_CEF_ALGO.optionName, 1);
+        Options.create(VHM_CEF_ALGO_N2K.optionName, 1);
+
+        Options.create(OVERLOAD_CHECKING.optionName, 0);
+        Options.create(NF_NL.optionName, 1);
+        Options.create(DETECTABLE_PRECEDENCE.optionName, 2);
+        Options.create(EDGE_FINDING_D.optionName, 3);
+        Options.create(DEFAULT_FILTERING.optionName, 4);
+        Options.create(VILIM_FILTERING.optionName, 5);
+        Options.create(SINGLE_RULE_FILTERING.optionName, 6);
+
+        Options.create(GLOBAL.optionName, 0);
+        Options.create(MIXED.optionName, 0);
+
+    }
+
 		
 	SettingType(String name, String label, String optionName) {
 		this.name=name;

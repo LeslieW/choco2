@@ -12,7 +12,7 @@ import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
 import choco.kernel.solver.constraints.reified.INode;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.Set;
+import java.util.List;
 
 public class SimpleDTConstraint extends AbstractBinIntSConstraint implements
         ISpecializedConstraint {
@@ -96,13 +96,13 @@ public class SimpleDTConstraint extends AbstractBinIntSConstraint implements
     public static class SimpleDTConstraintManager extends IntConstraintManager {
 
         @Override
-        public int[] getFavoriteDomains(Set<String> options) {
+        public int[] getFavoriteDomains(List<String> options) {
             return new int[] { IntDomainVar.BITSET };
         }
 
         @Override
         public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables,
-                Object parameters, Set<String> options) {
+                Object parameters, List<String> options) {
             final int[] durations = (int[]) parameters;
             final IntDomainVar[] sv = new IntDomainVar[variables.length];
             for (int i = variables.length; --i >= 0;) {
@@ -122,7 +122,7 @@ public class SimpleDTConstraint extends AbstractBinIntSConstraint implements
          * @return array of 2 SConstraint object, the constraint and its opposite
          */
         @Override
-        public SConstraint[] makeConstraintAndOpposite(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
+        public SConstraint[] makeConstraintAndOpposite(Solver solver, IntegerVariable[] variables, Object parameters, List<String> options) {
             SConstraint c = makeConstraint(solver, variables, parameters, options);
             SConstraint opp = c.opposite(solver);
             return new SConstraint[]{c, opp};

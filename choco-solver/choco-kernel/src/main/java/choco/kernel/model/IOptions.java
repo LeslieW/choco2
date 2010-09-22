@@ -22,6 +22,7 @@
  **************************************************/
 package choco.kernel.model;
 
+import java.util.List;
 import java.util.Set;
 
 /*
@@ -36,7 +37,7 @@ import java.util.Set;
 public interface IOptions {
 
     /**
-     * Add a single option to the pool of option.
+     * Add an option to the pool of option.
      *
      *@param the option.
      */
@@ -55,6 +56,13 @@ public interface IOptions {
     void addOptions(String[] options);
 
     /**
+     * Add a list of options to the pool of options
+     * of the object
+     * @param options set of options
+     */
+    void addOptions(List<String> options);
+
+    /**
      * Add a set of options to the pool of options
      * of the object
      * @param options set of options
@@ -65,7 +73,7 @@ public interface IOptions {
      * Get the pool of unique options
      * @return set of options
      */
-    Set<String> getOptions();
+    List<String> getOptions();
    
     /**
      * check if the option is activated

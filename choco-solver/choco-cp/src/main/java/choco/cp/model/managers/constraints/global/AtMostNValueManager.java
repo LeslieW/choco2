@@ -30,7 +30,7 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -49,7 +49,7 @@ public final class AtMostNValueManager extends IntConstraintManager {
      * @param options
      * @return
      */
-    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, List<String> options) {
         if (solver instanceof CPSolver) {
             IntegerVariable[] vars = new IntegerVariable[variables.length-1];
             System.arraycopy(variables, 0, vars, 0, vars.length);

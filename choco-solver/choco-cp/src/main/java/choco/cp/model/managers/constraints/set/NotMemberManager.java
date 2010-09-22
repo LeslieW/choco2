@@ -34,7 +34,7 @@ import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 
-import java.util.Set;
+import java.util.List;
 
 /*
  *  ______
@@ -51,7 +51,7 @@ import java.util.Set;
  * A manager to build new NotMember constraint
  */
 public final class NotMemberManager extends MixedConstraintManager {
-  public SConstraint makeConstraint(Solver solver, Variable[] vars, Object parameters, Set<String> options) {
+  public SConstraint makeConstraint(Solver solver, Variable[] vars, Object parameters, List<String> options) {
     if (solver instanceof CPSolver) {
         if(vars[0] instanceof SetVariable){
           if (vars.length == 2) {

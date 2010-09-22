@@ -33,7 +33,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.reified.INode;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -53,7 +53,7 @@ public final class BooleanManager extends ConstraintManager<Variable> {
      * @return
      */
     @Override
-    public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, Set<String> options) {
+    public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, List<String> options) {
         if(parameters instanceof Boolean){
             boolean bool = (Boolean)parameters;
             if(bool){
@@ -75,7 +75,7 @@ public final class BooleanManager extends ConstraintManager<Variable> {
      * @return array of 2 SConstraint object, the constraint and its opposite
      */
     @Override
-    public SConstraint[] makeConstraintAndOpposite(Solver solver, Variable[] variables, Object parameters, Set<String> options) {
+    public SConstraint[] makeConstraintAndOpposite(Solver solver, Variable[] variables, Object parameters, List<String> options) {
          if(parameters instanceof Boolean){
             boolean bool = (Boolean)parameters;
             if(bool){
@@ -93,7 +93,7 @@ public final class BooleanManager extends ConstraintManager<Variable> {
      *         by order of preference
      */
     @Override
-    public int[] getFavoriteDomains(Set<String> options) {
+    public int[] getFavoriteDomains(List<String> options) {
         return null;
     }
 
