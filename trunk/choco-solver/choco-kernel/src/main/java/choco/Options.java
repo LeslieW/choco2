@@ -22,18 +22,25 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco;
 
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.model.ModelException;
+import gnu.trove.TObjectIntHashMap;
+
+import java.util.logging.Logger;
+
 
 /**
  * User : cprudhom<br/>
  * Mail : cprudhom(a)emn.fr<br/>
  * Date : 25 mars 2010<br/>
  * Since : Choco 2.1.1<br/>
- *
+ * <p/>
  * A class to declare options concerning variables and constraints.
  * Available for module choco-cp only.
- *
  */
 public class Options {
+
+    private static Logger LOGGER  = ChocoLogging.getMainLogger();
 
     public static final String NO_OPTION = "";
 
@@ -46,7 +53,7 @@ public class Options {
      * <br/><b>Scope</b>: {@link choco.kernel.model.variables.integer.IntegerVariable},
      * {@link choco.kernel.model.variables.set.SetVariable}'s cardinality variable.
      */
-   public static final String V_BOUND = "cp:bound";
+    public static final String V_BOUND = "cp:bound";
 
     /**
      * <br/><b>Goal</b> : force Solver to create enumerated domain variable (default options if options is empty).
@@ -87,7 +94,7 @@ public class Options {
      * {@link choco.kernel.model.variables.set.SetVariable}
      * and {@link choco.kernel.model.variables.real.RealVariable}.
      * @deprecated This option has no longer effect
-     * as by default every variables are put in the decision variable pool.
+     *             as by default every variables are put in the decision variable pool.
      */
     public static final String V_DECISION = "cp:decision";
 
@@ -213,11 +220,11 @@ public class Options {
      */
     public static final String C_ALLDIFFERENT_AC = "cp:ac";
 
-        /**
+    /**
      * <br/><b>Goal</b> : for bound all different using the propagator of
-	 * A. Lopez-Ortiz, C.-G. Quimper, J. Tromp, and P. van Beek.
-	 * A fast and simple algorithm for bounds consistency of the alldifferent
-	 * constraint. IJCAI-2003.
+     * A. Lopez-Ortiz, C.-G. Quimper, J. Tromp, and P. van Beek.
+     * A fast and simple algorithm for bounds consistency of the alldifferent
+     * constraint. IJCAI-2003.
      * <br/><b>Scope</b>: {@link choco.Choco#allDifferent(String, choco.kernel.model.variables.integer.IntegerVariable[])} .
      */
     public static final String C_ALLDIFFERENT_BC = "cp:bc";
@@ -289,14 +296,94 @@ public class Options {
     public static final String C_POST_PONED = "cp:postponed";
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////// SOLVER ////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	
+    /* Options are sorted by categories. 2 options of the same categories are exclusive */
+    protected static TObjectIntHashMap<String> categories = new TObjectIntHashMap<String>(16);
 
-	private Options() {
-		super();
-	}
+    static {
+        categories.put(NO_OPTION, 0);
+        // VARIABLES
+        categories.put(V_BLIST, 0);
+        categories.put(V_BOUND, 0);
+        categories.put(V_BTREE, 0);
+        categories.put(V_ENUM, 0);
+        categories.put(V_LINK, 0);
 
+        categories.put(V_OBJECTIVE, 1);
+
+        categories.put(V_NO_DECISION, 2);
+        categories.put(V_NO_DECISION, 2);
+
+        categories.put(V_MAKESPAN, 0);
+
+        // EXPRESSIONS
+        categories.put(E_DECOMP, 0);
+
+        // CONSTRAINTS
+        categories.put(C_EXT_AC2001, 0);
+        categories.put(C_EXT_AC2008, 0);
+        categories.put(C_EXT_AC3, 0);
+        categories.put(C_EXT_AC32, 0);
+        categories.put(C_EXT_AC322, 0);
+        categories.put(C_EXT_FC, 0);
+
+        categories.put(C_ALLDIFFERENT_AC, 0);
+        categories.put(C_ALLDIFFERENT_BC, 0);
+        categories.put(C_ALLDIFFERENT_CLIQUE, 0);
+
+        categories.put(C_GCC_AC, 0);
+        categories.put(C_GCC_BC, 0);
+
+        categories.put(C_INCREASING_NVALUE_ATLEAST, 0);
+        categories.put(C_INCREASING_NVALUE_ATMOST, 0);
+        categories.put(C_INCREASING_NVALUE_BOTH, 0);
+
+        categories.put(C_NTH_G, 0);
+
+        categories.put(C_CLAUSES_ENTAIL, 0);
+
+        categories.put(C_POST_PONED, 1);
+    }
+
+
+    private Options() {
+        super();
+    }
+
+    /**
+     * Retrieves the categorie of the given option.
+     * If <code>option</code> doesn't exist, return 0 (default categorie).
+     * See
+     *
+     * @param name
+     * @return
+     */
+    public static int getCategorie(String name) {
+        if(!categories.contains(name)){
+            LOGGER.warning("No categorie defines for \""+ name+"\".\n See Options.create(String name, int categorie) for " +
+                    "more information.");
+
+        }
+        return categories.get(name);
+    }
+
+    /**
+     * Declares a new option and define its categorie.
+     * Categaorie is mandatory to set a hierachy between options of an object: exclusive options should have the same
+     * categorie.
+     * @param name option name
+     * @param categorie option categorie
+     */
+    public static void create(String name, int categorie) {
+        if (categories.containsKey(name)) {
+            int c = categories.get(name);
+            if (categorie != c) {
+                throw new ModelException("option " + name + " already exists and categorie is set to " + c);
+            }
+        } else {
+            categories.put(name, categorie);
+        }
+    }
 
 }

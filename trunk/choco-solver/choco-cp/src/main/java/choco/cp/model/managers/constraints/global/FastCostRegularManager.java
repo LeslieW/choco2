@@ -11,7 +11,7 @@ import choco.kernel.solver.constraints.global.automata.fast_costregular.structur
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.jgrapht.graph.DirectedMultigraph;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -22,7 +22,7 @@ import java.util.Set;
 
 public final class FastCostRegularManager extends IntConstraintManager {
 
-    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, List<String> options) {
 
         if (parameters instanceof Object[] && ((Object[])parameters).length == 2)
         {

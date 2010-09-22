@@ -43,7 +43,7 @@ import java.util.Set;
 public class MinSpanningTree extends AbstractLargeIntSConstraint {
 
     public static class MinSpanningTreeManager extends IntConstraintManager {
-        public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
+        public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, List<String> options) {
             if(solver instanceof CPSolver){
                 Object[] p = (Object[]) parameters;
                 int[][] dist = (int[][])(p[0]);

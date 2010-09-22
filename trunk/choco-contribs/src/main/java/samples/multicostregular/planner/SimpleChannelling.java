@@ -30,7 +30,7 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -135,7 +135,7 @@ public class SimpleChannelling extends AbstractBinIntSConstraint {
     public static class SimpleManager extends IntConstraintManager
     {
 
-        public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
+        public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, List<String> options) {
             return new SimpleChannelling(solver.getVar(variables[0]),solver.getVar(
                     variables[1]));
 

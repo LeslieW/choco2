@@ -40,19 +40,20 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 public class StrongConsistencyManager extends IntConstraintManager {
 
     @Override
-    public int[] getFavoriteDomains(Set<String> options) {
+    public int[] getFavoriteDomains(List<String> options) {
         // TODO Auto-generated method stub
         return new int[0];
     }
 
     @Override
     public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables,
-            Object parameters, Set<String> options) {
+            Object parameters, List<String> options) {
         final Class<? extends AbstractStrongConsistency> scImplementation;
         final Constraint[] modelConstraints;
         try {
@@ -133,7 +134,7 @@ public class StrongConsistencyManager extends IntConstraintManager {
      * @return array of 2 SConstraint object, the constraint and its opposite
      */
     @Override
-    public SConstraint[] makeConstraintAndOpposite(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
+    public SConstraint[] makeConstraintAndOpposite(Solver solver, IntegerVariable[] variables, Object parameters, List<String> options) {
         SConstraint c = makeConstraint(solver, variables, parameters, options);
         SConstraint opp = c.opposite(solver);
         return new SConstraint[]{c, opp};

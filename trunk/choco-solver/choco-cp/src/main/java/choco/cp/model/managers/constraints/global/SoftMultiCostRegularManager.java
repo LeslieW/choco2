@@ -11,7 +11,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -22,7 +22,7 @@ import java.util.Set;
 public class SoftMultiCostRegularManager extends IntConstraintManager
 {
 @Override
-public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options)
+public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, List<String> options)
 {
         IntDomainVar[] allVars = solver.getVar(variables);
         Object[] param = (Object[]) parameters;

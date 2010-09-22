@@ -6,7 +6,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -20,7 +20,7 @@ public class SoftCumulativeSumManager extends IntConstraintManager {
 public SConstraint makeConstraint(Solver solver,
 			                            IntegerVariable[] variables,
 			                            Object parameters,
-			                            Set<String> options){
+			                            List<String> options){
           Object[] par = (Object[]) parameters;
           int[] durations = (int[]) par[0];
           int[] heights = (int[]) par[1];

@@ -27,7 +27,6 @@ import choco.cp.solver.constraints.global.scheduling.cumulative.AltCumulative;
 import choco.cp.solver.constraints.global.scheduling.cumulative.Cumulative;
 import choco.cp.solver.constraints.global.scheduling.disjunctive.AltDisjunctive;
 import choco.cp.solver.constraints.global.scheduling.disjunctive.Disjunctive;
-import static choco.kernel.common.util.tools.VariableUtils.getIntVar;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -39,7 +38,8 @@ import gnu.trove.TIntProcedure;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+
+import static choco.kernel.common.util.tools.VariableUtils.getIntVar;
 
 
 /**
@@ -126,7 +126,7 @@ public final class CumulativeManager extends AbstractResourceManager {
 	}
 
 
-	protected final void makeDisjunctive(CPSolver solver, RscData rdata, Set<String> options) {
+	protected final void makeDisjunctive(CPSolver solver, RscData rdata, List<String> options) {
 		final int n = dclique.size();
 		if(n > 3) {
 			//make tasks array
@@ -155,7 +155,7 @@ public final class CumulativeManager extends AbstractResourceManager {
 		}
 	}
 
-	protected final void makeCumulative(RscData rdata, Set<String> options, Solver solver) {
+	protected final void makeCumulative(RscData rdata, List<String> options, Solver solver) {
 		final Cumulative cstr = (
 				rdata.getNbOptionalTasks() > 0 ? 
 						new AltCumulative(solver, rdata.getRscName(), tasks, heights, usages, consumption, capacity, uppBound) :
@@ -173,7 +173,7 @@ public final class CumulativeManager extends AbstractResourceManager {
 
 	@Override
 	protected void makeDecompositionConstraint(CPSolver solver,
-			Variable[] variables, RscData rdata, Set<String> options) {
+			Variable[] variables, RscData rdata, List<String> options) {
 		initializeDecomposition(rdata);
 		makeDisjunctions(solver);
 		makeGlobalConstraint(solver, variables, rdata, options);
@@ -181,14 +181,14 @@ public final class CumulativeManager extends AbstractResourceManager {
 
 	@Override
 	protected void makeGlobalConstraint(CPSolver solver,
-			Variable[] variables, RscData rdata, Set<String> options) {
+			Variable[] variables, RscData rdata, List<String> options) {
 		makeConsCapaConstraint(solver);
 		makeCumulative(rdata, options, solver);
 	}
 
 	@Override
 	protected void makeMixedConstraint(CPSolver solver,
-			Variable[] variables, RscData rdata, Set<String> options) {
+			Variable[] variables, RscData rdata, List<String> options) {
 		initializeDecomposition(rdata);
 		makeDisjunctive(solver, rdata, options);
 		makeGlobalConstraint(solver, variables, rdata, options);

@@ -31,7 +31,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.Var;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * User : cprudhom
@@ -50,7 +50,7 @@ public final class AmongSetManager extends MixedConstraintManager{
      * @return
      */
     @Override
-    public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, Set<String> options) {
+    public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, List<String> options) {
         if(solver instanceof CPSolver){
             if(parameters  == null){
                 Var[] vars = new Var[variables.length];

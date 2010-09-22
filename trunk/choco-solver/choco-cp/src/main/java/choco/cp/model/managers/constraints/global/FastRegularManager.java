@@ -8,7 +8,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -17,7 +17,7 @@ import java.util.Set;
  * Time: 3:05:34 PM
  */
 public final class FastRegularManager extends IntConstraintManager {
-     public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
+     public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, List<String> options) {
             if (parameters instanceof FiniteAutomaton)
             {
                 FiniteAutomaton auto = (FiniteAutomaton) parameters;

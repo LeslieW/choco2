@@ -16,7 +16,6 @@ import choco.kernel.solver.constraints.SConstraint;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -35,7 +34,7 @@ public final class GeostManager extends IntConstraintManager {
      * @param options
      * @return
      */
-    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables/*variables model*/, Object parameters, Set<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables/*variables model*/, Object parameters, List<String> options) {
         if (solver instanceof CPSolver) {
             if(parameters instanceof Object[]){
                 Object[] params = (Object[])parameters;

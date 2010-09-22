@@ -40,7 +40,7 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetVar;
 
-import java.util.Set;
+import java.util.List;
 
 
 /**
@@ -51,7 +51,7 @@ public final class MinMaxManager extends MixedConstraintManager {
 
 
 	@Override
-	public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, Set<String> options) {
+	public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, List<String> options) {
 		if (solver instanceof CPSolver) {
 			final IntDomainVar bvar = solver.getVar((IntegerVariable) variables[0]);
 			return buildConstraint(solver, parameters, bvar, variables);
@@ -70,7 +70,7 @@ public final class MinMaxManager extends MixedConstraintManager {
 	 * @return array of 2 SConstraint object, the constraint and its opposite
 	 */
 	//    @Override
-	public SConstraint[] makeConstraintAndOpposite(Solver solver, Variable[] variables, Object parameters, Set<String> options) {
+	public SConstraint[] makeConstraintAndOpposite(Solver solver, Variable[] variables, Object parameters, List<String> options) {
 		if (solver instanceof CPSolver) {
 			final SConstraint[] cs = new SConstraint[2];
 			if (parameters instanceof Boolean) {

@@ -30,7 +30,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * User : xlorca
@@ -40,7 +40,7 @@ import java.util.Set;
  */
 public final class IncreasingNValueManager extends IntConstraintManager {
 
-    public SConstraint makeConstraint(Solver solver, IntegerVariable[] integerVariables, Object parameters, Set<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] integerVariables, Object parameters, List<String> options) {
         IntDomainVar[] vars = new IntDomainVar[integerVariables.length-1];
         System.arraycopy(solver.getVar(integerVariables),1,vars,0,integerVariables.length-1);
         if(options.contains(Options.C_INCREASING_NVALUE_ATLEAST)){

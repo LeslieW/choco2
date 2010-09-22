@@ -11,7 +11,7 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 
-import java.util.Set;
+import java.util.List;
 
 public abstract class AbstractPrecedenceManager extends MixedConstraintManager {
 
@@ -43,7 +43,7 @@ public abstract class AbstractPrecedenceManager extends MixedConstraintManager {
 	}
 	@Override
 	public final SConstraint makeConstraint(Solver solver, Variable[] variables,
-			Object parameters, Set<String> options) {
+			Object parameters, List<String> options) {
 		if(solver instanceof CPSolver){
 			final CPSolver s = (CPSolver) solver;
 			final int k1 = getConstantValue(s, variables[1]);
@@ -72,7 +72,7 @@ public abstract class AbstractPrecedenceManager extends MixedConstraintManager {
 	}
 
 	@Override
-	public int[] getFavoriteDomains(Set<String> options) {
+	public int[] getFavoriteDomains(List<String> options) {
 		return getBCFavoriteIntDomains();
 	}
 

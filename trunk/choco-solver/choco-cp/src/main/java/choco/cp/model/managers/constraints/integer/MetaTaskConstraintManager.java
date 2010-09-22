@@ -12,7 +12,7 @@ import choco.kernel.model.variables.Variable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * @author Arnaud Malapert</br> 
@@ -22,11 +22,11 @@ import java.util.Set;
 public final class MetaTaskConstraintManager extends MixedConstraintManager {
 
 	/**
-	 * @see choco.kernel.model.constraints.ConstraintManager#makeConstraint(choco.kernel.solver.Solver, choco.kernel.model.variables.Variable[], java.lang.Object, Set)
+	 * @see choco.kernel.model.constraints.ConstraintManager#makeConstraint(choco.kernel.solver.Solver,V[], Object,java.util.List
 	 */
 	@Override
 	public SConstraint makeConstraint(Solver solver, Variable[] variables,
-			Object parameters, Set<String> options) {
+			Object parameters, List<String> options) {
 		  if (solver instanceof CPSolver) {
 			  if (parameters instanceof Constraint) {
 				final Constraint ic = (Constraint) parameters;
@@ -41,7 +41,7 @@ public final class MetaTaskConstraintManager extends MixedConstraintManager {
 	}
 
 	@Override
-	public int[] getFavoriteDomains(Set<String> options) {
+	public int[] getFavoriteDomains(List<String> options) {
 		//because we are dealing with tasks
 		return getBCFavoriteIntDomains();
 	}

@@ -34,7 +34,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.reified.INode;
 
-import java.util.Set;
+import java.util.List;
 
 /*
  * User:    charles
@@ -51,7 +51,7 @@ public final class IfOnlyIfManager extends IntConstraintManager{
      * @param options
      * @return
      */
-    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, List<String> options) {
         return null;
     }
 

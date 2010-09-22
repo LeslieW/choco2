@@ -33,7 +33,7 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -52,7 +52,7 @@ public final class ReifiedManager extends MixedConstraintManager {
      * @param options
      * @return
      */
-    public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, Set<String> options) {
+    public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, List<String> options) {
         if(solver instanceof CPSolver){
             Constraint[] constraints = (Constraint[])((Object[])parameters)[1];
             SConstraint[] cons = new SConstraint[2];

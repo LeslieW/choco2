@@ -22,13 +22,13 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.constraints;
 
-import java.util.Set;
-
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import java.util.List;
 
 public abstract class ConstraintManager <V extends Variable> implements ExpressionManager{
 
@@ -41,7 +41,7 @@ public abstract class ConstraintManager <V extends Variable> implements Expressi
      * @param options set of options
      * @return One SConstraint
      */
-    public abstract SConstraint makeConstraint(Solver solver, V[] variables, Object parameters, Set<String> options);
+    public abstract SConstraint makeConstraint(Solver solver, V[] variables, Object parameters, List<String> options);
 
     /**
      * Build a constraint and its opposite for the given solver and "model variables"
@@ -51,14 +51,14 @@ public abstract class ConstraintManager <V extends Variable> implements Expressi
      * @param options set of options
      * @return array of 2 SConstraint object, the constraint and its opposite
      */
-    public abstract SConstraint[] makeConstraintAndOpposite(Solver solver, V[] variables, Object parameters, Set<String> options);
+    public abstract SConstraint[] makeConstraintAndOpposite(Solver solver, V[] variables, Object parameters, List<String> options);
 
     /**
      * @param options : the set of options on the constraint (Typically the level of consistency)
      * @return a list of domains accepted by the constraint and sorted
      *         by order of preference
      */
-    public abstract int[] getFavoriteDomains(Set<String> options);
+    public abstract int[] getFavoriteDomains(List<String> options);
 
     protected static int[] getACFavoriteIntDomains() {
         return new int[]{IntDomainVar.BITSET,

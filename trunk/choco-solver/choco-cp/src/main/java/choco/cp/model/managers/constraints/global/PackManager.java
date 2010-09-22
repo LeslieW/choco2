@@ -26,8 +26,6 @@ import choco.cp.model.managers.MixedConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.BitFlags;
 import choco.cp.solver.constraints.global.pack.PackSConstraint;
-import static choco.kernel.common.util.tools.VariableUtils.getIntVar;
-import static choco.kernel.common.util.tools.VariableUtils.getSetVar;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -35,7 +33,11 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetVar;
 
-import java.util.Set;
+import java.util.List;
+
+import static choco.kernel.common.util.tools.VariableUtils.getIntVar;
+import static choco.kernel.common.util.tools.VariableUtils.getSetVar;
+
 /**
  * Created by IntelliJ IDEA.
  * User: charles
@@ -54,7 +56,7 @@ public final class PackManager extends MixedConstraintManager {
 	 * @return
 	 */
 	@Override
-	public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, Set<String> options) {
+	public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, List<String> options) {
 		if(solver instanceof CPSolver){
 			CPSolver s = (CPSolver) solver;
 			if(parameters instanceof Object[]){
@@ -78,7 +80,7 @@ public final class PackManager extends MixedConstraintManager {
 	}
 
 	@Override
-	public int[] getFavoriteDomains(final Set<String> options) {
+	public int[] getFavoriteDomains(final List<String> options) {
 		return getBCFavoriteIntDomains();
 	}
 

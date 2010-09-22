@@ -33,7 +33,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.Set;
+import java.util.List;
 
 /*
 *  ______
@@ -54,7 +54,7 @@ public final class DistanceManager extends IntConstraintManager {
     private static final int NEQ = 3;
 
 
-    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, List<String> options) {
         if (solver instanceof CPSolver) {
             if (parameters instanceof Integer) {
                 int type = (Integer) parameters;
@@ -86,7 +86,7 @@ public final class DistanceManager extends IntConstraintManager {
      * @return array of 2 SConstraint object, the constraint and its opposite
      */
     @Override
-    public SConstraint[] makeConstraintAndOpposite(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
+    public SConstraint[] makeConstraintAndOpposite(Solver solver, IntegerVariable[] variables, Object parameters, List<String> options) {
         SConstraint[] cs = new SConstraint[2];
         if (solver instanceof CPSolver) {
             if (parameters instanceof Integer) {

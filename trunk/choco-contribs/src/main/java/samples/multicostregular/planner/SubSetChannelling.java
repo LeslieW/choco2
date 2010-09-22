@@ -30,7 +30,7 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -154,7 +154,7 @@ public boolean isSatisfied(int[] sol)
     public static class SubSetManager extends IntConstraintManager
     {
 
-        public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
+        public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, List<String> options) {
             if (parameters == null)
             {
                 IntDomainVar[] vs = solver.getVar((IntegerVariable[]) variables);

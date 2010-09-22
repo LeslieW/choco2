@@ -31,7 +31,7 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.reified.INode;
 import choco.kernel.solver.variables.set.SetVar;
 
-import java.util.Set;
+import java.util.List;
 
 /*
  * Created by IntelliJ IDEA.
@@ -47,7 +47,7 @@ public abstract class SetConstraintManager extends ConstraintManager<SetVariable
      * @return a list of domains accepted by the constraint and sorted
      *         by order of preference
      */
-    public int[] getFavoriteDomains(Set<String> options) {
+    public int[] getFavoriteDomains(List<String> options) {
         return new int[]{SetVar.BOUNDSET_BOUNDCARD,
                 SetVar.BOUNDSET_ENUMCARD
         };
@@ -75,7 +75,7 @@ public abstract class SetConstraintManager extends ConstraintManager<SetVariable
      * @return array of 2 SConstraint object, the constraint and its opposite
      */
     @Override
-    public SConstraint[] makeConstraintAndOpposite(Solver solver, SetVariable[] variables, Object parameters, Set<String> options) {
+    public SConstraint[] makeConstraintAndOpposite(Solver solver, SetVariable[] variables, Object parameters, List<String> options) {
         SConstraint c = makeConstraint(solver, variables, parameters, options);
         SConstraint opp = c.opposite(solver);
         return new SConstraint[]{c, opp};

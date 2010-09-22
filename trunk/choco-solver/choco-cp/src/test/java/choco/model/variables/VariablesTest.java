@@ -23,7 +23,6 @@
 package choco.model.variables;
 
 import choco.Choco;
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -32,6 +31,7 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.Model;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
@@ -40,15 +40,17 @@ import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.branch.AbstractIntBranchingStrategy;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import static junit.framework.Assert.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import static java.text.MessageFormat.format;
 import java.util.Iterator;
-import java.util.Set;
+import java.util.List;
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
+import static java.text.MessageFormat.format;
+import static junit.framework.Assert.*;
 
 /**
  * @author Arnaud Malapert
@@ -79,6 +81,13 @@ public class VariablesTest {
 		assertEquals("nb remaining constraints",nbConstraints, model.getNbConstraints());
 		assertEquals("nb remaining variables ",nbVars, model.getNbTotVars());
 	}
+
+    static{
+        Options.create("foo",0);
+        Options.create("bar",1);
+        Options.create("fou",2);
+        Options.create("bao",2);
+    }
 
 	@Before
 	public void initialize() {
@@ -176,7 +185,7 @@ public class VariablesTest {
 		assertTrue("check decision var",contains);
 	}
 	
-	private static void checkOptions(Set<String> options, int nb, int length) {
+	private static void checkOptions(List<String> options, int nb, int length) {
 		assertEquals("Nb Options", nb, options.size());
 		for (String str : options) {
 			assertEquals("Option lenght: |"+str+ '|', length, str.length());
@@ -356,5 +365,10 @@ public class VariablesTest {
         Assert.assertEquals(2, vars.length);
         Assert.assertEquals(solver.getVar(x), vars[0]);
         Assert.assertEquals(solver.getVar(y), vars[1]);
+    }
+
+    @Test(expected = ModelException.class)
+    public void testDoubleOption(){
+        Options.create("foo", 2);
     }
 }
