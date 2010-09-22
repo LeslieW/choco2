@@ -33,11 +33,12 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
-import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import java.text.MessageFormat;
 import java.util.logging.Logger;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by IntelliJ IDEA.
@@ -135,8 +136,8 @@ public class ImpactTest {
         s.setTimeLimit(65000);
         s.setGeometricRestart(14, 1.5d);
         s.generateSearchStrategy();
-
-        s.attachGoal(ibb);
+        s.clearGoals();
+        s.addGoal(ibb);
         s.setFirstSolution(true);
         s.launch();
 
@@ -151,7 +152,7 @@ public class ImpactTest {
             LOGGER.info(st.toString());
         }
 
-        assertTrue(s.getNodeCount() < 5000);
+        assertTrue(String.format("%s >= 5000", s.getNodeCount()),s.getNodeCount() < 5000);
     }
 
     @Test
