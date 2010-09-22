@@ -22,7 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.solver.search;
 
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -32,13 +31,12 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
-import org.junit.After;
-import org.junit.Assert;
-import static org.junit.Assert.assertEquals;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
+import static org.junit.Assert.assertEquals;
 
 /* File choco.currentElement.search.QueensTest.java, last modified by flaburthe 12 janv. 2004 18:03:29 */
 
@@ -46,7 +44,7 @@ import java.util.logging.Logger;
  * A currentElement placing n-queens on a chessboard, so that no two attack each other
  */
 public class QueensTest {
-    public final static int NB_QUEENS_SOLUTION[] = {0, 0, 0, 0, 2, 10, 4, 40, 92, 352, 724, 2680, 14200, 73712};
+    public final static int NB_QUEENS_SOLUTION[] = {0, 0, 0, 0, 2, 10, 4, 40, 92, 352, 724, 2680, 14200, 73712, 365596};
     public static final boolean LINKED = false;
     private final static Logger LOGGER = ChocoLogging.getTestLogger();
     public Model m;
@@ -81,7 +79,7 @@ public class QueensTest {
         }
         // diagonal constraints
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
+            for (int j = i + 1; j < n; j++) {                              
                 int k = j - i;
                 m.addConstraint(neq(queens[i], queens[j]));
                 m.addConstraint(neq(queens[i], plus(queens[j], k)));
@@ -104,11 +102,11 @@ public class QueensTest {
     
     public void solve(int n){
         s1.read(m);
-        s1.setValIntIterator(new DecreasingDomain()); 
+        s1.setValIntIterator(new DecreasingDomain());
         incrementalSolve(s1, n);
-        
+
         s2.read(m);
-        s2.setValIntSelector(new MaxVal()); 
+        s2.setValIntSelector(new MaxVal());
         incrementalSolve(s2, n);
 
         Assert.assertEquals(s1.getSolutionCount(), s2.getSolutionCount());
@@ -157,7 +155,19 @@ public class QueensTest {
 
     @Test
     public void test7() {
-        queen0(11);
+        queen0(12);
+    }
+
+    @Test
+    @Ignore
+    public void testAll() {
+        ChocoLogging.toSilent();
+        for (int i = 4; i < 15; i++) {
+            m = new CPModel();
+            s1 = new CPSolver();
+            System.out.printf("queen %s\n", i);
+            queen0(i);
+        }
     }
 
 }

@@ -34,6 +34,7 @@ public enum NodeType {
     AND,
     CONSTANTLEAF,
     CONSTRAINTLEAF,
+    CUSTOM,
     DIST,
     DISTEQ,
     DISTGT,

@@ -23,7 +23,6 @@
 package choco.shaker;
 
 import choco.Choco;
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -42,6 +41,8 @@ import org.junit.*;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
 
 /*
 * User : charles
@@ -428,7 +429,7 @@ public class ExpressionTest {
         checker();
     }
 
-    @Test(expected=UnsupportedOperationException.class)
+    @Test
     public void testExpression16() {
         m  = new CPModel();
         final IntegerVariable[] v = new IntegerVariable[3];
