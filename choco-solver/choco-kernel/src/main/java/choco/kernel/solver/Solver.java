@@ -27,7 +27,6 @@ import choco.kernel.common.IndexFactory;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.IEnvironment;
-import choco.kernel.model.IOptions;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Variable;
@@ -49,7 +48,6 @@ import choco.kernel.solver.search.ValIterator;
 import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.search.checker.SolutionCheckerEngine;
 import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
-import choco.kernel.solver.search.measure.FailMeasure;
 import choco.kernel.solver.search.measure.IMeasures;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -97,9 +95,23 @@ public interface Solver extends IMeasures, IPretty {
 
 	public void generateSearchStrategy();
 
+    /**
+     * @deprecated calls {@link choco.kernel.solver.Solver#clearGoals()} then
+     * {@link Solver#addGoal(choco.kernel.solver.branch.AbstractIntBranchingStrategy)}
+     */
+    @Deprecated 
 	public void attachGoal(AbstractIntBranchingStrategy branching);
 
+    /**
+     * Adds a new branching goal to the end of list of goals
+     * @param branching new goal to add
+     */
 	public void addGoal(AbstractIntBranchingStrategy branching);
+
+    /**
+     * Clears the list of goals defined
+     */
+    public void clearGoals();
 
 
 	/**

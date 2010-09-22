@@ -51,8 +51,6 @@ import choco.cp.solver.constraints.set.*;
 import choco.cp.solver.goals.GoalSearchSolver;
 import choco.cp.solver.propagation.ChocEngine;
 import choco.cp.solver.propagation.EventQueueFactory;
-import static choco.cp.solver.search.BranchingFactory.incDomWDeg;
-import static choco.cp.solver.search.BranchingFactory.incDomWDegBin;
 import choco.cp.solver.search.GlobalSearchStrategy;
 import choco.cp.solver.search.GoalSearchLoop;
 import choco.cp.solver.search.integer.branching.AssignVar;
@@ -69,15 +67,12 @@ import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.cp.solver.variables.integer.IntTerm;
 import choco.cp.solver.variables.real.RealVarImpl;
 import choco.cp.solver.variables.set.SetVarImpl;
-import static choco.kernel.common.Constant.FALSE;
-import static choco.kernel.common.Constant.TRUE;
 import choco.kernel.common.IndexFactory;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.common.util.tools.StringUtils;
-import static choco.kernel.common.util.tools.StringUtils.prettyOnePerLine;
 import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
@@ -133,6 +128,12 @@ import gnu.trove.TLongObjectHashMap;
 import java.lang.reflect.Array;
 import java.util.*;
 import java.util.logging.Level;
+
+import static choco.cp.solver.search.BranchingFactory.incDomWDeg;
+import static choco.cp.solver.search.BranchingFactory.incDomWDegBin;
+import static choco.kernel.common.Constant.FALSE;
+import static choco.kernel.common.Constant.TRUE;
+import static choco.kernel.common.util.tools.StringUtils.prettyOnePerLine;
 
 
 /**
@@ -865,29 +866,22 @@ public class CPSolver implements Solver {
 	}
 
 	/**
-	 * Attach the FIRST branching strategy to the search strategy
+	 * {@inheritDoc}
+     * Attach the FIRST branching strategy to the search strategy
 	 *
 	 * @param branching
 	 *            the branching strategy
+     * @deprecated calls {@link CPSolver#clearGoals()} then
+     * {@link CPSolver#addGoal(choco.kernel.solver.branch.AbstractIntBranchingStrategy)}
 	 */
+    @Deprecated
 	public void attachGoal(AbstractIntBranchingStrategy branching) {
-		if (strategy == null) {
-			tempGoal = branching;
-		} else {
-			// To remove properly the listener from the Propagation engine
-			if(strategy.mainGoal instanceof PropagationEngineListener){
-				((PropagationEngineListener)strategy.mainGoal).safeDelete();
-			}
-			AbstractIntBranchingStrategy br = branching;
-			while (br != null) {
-				br.setSolver(strategy);
-				br = (AbstractIntBranchingStrategy) br.getNextBranching();
-			}
-			strategy.mainGoal = branching;
-		}
+        clearGoals();
+        addGoal(branching);
 	}
 
 	/**
+     * {@inheritDoc}
 	 * Add branching strategy to the search strategy. (Do not have to be called
 	 * before attachGoal(AbstractIntBranching branching))
 	 *
@@ -896,20 +890,68 @@ public class CPSolver implements Solver {
 	 *            the order given by the adding.
 	 */
 	public void addGoal(AbstractIntBranchingStrategy branching) {
-		AbstractIntBranchingStrategy br;
-		if (strategy == null) {
-			br = tempGoal;
-		} else {
-			branching.setSolver(strategy);
-			br = strategy.mainGoal;
-		}
-		while (br.getNextBranching() != null) {
-			br = (AbstractIntBranchingStrategy) br.getNextBranching();
-		}
-		br.setNextBranching(branching);
+        // if no branching strategy has been already generated
+        if(strategy == null){
+            // if this is the first branching strategy
+            if(tempGoal == null){
+                tempGoal = branching;
+            }
+            else{
+                AbstractIntBranchingStrategy br = tempGoal;
+                while (br.getNextBranching() != null) {
+                    br = (AbstractIntBranchingStrategy) br.getNextBranching();
+                }
+                br.setNextBranching(branching);
+            }
+        }
+        // otherwise
+        else{
+            branching.setSolver(strategy);
+            if(strategy.mainGoal == null){
+                AbstractIntBranchingStrategy br = branching;
+                while (br != null) {
+                    br.setSolver(strategy);
+                    br = (AbstractIntBranchingStrategy) br.getNextBranching();
+                }
+                strategy.mainGoal = branching;
+            }else{
+                AbstractIntBranchingStrategy br = strategy.mainGoal;
+                while (br.getNextBranching() != null) {
+                    br = (AbstractIntBranchingStrategy) br.getNextBranching();
+                }
+                br.setNextBranching(branching);
+            }
+        }
 	}
 
 
+    /**
+     * {@inheritDoc}
+     */
+    public void clearGoals(){
+        // if no branching strategy has been already generated
+        if(strategy == null){
+            AbstractIntBranchingStrategy br = tempGoal;
+            while(br!=null){
+                AbstractIntBranchingStrategy tmp = (AbstractIntBranchingStrategy)br.getNextBranching();
+                br = null;
+                br = tmp;
+            }
+        }
+        //otherwise
+        else{
+			AbstractIntBranchingStrategy br = strategy.mainGoal;
+            while (br != null) {
+                // To remove properly the listener from the Propagation engine
+                if(strategy.mainGoal instanceof PropagationEngineListener){
+                    ((PropagationEngineListener)strategy.mainGoal).safeDelete();
+                }
+                AbstractIntBranchingStrategy tmp = (AbstractIntBranchingStrategy)br.getNextBranching();
+				br = null;
+                br = tmp;
+			}
+        }
+    }
 
 	/**
 	 * Set the ilogGoal of the search strategy
@@ -1117,7 +1159,6 @@ public class CPSolver implements Solver {
 	 * Sets a unique integer variable selector the search olver should use.
 	 *
 	 * @see choco.cp.solver.CPSolver#addGoal(choco.kernel.solver.branch.AbstractIntBranchingStrategy)
-	 * @see choco.cp.solver.CPSolver#attachGoal(choco.kernel.solver.branch.AbstractIntBranchingStrategy)
 	 */
 	public void setVarIntSelector(VarSelector<IntDomainVar> varSelector) {
 		// To remove properly the listener from the Propagation engine
@@ -1142,7 +1183,6 @@ public class CPSolver implements Solver {
 	 * Sets a unique real variable selector the search strategy should use.
 	 *
 	 * @see choco.cp.solver.CPSolver#addGoal(choco.kernel.solver.branch.AbstractIntBranchingStrategy)
-	 * @see choco.cp.solver.CPSolver#attachGoal(choco.kernel.solver.branch.AbstractIntBranchingStrategy)
 	 */
 	public void setVarRealSelector(VarSelector<RealVar> realVarSelector) {
 		this.varRealSelector = realVarSelector;
@@ -1153,7 +1193,6 @@ public class CPSolver implements Solver {
 	 * Sets unique set variable selector the search strategy should use.
 	 *
 	 * @see choco.cp.solver.CPSolver#addGoal(choco.kernel.solver.branch.AbstractIntBranchingStrategy)
-	 * @see choco.cp.solver.CPSolver#attachGoal(choco.kernel.solver.branch.AbstractIntBranchingStrategy)
 	 */
 	public void setVarSetSelector(VarSelector<SetVar> setVarSelector) {
 		this.varSetSelector = setVarSelector;
@@ -2415,6 +2454,7 @@ public class CPSolver implements Solver {
 	/**
 	 * use {@link ChocoLogging#setVerbosity(Verbosity)}
 	 * @param verbosity logger verbosity
+     * @deprecated
 	 */
 	@SuppressWarnings({"deprecation"})
     @Deprecated
