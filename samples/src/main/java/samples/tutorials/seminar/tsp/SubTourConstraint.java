@@ -35,15 +35,12 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.BitSet;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 public class SubTourConstraint extends AbstractLargeIntSConstraint {
 
     public static class SubTourConstraintManager extends IntConstraintManager {
-        public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
+        public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, List<String> options) {
             if(solver instanceof CPSolver){
                 return new SubTourConstraint(solver.getVar(variables), solver.getEnvironment());
             }
