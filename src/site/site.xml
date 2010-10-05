@@ -35,6 +35,7 @@
 
     <menu name="Using CHOCO">
       <item name="Documentation" href="choco-documentation.html"/>
+        <item name="Forums" href="choco-forums.html"/>
         <item name="Samples" href="choco-samples.html"/>
         <item name="Materials" href="choco-materials.html"/>
       <!--<item name="Tutorials" href="choco-tutorials.html"/>-->

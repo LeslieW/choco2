@@ -1,7 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * 
  *          _       _                            *
- *         |  °(..)  |                           *
- *         |_  J||L _|        CHOCO solver       *
+ *         |  (..)  |                            *
+ *         |_ J||L _|         CHOCO solver       *
  *                                               *
  *    Choco is a java library for constraint     *
  *    satisfaction problems (CSP), constraint    *
@@ -11,12 +11,12 @@
  *    with backtrackable structures.             *
  *                                               *
  *    Choco is an open-source software,          *
- *    distributed under a BSD licence            *
+ *    distributed under a BSD license            *
  *    and hosted by sourceforge.net              *
  *                                               *
  *    + website : http://choco.emn.fr            *
  *    + support : choco@emn.fr                   *
  *                                               *
  *    Copyright (C) F. Laburthe,                 *
- *                  N. Jussien    1999-2008      *
+ *                  N. Jussien    1999-2010      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
