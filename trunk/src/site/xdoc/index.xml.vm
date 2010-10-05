@@ -1,72 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
 <document>
-  <properties>
-    <title>Welcome to CHOCO</title>
-    <author>CHOCO Development Team</author>
+    <properties>
+        <title>Welcome to CHOCO</title>
+        <author>CHOCO Development Team</author>
     </properties>
-<body>
+    <body>
 
-<section name="Welcome">
+        <section name="Welcome">
 
-<p>
-  <tt>choco</tt> is a java library for constraint satisfaction problems (CSP),
-  constraint programming (CP) and explanation-based constraint solving (e-CP).<br/>
-  It is built on a event-based propagation mechanism with backtrackable structures.
-</p>
+            <p>
+                <tt>choco</tt>
+                is a java library for constraint satisfaction problems (CSP),
+                constraint programming (CP) and explanation-based constraint solving (e-CP).
+                <br/>
+                It is built on a event-based propagation mechanism with backtrackable structures.
+            </p>
 
-<p>
- <tt>choco</tt> can be used for:
-<ul>
-<li>
-teaching (a user-oriented constraint solver with open-source code)
-</li>
-<li>
-research (state-of-the-art algorithms and techniques, user-defined constraints, domains and variables)
-</li>
-<li>
-real-life applications (many application now embed <tt>choco</tt>)
-</li>
-</ul>      
-</p>
+            <p>
+                <tt>choco</tt>
+                can be used for:
+                <ul>
+                    <li>
+                        teaching (a user-oriented constraint solver with open-source code)
+                    </li>
+                    <li>
+                        research (state-of-the-art algorithms and techniques, user-defined constraints, domains and
+                        variables)
+                    </li>
+                    <li>
+                        real-life applications (many application now embed<tt>choco</tt>)
+                    </li>
+                </ul>
+            </p>
 
-<p>
- Please visit the web site for downloading and more information.
-</p>
+            <p>
+                Please visit the web site for downloading and more information.
+            </p>
 
-</section>
+        </section>
 
-<section name="CHOCO's environment">
-<p>
-  <tt>choco</tt> is an open-source software, distributed under a <a href="licence.html">BSD Licence</a>
-  and hosted by <a href="http://sourceforge.net/projects/choco/">Sourceforge.net</a>.
-</p>
-
-<p>
-  <a href="http://www.jetbrains.com/idea/features/code_analysis.html" target="_blank">
-  <img src="http://www.jetbrains.com/idea/opensource/img/banners/idea468x60_white.gif"/></a>
-</p>
-
-</section>
-
-<section name="Learning about Choco">
-     <ul>
-     <li><a href="choco-documentation.html"><div class="header">Documentation</div></a>
-         Informations for those wanting to use <tt>choco</tt>. It introduces to Constraint Programming and <tt>choco</tt> and
-         describes how to solve problems using <tt>choco</tt>. It also provides tutorials and examples.
-     </li>
-     <li><a href="choco-faq.html"><div class="header">Frequently Asked Questions</div></a>
-         A list of frequently asked questions about <tt>choco</tt>.
-     </li>
-     <li><a href="team-list.html"><div class="header">The team</div></a>
-         List of the members involved in the development of <tt>choco</tt> with
-         contacts.
-     </li>
-     <li><a href="choco-users.html"><div class="header">Users</div></a>
-         Non exhaustive list of <tt>choco</tt>'s users.
-     </li>
-</ul>
-</section>
+        <section name="CHOCO's environment">
+            <p>
+                <tt>choco</tt>
+                is an open-source software, distributed under a
+                <a href="license.html">BSD License</a>, hosted by
+                <a href="http://sourceforge.net/projects/choco/">sourceforge.net</a>
+                and developed with
+                <a href="http://www.jetbrains.com/idea/features/code_analysis.html" target="_blank">Intellij IDEA</a>
+                and <a href="http://www.ej-technologies.com/products/jprofiler/overview.html" target="_blank">JProfiler</a>.
+            </p>
 
 
-</body>
+            <p>
+                <a href="http://sourceforge.net/projects/choco/" target="_blank">
+                    <img src="images/Sourceforge.net_logo.png"/>
+                </a>
+                <a href="http://www.jetbrains.com/idea/features/code_analysis.html" target="_blank">
+                    <img src="http://www.jetbrains.com/idea/opensource/img/banners/idea468x60_white.gif"/>
+                </a>
+                <a href="http://www.ej-technologies.com/products/jprofiler/overview.html" target="_blank">
+                    <img src="images/jprofiler-logo.png"/>
+                </a>
+            </p>
+
+        </section>
+
+        <section name="Learning about Choco">
+            <ul>
+                <li>
+                    <a href="choco-documentation.html">
+                        <div class="header">Documentation</div>
+                    </a>
+                    Informations for those wanting to use<tt>choco</tt>. It introduces to Constraint Programming and
+                    <tt>choco</tt>
+                    and
+                    describes how to solve problems using<tt>choco</tt>. It also provides tutorials and examples.
+                </li>
+                <li>
+                    <a href="choco-faq.html">
+                        <div class="header">Frequently Asked Questions</div>
+                    </a>
+                    A list of frequently asked questions about<tt>choco</tt>.
+                </li>
+                <li>
+                    <a href="team-list.html">
+                        <div class="header">The team</div>
+                    </a>
+                    List of the members involved in the development of
+                    <tt>choco</tt>
+                    with
+                    contacts.
+                </li>
+                <li>
+                    <a href="choco-users.html">
+                        <div class="header">Users</div>
+                    </a>
+                    Non exhaustive list of<tt>choco</tt>'s users.
+                </li>
+            </ul>
+        </section>
+
+
+    </body>
 </document>
