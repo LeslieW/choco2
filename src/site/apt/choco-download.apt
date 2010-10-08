@@ -7,7 +7,38 @@
 
 Download CHOCO
 
-   There are different <jar> files available:
+* Most recent jar files:
+
+    * {{{http://sourceforge.net/projects/choco/files/choco/2.1.1/SNAPSHOT/20101004/choco-2.1.1-20101004.120108-16.jar}choco-2.1.1.jar}}
+
+    * {{{http://sourceforge.net/projects/choco/files/choco/2.1.1/SNAPSHOT/20101004/choco-solver-2.1.1-20101004.120108-16.jar}choco-solver-2.1.1.jar}}
+    
+    * {{{http://sourceforge.net/projects/choco/files/choco/2.1.1/SNAPSHOT/20101004/}jars, md5 and sources}}
+
+* Previous files
+
+    You can download previsous files on {{{https://sourceforge.net/projects/choco/files/}Sourceforge}}.
+
+* Building from the sources
+
+   You can build <<<choco>>> from sources using the repository. See {{{choco-build.html} Build CHOCO}} page for more details.
+
+
+* System Requirements
+
+
+  * <<JDK>> - 1.6 or above (developed and tested with the 1.6)
+
+  * <<Memory>> - 128MB
+
+  * <<Disk>> - <no minimum requirement>
+
+  * <<Operating System>> - Should be able to run on any system that provides a compatible JAVA environment.
+
+
+* Project structure
+
+    There are different <jar> files available:
 
     * A single <jar> that only contains the minimum required to solve CP problems : <choco-solver-X.x.x>. This archive should be used
     if you want to integrate <<<choco>>> as a library.
@@ -29,7 +60,7 @@ Download CHOCO
         * <choco-cli-X.x.x>,
 
         * <choco-visu-X.x.x>
-        
+
         * <choco-contribs-X.x.x>,
 
         * <samples-X.x.x>,
@@ -37,42 +68,6 @@ Download CHOCO
         * and <dadcop-tracer-X.x.x>.
 
    These archives should be used if you want to integrate your own class-path.
-
-* Stable versions
-
-    No recent stable releases are available. See {{{previous_files}previous files}}.
-
-* Snapshot versions
-
-   Snapshot are available for development versions. They contain additional features or fixes
-   that are not as mature to be considered as a release.
-
-** jars
-
-   All the previous snapshots are available on the {{{http://sourceforge.net/projects/choco/files/choco/2.1.1/} snapshot repository on Sourceforge}}.
-
-* {Previous files}
-
-    You can download previsous files on {{{https://sourceforge.net/projects/choco/files/}Sourceforge}}.
-
-* Building from the sources
-
-   You can build <<<choco>>> from sources using the repository. See {{{choco-build.html} Build CHOCO}} page for more details.
-
-
-* System Requirements
-
-
-  * <<JDK>> - 1.6 or above (developed and tested with the 1.6)
-
-  * <<Memory>> - 1GB
-
-  * <<Disk>> - <no minimum requirement>
-
-  * <<Operating System>> - Should be able to run on any system that provides a compatible JAVA environment.
-
-
-* Project structure
 
 ---
 choco
