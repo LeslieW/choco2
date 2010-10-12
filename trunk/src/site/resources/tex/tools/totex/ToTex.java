@@ -66,13 +66,38 @@ public class ToTex {
      * @param args array of size 2 excepted : {input file or directory, output directory}
      */
     public static void main(String[] args) {
-		if(args.length != 2){
-			System.err.println("2 arguments expected : input file or directory, output directory");
-		}
+        if (args.length != 2) {
+            System.err.println("2 arguments expected : input file or directory, output directory");
+        }
         File input = new File(args[0]);
         File output = new File(args[1]);
-
+        cleanOutoutDirectory(output);
         scan(input, output);
+    }
+
+    private static void cleanOutoutDirectory(File output) {
+        // Make sure the file or directory exists and isn't write protected
+        if (!output.exists()) {
+            throw new IllegalArgumentException(
+                    "Delete: no such file or directory: " + output.getName());
+        }
+
+        if (!output.canWrite()) {
+            throw new IllegalArgumentException("Delete: write protected: "
+                    + output.getName());
+        }
+
+        // If it is a directory, make sure it is empty
+        if (output.isDirectory()) {
+            File[] files = output.listFiles();
+            for (File ff : files) {
+                if (ff.getName().substring(ff.getName().length() - 4).equals(".j2t")) {
+                    if (!ff.delete()) {
+                        throw new IllegalArgumentException("Delete: deletion failed");
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -107,6 +132,7 @@ public class ToTex {
         public boolean accept(File dir, String name) {
             return dir.isDirectory() || (name.length() > 5 && name.substring(name.length() - 5).equals(".java"));
         }
+
     }
 
     /**
@@ -139,17 +165,17 @@ public class ToTex {
                         line = "";
                         buffer.close();
                     }
-                }else
-                // (append tag)
-                if (line.contains(APPEND)) {
-                    String fileName = line.substring(line.indexOf(APPEND) + APPEND.length()).trim();
-                    String absFileName = String.format("%s%s%s%s", dir.getAbsolutePath(), File.separator, fileName, EXTENSION);
-                    buffers.add(createBuffer(absFileName, true));
-                    line = br.readLine();
-                    if (line == null) {
-                        break;
+                } else
+                    // (append tag)
+                    if (line.contains(APPEND)) {
+                        String fileName = line.substring(line.indexOf(APPEND) + APPEND.length()).trim();
+                        String absFileName = String.format("%s%s%s%s", dir.getAbsolutePath(), File.separator, fileName, EXTENSION);
+                        buffers.add(createBuffer(absFileName, true));
+                        line = br.readLine();
+                        if (line == null) {
+                            break;
+                        }
                     }
-                }
                 for (BufferedWriter bf : buffers) {
                     bf.append(line).append("\n");
                 }
