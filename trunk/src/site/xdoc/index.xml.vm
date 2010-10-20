@@ -28,7 +28,7 @@
                         variables)
                     </li>
                     <li>
-                        real-life applications (many application now embed<tt>choco</tt>)
+                        real-life applications (many application now embed <tt>choco</tt>)
                     </li>
                 </ul>
             </p>
@@ -67,16 +67,16 @@
                     <a href="choco-documentation.html">
                         <div class="header">Documentation</div>
                     </a>
-                    Informations for those wanting to use<tt>choco</tt>. It introduces to Constraint Programming and
+                    Informations for those wanting to use <tt>choco</tt>. It introduces to Constraint Programming and
                     <tt>choco</tt>
                     and
-                    describes how to solve problems using<tt>choco</tt>. It also provides tutorials and examples.
+                    describes how to solve problems using <tt>choco</tt>. It also provides tutorials and examples.
                 </li>
                 <li>
                     <a href="choco-faq.html">
                         <div class="header">Frequently Asked Questions</div>
                     </a>
-                    A list of frequently asked questions about<tt>choco</tt>.
+                    A list of frequently asked questions about <tt>choco</tt>.
                 </li>
                 <li>
                     <a href="team-list.html">
@@ -91,7 +91,7 @@
                     <a href="choco-users.html">
                         <div class="header">Users</div>
                     </a>
-                    Non exhaustive list of<tt>choco</tt>'s users.
+                    Non exhaustive list of <tt>choco</tt>'s users.
                 </li>
             </ul>
         </section>

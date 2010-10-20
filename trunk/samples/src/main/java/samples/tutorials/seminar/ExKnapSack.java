@@ -22,17 +22,21 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.tutorials.seminar;
 
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.valiterator.DecreasingDomain;
+import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
+import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
 
 /*
  * Created by IntelliJ IDEA.
@@ -54,16 +58,16 @@ public class ExKnapSack {
     public static Model postKnapsacPB() {
         Model m = new CPModel();
 
-        obj1 = makeIntVar("obj1", 0, 5);
-        obj2 = makeIntVar("obj2", 0, 7);
-        obj3 = makeIntVar("obj3", 0, 10);
-        c = makeIntVar("cost", 1, 1000000);
+        obj1 = makeIntVar("obj1", 0, 17);
+        obj2 = makeIntVar("obj2", 0, 17);
+        obj3 = makeIntVar("obj3", 0, 17);
+        c = makeIntVar("cost", 0, 500);
         m.addVariable(Options.V_BOUND, c);
 
         int capacity = 34;
 
-        int[] volumes = new int[]{7, 5, 3};
-        int[] energy = new int[]{6, 4, 2};
+        int[] volumes = new int[]{7, 5, 2};
+        int[] energy = new int[]{6, 4, 3};
 
         m.addConstraint(leq(scalar(volumes, new IntegerVariable[]{obj1, obj2, obj3}), capacity));
         m.addConstraint(eq(scalar(energy, new IntegerVariable[]{obj1, obj2, obj3}), c));
@@ -76,8 +80,9 @@ public class ExKnapSack {
 
         Solver s =  new CPSolver();
         s.read(m);
-
-        s.solve();
+        s.attachGoal(new AssignVar(new StaticVarOrder(s, s.getVar(new IntegerVariable[]{obj1, obj2, obj3})), new IncreasingDomain()));
+//        ChocoLogging.toSearch();
+        s.maximize(s.getVar(c), false);
 
         LOGGER.info("obj1: " + s.getVar(obj1).getVal());
         LOGGER.info("obj2: " + s.getVar(obj2).getVal());
@@ -111,7 +116,7 @@ public class ExKnapSack {
         LOGGER.info("=============================================");
         LOGGER.info("");
         long t3 = System.currentTimeMillis();
-        knapsacOPT();
+//        knapsacOPT();
         long t4 = System.currentTimeMillis();
         LOGGER.info("time : "+ (t4-t3));
         ChocoLogging.flushLogs();
