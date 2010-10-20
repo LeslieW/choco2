@@ -10,7 +10,7 @@
 
             <p>
                 You can download the current
-                <a href="./tex/documentation/choco-doc.pdf" class="externalLink" target="_blank">documentation of
+                <a href="http://choco.svn.sourceforge.net/viewvc/choco/trunk/src/site/resources/tex/documentation/choco-doc.pdf" class="externalLink" target="_blank">documentation of
                     <tt>choco</tt>
                 </a>
                 in PDF format.
@@ -24,7 +24,7 @@
             <subsection name="Tutorials">
 	    <p>
                 You can also download the current
-                <a href="./tex/tutorials/choco-tut.pdf" class="externalLink" target="_blank">tutorials of
+                <a href="http://choco.svn.sourceforge.net/viewvc/choco/trunk/src/site/resources/tex/tutorials/choco-tut.pdf" class="externalLink" target="_blank">tutorials of
                     <tt>choco</tt>
                 </a>
                 in PDF format.
