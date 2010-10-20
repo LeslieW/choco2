@@ -17,9 +17,9 @@
 
             <p>
                 <i>bibtex file :
-                    <A HREF="http://choco.svn.sourceforge.net/viewvc/choco/trunk/src/site/resources/choco.bib"><tt>
+                    <a HREF="http://choco.svn.sourceforge.net/viewvc/choco/trunk/src/site/resources/choco.bib"><tt>
                         choco</tt>.bib
-                    </A>
+                    </a>
                     .
                 </i>
             </p>
@@ -141,8 +141,8 @@
 
             <p>
                 If you think an article is missing, contact us at
-                <A HREF="mailto:choco@emn.fr?subject=[ARTICLE]">add article to<tt>choco</tt>'s bibtex
-                </A>
+                <a HREF="mailto:choco@emn.fr?subject=[ARTICLE]">add article to <tt>choco</tt>'s bibtex
+                </a>
                 .
             </p>
         </section>

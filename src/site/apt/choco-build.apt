@@ -17,7 +17,7 @@ Build CHOCO
 
 * Get sources from Subversion
 
-   Sources can be checked out anonymously from Subversion (more information on {{{source-repository.html}Source repository}}):
+   Sources can be checked out anonymously from Subversion (more information on {{{./source-repository.html}Source repository}}):
 
 ---
 $ svn checkout https://choco.svn.sourceforge.net/svnroot/choco/trunk choco

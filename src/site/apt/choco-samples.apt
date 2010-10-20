@@ -15,7 +15,7 @@ Samples of CHOCO programs
 
     * JDK 6+
 
-    * a jar of <see {{{choco-download.html}choco}}>
+    * a jar of <see {{{./choco-download.html}choco}}>
 
     * a terminal
 
@@ -79,4 +79,4 @@ $ java -cp choco-X.x.x.jar path.to.the.Sample
     * samples.tutorials.trunk.WolfGoatCabbage1
 
 
-    Samples description can be found in {{{choco-documentation.html}Documentation page}}.
+    Samples description can be found in {{{./choco-documentation.html}Documentation page}}.

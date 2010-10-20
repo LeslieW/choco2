@@ -23,16 +23,21 @@
 package samples.tutorials.seminar.nqueen;
 
 import choco.Choco;
-import static choco.Choco.*;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.search.integer.branching.AssignOrForbidIntVarVal;
+import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.cp.solver.search.integer.varselector.MinDomain;
+import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
 
 
 /*
@@ -76,24 +81,26 @@ public class ExQueen {
 		Model m = new CPModel();
 
 		IntegerVariable[] queens = Choco.makeIntVarArray("Q", n, 1,n);
-		IntegerVariable[] diag1 = Choco.makeIntVarArray("D1", n, 1, 2*n);
+        IntegerVariable[] diag1 = Choco.makeIntVarArray("D1", n, 1, 2*n);
 		IntegerVariable[] diag2 = Choco.makeIntVarArray("D2", n, -n, n);
 
-		m.addConstraint(allDifferent(queens));
+		m.addConstraint(Options.C_ALLDIFFERENT_AC, allDifferent(queens));
 		for (int i = 0; i < n; i++) {
 			m.addConstraint(eq(diag1[i], plus(queens[i], i)));
 			m.addConstraint(eq(diag2[i], minus(queens[i], i)));
 		}
-		m.addConstraint(allDifferent(diag1));
-		m.addConstraint(allDifferent(diag2));
+		m.addConstraint(Options.C_ALLDIFFERENT_AC, allDifferent(diag1));
+		m.addConstraint(Options.C_ALLDIFFERENT_AC, allDifferent(diag2));
 
 		Solver s = new CPSolver();
 		s.read(m);
 
+        System.out.printf("%s\n", s.pretty());
 		int timeLimit = 60000;
 		s.setTimeLimit(timeLimit);
-		s.solve();
-
+        s.addGoal(new AssignOrForbidIntVarVal(new StaticVarOrder(s,s.getVar(queens)), new MinVal()));
+//		s.solve();
+        s.solveAll();
 	}
 
 	public static void nQueensNaifRed(int n) {
@@ -173,8 +180,6 @@ public class ExQueen {
 		Solver s = new CPSolver();
 		s.read(m);
 
-		s.setVarIntSelector(new MinDomain(s, s.getVar(queens)));
-
 
 		int timeLimit = 60000;
 		s.setTimeLimit(timeLimit);
@@ -213,8 +218,6 @@ public class ExQueen {
 		Solver s = new CPSolver();
 		s.read(m);
 
-		s.setVarIntSelector(new MinDomain(s,s.getVar(queens)));
-		s.setValIntSelector(new NQueenValueSelector(s.getVar(queensdual)));
 
 		int timeLimit = 60000;
 		s.setTimeLimit(timeLimit);
@@ -271,43 +274,45 @@ public class ExQueen {
 
 
 	public static void main(String[] args) {
-		int nbQueens = 20;
+		int nbQueens = 12;
 		//ChocoLogging.setVerbosity(Verbosity.VERBOSE);
-		LOGGER.info("************* Nqueens naif *************");
-		nQueensNaif(nbQueens); // (1)
+		/*LOGGER.info("************* Nqueens naif *************");
+//		nQueensNaif(nbQueens); // (1)
 		LOGGER.info("");
 		LOGGER.info("****************************************");
-		LOGGER.info("");
+		LOGGER.info("");*/
 
+        ChocoLogging.toVerbose();
+        ChocoLogging.setEveryXNodes(Integer.MAX_VALUE);
 		LOGGER.info("*********** Nqueens alldiff ************");
 		nQueensAlldiff(nbQueens); // (2)
 		LOGGER.info("");
 		LOGGER.info("****************************************");
 		LOGGER.info("");
 
-		LOGGER.info("******* Nqueens naif redondant *********");
-		nQueensNaifRed(nbQueens); // (3)
+		/*LOGGER.info("******* Nqueens naif redondant *********");
+//		nQueensNaifRed(nbQueens); // (3)
 		LOGGER.info("");
 		LOGGER.info("****************************************");
 		LOGGER.info("");
 
 		LOGGER.info("****** Nqueens alldiff redondant *******");
-		nQueensAlldiffRed(nbQueens); // (4)
+//		nQueensAlldiffRed(nbQueens); // (4)
 		LOGGER.info("");
 		LOGGER.info("****************************************");
 		LOGGER.info("");
 
 		LOGGER.info("***** Nqueens naif redondant heur ******");
-		heuristicNqueensNaifRed(nbQueens); // (5)
+//		heuristicNqueensNaifRed(nbQueens); // (5)
 		LOGGER.info("");
 		LOGGER.info("****************************************");
 		LOGGER.info("");
 
 		LOGGER.info("**** Nqueens alldiff redondant heur ****");
-		heuristicNqueensAlldiffRed(nbQueens);  // (6)
+//		heuristicNqueensAlldiffRed(nbQueens);  // (6)
 		LOGGER.info("");
 		LOGGER.info("****************************************");
-		LOGGER.info("");
+		LOGGER.info("");*/
 		ChocoLogging.flushLogs();
 	}
 

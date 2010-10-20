@@ -11,9 +11,9 @@
                 If you are using
                 <tt>choco</tt>
                 and want to appear on the website, contact us at
-                <A HREF="mailto:choco@emn.fr?subject=[USER]">users of
+                <a HREF="mailto:choco@emn.fr?subject=[USER]">users of
                     <tt>choco</tt>
-                </A>
+                </a>
                 .
             </p>
         </section>
@@ -138,7 +138,7 @@
         </section>
         <section name="Contributors">
             <p>
-                They contribute to the development of<tt>choco</tt>:
+                They contribute to the development of <tt>choco</tt>:
             </p>
             <div style="vertical-align: bottom; text-align: center;">
                 <a href="http://www.bouygues.com/" target="_blank">

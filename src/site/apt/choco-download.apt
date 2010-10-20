@@ -21,7 +21,7 @@ Download CHOCO
 
 * Building from the sources
 
-   You can build <<<choco>>> from sources using the repository. See {{{choco-build.html} Build CHOCO}} page for more details.
+   You can build <<<choco>>> from sources using the repository. See {{{./choco-build.html} Build CHOCO}} page for more details.
 
 
 * System Requirements

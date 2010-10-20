@@ -29,9 +29,9 @@
     <p>
         Here you can find some materials at your disposal.
         If you create any, you can also send it to us at
-        <A HREF="mailto:choco@emn.fr?subject=[MATERIALS]" TITLE="[MAT]">materials for
+        <a HREF="mailto:choco@emn.fr?subject=[MATERIALS]" TITLE="[MAT]">materials for
             <tt>choco</tt>
-        </A>
+        </a>
         ,
         so we can add it to the list.
     </p>
