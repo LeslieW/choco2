@@ -29,8 +29,6 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.branching.AssignOrForbidIntVarVal;
 import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
-import choco.cp.solver.variables.integer.AbstractIntDomain;
-import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.tools.StatisticUtils;
 import choco.kernel.memory.IEnvironment;
@@ -205,10 +203,10 @@ public class KnapsackTest {
         KnapsackTest ks = new KnapsackTest();
         ks.parse("../files/knapsack.13-1.txt", 13);
         ks.modelIt(true);
-        System.out.printf("i:%d, r:%d, l:%d, u:%d\n", IntDomainVarImpl.inst, IntDomainVarImpl.rem,
-                IntDomainVarImpl.low, IntDomainVarImpl.upp);
-        System.out.printf("i:%d, r:%d, l:%d, u:%d\n", AbstractIntDomain.instE, AbstractIntDomain.remE,
-                AbstractIntDomain.lowE, AbstractIntDomain.uppE);
+//        System.out.printf("i:%d, r:%d, l:%d, u:%d\n", IntDomainVarImpl.inst, IntDomainVarImpl.rem,
+//                IntDomainVarImpl.low, IntDomainVarImpl.upp);
+//        System.out.printf("i:%d, r:%d, l:%d, u:%d\n", AbstractIntDomain.instE, AbstractIntDomain.remE,
+//                AbstractIntDomain.lowE, AbstractIntDomain.uppE);
 //        Assert.assertTrue(s.getSearchLoop().getTimeCount() < 15000, "time spent > 15000 ms" );
     }
 
