@@ -24,7 +24,6 @@ package choco.kernel.common.util.iterators;
 
 import choco.kernel.common.util.disposable.Disposable;
 
-import java.util.NoSuchElementException;
 import java.util.Queue;
 
 public final class SingleElementIterator<E> extends DisposableIterator<E> {
@@ -36,29 +35,33 @@ public final class SingleElementIterator<E> extends DisposableIterator<E> {
      * see http://en.wikipedia.org/wiki/Singleton_pattern
      */
     private static final class Holder {
-        private Holder() {}
+        private Holder() {
+        }
 
         private static final Queue<SingleElementIterator> container = Disposable.createContainer();
     }
 
 
-	private E elem;
+    private E elem;
 
-	private boolean hnext;
+    private boolean hnext;
 
-	private SingleElementIterator() {}
+    private SingleElementIterator() {
+    }
 
-    private static SingleElementIterator build(){
+    private static SingleElementIterator build() {
         return new SingleElementIterator();
     }
 
     @SuppressWarnings({"unchecked"})
-    public synchronized static <E> SingleElementIterator getIterator(final E element) {
+    public static <E> SingleElementIterator getIterator(final E element) {
         SingleElementIterator<E> it;
-        try{
-            it = Holder.container.remove();
-        }catch (NoSuchElementException e){
-            it = build();
+        synchronized (Holder.container) {
+            if (Holder.container.isEmpty()) {
+                it = build();
+            } else {
+                it = Holder.container.remove();
+            }
         }
         it.init(element);
         return it;
@@ -70,19 +73,19 @@ public final class SingleElementIterator<E> extends DisposableIterator<E> {
     public void init(final E anElement) {
         init();
         this.elem = anElement;
-        hnext=true;
+        hnext = true;
     }
 
     @Override
-	public boolean hasNext() {
-		return hnext;
-	}
+    public boolean hasNext() {
+        return hnext;
+    }
 
     @Override
-	public E next() {
-        hnext=false;
+    public E next() {
+        hnext = false;
         return elem;
-	}
+    }
 
     /**
      * Get the containerof disposable objects where free ones are available

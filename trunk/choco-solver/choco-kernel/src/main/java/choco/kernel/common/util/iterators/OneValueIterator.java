@@ -24,7 +24,6 @@ package choco.kernel.common.util.iterators;
 
 import choco.kernel.common.util.disposable.Disposable;
 
-import java.util.NoSuchElementException;
 import java.util.Queue;
 
 /*
@@ -34,6 +33,7 @@ import java.util.Queue;
 * Since : Choco 2.1.0
 * Update : Choco 2.1.0
 */
+
 public final class OneValueIterator extends DisposableIntIterator {
 
     /**
@@ -52,19 +52,22 @@ public final class OneValueIterator extends DisposableIntIterator {
     private int value;
     private boolean next;
 
-    private OneValueIterator() {}
+    private OneValueIterator() {
+    }
 
     private static OneValueIterator build() {
         return new OneValueIterator();
     }
 
     @SuppressWarnings({"unchecked"})
-    public synchronized static OneValueIterator getIterator(final int aValue) {
+    public static OneValueIterator getIterator(final int aValue) {
         OneValueIterator it;
-        try{
-            it = Holder.container.remove();
-        }catch (NoSuchElementException e){
-            it = build();
+        synchronized (Holder.container) {
+            if (Holder.container.isEmpty()) {
+                it = build();
+            } else {
+                it = Holder.container.remove();
+            }
         }
         it.init(aValue);
         return it;

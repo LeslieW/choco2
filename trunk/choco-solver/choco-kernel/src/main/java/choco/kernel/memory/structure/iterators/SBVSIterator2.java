@@ -26,7 +26,6 @@ import choco.kernel.common.util.disposable.Disposable;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.solver.variables.Var;
 
-import java.util.NoSuchElementException;
 import java.util.Queue;
 
 /**
@@ -61,13 +60,15 @@ public final class SBVSIterator2<E extends Var> extends DisposableIterator<E> {
     }
 
     @SuppressWarnings({"unchecked"})
-    public synchronized static <E extends Var> SBVSIterator2 getIterator(
+    public static <E extends Var> SBVSIterator2 getIterator(
             final E[] someElements, final int last) {
         SBVSIterator2 it;
-        try{
-            it = Holder.container.remove();
-        }catch (NoSuchElementException e){
-            it = build();
+        synchronized (Holder.container){
+            if(Holder.container.isEmpty()){
+                it = build();
+            }else{
+                it = Holder.container.remove();
+            }
         }
         it.init(someElements, last);
         return it;

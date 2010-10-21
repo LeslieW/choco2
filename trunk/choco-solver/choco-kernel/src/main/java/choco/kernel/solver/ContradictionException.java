@@ -36,7 +36,7 @@ import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 /**
  * An exception thrown when a contradiction achieved.
  */
-public class ContradictionException extends Exception {
+public final class ContradictionException extends Exception {
 
 	/**
 	 *
@@ -106,7 +106,10 @@ public class ContradictionException extends Exception {
 	public final boolean isSearchLimitCause(){
         return contradictionCause instanceof AbstractGlobalSearchLimit;
     }
-     
-    
+
+    @Override
+    public Throwable fillInStackTrace() {
+        return null;
+    }
 }
 

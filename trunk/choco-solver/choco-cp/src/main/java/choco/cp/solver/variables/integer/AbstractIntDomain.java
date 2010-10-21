@@ -76,6 +76,8 @@ public abstract class AbstractIntDomain implements IntDomain {
         return IntDomainIterator.getIterator(this);
 	}
 
+
+    public static int instE, remE, lowE, uppE;
 	/**
 	 * Internal var: update on the variable upper bound caused by its i-th
 	 * constraint.
@@ -94,6 +96,7 @@ public abstract class AbstractIntDomain implements IntDomain {
 			if (getSup() == x){
                 awake = forceAwake;// if the event has not change (promotion), keep the given awake policy
             }
+            uppE++;
 			if (val == getSup()) {
 				restrict(val);
 				propagationEngine.postInstInt(variable, cause, awake);
@@ -124,6 +127,7 @@ public abstract class AbstractIntDomain implements IntDomain {
 			if (getInf() == x){
                 awake = forceAwake; //TODO: remove and test, forceAwake should be forget for instantiation!
             }
+            lowE++;
 			if (val == getInf()) {
 				//        instantiate(getInf(), cause);
 				restrict(val);
@@ -155,6 +159,7 @@ public abstract class AbstractIntDomain implements IntDomain {
 
 	public boolean removeVal(final int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
 		if (_removeVal(x, cause)) {
+            remE++;
 			// we must forget the cause when the event is promoted !
             if (getInf() == getSup())
 				propagationEngine.postInstInt(variable, cause, true);
@@ -212,6 +217,7 @@ public abstract class AbstractIntDomain implements IntDomain {
 
 	public boolean instantiate(final int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
 		if (_instantiate(x, cause)) {
+            instE++;
 			propagationEngine.postInstInt(variable, cause, forceAwake);
 			return true;
 		} else

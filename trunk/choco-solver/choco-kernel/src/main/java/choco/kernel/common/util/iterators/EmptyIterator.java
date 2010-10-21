@@ -51,10 +51,12 @@ public final class EmptyIterator extends DisposableIterator<Object> {
     @SuppressWarnings({"unchecked"})
     public static <T> DisposableIterator<T> getIterator() {
         EmptyIterator it;
-        try{
-            it = Holder.container.remove();
-        }catch (NoSuchElementException e){
-            it = build();
+        synchronized (Holder.container) {
+            if (Holder.container.isEmpty()) {
+                it = build();
+            } else {
+                it = Holder.container.remove();
+            }
         }
         it.init();
         return (DisposableIterator<T>) it;

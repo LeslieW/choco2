@@ -27,7 +27,6 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.structure.IndexedObject;
 
-import java.util.NoSuchElementException;
 import java.util.Queue;
 
 /**
@@ -69,13 +68,15 @@ public final class BipartiteSetIterator extends DisposableIntIterator {
     }
 
     @SuppressWarnings({"unchecked"})
-    public static synchronized BipartiteSetIterator getIterator(final int[] aList, final int[] aPosition,
+    public static BipartiteSetIterator getIterator(final int[] aList, final int[] aPosition,
                                                                 final IStateInt aLast, final IndexedObject[] idxToObjects) {
         BipartiteSetIterator it;
-        try{
-            it = Holder.container.remove();
-        }catch (NoSuchElementException e){
-            it = build();
+        synchronized (Holder.container) {
+            if (Holder.container.isEmpty()) {
+                it = build();
+            } else {
+                it = Holder.container.remove();
+            }
         }
         it.init(aList, aPosition, aLast, idxToObjects);
         return it;
@@ -155,7 +156,7 @@ public final class BipartiteSetIterator extends DisposableIntIterator {
         }
     }
 
-   /**
+    /**
      * Get the containerof disposable objects where free ones are available
      *
      * @return a {@link java.util.Deque}

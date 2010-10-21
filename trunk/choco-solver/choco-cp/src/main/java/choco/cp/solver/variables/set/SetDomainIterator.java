@@ -25,7 +25,6 @@ package choco.cp.solver.variables.set;
 import choco.kernel.common.util.disposable.Disposable;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 
-import java.util.NoSuchElementException;
 import java.util.Queue;
 
 /**
@@ -61,12 +60,14 @@ public final class SetDomainIterator extends DisposableIntIterator {
     }
 
     @SuppressWarnings({"unchecked"})
-    public static synchronized SetDomainIterator getIterator(final BitSetEnumeratedDomain aDomain) {
+    public static SetDomainIterator getIterator(final BitSetEnumeratedDomain aDomain) {
         SetDomainIterator it;
-        try{
-            it = Holder.container.remove();
-        }catch (NoSuchElementException e){
-            it = build();
+        synchronized (Holder.container){
+            if(Holder.container.isEmpty()){
+                it = build();
+            }else{
+                it = Holder.container.remove();
+            }
         }
         it.init(aDomain);
         return it;

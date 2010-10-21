@@ -36,6 +36,7 @@ import java.util.*;
  * Since : Choco 2.1.0
  * Update : Choco 2.1.0
  */
+
 public final class ArrayUtils {
 
     private ArrayUtils() {
@@ -375,28 +376,26 @@ public final class ArrayUtils {
 
     }
 
-public static int[] zeroToNShuffle(int nb)
-{
-        return zeroToNShuffle(nb,System.nanoTime());
-}
-public static int[] zeroToNShuffle(int nb, long seed)
-{
+    public static int[] zeroToNShuffle(int nb) {
+        return zeroToNShuffle(nb, System.nanoTime());
+    }
+
+    public static int[] zeroToNShuffle(int nb, long seed) {
         Random r = new Random(seed);
         int[] ret = new int[nb];
         ArrayList<Integer> tmp = new ArrayList<Integer>();
-        for (int i =  0; i < nb ; i++) tmp.add(i);
+        for (int i = 0; i < nb; i++) tmp.add(i);
 
-        for (int i = 0 ; i < nb ; i++)
-        {
-                int idx = r.nextInt(tmp.size());
-                ret[i] = tmp.get(idx);
-                System.err.println(ret[i]);
-                System.err.println(tmp.remove(idx));
+        for (int i = 0; i < nb; i++) {
+            int idx = r.nextInt(tmp.size());
+            ret[i] = tmp.get(idx);
+            System.err.println(ret[i]);
+            System.err.println(tmp.remove(idx));
         }
 
         return ret;
 
-}
+    }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -412,15 +411,17 @@ public static int[] zeroToNShuffle(int nb, long seed)
 
         private final TLongHashSet hashset;
 
-        public synchronized static DLongHashSet getHashSet() {
-            DLongHashSet hs;
-            try {
-                hs = Holder.container.remove();
-            } catch (NoSuchElementException e) {
-                hs = build();
+        public static DLongHashSet getHashSet() {
+            DLongHashSet it;
+            synchronized (Holder.container) {
+                if (Holder.container.isEmpty()) {
+                    it = build();
+                } else {
+                    it = Holder.container.remove();
+                }
             }
-            hs.init();
-            return hs;
+            it.init();
+            return it;
         }
 
         private static DLongHashSet build() {
@@ -458,15 +459,17 @@ public static int[] zeroToNShuffle(int nb, long seed)
 
         private final ArrayList<Object> arrayList;
 
-        public synchronized static DArrayList getArrayList() {
-            DArrayList al;
-            try {
-                al = Holder.container.remove();
-            } catch (NoSuchElementException e) {
-                al = build();
+        public static DArrayList getArrayList() {
+            DArrayList it;
+            synchronized (Holder.container) {
+                if (Holder.container.isEmpty()) {
+                    it = build();
+                } else {
+                    it = Holder.container.remove();
+                }
             }
-            al.init();
-            return al;
+            it.init();
+            return it;
         }
 
         private static DArrayList build() {

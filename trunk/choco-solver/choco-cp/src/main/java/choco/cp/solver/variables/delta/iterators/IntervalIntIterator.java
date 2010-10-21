@@ -25,7 +25,6 @@ package choco.cp.solver.variables.delta.iterators;
 import choco.kernel.common.util.disposable.Disposable;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 
-import java.util.NoSuchElementException;
 import java.util.Queue;
 
 /**
@@ -59,13 +58,15 @@ public final class IntervalIntIterator extends DisposableIntIterator {
     }
 
     @SuppressWarnings({"unchecked"})
-    public static synchronized IntervalIntIterator getIterator(final int theCurrentInfPropagated, final int theCurrentSupPropagated,
-                     final int theLastIntPropagated, final int theLastSupPropagated) {
+    public static IntervalIntIterator getIterator(final int theCurrentInfPropagated, final int theCurrentSupPropagated,
+                                                               final int theLastIntPropagated, final int theLastSupPropagated) {
         IntervalIntIterator it;
-        try{
-            it = Holder.container.remove();
-        }catch (NoSuchElementException e){
-            it = build();
+        synchronized (Holder.container) {
+            if (Holder.container.isEmpty()) {
+                it = build();
+            } else {
+                it = Holder.container.remove();
+            }
         }
         it.init(theCurrentInfPropagated, theCurrentSupPropagated, theLastIntPropagated, theLastSupPropagated);
         return it;

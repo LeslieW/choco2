@@ -24,7 +24,6 @@ package choco.kernel.common.util.iterators;
 
 import choco.kernel.common.util.disposable.Disposable;
 
-import java.util.NoSuchElementException;
 import java.util.Queue;
 
 public final class ArrayIterator<E> extends DisposableIterator<E> {
@@ -36,7 +35,8 @@ public final class ArrayIterator<E> extends DisposableIterator<E> {
      * see http://en.wikipedia.org/wiki/Singleton_pattern
      */
     private static final class Holder {
-        private Holder() {}
+        private Holder() {
+        }
 
         private static final Queue<ArrayIterator> container = Disposable.createContainer();
     }
@@ -55,24 +55,28 @@ public final class ArrayIterator<E> extends DisposableIterator<E> {
     }
 
     @SuppressWarnings({"unchecked"})
-    public synchronized static <E> ArrayIterator<E> getIterator(final E[] elements, final int size) {
+    public static <E> ArrayIterator<E> getIterator(final E[] elements, final int size) {
         ArrayIterator<E> it;
-        try{
-            it = Holder.container.remove();
-        }catch (NoSuchElementException e){
-            it = build();
+        synchronized (Holder.container) {
+            if (Holder.container.isEmpty()) {
+                it = build();
+            } else {
+                it = Holder.container.remove();
+            }
         }
         it.init(elements, size);
         return it;
     }
 
     @SuppressWarnings({"unchecked"})
-    public synchronized static <E> ArrayIterator<E> getIterator(final E[] elements) {
+    public static <E> ArrayIterator<E> getIterator(final E[] elements) {
         ArrayIterator<E> it;
-        try{
-            it = Holder.container.remove();
-        }catch (NoSuchElementException e){
-            it = build();
+        synchronized (Holder.container) {
+            if (Holder.container.isEmpty()) {
+                it = build();
+            } else {
+                it = Holder.container.remove();
+            }
         }
         it.init(elements, elements.length);
         return it;

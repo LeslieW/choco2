@@ -30,7 +30,6 @@ import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.memory.structure.PartiallyStoredVector;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 
-import java.util.NoSuchElementException;
 import java.util.Queue;
 
 /**
@@ -73,15 +72,17 @@ public final class PSCLIterator<C extends AbstractSConstraint> extends Disposabl
     }
 
     @SuppressWarnings({"unchecked"})
-    public synchronized static <C extends AbstractSConstraint> PSCLIterator getIterator(
+    public static <C extends AbstractSConstraint> PSCLIterator getIterator(
             final PartiallyStoredVector<C> someElements,
             final PartiallyStoredIntVector someIndices,
             final C aCause, final DisposableIntIterator aCit) {
         PSCLIterator it;
-        try{
-            it = Holder.container.remove();
-        }catch (NoSuchElementException e){
-            it = build();
+        synchronized (Holder.container) {
+            if (Holder.container.isEmpty()) {
+                it = build();
+            } else {
+                it = Holder.container.remove();
+            }
         }
         it.init(someElements, someIndices, aCause, aCit);
         return it;

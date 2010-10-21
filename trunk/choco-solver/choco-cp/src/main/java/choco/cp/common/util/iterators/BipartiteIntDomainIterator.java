@@ -25,7 +25,6 @@ package choco.cp.common.util.iterators;
 import choco.kernel.common.util.disposable.Disposable;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 
-import java.util.NoSuchElementException;
 import java.util.Queue;
 
 /**
@@ -43,7 +42,8 @@ public final class BipartiteIntDomainIterator extends DisposableIntIterator {
      * see http://en.wikipedia.org/wiki/Singleton_pattern
      */
     private static final class Holder {
-        private Holder() {}
+        private Holder() {
+        }
 
         private static final Queue<BipartiteIntDomainIterator> container = Disposable.createContainer();
     }
@@ -59,12 +59,14 @@ public final class BipartiteIntDomainIterator extends DisposableIntIterator {
     }
 
     @SuppressWarnings({"unchecked"})
-    public synchronized static BipartiteIntDomainIterator getIterator(final int firstIdx, final int[] someValues) {
+    public static BipartiteIntDomainIterator getIterator(final int firstIdx, final int[] someValues) {
         BipartiteIntDomainIterator it;
-        try{
-            it = Holder.container.remove();
-        }catch (NoSuchElementException e){
-            it = build();
+        synchronized (Holder.container) {
+            if (Holder.container.isEmpty()) {
+                it = build();
+            } else {
+                it = Holder.container.remove();
+            }
         }
         it.init(firstIdx, someValues);
         return it;

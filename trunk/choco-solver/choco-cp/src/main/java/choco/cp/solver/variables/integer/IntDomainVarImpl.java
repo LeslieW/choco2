@@ -371,13 +371,16 @@ public class IntDomainVarImpl<C extends AbstractSConstraint & IntPropagator> ext
      * @param forceAwake
      */
 
+    public static int inst, rem, low, upp;
     public boolean updateInf(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
+        low++;
         return domain.updateInf(x, cause, forceAwake);
     }
 
     @Override
     @Deprecated
     public boolean updateInf(final int x, final int idx) throws ContradictionException {
+        low++;
         return domain.updateInf(x, getCause(idx), (idx < 0));
     }
 
@@ -392,12 +395,14 @@ public class IntDomainVarImpl<C extends AbstractSConstraint & IntPropagator> ext
      */
 
     public boolean updateSup(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
+        upp++;
         return domain.updateSup(x, cause, forceAwake);
     }
 
     @Override
     @Deprecated
     public boolean updateSup(final int x, final int idx) throws ContradictionException {
+        upp++;
         return domain.updateSup(x, getCause(idx), (idx < 0));
     }
 
@@ -417,12 +422,14 @@ public class IntDomainVarImpl<C extends AbstractSConstraint & IntPropagator> ext
      */
 
     public boolean removeVal(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
+        rem++;
         return domain.removeVal(x, cause, forceAwake);
     }
 
     @Override
     @Deprecated
     public boolean removeVal(final int x, final int idx) throws ContradictionException {
+        rem++;
         return domain.removeVal(x, getCause(idx), (idx < 0));
     }
 
@@ -457,12 +464,14 @@ public class IntDomainVarImpl<C extends AbstractSConstraint & IntPropagator> ext
      */
 
     public boolean instantiate(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
+        inst++;
         return domain.instantiate(x, cause, forceAwake);
     }
 
     @Override
     @Deprecated
     public boolean instantiate(final int x, final int idx) throws ContradictionException {
+        inst++;
         return domain.instantiate(x, getCause(idx), (idx < 0));
     }
 
