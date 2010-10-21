@@ -33,7 +33,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Queue;
 
 /**
@@ -445,13 +444,15 @@ public final class StoredBinaryTree implements IStateBinaryTree {
         }
 
         @SuppressWarnings({"unchecked"})
-        public synchronized static TreeIterator getIterator(final StoredBinaryTree tree) {
+        public static TreeIterator getIterator(final StoredBinaryTree tree) {
             TreeIterator it;
-            try {
-                it = Holder.container.remove();
-            } catch (NoSuchElementException e) {
+            synchronized (Holder.container){
+            if(Holder.container.isEmpty()){
                 it = build();
+            }else{
+                it = Holder.container.remove();
             }
+        }
             it.init(tree);
             return it;
         }

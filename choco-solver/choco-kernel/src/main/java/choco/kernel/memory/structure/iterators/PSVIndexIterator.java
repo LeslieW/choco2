@@ -22,13 +22,13 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.memory.structure.iterators;
 
-import static choco.kernel.common.Constant.STORED_OFFSET;
 import choco.kernel.common.util.disposable.Disposable;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateInt;
 
-import java.util.NoSuchElementException;
 import java.util.Queue;
+
+import static choco.kernel.common.Constant.STORED_OFFSET;
 
 /**
  * User : cprudhom<br/>
@@ -67,13 +67,15 @@ public final class PSVIndexIterator<E> extends DisposableIntIterator {
     }
 
     @SuppressWarnings({"unchecked"})
-    public static synchronized <E> PSVIndexIterator getIterator(final int theNStaticObjects, final E[] theStaticObjects,
+    public static <E> PSVIndexIterator getIterator(final int theNStaticObjects, final E[] theStaticObjects,
                                                             final IStateInt theNStoredObjects) {
         PSVIndexIterator it;
-        try{
-            it = Holder.container.remove();
-        }catch (NoSuchElementException e){
-            it = build();
+        synchronized (Holder.container){
+            if(Holder.container.isEmpty()){
+                it = build();
+            }else{
+                it = Holder.container.remove();
+            }
         }
         it.init(theNStaticObjects, theStaticObjects, theNStoredObjects);
         return it;

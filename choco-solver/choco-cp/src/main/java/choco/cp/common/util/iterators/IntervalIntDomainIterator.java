@@ -26,7 +26,6 @@ import choco.cp.solver.variables.integer.IntervalIntDomain;
 import choco.kernel.common.util.disposable.Disposable;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 
-import java.util.NoSuchElementException;
 import java.util.Queue;
 
 /**
@@ -52,7 +51,7 @@ public final class IntervalIntDomainIterator extends DisposableIntIterator {
 
     private IntervalIntDomain domain;
     private int value;
-    
+
     private IntervalIntDomainIterator() {
     }
 
@@ -61,12 +60,14 @@ public final class IntervalIntDomainIterator extends DisposableIntIterator {
     }
 
     @SuppressWarnings({"unchecked"})
-    public synchronized static IntervalIntDomainIterator getIterator(final IntervalIntDomain aDomain) {
+    public static IntervalIntDomainIterator getIterator(final IntervalIntDomain aDomain) {
         IntervalIntDomainIterator it;
-        try{
-            it = Holder.container.remove();
-        }catch (NoSuchElementException e){
-            it = build();
+        synchronized (Holder.container) {
+            if (Holder.container.isEmpty()) {
+                it = build();
+            } else {
+                it = Holder.container.remove();
+            }
         }
         it.init(aDomain);
         return it;

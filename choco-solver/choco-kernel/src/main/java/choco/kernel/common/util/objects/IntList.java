@@ -25,7 +25,6 @@ package choco.kernel.common.util.objects;
 import choco.kernel.common.util.disposable.Disposable;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 
-import java.util.NoSuchElementException;
 import java.util.Queue;
 
 
@@ -111,13 +110,15 @@ public class IntList {
         }
 
         @SuppressWarnings({"unchecked"})
-        public synchronized static IntListIterator getIterator(final IntList list) {
+        public static IntListIterator getIterator(final IntList list) {
             IntListIterator it;
-            try{
-            it = Holder.container.remove();
-        }catch (NoSuchElementException e){
-            it = build();
-        }
+            synchronized (Holder.container) {
+                if (Holder.container.isEmpty()) {
+                    it = build();
+                } else {
+                    it = Holder.container.remove();
+                }
+            }
             it.init(list);
             return it;
         }
@@ -131,7 +132,8 @@ public class IntList {
             return new IntListIterator();
         }
 
-        private IntListIterator() {}
+        private IntListIterator() {
+        }
 
         public void init(final IntList list) {
             init();

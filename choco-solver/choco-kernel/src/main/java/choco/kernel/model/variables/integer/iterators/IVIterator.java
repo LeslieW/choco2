@@ -25,7 +25,6 @@ package choco.kernel.model.variables.integer.iterators;
 import choco.kernel.common.util.disposable.Disposable;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 
-import java.util.NoSuchElementException;
 import java.util.Queue;
 
 /**
@@ -61,12 +60,14 @@ public final class IVIterator extends DisposableIntIterator {
     }
 
     @SuppressWarnings({"unchecked"})
-    public static synchronized IVIterator getIterator(final int theLow, final int theUpp, final int[] theValues) {
+    public static IVIterator getIterator(final int theLow, final int theUpp, final int[] theValues) {
         IVIterator it;
-        try{
-            it = Holder.container.remove();
-        }catch (NoSuchElementException e){
-            it = build();
+        synchronized (Holder.container) {
+            if (Holder.container.isEmpty()) {
+                it = build();
+            } else {
+                it = Holder.container.remove();
+            }
         }
         it.init(theLow, theUpp, theValues);
         return it;
@@ -79,9 +80,9 @@ public final class IVIterator extends DisposableIntIterator {
         init();
         this.upp = theUpp;
         this.values = theValues;
-        if(values != null){
+        if (values != null) {
             value = 0;
-        }else{
+        } else {
             value = theLow;
         }
     }
@@ -111,9 +112,9 @@ public final class IVIterator extends DisposableIntIterator {
      */
     @Override
     public int next() {
-        if (values == null){
+        if (values == null) {
             return value++;
-        }else{
+        } else {
             return values[value++];
         }
     }

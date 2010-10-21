@@ -139,9 +139,42 @@
                 </ul>
             </subsection>
 
+            <subsection name="2009">
+                <ul>
+                    <li xmlns:bibtex="http://bibtexml.sf.net/" id="menana-demassey-CPAIOR-2009">
+                        <a href="http://dx.doi.org/10.1007/978-3-642-01929-6_14">
+                            <span class="title">Sequencing and counting with the
+                                <tt>multicost-regular</tt>
+                                constraint
+                            </span>
+                        </a>
+                        (2009).
+                        <a href="http://hal.archives-ouvertes.fr/hal-00394434">
+                            [hal]
+                        </a>
+                        <a href="http://dx.doi.org/10.1007/978-3-642-01929-6_14">
+                            [doi]
+                        </a>
+                        <a href="http://www.emn.fr/x-info/sdemasse/art/menana09cpaior.pdf">[paper]</a>
+                        <br/>
+                        <span class="person">Julien Menana</span>
+                        <span class="person">Sophie Demassey</span>
+
+                        <span class="conf"><span class="journal">6th International Conference on Integration of AI and
+                            OR Techniques in Constraint Programming for Combinatorial Optimization Problems
+                            (CPAIOR'09)</span>, Pittsburgh, USA.
+                        </span>
+                        <span class="ref">
+                            <span class="series">Lecture Notes in Computer Science</span>
+                            5547: 178-192.
+                        </span>
+                    </li>
+                </ul>
+            </subsection>
+
             <p>
                 If you think an article is missing, contact us at
-                <a HREF="mailto:choco@emn.fr?subject=[ARTICLE]">add article to <tt>choco</tt>'s bibtex
+                <a HREF="mailto:choco@emn.fr?subject=[ARTICLE]">add article to<tt>choco</tt>'s bibtex
                 </a>
                 .
             </p>

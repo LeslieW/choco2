@@ -33,7 +33,6 @@ import choco.kernel.solver.variables.set.SetSubDomain;
 import choco.kernel.solver.variables.set.SetVar;
 
 import java.util.Arrays;
-import java.util.NoSuchElementException;
 import java.util.Queue;
 
 /**
@@ -123,6 +122,7 @@ public final class SetDomainImpl implements SetDomain {
     }
 
     //TODO : a bitset instead of a int[] ?
+
     boolean canBeInstantiatedTo(final int[] setVal) {
         if (kernel.getSize() <= setVal.length && enveloppe.getSize() >= setVal.length) {
             Arrays.sort(setVal);   // TODO : can we suppose that the table is sorted ?
@@ -195,6 +195,7 @@ public final class SetDomainImpl implements SetDomain {
     }
 
     // Si promotion, il faut annuler la cause
+
     public boolean addToKernel(final int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
         if (_addToKernel(x, cause)) {
             if (isInstantiated()) {
@@ -217,6 +218,7 @@ public final class SetDomainImpl implements SetDomain {
     }
 
     // Si promotion, il faut annuler la cause
+
     boolean _remFromEnveloppe(final int x, final SConstraint cause) throws ContradictionException {
         if (kernel.contains(x)) {
             propagationEngine.raiseContradiction(cause);
@@ -229,6 +231,7 @@ public final class SetDomainImpl implements SetDomain {
     }
 
     // Si promotion, il faut annuler la cause
+
     boolean _addToKernel(final int x, final SConstraint cause) throws ContradictionException {
         if (!enveloppe.contains(x)) {
             propagationEngine.raiseContradiction(cause);
@@ -298,27 +301,30 @@ public final class SetDomainImpl implements SetDomain {
         }
 
         @SuppressWarnings({"unchecked"})
-    public synchronized static SetOpenDomainIterator getIterator(final BitSetEnumeratedDomain dom1, final BitSetEnumeratedDomain dom2) {
-        SetOpenDomainIterator it;
-        try{
-            it = Holder.container.remove();
-        }catch (NoSuchElementException e){
-            it = build();
+        public static SetOpenDomainIterator getIterator(final BitSetEnumeratedDomain dom1, final BitSetEnumeratedDomain dom2) {
+            SetOpenDomainIterator it;
+            synchronized (Holder.container) {
+                if (Holder.container.isEmpty()) {
+                    it = build();
+                } else {
+                    it = Holder.container.remove();
+                }
+            }
+            it.init(dom1, dom2);
+            return it;
         }
-        it.init(dom1, dom2);
-        return it;
-    }
 
         private BitSetEnumeratedDomain envdomain;
         private BitSetEnumeratedDomain kerdomain;
         private int currentValue = Integer.MIN_VALUE;
         private int nbValueToBeIterated = Integer.MAX_VALUE;
 
-        private static SetOpenDomainIterator build(){
+        private static SetOpenDomainIterator build() {
             return new SetOpenDomainIterator();
         }
 
-        private SetOpenDomainIterator() {}
+        private SetOpenDomainIterator() {
+        }
 
         public void init(final BitSetEnumeratedDomain dom1, final BitSetEnumeratedDomain dom2) {
             init();
@@ -360,6 +366,6 @@ public final class SetDomainImpl implements SetDomain {
         @Override
         public Queue getContainer() {
             return Holder.container;
-      }
-  }
+        }
+    }
 }

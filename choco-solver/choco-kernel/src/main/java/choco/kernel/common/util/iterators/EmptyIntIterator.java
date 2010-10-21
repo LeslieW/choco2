@@ -34,6 +34,7 @@ import java.util.Queue;
 * Since : Choco 2.1.0
 * Update : Choco 2.1.0
 */
+
 public final class EmptyIntIterator extends DisposableIntIterator {
 
     /**
@@ -57,12 +58,14 @@ public final class EmptyIntIterator extends DisposableIntIterator {
     }
 
     @SuppressWarnings({"unchecked"})
-    public static synchronized EmptyIntIterator getIterator() {
+    public static EmptyIntIterator getIterator() {
         EmptyIntIterator it;
-        try{
-            it = Holder.container.remove();
-        }catch (NoSuchElementException e){
-            it = build();
+        synchronized (Holder.container) {
+            if (Holder.container.isEmpty()) {
+                it = build();
+            } else {
+                it = Holder.container.remove();
+            }
         }
         it.init();
         return it;
@@ -101,4 +104,4 @@ public final class EmptyIntIterator extends DisposableIntIterator {
     public Queue getContainer() {
         return Holder.container;
     }
-  }
+}

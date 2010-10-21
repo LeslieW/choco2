@@ -24,7 +24,6 @@ package choco.kernel.common.util.iterators;
 
 import choco.kernel.common.util.disposable.Disposable;
 
-import java.util.NoSuchElementException;
 import java.util.Queue;
 
 /**
@@ -33,7 +32,7 @@ import java.util.Queue;
  * Date : 1 mars 2010<br/>
  * Since : Choco 2.1.1<br/>
  */
-public final class IntArrayIterator extends DisposableIntIterator{
+public final class IntArrayIterator extends DisposableIntIterator {
 
     /**
      * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
@@ -61,18 +60,21 @@ public final class IntArrayIterator extends DisposableIntIterator{
 
     /**
      * Get iterator over {@code someElements} starting from {@code from} to {@code to} (included).
+     *
      * @param someElements array of int
-     * @param from starting index
-     * @param to ending index (excluded)
+     * @param from         starting index
+     * @param to           ending index (excluded)
      * @return Disposable iterator
      */
     @SuppressWarnings({"unchecked"})
-    public static synchronized IntArrayIterator getIterator(final int[] someElements, final int from, final int to) {
+    public static IntArrayIterator getIterator(final int[] someElements, final int from, final int to) {
         IntArrayIterator it;
-        try{
-            it = Holder.container.remove();
-        }catch (NoSuchElementException e){
-            it = build();
+        synchronized (Holder.container) {
+            if (Holder.container.isEmpty()) {
+                it = build();
+            } else {
+                it = Holder.container.remove();
+            }
         }
         it.init(someElements, from, to);
         return it;

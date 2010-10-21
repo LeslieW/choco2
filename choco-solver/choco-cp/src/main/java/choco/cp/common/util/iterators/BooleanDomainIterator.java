@@ -26,7 +26,6 @@ import choco.cp.solver.variables.integer.BooleanDomain;
 import choco.kernel.common.util.disposable.Disposable;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 
-import java.util.NoSuchElementException;
 import java.util.Queue;
 
 /**
@@ -47,7 +46,7 @@ public final class BooleanDomainIterator extends DisposableIntIterator {
         private Holder() {
         }
 
-        private static final Queue<BooleanDomainIterator> CONTAINER = Disposable.createContainer();
+        private static final Queue<BooleanDomainIterator> container = Disposable.createContainer();
     }
 
     private BooleanDomain domain;
@@ -62,12 +61,14 @@ public final class BooleanDomainIterator extends DisposableIntIterator {
     }
 
     @SuppressWarnings({"unchecked"})
-    public static synchronized BooleanDomainIterator getIterator(final BooleanDomain aDomain) {
+    public static BooleanDomainIterator getIterator(final BooleanDomain aDomain) {
         BooleanDomainIterator it;
-        try{
-            it = Holder.CONTAINER.remove();
-        }catch (NoSuchElementException e){
-            it = build();
+        synchronized (Holder.container){
+            if(Holder.container.isEmpty()){
+                it = build();
+            }else{
+                it = Holder.container.remove();
+            }
         }
         it.init(aDomain);
         return it;
@@ -120,6 +121,6 @@ public final class BooleanDomainIterator extends DisposableIntIterator {
      * @return a {@link java.util.Deque}
      */
     public Queue getContainer() {
-        return Holder.CONTAINER;
+        return Holder.container;
     }
 }

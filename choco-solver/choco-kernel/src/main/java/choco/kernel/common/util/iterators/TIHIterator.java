@@ -27,7 +27,6 @@ import choco.kernel.common.util.disposable.Disposable;
 import choco.kernel.common.util.objects.DeterministicIndicedList;
 import gnu.trove.TIntHashSet;
 
-import java.util.NoSuchElementException;
 import java.util.Queue;
 
 /**
@@ -63,13 +62,15 @@ public final class TIHIterator<E extends IIndex> extends DisposableIterator<E> {
     }
 
     @SuppressWarnings({"unchecked"})
-    public static synchronized <E extends IIndex> TIHIterator<E> getIterator(final TIntHashSet indices,
+    public static <E extends IIndex> TIHIterator<E> getIterator(final TIntHashSet indices,
                                                                              final DeterministicIndicedList<E> elements) {
         TIHIterator it;
-        try{
-            it = Holder.container.remove();
-        }catch (NoSuchElementException e){
-            it = build();
+        synchronized (Holder.container){
+            if(Holder.container.isEmpty()){
+                it = build();
+            }else{
+                it = Holder.container.remove();
+            }
         }
         it.init(indices, elements);
         return it;

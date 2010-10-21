@@ -28,7 +28,6 @@ import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.structure.StoredBipartiteVarSet;
 import choco.kernel.solver.variables.Var;
 
-import java.util.NoSuchElementException;
 import java.util.Queue;
 
 /**
@@ -58,20 +57,23 @@ public final class SBVSIterator1<E extends Var> extends DisposableIterator<E> {
     private IStateInt last;
     private int nlast;
 
-    private SBVSIterator1() {}
+    private SBVSIterator1() {
+    }
 
-    private static SBVSIterator1 build(){
+    private static SBVSIterator1 build() {
         return new SBVSIterator1();
     }
 
     @SuppressWarnings({"unchecked"})
     public synchronized static <E extends Var> SBVSIterator1 getIterator(final StoredBipartiteVarSet aStoredBipartiteVarSet,
-                                                final E[] someElements, final IStateInt last) {
+                                                                         final E[] someElements, final IStateInt last) {
         SBVSIterator1 it;
-        try{
-            it = Holder.container.remove();
-        }catch (NoSuchElementException e){
-            it = build();
+        synchronized (Holder.container) {
+            if (Holder.container.isEmpty()) {
+                it = build();
+            } else {
+                it = Holder.container.remove();
+            }
         }
         it.init(aStoredBipartiteVarSet, someElements, last);
         return it;

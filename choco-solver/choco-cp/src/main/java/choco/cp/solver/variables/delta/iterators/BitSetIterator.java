@@ -26,7 +26,6 @@ import choco.kernel.common.util.disposable.Disposable;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 
 import java.util.BitSet;
-import java.util.NoSuchElementException;
 import java.util.Queue;
 
 /**
@@ -63,14 +62,16 @@ public class BitSetIterator extends DisposableIntIterator {
         return new BitSetIterator();
     }
 
-    @SuppressWarnings({"unchecked"})
-    public synchronized static BitSetIterator getIterator(final int theOffset,
-                                                                   final BitSet theContents) {
+   @SuppressWarnings({"unchecked"})
+    public static BitSetIterator getIterator(final int theOffset,
+                                             final BitSet theContents) {
         BitSetIterator it;
-        try{
-            it = Holder.container.remove();
-        }catch (NoSuchElementException e){
-            it = build();
+        synchronized (Holder.container){
+            if(Holder.container.isEmpty()){
+                it = build();
+            }else{
+                it = Holder.container.remove();
+            }
         }
         it.init(theOffset, theContents);
         return it;

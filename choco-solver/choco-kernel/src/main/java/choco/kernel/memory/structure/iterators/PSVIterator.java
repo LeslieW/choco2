@@ -1,12 +1,13 @@
 package choco.kernel.memory.structure.iterators;
 
-import static choco.kernel.common.Constant.STORED_OFFSET;
 import choco.kernel.common.util.disposable.Disposable;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.IStateInt;
 
 import java.util.NoSuchElementException;
 import java.util.Queue;
+
+import static choco.kernel.common.Constant.STORED_OFFSET;
 
 public final class PSVIterator<E> extends DisposableIterator<E> {
 
@@ -17,7 +18,8 @@ public final class PSVIterator<E> extends DisposableIterator<E> {
      * see http://en.wikipedia.org/wiki/Singleton_pattern
      */
     private static final class Holder {
-        private Holder() {}
+        private Holder() {
+        }
 
         private static final Queue<PSVIterator> container = Disposable.createContainer();
 
@@ -25,12 +27,14 @@ public final class PSVIterator<E> extends DisposableIterator<E> {
 
     @SuppressWarnings({"unchecked"})
     public static <E> DisposableIterator getIterator(final int theNStaticObjects, final E[] theStaticObjects,
-                    final IStateInt theNStoredObjects,final E[] theStoredObjects) {
+                                                     final IStateInt theNStoredObjects, final E[] theStoredObjects) {
         PSVIterator<E> it;
-        try{
-            it = Holder.container.remove();
-        }catch (NoSuchElementException e){
-            it = build();
+        synchronized (Holder.container) {
+            if (Holder.container.isEmpty()) {
+                it = build();
+            } else {
+                it = Holder.container.remove();
+            }
         }
         it.init(theNStaticObjects, theStaticObjects, theNStoredObjects, theStoredObjects);
         return it;
@@ -47,7 +51,8 @@ public final class PSVIterator<E> extends DisposableIterator<E> {
 
     private int idx;
 
-    private PSVIterator() {}
+    private PSVIterator() {
+    }
 
     private static PSVIterator build() {
         return new PSVIterator();
@@ -57,13 +62,13 @@ public final class PSVIterator<E> extends DisposableIterator<E> {
      * Freeze the iterator, cannot be reused.
      */
     public void init(final int theNStaticObjects, final E[] theStaticObjects,
-                    final IStateInt theNStoredObjects,final E[] theStoredObjects) {
+                     final IStateInt theNStoredObjects, final E[] theStoredObjects) {
         init();
         idx = -1;
         this.nStaticObjects = theNStaticObjects;
         this.staticObjects = theStaticObjects;
         this.nStoredObjects = theNStoredObjects.get();
-        this.storedObjects =  theStoredObjects;
+        this.storedObjects = theStoredObjects;
     }
 
     public boolean hasNext() {
