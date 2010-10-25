@@ -1,0 +1,21 @@
+\section{CompositeIntVarSelector (Variable selector)}\label{compositeintvarselector:compositeintvarselectorvarselector}\hypertarget{compositeintvarselector:compositeintvarselectorvarselector}{}
+\begin{notedef}
+  \texttt{CompositeIntVarSelector} composes two heuristics for selecting a variable: a first heuristic is applied for selecting a constraint, then from that constraint a second heuristic is applied for selecting the variable
+  \end{notedef}
+
+\begin{itemize}
+	\item \textbf{Constructor} :\mylst{CompositeIntVarSelector(ConstraintSelector cs, HeuristicIntVarSelector cvs)}
+	\begin{itemize}
+\item \texttt{ConstraintSelector} is an \texttt{interface} not implemented. You should define your own implementation. 
+
+\item \texttt{HeuristicIntVarSelector} is an \texttt{abstract class}  implemented by: \hyperlink{mindomain:mindomainvarselector}{MinDomain}, \hyperlink{maxdomain:maxdomainvarselector}{MaxDomain}, \hyperlink{maxregret:maxregretvarselector}{MaxRegret}, \hyperlink{maxvaldomain:maxvaldomainvarselector}{MaxValueDomain}, \hyperlink{minvaldomain:minvaldomainvarselector}{MinValueDomain}, \hyperlink{mostconstrained:mostconstrainedvarselector}{MostConstrained}. //TODO to complete
+
+\end{itemize}
+
+	\item \textbf{type of variable} : integer
+	\item \textbf{references} : \emph{n/a}
+\end{itemize}
+
+\textbf{Example}:
+%\lstinputlisting{java/cabs.j2t}
+

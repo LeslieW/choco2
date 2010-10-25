@@ -125,11 +125,109 @@ After variables, the Solver iterates over the constraints added to the Model. It
 
 \section{Search Strategy}\label{solver:searchstrategy}\hypertarget{solver:searchstrategy}{}
 
-A key ingredient of any constraint approach is a clever branching strategy. The construction of the search tree is done according to a series of Branching objects (that plays the role of achieving intermediate goals in logic programming). The user may specify the sequence of branching objects to be used to build the search tree. A common way to branch in CP is by assigning variables to values (such a branching is called \textbf{\tt AssignVar} in choco). We will present in this section how to define your branching strategies with existing variables and values selectors. 
+A key ingredient of any constraint approach is a clever branching strategy. The construction of the search tree is done according to a series of \textit{branching objects} (that plays the role of achieving intermediate goals in logic programming). The user may specify the sequence of branching objects to be used to build the search tree. A common way to branch in CP is by assigning variables to values. We will present in this section how to define your branching strategies with existing variables and values selectors/iterators. But first...
+
+\subsection{Override the default search stragtegy}\label{solver:overridethedefaultsearchstrategy}\hypertarget{solver:overridethedefaultsearchstrategy}{}
+
+
+Basically, a search strategy is the composition of three objects: a branching strategy, a variable selector and a value selector. Some branching simply assign a selected value to a selected variable, like \hyperlink{assignvar:assignvarbranchstrat}{AssignVar}, others branching strategies embed the variable selector, like \hyperlink{domoverwdeg:domoverwdegbranchstrat}{DomOverWDegBranchingNew}, or more, like  \hyperlink{impact:impactbranchstrat}{ImpactBasedBranching}.
+
+The default branchings are: 
+
+\noindent\begin{tabular}{p{.4\linewidth}p{.6\linewidth}}
+\hline
+Variable &  Default strategy \\
+\hline
+Integer & \hyperlink{domoverwdeg:domoverwdegbranchstrat}{DomOverWDegBranchingNew} +\hyperlink{increasingdomain:increasingdomainvaliterator}{IncreasingDomain}\\
+Set &   \hyperlink{assignsetvar:assignsetvarbranchstrat}{AssignSetVar} + \hyperlink{mindomset:mindomsetvarselector}{MinDomainSet} + \hyperlink{minenv:minenvvalselector}{MinEnv} \\
+ Real &  \hyperlink{assigninterval:assignintervalbranchstrat}{AssignInterval} + \hyperlink{cyclicrealvarselector:cyclicrealvarselectorvarselector}{CyclicRealVarSelector}+ \hyperlink{realincreasingdomain:realincreasingdomainvaliterator}{RealIncreasingDomain} \\
+\hline\\
+\end{tabular}
+
+There are two ways to custom a search strategy: use the ones define in the factory  \texttt{BranchingFactory} or compose it. 
+A branching strategy can be set or add to the previous one using the following API (must be done before calling the method \mylst{solve()}):
+
+  \mylst{solver.addGoal(AbstractIntBranchingStrategy branching)} 
+
+\noindent to clear the list of goals, use:
+
+  \mylst{solver.clearGoals()} 
+
+You might want to apply different heuristics to different set of variables of the problem. In that case, the search is viewed as a sequence of branching objects (or goals). Up to now, we only had one branching or one goal including all the variables of the problem but several goals can be used.
+
+Adding a new goal is made through the solver with the \mylst{solver.addGoal(AbstractIntBranchingStrategy branching)} method. 
+
+The following example add three branching objects on integer variables \emph{vars1}, \emph{vars2} and set variables \emph{svars} to solver \emph{s}. The first two branchings are both \texttt{AssignVar} but use two different variable/values selection strategies:
+\begin{lstlisting}
+  s.addGoal(new AssignVar(new MinDomain(s,s.getVar(vars1)), new IncreasingDomain()));
+  s.addGoal(new AssignVar(new DomOverDeg(s,s.getVar(vars2)),new DecreasingDomain());
+  s.addGoal(new AssignSetVar(new MinDomSet(s,s.getVar(svars)), new MinEnv(s)));
+  s.solve();
+\end{lstlisting}
+
+\begin{note}
+Strategies are made of \texttt{Solver} variables (not \texttt{Model} variables).
+\end{note}
+
+\subsubsection{Branching strategy.}\label{solver:branchstrat}\hypertarget{solver:branchstrat}{}
+It defines the way to take a decision in a tree search node.
+  
+\noindent The \textbf{branching strategies} currently available in Choco are the following: 
+\begin{notedef}\tt
+\hyperlink{assigninterval:assignintervalbranchstrat}{AssignInterval}, \hyperlink{assignorforbidintvarval:assignorforbidintvarvalbranchstrat}{AssignOrForbidIntVarVal}, \hyperlink{assignorforbidintvarvalpair:assignorforbidintvarvalpairbranchstrat}{AssignOrForbidIntVarValPair}, \hyperlink{assignsetvar:assignsetvarbranchstrat}{AssignSetVar}, \hyperlink{assignvar:assignvarbranchstrat}{AssignVar}, \hyperlink{domoverwdeg:domoverwdegbranchstrat}{DomOverWDegBranchingNew}, \hyperlink{domoverwdegbin:domoverwdegbinbranchstrat}{DomOverWDegBinBranchingNew}, \hyperlink{impact:impactbranchstrat}{ImpactBasedBranching}, \hyperlink{packdynremovals:packdynremovalsbranchstrat}{PackDynRemovals}, \hyperlink{settimes:settimesbranchstrat}{SetTimes}, \hyperlink{taskdomoverwdeg:taskdomoverwdegbranchstrat}{TaskOverWDegBinBranching}.
+\end{notedef}    
+
+
+\subsubsection{Variable selector.}\label{solver:variableselector}\hypertarget{solver:variableselector}{}
+It defines the way to choose the non instantiated variable on which the next decision will be made.
+
+\noindent The \textbf{integer variable selectors} currently available in Choco are the following: 
+\begin{notedef}\tt
+\hyperlink{compositeintvarselector:compositeintvarselectorvarselector}{CompositeIntVarSelector}, \hyperlink{lexintvarselector:lexintvarselectorvarselector}{LexIntVarSelector}, \hyperlink{maxdomain:maxdomainvarselector}{MaxDomain}, \hyperlink{maxregret:maxregretvarselector}{MaxRegret}, \hyperlink{maxvaldomain:maxvaldomainvarselector}{MaxValueDomain}, \hyperlink{mindomain:mindomainvarselector}{MinDomain}, \hyperlink{minvaldomain:minvaldomainvarselector}{MinValueDomain}, \hyperlink{mostconstrained:mostconstrainedvarselector}{MostConstrained},  \hyperlink{randomvarint:randomvarintvarselector}{RandomIntVarSelector},  \hyperlink{staticvarorder:staticvarordervarselector}{StaticVarOrder}
+\end{notedef}
+
+\noindent The \textbf{set variable selectors} currently available in Choco are the following: 
+\begin{notedef}\tt
+\hyperlink{maxdomset:maxdomsetvarselector}{MaxDomainSet}, \hyperlink{maxregretset:maxregretsetvarselector}{MaxRegretSet}, \hyperlink{maxvaldomainset:maxvaldomainsetvarselector}{MaxValueDomainSet}, \hyperlink{mindomset:mindomsetvarselector}{MinDomainSet}, \hyperlink{minvaldomainset:minvaldomainsetvarselector}{MinValueDomainSet}, \hyperlink{mostconstrainedset:mostconstrainedsetvarselector}{MostConstrainedSet},  \hyperlink{randomvarset:randomvarsetvarselector}{RandomSetVarSelector},  \hyperlink{staticsetvarorder:staticsetvarordervarselector}{StaticSetVarOrder}
+\end{notedef}
+
+\noindent The \textbf{real variable selector} currently available in Choco is the following: 
+\begin{notedef}\tt
+\hyperlink{cyclicrealvarselector:cyclicrealvarselectorvarselector}{CyclicRealVarSelector}
+\end{notedef}
+
+\subsubsection{Value iterator}\label{solver:valueiterator}\hypertarget{solver:valueiterator}{}
+Once the variable has been choosen, the Solver has to compute its value. The first way to do it is to schedule the value once and give an iterator to the solver.
+
+\noindent The \textbf{integer value iterator} currently available in Choco are the following: 
+\begin{notedef}\tt
+\hyperlink{decreasingdomain:decreasingdomainvaliterator}{DecreasingDomain}, \hyperlink{increasingdomain:increasingdomainvaliterator}{IncreasingDomain}
+\end{notedef}
+
+\noindent The \textbf{real value iterator} currently available in Choco is the following: 
+\begin{notedef}\tt
+\hyperlink{realincreasingdomain:realincreasingdomainvaliterator}{RealIncreasingDomain}
+\end{notedef}
+
+
+
+
+\subsubsection{Value selector}\label{solver:valueselector}\hypertarget{solver:valueselector}{}
+The second way to do it is to compute the following value at each call.
+
+\noindent The \textbf{integer value selector} currently available in Choco are the following: 
+\begin{notedef}\tt
+\hyperlink{bestfit:bestfitvalselector}{BestFit}, \hyperlink{costregularvalselector:costregularvalselectorvalselector}{CostRegularValSelector}, \hyperlink{fcostregularvalselector:fcostregularvalselectorvalselector}{FCostRegularValSelector}, \hyperlink{maxval:maxvalvalselector}{MaxVal}, \hyperlink{mcrvalselector:mcrvalselectorvalselector}{MCRValSelector}, \hyperlink{midval:midvalvalselector}{MidVal}, \hyperlink{minval:minvalvalselector}{MinVal}
+\end{notedef}
+
+\noindent The \textbf{set value selector} currently available in Choco is the following: 
+\begin{notedef}\tt
+\hyperlink{minenv:minenvvalselector}{MinEnv}, \hyperlink{randomsetvalselector:randomsetvalselectorvalselector}{RandomSetValSelector}
+\end{notedef}
 
 \subsection{Why is it important to define a search strategy ?}\label{solver:whyisitimportanttodefineasearchstrategy}\hypertarget{solver:whyisitimportanttodefineasearchstrategy}{}
 
-Once a fix point is reached, the Solver needs to select a variable and its value to continue the search. The way variables and values are chosen has a \textbf{real impact on the resolution step efficient}. 
+In a partial instantiation, when a fix point has been reached, the Solver needs to take a decision to resume the search. The way decisions are chosen has a \textbf{real impact on the resolution step efficient}. 
 \begin{note}
 \emph{The search strategy should not be overlooked!!}
 An adapted search strategy can reduce: the execution time, the number of node expanded, the number of backtrack done.
@@ -137,206 +235,33 @@ An adapted search strategy can reduce: the execution time, the number of node ex
 Let see that small example:
 \begin{lstlisting}
 	Model m = new CPModel();
-	int n = 1000;
-	IntegerVariable var = makeBoundIntVar("var", 0, 2);
-	IntegerVariable[] bi = makeEnumIntVarArray("b", n, 0, 1);
-	m.addConstraint(eq(var, sum(bi)));
-	
-	Solver badStrat = new CPSolver();
-	badStrat.read(m);
-	badStrat.setVarIntSelector(new MinDomain(badStrat));
-	badStrat.setValIntIterator(new IncreasingDomain());
-	badStrat.solve();
-	badStrat.printRuntimeSatistics();
-	
-	Solver goodStrat = new CPSolver();
-	goodStrat.read(m);
-	goodStrat.setVarIntSelector(new MinDomain(goodStrat, 
-                                              goodStrat.getVar(new IntegerVariable[]{var})));
-	goodStrat.setValIntIterator(new DecreasingDomain());
-	goodStrat.solve();
-	goodStrat.printRuntimeSatistics();
+        int n = 1000;
+        IntegerVariable var = Choco.makeIntVar("var", 0, 2);
+        IntegerVariable[] bi = Choco.makeBooleanVarArray("b", n);
+        m.addConstraint(Choco.eq(var, Choco.sum(bi)));
+
+        Solver badStrat = new CPSolver();
+        badStrat.read(m);
+        badStrat.addGoal(
+                new AssignVar(
+                        new MinDomain(badStrat), 
+                        new IncreasingDomain()
+                ));
+        badStrat.solve();
+        badStrat.printRuntimeStatistics();
+
+        Solver goodStrat = new CPSolver();
+        goodStrat.read(m);
+        goodStrat.addGoal(
+                new AssignVar(
+                        new MinDomain(goodStrat, goodStrat.getVar(new IntegerVariable[]{var})), 
+                        new DecreasingDomain()
+                ));
+        goodStrat.solve();
+        goodStrat.printRuntimeStatistics();
 \end{lstlisting}
 
-This model ensures that $var = b_{0} + b_{1} + \ldots + b_{1000}$ where \emph{var} has a small domain and $b_{i}$ is a binary variable. The propagation has no effect on any domain and a fix point is reached at the beginning of the search. So, a decision has to be done choosing a variable and its value. As the default variable selector is \texttt{MinDomain} (see below), the solver will iterate over the variables, starting by the 1000 binary variables and ending with \emph{var}, and 1001 nodes will be created.
-
-\subsection{Variable and value selection}\label{solver:variableandvalueselection}\hypertarget{solver:variableandvalueselection}{}
-
-A common way to explore the search tree in CP is by assigning values to variables. The branching class of Choco dedicated to this kind of search is \texttt{\bf AssignVar}. More complex branching schemes can be performed in Choco but this section lists the default strategies available for exploring the search tree by assigning variables and that can be used within an \texttt{AssignVar} branching. These strategies are called \emph{variable and value selection heuristics}. 
-
-The heuristics available in Choco and the API for selecting a given heuristic depend on the type of the considered variables. 
-As instance, for integer variables, the default branching heuristic used by Choco is to choose the variable with current minimum domain size first (\texttt{MinDomain}) and to take its values in increasing order (\texttt{IncreasingDomain}). 
-Customizing the value and variable heuristics on the integer variables of the solver can be done (before calling the \texttt{solve()} method) using the \texttt{Solver} API, as shown in the following example:
-\begin{lstlisting}
-  // select the next branching variable randomly
-  solver.setVarIntSelector(new RandomIntVarSelector(solver));
-  // select the values in increasing order
-  solver.setValIntIterator(new DecreasingDomain());
-  // *OR* select the next value randomly
-  solver.setValIntSelector(new RandomIntValSelector());
-\end{lstlisting}
-
-\subsubsection{Variable selector.}\label{solver:variableselector}\hypertarget{solver:variableselector}{}
-It defines the way to choose the non instantiated variable on which the next decision will be made.
-A variable selector can be set using the following API:
-
-\noindent\begin{tabular}{p{.4\linewidth}p{.2\linewidth}p{.3\linewidth}}
-  \hline
-  \texttt{Solver} API &  Variable &  Default strategy \\
-  \hline
-  \mylst{setVarIntSelector(VarSelector)} &  Integer  &  MinDomain \\
-  \mylst{setVarRealSelector(RealVarSelector)} &  Real &  CyclicRealVarSelector \\
-  \mylst{setVarSetSelector(SetVarSelector)} &  Set  &  MinDomSet \\
-  \hline\\
-\end{tabular}
-
-\noindent The variable selectors currently available in Choco are the following: \todo{to complete}
-
-\noindent\begin{tabular}{p{.5\linewidth}p{.5\linewidth}}
-  \hline
-  Integer Variable Selector &  description \\
-  \hline
-  \mylst{StaticVarOrder(IntDomainVar[])} & A heuristic selecting the first non instantiated variable in the given static order \\
-  \mylst{MinDomain(Solver, IntDomainVar[])} & A heuristic selecting the variable with smallest domain \\
-  \mylst{DomOverDeg(Solver, IntDomainVar[])} & A heuristic selecting the variable with smallest ration (domainSize / degree), the \emph{degree} of a variable is the number of constraints linked to it. \\
-  \mylst{DomOverDynDeg(Solver, IntDomainVar[])} & A heuristic selecting the variable with smallest degree, the \emph{degree} of a variable is the number of constraints linked to it that is not completely instanciated. \\
-  \mylst{DomOverWDeg(Solver, IntDomainVar[])} & see \hyperlink{solver:dom/wdeg}{example}. \\
-  \mylst{MostConstrained(final Solver, final IntDomainVar[])} & A heuristic selecting the variable with the maximum degree \\
-  \mylst{RandomIntVarSelector(Solver, IntDomainVar[], long)} & A heuristic selecting randomly the non instantiated variable \\
-  \mylst{CompositeIntVarSelector(ConstraintSelector, HeuristicIntVarSelector)} & Composes two heuristics for selecting a variable: a first heuristic is applied for selecting a constraint. From that constraint a second heuristic is applied for selecting the variable \\
-  \mylst{LexIntVarSelector(HeuristicIntVarSelector, HeuristicIntVarSelector)} & applies two heuristics lexicographically for selecting a variable: a first heuristic is applied finding the best constraint, ties are broken with the second heuristic \\
-  &\\
-  \hline
-  Set Variable Selector & description   \\
-  \hline
-  \mylst{MinDomSet(Solver)} &A heuristic selecting the variable with the smallest domain \\
-  \mylst{RandomSetVarSelector(Solver, SetVar[], long)} &A heuristic selecting randomly the variable \\
-  \mylst{StaticSetVarOrder(SetVar[])} &A heuristic selecting the first non instantiated variable in the given static order \\
-  &\\
-  \hline
-  Real Variable Selector &  description \\
-  \hline
-  \mylst{CyclicRealVarSelector(Solver solver)} &Since a dichotomy algorithm is used, cyclic assiging is nedded for instantiate a real interval variable. A variable is selected several times to split its domain until it reaches the desired precision \\
-  \hline\\
-\end{tabular}
-
-\begin{note}
-Solver variables have to be specified (not Model variables).
-\end{note}
-
-\subsubsection{Value iterator}\label{solver:valueiterator}\hypertarget{solver:valueiterator}{}
-Once the variable has been choose, the Solver has to compute its value. The first way to do it is to schedule the value once and give an iterator to the solver. It can be done using the following API: 
-
-\noindent\begin{tabular}{p{.4\linewidth}p{.2\linewidth}p{.3\linewidth}}
-  \hline
-  Solver API &  Variable &  Default strategy \\
-  \hline
-  \mylst{setValIntIterator(ValIterator)} &  Integer &  IncreasingDomain \\
-  \mylst{setValRealIterator(RealValIterator)} &  Real &  RealIncreasingDomain \\
-  \mylst{setValSetIterator(ValIterator)} &  Set &  MinEnv \\
-  \hline\\
-\end{tabular}
-
-\noindent The value iterators currently available in Choco are the following: \todo{to complete}
-
-\noindent\begin{tabular}{p{.3\linewidth}p{.7\linewidth}}
-  \hline
-  Integer Value Iterator &  description \\
-  \hline
-  \mylst{DecreasingDomain()} &  A heuristic selecting value from the upper bound to the lower bound \\
-  \mylst{IncreasingDomain()} &  A heuristic selecting value from the lower bound to the upper bound \\
-  &\\
-  \hline
-  Real Value Iterator &  description \\
-  \hline
-  \mylst{RealIncreasingDomain()} &  A heuristic selecting value from the lower bound to the upper bound \\
-  \hline\\
-\end{tabular}
-
-\subsubsection{Value selector}\label{solver:valueselector}\hypertarget{solver:valueselector}{}
-The second way to do it is to compute the following value at each call. It can be done using the following API: 
-
-\noindent\begin{tabular}{p{.4\linewidth}p{.2\linewidth}p{.3\linewidth}}
-  \hline
-  Solver API &Variable &  Default strategy \\
-  \hline
-  \mylst{setValIntSelector(ValSelector)} &Integer &  (none: see \emph{value iterator}) \\
-  \mylst{setValRealSelector(ValSelector)} &Real &  (none: see \emph{value iterator}) \\
-  \mylst{setValSetSelector(SetValSelector)} &Set &  (none: see \emph{value iterator}) \\
-  \hline\\
-\end{tabular}
-
-\noindent The value selectors currently available in Choco are the following: \todo{to complete}
-
-\noindent\begin{tabular}{p{.3\linewidth}p{.7\linewidth}}
-  \hline
-  Integer Value Selector & description \\
-  \hline
-  \mylst{MaxVal()} &  Selecting the highest value in the domain \\
-  \mylst{MidVal()} &  Selecting the middle value in the domain \\
-  \mylst{MinVal()} &  Selecting the lowest value in the domain \\
-  \mylst{RandomIntValSelector()} &  Selecting randomly the value in the domain \\
-  &\\
-  \hline
-  Set Value Selector & description \\
-  \hline
-  \mylst{MinEnv(Solver)} &  Selecting the lowest value in the envelope and not in the kernel of the domain \\
-  \hline\\
-\end{tabular}
-
-% SOFREM: duplicated section see advanced
-\subsection{Building a sequence of branching object}\label{solver:buildingasequenceofbranchingobject}\hypertarget{solver:buildingasequenceofbranchingobject}{}
-
-You might want to apply different heuristics to different set of variables of the problem. In that case, the search is viewed as a sequence of branching objects (or goals). Up to now, we only had one branching or one goal including all the variables of the problem but several goals can be used.
-
-Adding a new goal is made through the solver with the \texttt{addGoal(AbstractBranching b)} method. As for the addition of your own limit, dont call the \texttt{solve()} method, but instead: build the solver by yourself, add your sequence of branching, and call the \texttt{launch()} method of the solver. 
-
-The following example add three branching objects on integer variables \emph{vars1}, \emph{vars2} and set variables \emph{svars} to solver \emph{s}. The first two branchings are both \texttt{AssignVar} but use two different variable/values selection strategies:
-\begin{lstlisting}
-  s.attachGoal(new AssignVar(new MinDomain(s,s.getVar(vars1)), new IncreasingDomain()));
-  s.addGoal(new AssignVar(new DomOverDeg(s,s.getVar(vars2)),new DecreasingDomain());
-  s.addGoal(new AssignSetVar(new MinDomSet(s,s.getVar(svars)), new MinEnv(s)));
-  s.generateSearchStrategy();
-  s.launch();
-\end{lstlisting}
-
-%An example of how to set the search solver in case of optimization in given in the \hyperlink{schedulinganduseofthecumulative:schedulinganduseofthecumulativeconstraint}{tutorial on cumulative}.
-
-\subsection{Dom/WDeg}\label{solver:dom/wdeg}\hypertarget{solver:dom/wdeg}{}
-\todo{to introduce}
-\begin{lstlisting}
-	Solver s = new CPSolver();
-	s.read(model);
-	    
-	s.attachGoal(new DomOverWDegBranching(s, new IncreasingDomain()));
-	    
-	s.setFirstSolution(true);
-	s.generateSearchStrategy();
-\end{lstlisting}
-
-The decision variables can be set using :
-\begin{lstlisting}
-	DomOverWDegBranching dwdeg = new DomOverWDegBranching(s, new IncreasingDomain());
-	dwdeg.setBranchingVars(vars);
-\end{lstlisting}
-
-\subsection{Impacts}\label{solver:impacts}\hypertarget{solver:impacts}{}
-\todo{to introduce}
-\begin{lstlisting}
-	CPSolver s = new CPSolver();
-	s.read(model);
-	
-	//create the branching on the decision variables vars.
-	ImpactBasedBranching ibb = new ImpactBasedBranching(s, vars);
-	
-	//initialize the impacts with a time limit of 10s 
-	ibb.getImpactStrategy().initImpacts(10000);
-	
-	s.generateSearchStrategy();
-	s.attachGoal(ibb);
-	s.setFirstSolution(true);
-	s.launch();
-\end{lstlisting}
+This model ensures that $var = b_{0} + b_{1} + \ldots + b_{1000}$ where \emph{var} has a small domain and $b_{i}$ is a binary variable. The propagation has no effect on any domain and a fix point is reached at the beginning of the search. So, a decision has to be done choosing a variable and its value. If the variable selector is set to \texttt{MinDomain} (see below), the solver will iterate over the variables, starting by the 1000 binary variables and ending with \emph{var}, and 1001 nodes will be created.
 
 \subsection{Restarts}\label{solver:restarts}\hypertarget{solver:restarts}{}
 
@@ -390,7 +315,7 @@ After having created the solver, you can specify whether or not you want to fix 
 \item[node limit] State a node limit on tree search. When the number of nodes explored is equal to the node limit, the search stops whatever a solution is found or not. You can define a node limit with the following API: \mylst{setNodeLimit(int nodeLimit)} where unit is the number of nodes. Or just monitor (or not) the number of nodes explored with the API: \mylst{monitorNodeLimit(boolean b)}. The default value is set to \texttt{true}. Finally, you can get the node limit, once the solve method has been called, with the API: \mylst{getNodeCount()} 
 \item[backtrack limit] State a backtrack limit on tree search. When the number of backtracks done is equal to the backtrack limit, the search stops whatever a solution is found or not. You can define a backtrack limit with the following API: \mylst{setBackTrackLimit(int backtrackLimit)} where unit is the number of backtracks. Or just monitor (or not) the number of backtrack done with the API: \mylst{monitorBackTrackLimit(boolean b)}. The default value is set to \texttt{false}. Finally, you can get the backtrack limit, once the solve method has been called, with the API: \mylst{getBackTrackCount()} 
 \item[fail limit] State a fail limit on tree search. When the number of failure is equal to the fail limit, the search stops whatever a solution is found or not. You can define a fail limit with the following API : \mylst{setFailLimit(int failLimit)} where unit is the number of failure. Or just monitor (or not) the number of failure encountered with the API : \mylst{monitorFailLimit(boolean b)}. The default value is set to \texttt{false}. Finally, you can get the fail limit, once the solve method has been called, with the API : \mylst{getFailCount()} 
-\item[CPU time limit] State a CPU limit on tree search. When the CPU time (user + system) is equal to the CPU time limit, the search stops whatever a solution is found or not. You can define a CPU time limit with the following API: \mylst{setCpuTimeLimit(int timeLimit)} where unit is millisecond. Or just monitor (or not) the search time with the API: \mylst{monitorCpuTimeLimit(boolean b)}. The default value is set to \texttt{false}. Finally, you can get the CPU time limit, once the solve method has been called, with the API: \mylst{getCpuTimeCount()} 
+%\item[CPU time limit] State a CPU limit on tree search. When the CPU time (user + system) is equal to the CPU time limit, the search stops whatever a solution is found or not. You can define a CPU time limit with the following API: \mylst{setCpuTimeLimit(int timeLimit)} where unit is millisecond. Or just monitor (or not) the search time with the API: \mylst{monitorCpuTimeLimit(boolean b)}. The default value is set to \texttt{false}. Finally, you can get the CPU time limit, once the solve method has been called, with the API: \mylst{getCpuTimeCount()} 
 \end{description}
 
 \todo{add example}
@@ -416,32 +341,39 @@ As Solver is the second element of a Choco program, the control of the search pr
 \subsection{Solver settings}\label{solver:solversettings}\hypertarget{solver:solversettings}{}
 
 \subsubsection{Logs}\label{solver:logs}\hypertarget{solver:logs}{}
-The solver class is instrumented in order to produce trace statements throughout search. The verbosity level of the solver can be set, by the following static method
+A logging class is instrumented in order to produce trace statements throughout search: ChocoLogging. The verbosity level of the solver can be set, by the following static method
 \begin{lstlisting}
-	CPSolver.setVerbosity(CPSolver.SEARCH);
+	ChocoLogging.toVerbose();
 	// And after solver.solve()
-	CPSolver.flushLogs();
+	ChocoLogging.flushLogs();
 \end{lstlisting}
 
 The code above ensure that messages are printed in order to describe the construction of the search tree.
 
-Five verbosity levels are available:
+Six verbosity levels are available:
 
 \noindent\begin{tabular}{p{.4\linewidth}p{.6\linewidth}}
   \hline
   Level & prints... \\
   \hline
- \texttt{CPSolver.SILENT} & nothing\\
- \texttt{CPSolver.SOLUTION} & messages whenever a solution is reached\\
- \texttt{CPSolver.SEARCH} & a message at each choice point\\
- \texttt{CPSolver.PROPAGATION} & messages to trace propagation\\
- \texttt{CPSolver.FINEST} & high level messages to trace propagation\\
+ \texttt{ChocoLogging.toSilent()} & display only severe messages from core loggers and warning messages otherwise\\
+ \ \texttt{ChocoLogging.toQuiet()} & display only severe messages from core loggers and info messages otherwise\\
+ \texttt{ChocoLogging.toDefault()} & display information about initial and final state of the search\\
+ \texttt{ChocoLogging.toVerbose()} & display search information at regular node intervals\\
+ \texttt{ChocoLogging.toSolution()} & display all solutions\\
+ \texttt{ChocoLogging.toSearch()} & display the search tree\\
 \hline\\
 \end{tabular}
 
-Note, that in the case of a verbosity set to \texttt{CPSolver.SEARCH}, trace statements are printed up to a maximal depth in the search tree. By default, only the 5 first levels are traced, but you can change the value of this threshold, say to 10, with the following setter method:
+Note that in the case of a verbosity greater or equals to \texttt{toVerbose()}, the regular search information step is set to 1000, by default. You can change this value, using:
 \begin{lstlisting}
-  solver.setLoggingMaxDepth(10);
+  ChocoLogging.setEveryXNodes(20000);
+\end{lstlisting}
+ 
+
+Note that in the case of verbosity \texttt{toSearch()}, trace statements are printed up to a maximal depth in the search tree. The default value is set to 25, but you can change the value of this threshold, say to 10, with the following setter method:
+\begin{lstlisting}
+  ChocoLogging.setLoggingMaxDepth(10);
 \end{lstlisting}
 
 \subsection{Optimization}\label{solver:optimization}\hypertarget{solver:optimization}{}

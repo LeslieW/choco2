@@ -165,6 +165,64 @@ This section lists and details the \hyperlink{model:constraints}{constraints} cu
 This section lists and details the options that can be declared on variables or constraints within a Choco Model .
 \input{chapters/Options.tex}
 
+\chapter{Branching strategies (Solver)}\label{solver:branchstrat}\hypertarget{solver:branchstrat}{}
+This section lists and details the \hyperlink{solver:searchstrategy}{branching strategies} currently available in Choco.
+
+\input{chapters/strategies/BSAssigninterval}
+\input{chapters/strategies/BSassignorforbidintvarval}
+\input{chapters/strategies/BSassignorforbidintvarvalpair}
+\input{chapters/strategies/BSassignsetvar}
+\input{chapters/strategies/BSassignvar}
+\input{chapters/strategies/BSdomoverwdeg}
+\input{chapters/strategies/BSdomoverwdegbin}
+\input{chapters/strategies/BSimpact}
+\input{chapters/strategies/BSpackdynremovals}
+\input{chapters/strategies/BSsettimes}
+\input{chapters/strategies/BStaskdomoverwdeg}
+
+\chapter{Variable selectors (Solver)}\label{ch:varsel}\hypertarget{ch:varsel}{}
+This section lists and details the \hyperlink{solver:variableselector}{variable selectors} currently available in Choco.
+
+\input{chapters/strategies/VScompositeint}
+\input{chapters/strategies/VScyclicreal}
+\input{chapters/strategies/VSlexint}
+\input{chapters/strategies/VSmaxdomain}
+\input{chapters/strategies/VSmaxdomset}
+\input{chapters/strategies/VSmaxregret}
+\input{chapters/strategies/VSmaxregretset}
+\input{chapters/strategies/VSmaxvaluedomain}
+\input{chapters/strategies/VSmaxvaluedomainset}
+\input{chapters/strategies/VSmindomain}
+\input{chapters/strategies/VSmindomset}
+\input{chapters/strategies/VSminvaluedomain}
+\input{chapters/strategies/VSminvaluedomainset}
+\input{chapters/strategies/VSmostconstrained}
+\input{chapters/strategies/VSmostconstrainedset}
+\input{chapters/strategies/VSrandomintvar}
+\input{chapters/strategies/VSrandomsetvar}
+\input{chapters/strategies/VSstaticsetvarorder}
+\input{chapters/strategies/VSstaticvarorder}
+
+\chapter{Value iterators (Solver)}\label{ch:valite}\hypertarget{ch:valite}{}
+This section lists and details the \hyperlink{solver:valueiterator}{value iterators} currently available in Choco.
+
+\input{chapters/strategies/videcdomain}
+\input{chapters/strategies/viincdomain}
+\input{chapters/strategies/virealincdomain}
+
+\chapter{Value selector (Solver)}\label{ch:valsel}\hypertarget{ch:valsel}{}
+This section lists and details the \hyperlink{solver:valueselector}{value selectors} currently available in Choco.
+
+\input{chapters/strategies/vsbestfit}
+\input{chapters/strategies/vscostregularvalselector}
+\input{chapters/strategies/vsfastcostregularvalselector}
+\input{chapters/strategies/vsmaxval}
+\input{chapters/strategies/vsmcrvalselector}
+\input{chapters/strategies/vsmidval}
+\input{chapters/strategies/vsminenv}
+\input{chapters/strategies/vsminval}
+\input{chapters/strategies/vsrandomsetvalselector}
+
 \part{Extras}\label{ch:extra}\hypertarget{ch:extra}{}
 \input{chapters/Choco_and_visu.tex}
 \input{chapters/sudoku_and_cp.tex}

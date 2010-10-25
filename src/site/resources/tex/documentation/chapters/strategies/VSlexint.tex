@@ -1,0 +1,21 @@
+\section{LexIntVarSelector (Variable selector)}\label{lexintvarselector:lexintvarselectorvarselector}\hypertarget{lexintvarselector:lexintvarselectorvarselector}{}
+\begin{notedef}
+  \texttt{LexIntVarSelector} applies two heuristics lexicographically for selecting a variable: a first heuristic is applied finding the best variables, ties are broken with the second heuristic 
+\end{notedef}
+
+\begin{itemize}
+	\item \textbf{Constructor} :\mylst{LexIntVarSelector(TiedIntVarSelector h1, HeuristicIntVarSelector h2)}
+	\begin{itemize}
+\item \texttt{TiedIntVarSelector} is an \texttt{interface} implemented by : \hyperlink{mindomain:mindomainvarselector}{MinDomain}, \hyperlink{maxdomain:maxdomainvarselector}{MaxDomain}, \hyperlink{maxregret:maxregretvarselector}{MaxRegret}, \hyperlink{maxvaldomain:maxvaldomainvarselector}{MaxValueDomain}, \hyperlink{minvaldomain:minvaldomainvarselector}{MinValueDomain}, \hyperlink{mostconstrained:mostconstrainedvarselector}{MostConstrained}. //TODO to complete
+
+\item \texttt{HeuristicIntVarSelector} is an \texttt{abstract class}  implemented by: \hyperlink{mindomain:mindomainvarselector}{MinDomain}, \hyperlink{maxdomain:maxdomainvarselector}{MaxDomain}, \hyperlink{maxregret:maxregretvarselector}{MaxRegret}, \hyperlink{maxvaldomain:maxvaldomainvarselector}{MaxValueDomain}, \hyperlink{minvaldomain:minvaldomainvarselector}{MinValueDomain}, \hyperlink{mostconstrained:mostconstrainedvarselector}{MostConstrained}. //TODO to complete
+
+\end{itemize}
+
+	\item \textbf{type of variable} : integer
+	\item \textbf{references} : \emph{n/a}
+\end{itemize}
+
+\textbf{Example}:
+%\lstinputlisting{java/cabs.j2t}
+
