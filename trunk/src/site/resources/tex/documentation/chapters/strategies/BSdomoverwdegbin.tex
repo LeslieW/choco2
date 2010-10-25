@@ -1,0 +1,14 @@
+\section{DomOverWDegBinBranchingNew (Branching strategy)}\label{domoverwdegbin:domoverwdegbinbranchstrat}\hypertarget{domoverwdegbin:domoverwdegbinbranchstrat}{}
+\begin{notedef}
+  \texttt{DomOverWDegBinBranchingNew} is a \textbf{binary branching} assigning a value to a variable. This branching strategy maintains (incrementally or dynamically) a counter on each constraint, updated during search whenever a dead-end occurs. Then, the weight, $w$, of a variable $X_i$ is the sum of the weights of the constraints involving $X_i$ and at least one uninstantiated variable. And combining $w$ with the domain size, $dom$, and the degree, $deg$, of $X_i$, this strategy selects the variable with the smallest ratio $r_i=dom/w*deg$. Ties are breaked randomly.
+\end{notedef}
+
+\begin{itemize}
+	\item \textbf{Constructor} :\mylst{DomOverWDegBinBranchingNew(Solver s, IntDomainVar[] vars, ValIterator valHeuri, Number seed)}
+	\item \textbf{type of variable} : integer
+	\item \textbf{references} : \cite{Boussemart04}: \emph{Boosting systematic search by weighting constraints}.
+\end{itemize}
+
+\textbf{Example}:
+%\lstinputlisting{java/cabs.j2t}
+

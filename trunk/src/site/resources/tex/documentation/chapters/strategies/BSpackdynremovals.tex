@@ -1,0 +1,14 @@
+\section{PackDynRemovals (Branching strategy)}\label{packdynremovals:packdynremovalsbranchstrat}\hypertarget{packdynremovals:packdynremovalsbranchstrat}{}
+\begin{notedef}
+  \texttt{PackDynRemovals} is an extension of \hyperlink{assignvar:assignvarbranchstrat}{AssignVar} specialized for packing problem. At every backtrack, we state that the item can not be packed in equivalent bins. Two bins are equivalent if they have the same remaining space.
+\end{notedef}
+
+\begin{itemize}
+	\item \textbf{Constructor} :\mylst{PackDynRemovals(VarSelector varSel, ValSelector valHeuri, PackSConstraint pack)}
+	\item \textbf{type of variable} : integer
+	\item \textbf{references} : \emph{n/a}
+\end{itemize}
+
+\textbf{Example}:
+%\lstinputlisting{java/cabs.j2t}
+

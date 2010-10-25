@@ -52,6 +52,12 @@ Bleuzen-Guernalec, N. and Colmerauer, A. (1997).
   Constraint Programming (CP'97)}, volume~? of {\em LNCS}, pages ?--?
   Springer-Verlag.
 
+\bibitem[Boussemart et~al., 2004]{Boussemart04}
+Boussemart, F., Hemery, F., Lecoutre, C., and Sais, L. (2004).
+\newblock Boosting systematic search by weighting constraints.
+\newblock In {\em Proceedings of the 16th European Conference on Artificial
+  Intelligence (ECAI'04)}, pages 146--150. IOS Press 2004.
+
 \bibitem[Carlsson and Beldiceanu, 2002]{BeldiceanuSICS02}
 Carlsson, M. and Beldiceanu, N. (2002).
 \newblock Arc-consistency for a chain of lexicographic ordering constraints.
@@ -113,6 +119,13 @@ Quimper, C.-G., van Beek, P., L\'opez-Ortiz, A., Golynski, A., and Sadjad,
   global-cardinality} constraint.
 \newblock In {\em International Conference on Principles and Practice of
   Constraint Programming (CP'03)}, volume 2833 of {\em LNCS}, pages 600--614.
+  Springer-Verlag.
+
+\bibitem[Refalo, 2004]{Refalo04}
+Refalo, P. (2004).
+\newblock Impact-based search strategies for constraint programming.
+\newblock In {\em International Conference on Principles and Practice of
+  Constraint Programming (CP'04)}, volume 3258 of {\em LNCS}, pages 557--570.
   Springer-Verlag.
 
 \bibitem[R{\'e}gin, 1994]{ReginAAAI94}

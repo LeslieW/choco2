@@ -1,0 +1,18 @@
+\section{ImpactBasedBranching (Branching strategy)}\label{impact:impactbranchstrat}\hypertarget{impact:impactbranchstrat}{}
+\begin{notedef}
+  \texttt{ImpactBasedBranching} is a \textbf{n-ary branching} assigning a value to a variable. Impacts are learned from the observation of domain reduction during search. Restarting search can dramatically improve performance.
+\end{notedef}
+
+\begin{itemize}
+	\item \textbf{Constructor} :
+	\begin{itemize}
+	\item \mylst{ImpactBasedBranching(Solver solver, IntDomainVar[] vars)}
+	\item \mylst{ImpactBasedBranching(Solver solver, IntDomainVar[] vars, AbstractImpactStrategy ibs)}
+	\end{itemize}	
+	\item \textbf{type of variable} : integer
+	\item \textbf{references} : \cite{Refalo04}: \emph{Impact-Based Search Strategies for Constraint Programming}. 
+\end{itemize}
+
+\textbf{Example}:
+%\lstinputlisting{java/cabs.j2t}
+
