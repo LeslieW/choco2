@@ -1,10 +1,13 @@
 \section{DomOverWDegBinBranchingNew (Branching strategy)}\label{domoverwdegbin:domoverwdegbinbranchstrat}\hypertarget{domoverwdegbin:domoverwdegbinbranchstrat}{}
 \begin{notedef}
-  \texttt{DomOverWDegBinBranchingNew} is a \textbf{binary branching} assigning a value to a variable. This branching strategy maintains (incrementally or dynamically) a counter on each constraint, updated during search whenever a dead-end occurs. Then, the weight, $w$, of a variable $X_i$ is the sum of the weights of the constraints involving $X_i$ and at least one uninstantiated variable. And combining $w$ with the domain size, $dom$, and the degree, $deg$, of $X_i$, this strategy selects the variable with the smallest ratio $r_i=dom/w*deg$. Ties are breaked randomly.
-\end{notedef}
+  \texttt{DomOverWDegBranchingNew} is a \textbf{binary branching} assigning distinct values to an integer variable. It maintains (incrementally or dynamically) on each constraint, the count of the failures caused by the constraint from the beginning of the search.
+To each variable are then associated, at any time, three values: $dom$ the current domain size, $deg$ the current number of uninstantiated constraints involving the variable, and $w$ the sum of the counters associated to these $deg$ constraints.
+The strategy selects the variable with the smallest ratio $r_i=dom/w*deg$.  Ties are randomly broken when \mylst{seed != null}.
+The variable is then assigned, in the first branch, to the selected value; in the second branch, the value is removed from the variable domain.
+$$B_1: x=v,\quad B_2: x\neq v,\qquad\text{ with } x=\arg\min\bigl(\frac{dom_x}{w_x*deg_x}\bigr)$$\end{notedef}
 
 \begin{itemize}
-	\item \textbf{Constructor} :\mylst{DomOverWDegBinBranchingNew(Solver s, IntDomainVar[] vars, ValIterator valHeuri, Number seed)}
+	\item \textbf{Constructor}: \mylst{DomOverWDegBinBranchingNew(Solver s, IntDomainVar[] vars, ValSelector valSel, Number seed)}
 	\item \textbf{type of variable} : integer
 	\item \textbf{references} : \cite{Boussemart04}: \emph{Boosting systematic search by weighting constraints}.
 \end{itemize}

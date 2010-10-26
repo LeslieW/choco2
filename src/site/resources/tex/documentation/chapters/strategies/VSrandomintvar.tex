@@ -1,15 +1,14 @@
 \section{RandomIntVarSelector (Variable selector)}\label{randomvarint:randomvarintvarselector}\hypertarget{randomvarint:randomvarintvarselector}{}
 \begin{notedef}
-  \texttt{RandomIntVarSelector}$(xs)$ chooses a random variable in $$xs$$:
-$$\{x | \}$$
+  \texttt{RandomIntVarSelector}$(x)$ selects an integer variable randomly (\textbf{dynamic}). The random \texttt{seed} can be fixed.
 \end{notedef}
 
 \begin{itemize}
 	\item \textbf{Constructor} : 
 	\begin{itemize}
-	\item \mylst{RandomIntVarSelector(Solver solver)}
-	\item \mylst{RandomIntVarSelector(Solver solver, long seed)}
-	\item \mylst{RandomIntVarSelector(Solver solver, IntDomainVar[] vs, long seed)}
+	\item \mylst{RandomIntVarSelector(Solver s)}
+	\item \mylst{RandomIntVarSelector(Solver s, long seed)}
+	\item \mylst{RandomIntVarSelector(Solver s, IntDomainVar[] vars, long seed)}
 	\end{itemize}	
 	\item \textbf{type of variable} : integer
 	\item \textbf{references} : \emph{n/a}
