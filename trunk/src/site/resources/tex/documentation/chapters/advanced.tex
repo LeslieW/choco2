@@ -67,6 +67,9 @@ You can add your variable selector as a part of a search strategy, using \mylst{
 You may also define your own concrete classes of \texttt{ValIterator} or \texttt{ValSelector}. 
 
 \subsubsection{Value selector}\label{advanced:valueselector}\hypertarget{advanced:valueselector}{}
+
+\insertGraphique{.5\linewidth}{media/valselector.pdf}{ValSelector interface and implementation}
+
 We give here an example of an \texttt{IntValSelector} with the implementation of a minimum value selecting:
 \begin{lstlisting}
   public class MinVal extends AbstractSearchHeuristic implements ValSelector {

@@ -7,7 +7,10 @@
 
 %\section{How to create a solver}\label{solver:howtocreateasolver}\hypertarget{solver:howtocreateasolver}{}
 
-To create a {\tt Solver}, one just needs to create a new object as follow:
+
+\newglossaryentry{Solver}{name={Solver},description={solver description}}
+
+To create a \gls{Solver}, one just needs to create a new object as follow:
 \begin{lstlisting}
 Solver solver = new CPSolver();
 \end{lstlisting}
@@ -32,7 +35,7 @@ On the contrary, the domain of an \textbf{enumerated variable} is explicitly rep
 \end{note}
 
 %\begin{note}
-Model variables and Solver variables are distinct. Solver variables are solver representation of the model variables. One can't access to variable value directly from the model variable. To access to a model variable thanks to the solver, use the following \texttt{Solver} API: \mylst{getVar(Variable v);}
+\textbf{Model variables and Solver variables are distinct objects}. Solver variables are solver representation of the model variables. One can't access to variable value directly from the model variable. To access to a model variable thanks to the solver, use the following \texttt{Solver} API: \mylst{getVar(Variable v);}
 %\end{note}
 
 \subsection{Solver and IntegerVariables}\label{solver:solverandintegervariables}\hypertarget{solver:solverandintegervariables}{}
@@ -121,18 +124,25 @@ Continuous variables are useful for non linear equation systems which are encoun
 For more informations on advanced uses of such \texttt{RealVar}, see \hyperlink{advanced}{advanced uses}.
 
 \section{Constraints reading}\label{solver:constraintsreading}\hypertarget{solver:constraintsreading}{}
-After variables, the Solver iterates over the constraints added to the Model. It creates Solver constraints that encapsulates a filtering algorithm which are called when a propagation step occur or when external events happen on the variables belonging to the constraint, such as value removals or bounds modifications. And it add it to the constraint network. 
+Once variables are known, the Solver iterates over the constraints of the Model, creates Solver constraint objects and add it the internal constraint network. Each Solver's constraint encapsulates a filtering algorithm which is called when a propagation step occurs or when external events happen on the variables belonging to the constraint, such as value removals or bounds modifications. 
 
 \section{Search Strategy}\label{solver:searchstrategy}\hypertarget{solver:searchstrategy}{}
 
-A key ingredient of any constraint approach is a clever branching strategy. The construction of the search tree is done according to a series of \textit{branching objects} (that plays the role of achieving intermediate goals in logic programming). The user may specify the sequence of branching objects to be used to build the search tree. A common way to branch in CP is by assigning variables to values. We will present in this section how to define your branching strategies with existing variables and values selectors/iterators. But first...
+\newglossaryentry{branching strategy}{name={branching strategy}, plural={branching strategies},description={heuristic controlling the execution of a search loop at a point where the control flow may be split between different branches}}
+\newglossaryentry{search strategy}{name={search strategy}, plural={search strategies},description={composition of branching strategies}}
+
+A key ingredient of any constraint approach is a clever \gls{search strategy}. The construction of the search tree is done according to a series of \glspl{branching strategy} that plays the role of achieving intermediate goals in logic programming. The user may specify the sequence of branching strategies to be used to build the search tree. We will present in this section how to define your branching strategies.
 
 \subsection{Override the default search stragtegy}\label{solver:overridethedefaultsearchstrategy}\hypertarget{solver:overridethedefaultsearchstrategy}{}
 
+\newglossaryentry{value selector}{name={value selector}, plural={value selector},description={heuristic specifying how to choose dynamically a value from a chosen variable at a fix point}}
+\newglossaryentry{value iterator}{name={value iterator}, plural={value iterators},description={heuristic specifying how to choose a value from a chosen variable, through an iterator, at a fix point }}
+\newglossaryentry{variable selector}{name={variable selector}, plural={variable selectors},description={heuristic specifying how to choose a variable at a fix point}}
 
-Basically, a search strategy is the composition of three objects: a branching strategy, a variable selector and a value selector. Some branching simply assign a selected value to a selected variable, like \hyperlink{assignvar:assignvarbranchstrat}{AssignVar}, others branching strategies embed the variable selector, like \hyperlink{domoverwdeg:domoverwdegbranchstrat}{DomOverWDegBranchingNew}, or more, like  \hyperlink{impact:impactbranchstrat}{ImpactBasedBranching}.
 
-The default branchings are: 
+Basically, a search strategy is the composition of three objects: a \gls{branching strategy}, a \gls{variable selector} and a \gls{value selector} (or a \gls{value iterator}). Some branching strategies simply assign a selected value to a selected variable, like \hyperlink{assignvar:assignvarbranchstrat}{AssignVar}, others branching strategies embed the variable selector, like \hyperlink{domoverwdeg:domoverwdegbranchstrat}{DomOverWDegBranchingNew}, or more, like  \hyperlink{impact:impactbranchstrat}{ImpactBasedBranching}.
+
+The default search strategies are: 
 
 \noindent\begin{tabular}{p{.4\linewidth}p{.6\linewidth}}
 \hline
@@ -144,18 +154,17 @@ Set &   \hyperlink{assignsetvar:assignsetvarbranchstrat}{AssignSetVar} + \hyperl
 \hline\\
 \end{tabular}
 
-There are two ways to custom a search strategy: use the ones define in the factory  \texttt{BranchingFactory} or compose it. 
-A branching strategy can be set or add to the previous one using the following API (must be done before calling the method \mylst{solve()}):
+There are two ways to custom a search strategy: use one og those define in the factory \texttt{BranchingFactory} or build your own one. 
+A branching strategy can be added the following API (must be done before calling the resolution method):
 
-  \mylst{solver.addGoal(AbstractIntBranchingStrategy branching)} 
-
-\noindent to clear the list of goals, use:
-
-  \mylst{solver.clearGoals()} 
-
-You might want to apply different heuristics to different set of variables of the problem. In that case, the search is viewed as a sequence of branching objects (or goals). Up to now, we only had one branching or one goal including all the variables of the problem but several goals can be used.
-
-Adding a new goal is made through the solver with the \mylst{solver.addGoal(AbstractIntBranchingStrategy branching)} method. 
+\begin{lstlisting}
+solver.addGoal(AbstractIntBranchingStrategy branching);
+\end{lstlisting}
+The initial list of goals is empty. If no goal is defined, default ones will be build from the current state of the Solver.
+\noindent To clear the list of goals, use:
+\begin{lstlisting}
+solver.clearGoals();
+\end{lstlisting} 
 
 The following example add three branching objects on integer variables \emph{vars1}, \emph{vars2} and set variables \emph{svars} to solver \emph{s}. The first two branchings are both \texttt{AssignVar} but use two different variable/values selection strategies:
 \begin{lstlisting}

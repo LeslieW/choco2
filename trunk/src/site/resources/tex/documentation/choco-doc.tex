@@ -4,6 +4,14 @@
 \usepackage{fancyhdr,lastpage,fullpage,fancybox}
 \usepackage{amsmath,amssymb}
 
+%%%% Glossary  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[acronym]{glossaries} % make a separate list of acronyms
+% to use call
+% $> latex choco-doc 
+% $> makeglossaries choco-doc 
+% $> latex choco-doc 
+
+\makeglossaries
 
 %%%% Web Tralics  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifweb
@@ -122,6 +130,9 @@
 \input{content-doc}
 
 \backmatter
+
+\printglossaries
+\addcontentsline{toc}{part}{Glossary}
 
 \addcontentsline{toc}{part}{Bibliography}
 \bibliographystyle{apalike}
