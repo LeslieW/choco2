@@ -41,9 +41,12 @@ Automaton $\Pi$ is encoded as an object of class \texttt{FiniteAutomaton}, whose
 \begin{itemize}
 	\item \textbf{API} :
 	\begin{itemize}
-		\item \mylst{costRegular(IntegerVariable z, IntegerVariable[] x, FiniteAutomaton pi, int[][] c)}
-		\item \mylst{costRegular(IntegerVariable z, IntegerVariable[] x, FiniteAutomaton pi, int[][][] c)}
-		\item \mylst{costRegular(IntegerVariable z, IntegerVariable[] x, DirectedMultigraph<Node,Arc> g, Node s)}
+		\item \mylst{costRegular(IntegerVariable z, IntegerVariable[] x, FiniteAutomaton pi, int[][] c)}\\
+based on the  \mylst{ConstraintType.COSTREGULAR} implementation
+		\item \mylst{costRegular(IntegerVariable z, IntegerVariable[] x, FiniteAutomaton pi, int[][][] c)}\\
+based on the  \mylst{ConstraintType.FASTCOSTREGULAR} implementation
+		\item \mylst{costRegular(IntegerVariable z, IntegerVariable[] x, DirectedMultigraph<Node,Arc> g, Node s)}\\
+based on the  \mylst{ConstraintType.FASTCOSTREGULAR} implementation
 	\end{itemize}
 	\item \textbf{return type} : \texttt{Constraint}
 	\item \textbf{options} : \emph{n/a}
