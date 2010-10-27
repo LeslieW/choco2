@@ -292,13 +292,12 @@
 \contentsline {chapter}{\numberline {12}Value selector (Solver)}{163}{chapter.12}
 \contentsline {section}{\numberline {12.1}BestFit (Value selector)}{163}{section.12.1}
 \contentsline {section}{\numberline {12.2}CostRegularValSelector (Value selector)}{163}{section.12.2}
-\contentsline {section}{\numberline {12.3}FCostRegularValSelector (Value selector)}{163}{section.12.3}
+\contentsline {section}{\numberline {12.3}FCostRegularValSelector (Value selector)}{164}{section.12.3}
 \contentsline {section}{\numberline {12.4}MaxVal (Value selector)}{164}{section.12.4}
-\contentsline {section}{\numberline {12.5}MCRValSelector (Value selector)}{164}{section.12.5}
-\contentsline {section}{\numberline {12.6}MidVal (Value selector)}{164}{section.12.6}
-\contentsline {section}{\numberline {12.7}MinEnv (Value selector)}{165}{section.12.7}
-\contentsline {section}{\numberline {12.8}MinVal (Value selector)}{165}{section.12.8}
-\contentsline {section}{\numberline {12.9}RandomSetValSelector (Value selector)}{165}{section.12.9}
+\contentsline {section}{\numberline {12.5}MidVal (Value selector)}{164}{section.12.5}
+\contentsline {section}{\numberline {12.6}MinEnv (Value selector)}{165}{section.12.6}
+\contentsline {section}{\numberline {12.7}MinVal (Value selector)}{165}{section.12.7}
+\contentsline {section}{\numberline {12.8}RandomSetValSelector (Value selector)}{165}{section.12.8}
 \contentsline {part}{III\hspace {1em}Extras}{167}{part.3}
 \contentsline {chapter}{\numberline {13}Choco and Visu}{169}{chapter.13}
 \contentsline {section}{\numberline {13.1}Why?}{169}{section.13.1}
