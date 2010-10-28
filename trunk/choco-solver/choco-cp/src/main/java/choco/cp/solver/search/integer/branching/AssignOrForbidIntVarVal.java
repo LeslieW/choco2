@@ -28,6 +28,7 @@ import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.search.IntBranchingDecision;
 import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.search.integer.VarValPairSelector;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
  * A class for branching schemes that consider two branches: - one assigning a
@@ -38,8 +39,8 @@ public class AssignOrForbidIntVarVal extends AbstractAssignOrForbidBranching {
 	
 	private VarSelector varHeuristic;
 
-	public AssignOrForbidIntVarVal(VarSelector varHeuristic,
-			ValSelector valSHeuristic) {
+	public AssignOrForbidIntVarVal(VarSelector<IntDomainVar> varHeuristic,
+			ValSelector<IntDomainVar> valSHeuristic) {
 		super(valSHeuristic);
 		this.varHeuristic = varHeuristic;
 	}

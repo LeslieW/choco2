@@ -23,13 +23,13 @@
 package choco.cp.solver.search.integer.varselector;
 
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.search.integer.AbstractIntVarSelector;
+import choco.kernel.solver.search.integer.IntHeuristicIntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.ArrayList;
 import java.util.Random;
 
-public class RandomIntVarSelector extends AbstractIntVarSelector{
+public class RandomIntVarSelector extends IntHeuristicIntVarSelector {
 
 	private ArrayList<IntDomainVar> reuseList = new ArrayList<IntDomainVar>();
 	protected final Random random;
@@ -42,7 +42,7 @@ public class RandomIntVarSelector extends AbstractIntVarSelector{
 		this.random = new Random();
 	}
 
-	/**
+    /**
 	 * Creates a new random-based integer domain variable selector with the specified seed
 	 * (to make the experiment determinist)
 	 */
@@ -56,17 +56,9 @@ public class RandomIntVarSelector extends AbstractIntVarSelector{
 		this.random = new Random(seed);
 	}
 
+    @Override
+    public int getHeuristic(IntDomainVar v) {
+        return random.nextInt();
+    }
 
-	public IntDomainVar selectVar() {
-		reuseList.clear();
-		for (IntDomainVar v : vars) {
-			if (!v.isInstantiated()) {
-				reuseList.add(v);
-			}
-		}
-		final int n = reuseList.size();
-		if (n > 1) reuseList.get(random.nextInt(reuseList.size()));
-		if (n < 1) return null;
-		else return reuseList.get(0);
-	}
 }

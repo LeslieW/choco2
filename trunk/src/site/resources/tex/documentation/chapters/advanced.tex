@@ -9,7 +9,7 @@
 
 Environment is a central object of the backtracking system. It defines the notion of \textit{world}. A world contains values of storable objects or operations that permit to \textit{backtrack} to its state. The environment \textit{pushes} and \textit{pops} worlds.
 
-There are \textit{primitive} data types (\texttt{IstateBitSet, IStateBool, IStateDouble, IStateInt, IStateLong}) and \textit{objects} data types (\texttt{IStateBinarytree, IStateIntInterval, IStateIntProcedure, IStateIntVector, IStateObject, IStateVector}).
+There are \textit{primitive} data types (\mylst{IstateBitSet, IStateBool, IStateDouble, IStateInt, IStateLong}) and \textit{objects} data types (\mylst{IStateBinarytree, IStateIntInterval, IStateIntProcedure, IStateIntVector, IStateObject, IStateVector}).
 
 There are two different environments: \textit{EnvironmentTrailing} and \textit{EnvironmentCopying}.
 
@@ -26,64 +26,298 @@ In this section, we will start with a very simple and common way to branch by ch
 
 For integer variables, the variable and value selection strategy objects are based on the following interfaces:
 \begin{itemize}
-	\item \texttt{AbstractIntBranchingStrategy}: abstract class for the branching strategy,
-	\item \texttt{VarSelector<V>} : Interface for the variable selection (V extends Var),
-	\item \texttt{ValIterator<V>} : Interface to describes an iteration scheme on the domain of a variable,
-	\item \texttt{ValSelector<V>} : Interface for a value selection.
+	\item \mylst{AbstractIntBranchingStrategy}: abstract class for the branching strategy,
+	\item \mylst{VarSelector<V>} : Interface for the variable selection (\mylst{V extends Var}),
+	\item \mylst{ValIterator<V>} : Interface to describes an iteration scheme on the domain of a variable,
+	\item \mylst{ValSelector<V>} : Interface for a value selection.
 \end{itemize}
 
 Concrete examples of these interfaces are respectively,  \hyperlink{assignvar:assignvarbranchstrat}{AssignVar}, \hyperlink{mindomain:mindomainvarselector}{MinDomain}, \hyperlink{increasingdomain:increasingdomainvaliterator}{IncreasingDomain}, \hyperlink{maxval:maxvalvalselector}{MaxVal}.
 
+
+\subsection{How does a search loop work ?}\label{advanced:howdoesasearchloopwork}\hypertarget{advanced:howdoesasearchloopwork}{}
+To understand search strategy, it is good to know how it is invoked. This is done in the search loop. It goes down and up in the branches in order to cover the tree search.
+Here is the organigram of the search loop. 
+
+%\insertGraphique{0.8\linewidth}{media/searchloop.pdf}{Organigram of the search loop}
+
+\begin{figure}[!htp]
+	\centerline{\Graph{media/searchloop.pdf}{width=0.8\linewidth}}
+	\caption[]{Organigram of the search loop}\label{fig:media/searchloop.pdf}
+\end{figure}
+
+Basically, the search loop is divided in 4 steps: \mylst{INITIAL PROPAGATION} (highlighted in red), \mylst{OPEN NODE} (highlighted in green), \mylst{DOWN BRANCH} (highlighted in violet) and \mylst{UP BRANCH} (highlighted in orange). 
+
 \subsection{How to define your own Branching object}\label{advanced:beyondvariable/valueselection,howtodefineyourownbranchingobject}\hypertarget{advanced:beyondvariable/valueselection,howtodefineyourownbranchingobject}{}
 
-Beyond Variable/value selection...
+When you need a specific branching strategy that can't be expressed with the ones already existing, you can define your own concrete class of:
 
-\subsection{Define your own variable selection}\label{advanced:defineyourownvariableselection}\hypertarget{advanced:defineyourownvariableselection}{}
-You may extend this small library of branching schemes and heuristics by defining your own concrete classes of \texttt{AbstractIntVarSelector}. We give here an example of an \texttt{IntVarSelector} with the implementation of a static variable ordering :
-\begin{lstlisting}
-  public class StaticVarOrder extends AbstractIntVarSelector {
+\noindent{\begin{tabular}{ll}
+\hline
+  Default class to implement &  definition \\
+  \hline
+  \mylst{AbstractBinIntBranchingStrategy} &  abstract class defining a binary tree search \\
+  \mylst{AbstractLargeIntSConstraint} &  abstract class defining a n-ary tree search. \\
+  \hline\\
+\end{tabular}}
 
-      // the sequence of variables that need be instantiated
-	  protected IntDomainVar[] vars;
-	
-	  public StaticVarOrder(IntDomainVar[] vars) {
-          this.vars = vars;
-	  }
-	
-	  public IntDomainVar selectIntVar() {
-          for (int i = 0; i < vars.length; i++)
-              if (!vars[i].isInstantiated())
-                  return vars[i];
-          return null;
-	  }
-  }
+
+\insertGraphique{\linewidth}{media/branching.pdf}{Branching strategy: interfaces and abstract classes.}
+
+We give here two examples of implementations of these classes, first for a binary branching, then for a n-ary branching. 
+\begin{lstlisting}   
+/**
+ * A class for branching schemes that consider two branches: 
+ * - one assigning a value to an IntVar (X == v) 
+ * - and the other forbidding this assignment (X != v)
+ */
+public class AssignOrForbid extends AbstractBinIntBranchingStrategy {
+
+    protected VarSelector<IntDomainVar> varSelector;
+
+    protected ValSelector<IntDomainVar> valSelector;
+
+    public AssignOrForbid(VarSelector<IntDomainVar> varSelector,
+                          ValSelector<IntDomainVar> valSelector) {
+        super();
+        this.valSelector = valSelector;
+        this.varSelector = varSelector;
+    }
+
+    /**
+     * Select the variable to constrained
+     *
+     * @return the branching object
+     */
+    public Object selectBranchingObject() throws ContradictionException {
+        return varSelector.selectVar();
+    }
+
+    /**
+     * Select the value to assign, and set it in the decision object in parameter
+     * @param decision the next decision to apply
+     */
+    @Override
+    public void setFirstBranch(final IntBranchingDecision decision) {
+        decision.setBranchingValue(valSelector.getBestVal(decision.getBranchingIntVar()));
+    }
+
+
+    /**
+     * Create and return the message to print, in case of strong verbosity
+     * @param decision current decision
+     * @return pretty print of the current decision
+     */
+    @Override
+    public String getDecisionLogMessage(final IntBranchingDecision decision) {
+        return decision.getBranchingObject() +  (decision.getBranchIndex() == 0 ? "==" : "=/=") + decision.getBranchingValue();
+    }
+
+
+    /**
+     * Execution action based on the couple: {decision, branching index}.
+     * As <code>this</code> build a binary branching, there are only 2 branching indices:
+     * 0 -- assignment, the variable is instantiated to the value
+     * 1 -- forbidance, the value is removed from the domain of the variable
+     *
+     * @throws ContradictionException if the decision leads to an incoherence
+     */
+    @Override
+    public void goDownBranch(final IntBranchingDecision decision) throws ContradictionException {
+        if (decision.getBranchIndex() == 0) {
+            decision.setIntVal();
+        } else {
+            decision.remIntVal();
+        }
+    }
+}
 \end{lstlisting}
 
-Notice on this example that you only need to implement method \texttt{selectIntVar()} which belongs to the contract of \texttt{IntVarSelector}. This method should return a non instantiated variable or \texttt{null}. Once the branching is finished, the next branching (if one exists) is taken by the search algorithm to continue the search, otherwise, the search stops as all variable are instantiated. To avoid the loop over the variables of the branching, a backtrackable integer (\texttt{StoredInt}) could be used to remember the last instantiated variable and to directly select the next one in the table. Notice that backtrackable structures could be used in any of the code presented in this chapter to speedup the computation of dynamic choices.
+\begin{lstlisting}   
+/**
+ * A class for branching schemes that consider n branches: 
+ * -  assigning a value v_i to an variable (X == v_i)
+ */
+public class Assign extends AbstractLargeIntBranchingStrategy {
+
+    protected final VarSelector<IntDomainVar> varSelector;
+
+    protected ValIterator<IntDomainVar> valIterator;
+
+    public Assign(VarSelector<IntDomainVar> varSelector, ValIterator<IntDomainVar> valIterator) {
+        this.varSelector = varSelector;
+        this.valIterator = valIterator;
+    }
+
+    /**
+     * Select the variable to constrained
+     *
+     * @return the branching object
+     */
+    public Object selectBranchingObject() throws ContradictionException {
+        return varSelector.selectVar();
+    }
+
+    /**
+     * Select the first value to assign, and set it in the decision object in parameter
+     *
+     * @param decision the first decision to apply
+     */
+    public void setFirstBranch(final IntBranchingDecision decision) {
+        decision.setBranchingValue(valIterator.getFirstVal(decision.getBranchingIntVar()));
+    }
+
+    /**
+     * Select the next value to assign, and set it in the decision object in parameter
+     *
+     * @param decision the next decision to apply
+     */
+    public void setNextBranch(final IntBranchingDecision decision) {
+        decision.setBranchingValue(valIterator.getNextVal(decision.getBranchingIntVar(), decision.getBranchingValue()));
+    }
+
+    /**
+     * Check wether there is still a value to assign
+     *
+     * @param decision the last decision applied
+     * @return <code>false</code> if there is still a branching to do
+     */
+    public boolean finishedBranching(final IntBranchingDecision decision) {
+        return !valIterator.hasNextVal(decision.getBranchingIntVar(), decision.getBranchingValue());
+    }
+
+    /**
+     * Apply the computed decision building the i^th branch.
+     * --> assignment: the variable is instantiated to the value
+     * 
+     * 
+     * @param decision the decision to apply.
+     * @throws ContradictionException if the decision leads to an incoherence
+     */
+    @Override
+    public void goDownBranch(final IntBranchingDecision decision) throws ContradictionException {
+        decision.setIntVal();
+    }
+
+    /**
+     * Reconsider the computed decision, destroying the i^th branch
+     * --> forbiddance: the value is removed from the domain of the variable
+     * 
+     * @param decision the decision that has been set at the father choice point
+     * @throws ContradictionException if the non-decision leads to an incoherence
+     */
+    @Override
+    public void goUpBranch(final IntBranchingDecision decision) throws ContradictionException {
+        decision.remIntVal();
+    }
+
+    /**
+     * Create and return the message to print, in case of strong verbosity
+     * @param decision current decision
+     * @return pretty print of the current decision
+     */
+    @Override
+    public String getDecisionLogMessage(IntBranchingDecision decision) {
+        return decision.getBranchingObject() + "==" + decision.getBranchingValue();
+    }
+}
+\end{lstlisting}
+
+\subsection{Define your own variable selection}\label{advanced:defineyourownvariableselection}\hypertarget{advanced:defineyourownvariableselection}{}
+
+\insertGraphique{.5\linewidth}{media/varselector-s.pdf}{Variable selector: interface}
+
+You may extend this small library of branching schemes and heuristics by defining your own concrete classes of \mylst{AbstractIntVarSelector}. We give here an example of an \mylst{VarSelector<IntDomainVar>} with the implementation of a static variable ordering :
+\begin{lstlisting}
+/**
+ * A variable selector selecting the first non instantiated variable according to a given static order
+ */
+public class StaticVarOrder extends AbstractIntVarSelector {
+
+    private final IStateInt last;
+
+    public StaticVarOrder(Solver solver) {
+        super(solver);
+        this.last = solver.getEnvironment().makeInt(0);
+    }
+
+    public StaticVarOrder(Solver solver, IntDomainVar[] vars) {
+        super(solver, vars);
+        this.last = solver.getEnvironment().makeInt(0);
+    }
+
+    /**
+     * Select the next uninstantiated variable, according to the define policy: input order
+     * @return the selected variable if exists, <code>null</code> otherwise
+     */
+    public IntDomainVar selectVar() {
+        for (int i = last.get(); i < vars.length; i++) {
+            if (!vars[i].isInstantiated()) {
+                last.set(i);
+                return vars[i];
+
+            }
+        }
+        return null;
+    }
+}
+\end{lstlisting}
+
+Notice on this example that you only need to implement method \mylst{selectVar()} which belongs to the contract of \mylst{VarSelector}. This method should return a non instantiated variable or \mylst{null}. Once the branching is finished, the next branching (if one exists) is taken by the search algorithm to continue the search, otherwise, the search stops as all variable are instantiated. To avoid the loop over the variables of the branching, a backtrackable integer (\mylst{IStateInt}) could be used to remember the last instantiated variable and to directly select the next one in the table. Notice that backtrackable structures could be used in any of the code presented in this chapter to speedup the computation of dynamic choices.
+
+\insertGraphique{.8\linewidth}{media/varselector-a.pdf}{Variable selector: interface and abstract classes}
+
+If you need an integer variable selector that can be used as a parameter of \hyperlink{lexintvarselector:lexintvarselectorvarselector}{LexIntVarSelector}, it should extend \mylst{IntHeuristicIntVarSelector} or \mylst{DoubleHeuristicIntVarSelector}. These two abstract classes only require to implement one method : \mylst{getHeuristic(IntDomainVar v)} which computes and returns a criterion (\mylst{int} or \mylst{double}). The criteria are used in a master class to select the smallest crtierion's variable 
+
+We give here an other example of an \mylst{VarSelector<IntDomainVar>}, this one extends \mylst{IntHeuristicIntVarSelector} and choose the variable with the smallest domain :
+\begin{lstlisting}
+public class MinDomain extends IntHeuristicIntVarSelector {
+
+	public MinDomain(Solver solver) {
+		super(solver);
+	}
+
+	public MinDomain(Solver solver, IntDomainVar[] vs) {
+		super(solver, vs);
+	}
+
+    /**
+     * Compute the criterion, according to the define policy: smallest domain size
+     * @return the selected variable if exists, <code>null</code> otherwise
+     */
+	@Override
+	public int getHeuristic(IntDomainVar v) {
+		return v.getDomainSize();
+	}
+
+}
+\end{lstlisting}
+
 
 You can add your variable selector as a part of a search strategy, using \mylst{solver.addGoal()}.
 
 \subsection{Define your own value selection}\label{advanced:defineyourownvalueselection}\hypertarget{advanced:defineyourownvalueselection}{}
-You may also define your own concrete classes of \texttt{ValIterator} or \texttt{ValSelector}. 
+You may also define your own concrete classes of \mylst{ValIterator} or \mylst{ValSelector}. 
 
 \subsubsection{Value selector}\label{advanced:valueselector}\hypertarget{advanced:valueselector}{}
 
-\insertGraphique{.5\linewidth}{media/valselector.pdf}{ValSelector interface and implementation}
+\insertGraphique{.3\linewidth}{media/valselector.pdf}{Value selector: interface}
 
-We give here an example of an \texttt{IntValSelector} with the implementation of a minimum value selecting:
+We give here an example of an \mylst{IntValSelector} with the implementation of a minimum value selecting:
 \begin{lstlisting}
-  public class MinVal extends AbstractSearchHeuristic implements ValSelector {
-	 /**
-      * selecting the lowest value in the domain
-      * @param x the variable under consideration
-      * @return what seems the most interesting value for branching
-      */
-	  public int getBestVal(IntDomainVar x) {
-          return x.getInf();
-	  }
+public class MinVal implements ValSelector<IntDomainVar> {
+  /**
+   * selecting the lowest value in the domain
+   *
+   * @param x the variable under consideration
+   * @return what seems the most interesting value for branching
+   */
+  public int getBestVal(IntDomainVar x) {
+    return x.getInf();
   }
+}
 \end{lstlisting}
-Only \texttt{getBestVal()} method must be implemented, returning the best value \emph{in the domain} according to the heuristic.
+Only \mylst{getBestVal()} method must be implemented, returning the best value \emph{in the domain} according to the heuristic.
 
 You can add your value selector as a part of a search strategy, using \mylst{solver.addGoal()}.
 
@@ -92,42 +326,47 @@ Using a value selector with bounded domain variable is strongly inadvised, excep
 \end{note} 
 
 \subsubsection{Values iterator}\label{advanced:valuesiterator}\hypertarget{advanced:valuesiterator}{}
-We give here an example of an \texttt{ValIterator} with the implementation of an increasing domain iterator:
+
+\insertGraphique{.3\linewidth}{media/valiterator.pdf}{Value iterator: interface}
+
+We give here an example of an \mylst{ValIterator} with the implementation of an increasing domain iterator:
 \begin{lstlisting}
-  public final class IncreasingDomain implements ValIterator {
-	  /**
-	   * testing whether more branches can be considered after branch i, 
-       * on the alternative associated to variable x
-	   * @param x the variable under scrutiny
-	   * @param i the index of the last branch explored
-	   * @return true if more branches can be expanded after branch i
-	   */
-       public boolean hasNextVal(Var x, int i) {
-           return (i < ((IntDomainVar) x).getSup());
-       }
-	
-	  /**
-	   * accessing the index of the first branch for variable x
-	   * @param x the variable under scrutiny
-	   * @return the index of the first branch: first value to be assigned to x
-	   */
-       public int getFirstVal(Var x) {
-           return ((IntDomainVar) x).getInf();
-       }
-	
-	  /**
-	   * generates the index of the next branch after branch i, 
-       * on the alternative associated to variable x
-	   * @param x the variable under scrutiny
-	   * @param i the index of the last branch explored
-	   * @return the index of the next branch to be expanded after branch i
-	   */
-       public int getNextVal(Var x, int i) {
-           return ((IntDomainVar) x).getNextDomainValue(i);
-       }
-   }
+public class IncreasingDomain implements ValIterator<IntDomainVar> {
+
+  /**
+   * testing whether more branches can be considered after branch i, on the alternative associated to variable x
+   *
+   * @param x the variable under scrutiny
+   * @param i the index of the last branch explored
+   * @return true if more branches can be expanded after branch i
+   */
+  public boolean hasNextVal(IntDomainVar x, int i) {
+    return (i < x.getSup());
+  }
+
+  /**
+   * Accessing the index of the first branch for variable x
+   *
+   * @param x the variable under scrutiny
+   * @return the index of the first branch (such as the first value to be assigned to the variable)
+   */
+  public int getFirstVal(IntDomainVar x) {
+    return x.getInf();
+  }
+
+  /**
+   * generates the index of the next branch after branch i, on the alternative associated to variable x
+   *
+   * @param x the variable under scrutiny
+   * @param i the index of the last branch explored
+   * @return the index of the next branch to be expanded after branch i
+   */
+  public int getNextVal(IntDomainVar x, int i) {
+    return x.getNextDomainValue(i);
+  }
+}
 \end{lstlisting}
-%Works as an basic \texttt{Iterator} object, implementing the three main methods \texttt{hasNextVal()}, \texttt{getFirstVal()} and \texttt{getNextVal()}.
+%Works as an basic \mylst{Iterator} object, implementing the three main methods \mylst{hasNextVal()}, \mylst{getFirstVal()} and \mylst{getNextVal()}.
 
 You can add your value iterator as a part of a search strategy, using \mylst{solver.addGoal()}.
 
@@ -135,7 +374,7 @@ You can add your value iterator as a part of a search strategy, using \mylst{sol
 
 \section{Define your own limit search space}\label{advanced:defineyourownlimitsearchspace}\hypertarget{advanced:defineyourownlimitsearchspace}{}
 
-To define your own limits/statistics (notice that a limit object can be used only to get statistics about the search), you can create a limit object by extending the \texttt{AbstractGlobalSearchLimit} class or implementing directly the interface \texttt{IGlobalSearchLimit}. Limits are managed at each node of the tree search and are updated each time a node is open or closed. Notice that limits are therefore time consuming. Implementing its own limit need only to specify to the following interface :
+To define your own limits/statistics (notice that a limit object can be used only to get statistics about the search), you can create a limit object by extending the \mylst{AbstractGlobalSearchLimit} class or implementing directly the interface \mylst{IGlobalSearchLimit}. Limits are managed at each node of the tree search and are updated each time a node is open or closed. Notice that limits are therefore time consuming. Implementing its own limit need only to specify to the following interface :
 
 \begin{lstlisting}
 	/**
@@ -165,7 +404,7 @@ To define your own limits/statistics (notice that a limit object can be used onl
 	}
 \end{lstlisting}
 
-Look at the following example to see a concrete implementation of the previous interface. We define here a limit on the depth of the search (which is not found by default in choco). The \texttt{getWorldIndex()} is used to get the current world, i.e the current depth of the search or the number of choices which have been done from baseWorld. 
+Look at the following example to see a concrete implementation of the previous interface. We define here a limit on the depth of the search (which is not found by default in choco). The \mylst{getWorldIndex()} is used to get the current world, i.e the current depth of the search or the number of choices which have been done from baseWorld. 
 
 \begin{lstlisting}
 	public class DepthLimit extends AbstractGlobalSearchLimit {
@@ -195,7 +434,7 @@ Look at the following example to see a concrete implementation of the previous i
 	  }
 \end{lstlisting}
 
-Once you have implemented your own limit, you need to tell the search solver to take it into account. Instead of using a call to the \texttt{solve()} method, you have to create the search solver by yourself and add the limit to its limits list such as in the following code :
+Once you have implemented your own limit, you need to tell the search solver to take it into account. Instead of using a call to the \mylst{solve()} method, you have to create the search solver by yourself and add the limit to its limits list such as in the following code :
 \begin{lstlisting}
 	Solver s = new CPSolver();
 	s.read(model);
@@ -205,56 +444,17 @@ Once you have implemented your own limit, you need to tell the search solver to 
 	s.launch();
 \end{lstlisting}
 
-
-\subsection{How does a search loop work ?}\label{advanced:howdoesasearchloopwork}\hypertarget{advanced:howdoesasearchloopwork}{}
-The seach loop is created when a \texttt{solve()} method is called. It goes down and up in the branches in order to cover the tree search. 
-
-%\subsubsection{Search loop}\label{advanced:searchloop}\hypertarget{advanced:searchloop}{}
-\begin{lstlisting}[title={Algorithm of the search loop in Choco}]
-  next_move = new node
-  WHILE no solution AND in search limit
-        IF next_move is new node
-	    THEN
-	        create a new node : variable/value selection ;
-	        IF node exists 
-	        THEN
-	            next_move <-- go down branch ;            
-	        ELSE 
-	            next_move <-- go up branch ;
-	            solution is found ;
-	
-	    ELSE IF next_move is go down branch
-	        propagate ;
-	        IF no contradiction 
-	        THEN
-	            next_move <-- new node ;                        
-	        ELSE
-	            next_move <-- go up branch ;
-	        
-	    ELSE IF next_move is go up branch 
-	        find next branch ;
-	        propagate ;
-	        IF has next branch AND no contradiction
-	        THEN
-	            next_move <-- go down branch ;                            
-	        ELSE
-	            next_move <-- go up branch ;
-	
-	    END IF
-	
-  END WHILE
-\end{lstlisting}
 %\subsubsection{Search loop with recomputation}\label{advanced:searchloopwithrecomputation}\hypertarget{advanced:searchloopwithrecomputation}{}
 
 \section{Define your own constraint}\label{advanced:defineyourownconstraint}\hypertarget{advanced:defineyourownconstraint}{}
 
 This section describes how to add you own constraint, with specific propagation algorithms. Note that this section is only useful in case you want to express a constraint for which the basic propagation algorithms (using tables of tuples, or boolean predicates) are not efficient enough to propagate the constraint.
 
-The general process consists in defining a new constraint class and implementing the various propagation methods. We recommend the user to follow the examples of existing constraint classes (for instance, such as \texttt{GreaterOrEqualXYC} for a binary inequality) 
+The general process consists in defining a new constraint class and implementing the various propagation methods. We recommend the user to follow the examples of existing constraint classes (for instance, such as \mylst{GreaterOrEqualXYC} for a binary inequality) 
 
 \subsection{The constraint hierarchy}\label{advanced:theconstrainthierarchy}\hypertarget{advanced:theconstrainthierarchy}{}
 
-Each new constraint must be represented by an object implementing the \texttt{\bf SConstraint} interface (\texttt{S} for solver constraint). To help the user defining new constraint classes, several abstract classes defining \texttt{SConstraint} have been implemented. These abstract classes provide the user with a management of the constraint network and the propagation engineering. They should be used as much as possible.
+Each new constraint must be represented by an object implementing the \mylst{SConstraint} interface (\mylst{S} for solver constraint). To help the user defining new constraint classes, several abstract classes defining \texttt{SConstraint} have been implemented. These abstract classes provide the user with a management of the constraint network and the propagation engineering. They should be used as much as possible.
 
 For constraints on integer variables, the easiest way to implement your own constraint is to inherit from one of the following classes, depending of the number of solver integer variables (\texttt{IntDomainVar}) involved:
 
@@ -482,7 +682,7 @@ Choco logging system is based on the \texttt{java.util.logging} package and loca
 Most Choco abstract classes or interfaces propose a static field \texttt{LOGGER}.
 The following figures present the architecture of the logging system with the default verbosity.
 
-\insertGraphique{.9\linewidth}{media/logger-default.png}{Logger Tree with the default verbosity}
+\insertGraphique{.3\linewidth}{media/logger-default.png}{Logger Tree with the default verbosity}
 
 The shape of the node depicts the type of logger:
 \begin{itemize}

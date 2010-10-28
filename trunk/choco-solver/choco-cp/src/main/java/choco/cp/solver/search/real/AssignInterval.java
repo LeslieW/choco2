@@ -38,11 +38,11 @@ import choco.kernel.solver.variables.real.RealVar;
 public class AssignInterval extends AbstractIntBranchingStrategy {
 
 	protected VarSelector<RealVar> varSelector;
-	protected ValIterator valIterator;
+	protected ValIterator<RealVar> valIterator;
 
 	protected static final String[] LOG_DECISION_MSG = new String[]{"in first half of ", "in second half of "};
 
-	public AssignInterval(VarSelector<RealVar> varSelector, ValIterator valIterator) {
+	public AssignInterval(VarSelector<RealVar> varSelector, ValIterator<RealVar> valIterator) {
 		this.varSelector = varSelector;
 		this.valIterator = valIterator;
 	}

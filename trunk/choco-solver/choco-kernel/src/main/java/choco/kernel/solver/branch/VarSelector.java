@@ -28,13 +28,6 @@ import choco.kernel.solver.variables.Var;
  * an interface for objects controlling the selection of a variable (for heuristic purposes)
  */
 public interface VarSelector<V extends Var> {
-  /**
-   * each VarSelector is associated to a branching strategy
-   *
-   * @return the associated branching strategy
-   */
-  @Deprecated
-  public IntBranching getBranching();
 
   /**
    * the VarSelector can be asked to return a variable

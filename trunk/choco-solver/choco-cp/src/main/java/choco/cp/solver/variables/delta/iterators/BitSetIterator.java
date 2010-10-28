@@ -81,6 +81,7 @@ public class BitSetIterator extends DisposableIntIterator {
      * Freeze the iterator, cannot be reused.
      */
     public void init(final int theOffset, final BitSet theContents) {
+        super.init();
         this.contents = theContents;
         this.offset = theOffset;
         nextValue = theContents.nextSetBit(0);
