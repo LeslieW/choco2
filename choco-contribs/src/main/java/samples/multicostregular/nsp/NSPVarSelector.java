@@ -1,6 +1,5 @@
 package samples.multicostregular.nsp;
 
-import choco.kernel.solver.branch.IntBranching;
 import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -157,10 +156,4 @@ public class NSPVarSelector implements VarSelector<IntDomainVar> {
         else return tmp;*/
 
     }
-    
-	@Override
-	public final IntBranching getBranching() {
-		return null;
-	}
-    
 }

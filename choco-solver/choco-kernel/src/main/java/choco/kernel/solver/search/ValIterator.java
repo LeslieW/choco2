@@ -25,7 +25,7 @@ package choco.kernel.solver.search;
 import choco.kernel.solver.variables.Var;
 
 /**
- * An interface for control objects that model the iteration of (search) values associated to an {@link IntDomainVar}
+ * An interface for control objects that model the iteration of (search) values associated to an {@link Var}
  */
 public interface ValIterator<V extends Var> {
   /**

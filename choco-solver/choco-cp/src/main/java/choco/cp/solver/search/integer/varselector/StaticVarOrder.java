@@ -44,6 +44,10 @@ public class StaticVarOrder extends AbstractIntVarSelector {
         this.last = solver.getEnvironment().makeInt(0);
     }
 
+    /**
+     * Select what seems to be most interesting variable, considering the current state of the variables
+     * @return
+     */
     public IntDomainVar selectVar() {
         //<hca> it starts at last.get() and not last.get() +1 to be
         //robust to restart search loop

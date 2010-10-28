@@ -24,6 +24,7 @@ package choco.kernel.solver.search.integer;
 
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
+import choco.kernel.solver.search.TiedIntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.List;
@@ -33,7 +34,7 @@ import java.util.List;
  * A class the selects the variables which minimizes a heuristic
  *  (such classes support ties)
  */
-public abstract class HeuristicIntVarSelector extends AbstractIntVarSelector implements TiedIntVarSelector {
+public abstract class HeuristicIntVarSelector extends AbstractIntVarSelector implements TiedIntVarSelector<IntDomainVar> {
 
 	public HeuristicIntVarSelector(Solver solver) {
 		super(solver);

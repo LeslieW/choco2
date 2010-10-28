@@ -23,7 +23,6 @@
 package choco.cp.solver.search.integer.varselector;
 
 import choco.kernel.solver.branch.ConstraintSelector;
-import choco.kernel.solver.branch.IntBranching;
 import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
@@ -57,10 +56,5 @@ public class CompositeIntVarSelector implements VarSelector<IntDomainVar> {
     public HeuristicIntVarSelector getCvs() {
         return cvs;
     }
-
-	@Override
-	public IntBranching getBranching() {
-		return null;
-	}
     
 }

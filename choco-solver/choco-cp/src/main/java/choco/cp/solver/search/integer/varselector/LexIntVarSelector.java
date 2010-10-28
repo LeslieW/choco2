@@ -22,10 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.varselector;
 
-import choco.kernel.solver.branch.IntBranching;
 import choco.kernel.solver.branch.VarSelector;
+import choco.kernel.solver.search.TiedIntVarSelector;
 import choco.kernel.solver.search.integer.HeuristicIntVarSelector;
-import choco.kernel.solver.search.integer.TiedIntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.List;
@@ -53,10 +52,5 @@ public class LexIntVarSelector implements VarSelector<IntDomainVar> {
 		case 1: return ties.get(0);
 		default: return h2.getMinVar(ties);
 		}
-	}
-
-	@Override
-	public IntBranching getBranching() {
-		return null;
 	}
 }

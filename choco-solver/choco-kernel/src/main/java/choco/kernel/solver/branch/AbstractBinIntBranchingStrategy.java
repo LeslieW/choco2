@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.branch;
 
+import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.search.IntBranchingDecision;
 
 public abstract class AbstractBinIntBranchingStrategy extends AbstractIntBranchingStrategy {
@@ -39,6 +40,13 @@ public abstract class AbstractBinIntBranchingStrategy extends AbstractIntBranchi
 	public final boolean finishedBranching(final IntBranchingDecision ctx) {
 		return ctx.getBranchIndex() > 0;
 	}
-	
+
+    /**
+	 * nothing to do
+	 */
+	@Override
+	public void goUpBranch(final IntBranchingDecision decision)	throws ContradictionException {
+		//nothing to do
+	}
 
 }

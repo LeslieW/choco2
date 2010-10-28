@@ -50,15 +50,6 @@ public abstract class AbstractSetBranchingStrategy extends AbstractBinIntBranchi
 		}
 	}
 
-	/**
-	 * nothing to do
-	 * @see choco.kernel.solver.branch.AbstractIntBranchingStrategy#goUpBranch(java.lang.Object, int)
-	 */
-	@Override
-	public void goUpBranch(final IntBranchingDecision ctx) throws ContradictionException {
-		//nothing to do
-	}
-
 	public String getDecisionLogMessage(IntBranchingDecision decision) {
 		return decision.getBranchingSetVar() + LOG_DECISION_MSG[decision.getBranchIndex()] + decision.getBranchingValue();
 	}

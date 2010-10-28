@@ -24,7 +24,7 @@ package choco.cp.solver.search.integer.varselector.ratioselector;
 
 import choco.cp.solver.search.integer.varselector.ratioselector.ratios.IntRatio;
 import choco.kernel.solver.branch.VarSelector;
-import choco.kernel.solver.search.integer.TiedIntVarSelector;
+import choco.kernel.solver.search.TiedIntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 
