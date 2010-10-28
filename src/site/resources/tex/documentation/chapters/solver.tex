@@ -14,232 +14,353 @@ To create a \gls{Solver}, one just needs to create a new object as follow:
 \begin{lstlisting}
 Solver solver = new CPSolver();
 \end{lstlisting}
-By this, a Constraint Programming (CP) {\tt Solver} object is created. 
+This instruction creates a Constraint Programming (CP) {\tt Solver} object.
 
 %\section{Read a model}\label{solver:readamodel}\hypertarget{solver:readamodel}{}
 The solver gives an API to read a model. The reading of a model is compulsory and must be done after the entire definition of the model. 
 \begin{lstlisting}
 solver.read(model);
 \end{lstlisting}
-The reading is divided in 2 parts: \hyperlink{solver:variablesreading}{variables reading} and \hyperlink{solver:constraintsreading}{constraints reading}.
+The reading is divided in two parts: \hyperlink{solver:variablesreading}{variables reading} and \hyperlink{solver:constraintsreading}{constraints reading}.
 
 \section{Variables reading}\label{solver:variablesreading}\hypertarget{solver:variablesreading}{}
-The solver iterates over the variables of the Model to create solver-specific variables and domains (as defined in the model). 
-Thus, three types of variables can be created: integer variables, real variables and set variables. 
-Depending on the constructor, the correct domain is created (like bounded domain or enumerated domain for integer variables). 
+The variables are declared in a model with a given type \texttt{IntegerVariable, SetVariable, RealVariable} and, possibly, with a given domain type (e.g. bounded or enumerated domains for integer and set variables).
+When reading the model, the solver iterates over the model variables, then creates the corresponding solver variables and domains data structures in accord with these types.
 
 \begin{note}
 \textbf{Bound variables} are related to large domains which are only represented by their lower and upper bounds. The domain is encoded in a space efficient way and propagation events only concern bound updates. Value removals between the bounds are therefore ignored (\emph{holes} are not considered). The level of consistency achieved by most constraints on these variables is called \emph{bound-consistency}.
 
-On the contrary, the domain of an \textbf{enumerated variable} is explicitly represented and every value is considered while pruning. Basic constraints are therefore often able to achieve \emph{arc-consistency} on enumerated variables (except for NP global constraint such as the cumulative constraint). Remember that switching from an enumerated variable to a bounded variables decrease the level of propagation achieved by the system.
+On the contrary, the domain of an \textbf{enumerated variable} is explicitly represented and every value is considered while pruning. Basic constraints are therefore often able to achieve \emph{arc-consistency} on enumerated variables (except for NP-hard global constraint such as the cumulative constraint). Remember that switching from enumerated variables to bounded variables decreases the level of propagation achieved by the system.
 \end{note}
 
+
 %\begin{note}
-\textbf{Model variables and Solver variables are distinct objects}. Solver variables are solver representation of the model variables. One can't access to variable value directly from the model variable. To access to a model variable thanks to the solver, use the following \texttt{Solver} API: \mylst{getVar(Variable v);}
+\paragraph{Model variables and solver variables are distinct objects.} 
+Model variables implement the \mylst{Variable} interface and solver variables implement the \mylst{Var} interface.
+A model variable is defined by an abstract representation of its initial domain, while a solver variable encapsulates a concrete representation of the domain, and maintains its current state throughout the search.
+Hence, one cannot access to a variable value directly from a model variable but one can from its corresponding solver variable. The solver variables are anonymous but can be accessed from the corresponding model variables using the \texttt{Solver} API \mylst{getVar(Variable v)} and \mylst{getVar(Variable... v)}.
+%To access to a model variable thanks to the solver, use the following 
 %\end{note}
 
-\subsection{Solver and IntegerVariables}\label{solver:solverandintegervariables}\hypertarget{solver:solverandintegervariables}{}
+\subsection{from \texttt{IntegerVariable} to\texttt{IntDomainVar}}\label{solver:solverandintegervariables}\hypertarget{solver:solverandintegervariables}{}
 
-A model integer variable can be accessed by the method \textbf{\tt getVar(IntegerVariable v)} which returns a \textbf{\tt IntDomainVar} object:
+For integer variables, the solver \textbf{\tt IntDomainVar} is the counterpart to the model \hyperlink{integervariable}{\textbf{\tt IntegerVariable}}. 
+Methods \textbf{\tt getVar(IntegerVariable var)} and \textbf{\tt getVar(IntegerVariable... vars)} of \texttt{Solver} return the objects \texttt{IntDomainVar} and \texttt{IntDomainVar[]} respectively corresponding to \texttt{var} and \texttt{vars}:
 \begin{lstlisting}
-  IntegerVariable x = makeEnumIntVar("x", 1, 100);  // model variable
+  IntegerVariable x = Choco.makeEnumIntVar("x", 1, 100);  // model variable
   IntDomainVar xOnSolver = solver.getVar(x);  // solver variable
 \end{lstlisting}
 
-The state of an \texttt{IntDomainVar} can be accessed through the main following public methods :
+The state of an \texttt{IntDomainVar} can be accessed using these main public methods:
 
 \noindent\begin{tabular}{p{.3\linewidth}p{.7\linewidth}}
   \hline
   \texttt{IntDomainVar} API &  description \\
   \hline
-	\mylst{hasEnumeratedDomain()} &checks if the variable is an enumerated or a bound one\\
-	\mylst{getInf()} &returns the lower bound of the variable\\
-	\mylst{getSup()} &returns the upper bound of the variable\\
-	\mylst{getVal()} &returns the value if it is instantiated\\
-	\mylst{isInstantiated()} &checks if the domain is reduced to a singleton\\
-	\mylst{canBeInstantiatedTo(int v)} &checks if the value \emph{v} is contained in the domain of the variable\\
+	\mylst{hasEnumeratedDomain()} &checks if the domain type is enumerated or bounded\\
+	\mylst{getInf()} &returns the current lower bound of the variable\\
+	\mylst{getSup()} &returns the current upper bound of the variable\\
+	\mylst{getVal()} &returns the value of the variable if it is currently instantiated\\
+	\mylst{isInstantiated()} &checks if the domain is currently reduced to a singleton\\
+	\mylst{canBeInstantiatedTo(int v)} &checks if value \texttt{v} currently belongs to the domain of the variable\\
 	\mylst{getDomainSize()} &returns the current size of the domain\\
   \hline\\
 \end{tabular}
 
-For more informations on advanced uses of such \texttt{IntDomainVar}, see \hyperlink{advanced}{advanced uses}.
+The data structure representing the current domain within the \texttt{IntDomainVar} object depends on the domain type (bounded, enumerated, boolean, constant, etc.) of the model variable. 
+See \hyperlink{advanced}{advanced uses} for more informations on \texttt{IntDomainVar}.
 
-\subsection{Solver and SetVariables}\label{solver:solverandsetvariables}\hypertarget{solver:solverandsetvariables}{}
+\subsection{from \texttt{SetVariable} to \texttt{SetVar}}\label{solver:solverandsetvariables}\hypertarget{solver:solverandsetvariables}{}
 
-A model set variable can be access by the method \textbf{\tt getVar(SetVariable v)} which returns a \textbf{\tt SetVar} object:
+For set variables, the solver \textbf{\tt SetVar} is the counterpart to the model \hyperlink{setvariable}{\textbf{\tt SetVariable}}. 
+Methods \textbf{\tt getVar(SetVariable var)} and \textbf{\tt getVar(SetVariable... vars)} of \texttt{Solver} return the objects \texttt{SetVar} and \texttt{SetVar[]} respectively corresponding to \texttt{var} and \texttt{vars}:
 \begin{lstlisting}
-	SetVariable x = makeBoundSetVar("x", 1, 40); // model variable
+	SetVariable x = Choco.makeBoundSetVar("x", 1, 40); // model variable
 	SetVar xOnSolver = solver.getVar(x); // solver variable
 \end{lstlisting}
-A set variable on integer values between $[1,n]$ has $2^{n}$ values (every possible subsets of $\{1..n\}$). This makes an exponential number of values and the domain is represented with two bounds corresponding to the intersection of all possible sets (called the kernel) and the union of all possible sets (called the envelope) which are the possible candidate values for the variable.
 
-The state of a \texttt{SetVar} can be accessed through the main following public methods on the SetVar class:
+Note that a set variable on integer values between $1$ and $n$ may have $2^{n}$ possible values, corresponding to every possible subsets of $\{1,2,\ldots,n\}$. Hence, the domain of a \texttt{SetVar} is encoded by these bounds only: the lower bound, called the \emph{kernel}, is the intersection of all possible set values, and the upper bound, called the \emph{envelope}, is the union of all possible set values. Furthermore, a \texttt{SetVar} encapsulated an \texttt{IntDomainVar} representing the cardinality of the set variable. The domain type of this variable (enumerated or bounded) depends on the option given at the construction of the \texttt{SetVariable}. 
+%This makes an exponential number of values and the domain is represented with two bounds corresponding to the intersection of all possible sets (called the kernel) and the union of all possible sets (called the envelope) which are the possible candidate values for the variable.
+
+The state of a \texttt{SetVar} can be accessed through these main public methods: \todo{Warning: Envelope is (french) spelled with two 'p' in the method name.}
 
 \noindent\begin{tabular}{p{.3\linewidth}p{.7\linewidth}}
   \hline
   \texttt{SetVar} API &  description \\
   \hline
-	\mylst{getCard()} &returns the \texttt{IntDomainVar} representing the cardinality of the set variable\\
-	\mylst{isInDomainKernel(int v)} &checks if value \emph{v} is contained in the current kernel\\
-	\mylst{isInDomainEnveloppe(int v)} &checks if value \emph{v} is contained in the current envelope\\
-	\mylst{getDomain()} &returns the domain of the variable as a \texttt{SetDomain}. Iterators on envelope or kernel can than be called\\
-	\mylst{getKernelDomainSize()} &returns the size of the kernel\\
-	\mylst{getEnveloppeDomainSize()} &returns the size of the envelope\\
-	\mylst{getEnveloppeInf()} &returns the first available value of the envelope\\
-	\mylst{getEnveloppeSup()} &returns the last available value of the envelope\\
-	\mylst{getKernelInf()} &returns the first available value of the kernel\\
-	\mylst{getKernelSup()} &returns the last available value of the kernel\\
-	\mylst{getValue()} &returns a table of integers \texttt{int[]} containing the current domain\\
+	\mylst{getCard()} &returns the current cardinality (an \texttt{IntDomainVar} object)\\
+	\mylst{isInDomainKernel(int v)} &checks if value \texttt{v} belongs to the current kernel\\
+	\mylst{isInDomainEnveloppe(int v)} &checks if value \texttt{v} belongs to the current envelope\\
+	\mylst{getDomain()} &returns the current domain (a \texttt{SetDomain} object). Iterators on envelope or kernel can then be called\\
+	\mylst{getKernelDomainSize()} &returns the current size of the kernel\\
+	\mylst{getEnveloppeDomainSize()} &returns the current size of the envelope\\
+	\mylst{getEnveloppeInf()} &returns the current smallest value of the envelope\\
+	\mylst{getEnveloppeSup()} &returns the current largest value of the envelope\\
+	\mylst{getKernelInf()} &returns the current smallest value of the kernel\\
+	\mylst{getKernelSup()} &returns the current largest available value of the kernel\\
+	\mylst{getValue()} &returns the set value as a table of integers \texttt{int[]} when the variable is currently instantiated (kernel=envelope)\\
   \hline\\
 \end{tabular}
 
+\noindent See \hyperlink{advanced}{advanced uses} for more informations on \texttt{SetVar}.
 
-For more informations on advanced uses of such \texttt{SetVar}, see \hyperlink{advanced}{advanced uses}.
-
-\subsection{Solver and RealVariables}\label{solver:solverandrealvariables}\hypertarget{solver:solverandrealvariables}{}
+\subsection{from \texttt{RealVariable} to \texttt{RealVar}}\label{solver:solverandrealvariables}\hypertarget{solver:solverandrealvariables}{}
 
 \begin{note}
 \emph{Real variables are still under development but can be used to solve toy problems such as small systems of equations.}
 \end{note}
  
-A model real variable can be access by the method \textbf{\tt getVar(RealVariable v)} which returns a \texttt{RealVar} object:
+For real variables, the solver \textbf{\tt RealVar} is the counterpart to the model \hyperlink{realvariable}{\textbf{\tt RealVariable}}. 
+Methods \textbf{\tt getVar(RealVariable var)} and \textbf{\tt getVar(RealVariable... vars)} of \texttt{Solver} return the objects \texttt{RealVar} and \texttt{RealVar[]} respectively corresponding to \texttt{var} and \texttt{vars}:
 \begin{lstlisting}
-	RealVariable x = makeRealVar("x", 1.0, 3.0); // model variable
-	RealVar xOnSolver = s.getVar(x); // solver variable
+	RealVariable x = Choco.makeRealVar("x", 1.0, 3.0); // model variable
+	RealVar xOnSolver = solver.getVar(x); // solver variable
 \end{lstlisting}
 
 Continuous variables are useful for non linear equation systems which are encountered in physics for example.
+The state of a \texttt{RealVar} can be accessed through these main public methods:
 
 \noindent\begin{tabular}{p{.3\linewidth}p{.7\linewidth}}
   \hline
   \texttt{RealVar} API &  description \\
   \hline
-	\mylst{getInf()} &returns the lower bound of the variable (\texttt{double})\\
-	\mylst{getSup()} &returns the upper bound of the variable (\texttt{double})\\
-	\mylst{isInstantiated()} &checks if the domain of a variable is reduced to a canonical interval. A canonical interval indicates that the domain has reached the precision given by the user or the solver\\
+	\mylst{getInf()} &returns the current lower bound of the variable (\texttt{double})\\
+	\mylst{getSup()} &returns the current upper bound of the variable (\texttt{double})\\
+	\mylst{isInstantiated()} &checks if the domain is reduced to a canonical interval. A canonical interval indicates that the domain has reached the precision given by the user or the solver\\
   \hline\\
 \end{tabular}
 
+\noindent See \hyperlink{advanced}{advanced uses} for more informations on \texttt{RealVar}.
 
-For more informations on advanced uses of such \texttt{RealVar}, see \hyperlink{advanced}{advanced uses}.
+\subsection{from \texttt{TaskVariable} to \texttt{TaskVar}}\label{solver:solverandtaskvariables}\hypertarget{solver:solverandtaskvariables}{}
+
+For task variables, the solver \textbf{\tt TaskVar} is the counterpart to the model \hyperlink{taskvariable}{\textbf{\tt TaskVariable}}. 
+Methods \textbf{\tt getVar(TaskVariable var)} and \textbf{\tt getVar(TaskVariable... vars)} of \texttt{Solver} return the objects \texttt{TaskVar} and \texttt{TaskVar[]} respectively corresponding to \texttt{var} and \texttt{vars}:
+\begin{lstlisting}
+	TaskVariable x = Choco.makeTaskVar("x", 0, 123, 18); // model variable
+	TaskVar xOnSolver = solver.getVar(x); // solver variable
+\end{lstlisting}
+
+Task variables help at formulating scheduling problems where one have to determine the starting and ending time of a task. A task variable aggregates three integer variable: \texttt{start}, \texttt{end}, and \texttt{duration} and the implicit constraint \texttt{start}+\texttt{duration}=\texttt{end}. 
+
+\todo{To complete.}
+The state of a \texttt{TaskVar} can be accessed through these main public methods:
+
+\noindent\begin{tabular}{p{.3\linewidth}p{.7\linewidth}}
+  \hline
+  \texttt{TaskVar} API &  description \\
+  \hline
+	\mylst{isInstantiated()} &checks if the three time integer variables are instantiated\\
+  \hline\\
+\end{tabular}
+
+\noindent See \hyperlink{advanced}{advanced uses} for more informations on \texttt{TaskVar}.
 
 \section{Constraints reading}\label{solver:constraintsreading}\hypertarget{solver:constraintsreading}{}
-Once variables are known, the Solver iterates over the constraints of the Model, creates Solver constraint objects and add it the internal constraint network. Each Solver's constraint encapsulates a filtering algorithm which is called when a propagation step occurs or when external events happen on the variables belonging to the constraint, such as value removals or bounds modifications. 
+Once the solver variables are created when reading the model, the solver then iterates over the constraints of the model, and creates the solver \texttt{SConstraint} objects  by calling method \texttt{makeConstraint} of the \texttt{ConstraintManager} object associated to the model constraint type.
+At this step, auxiliary solver variables and constraints may be generated. The created constraints are then added to the internal constraint network. 
+
+Each solver constraint encapsulates a filtering algorithm which is called, during the search, when a propagation step occurs or when an external event (e.g., value removal or bound modification) happens on some variable of the constraint.
 
 \section{Search Strategy}\label{solver:searchstrategy}\hypertarget{solver:searchstrategy}{}
 
 \newglossaryentry{branching strategy}{name={branching strategy}, plural={branching strategies},description={heuristic controlling the execution of a search loop at a point where the control flow may be split between different branches}}
 \newglossaryentry{search strategy}{name={search strategy}, plural={search strategies},description={composition of branching strategies}}
 
-A key ingredient of any constraint approach is a clever \gls{search strategy}. The construction of the search tree is done according to a series of \glspl{branching strategy} that plays the role of achieving intermediate goals in logic programming. The user may specify the sequence of branching strategies to be used to build the search tree. We will present in this section how to define your branching strategies.
+A key ingredient of any constraint approach is a clever \gls{search strategy}. 
+In backtracking or branch-and-bound approaches, the search is organized as an enumeration tree, where each node corresponds to a subspace of the search, and each child node is a subdivision of the space of its father node.
+The tree is progressively constructed by applying a series of \glspl{branching strategy} that determine how to subdivise space at each node and in which order to explore the created child nodes. Branching strategies play the role of achieving intermediate goals in logic programming. 
 
-\subsection{Override the default search stragtegy}\label{solver:overridethedefaultsearchstrategy}\hypertarget{solver:overridethedefaultsearchstrategy}{}
+This section presents how to define your own search strategy in Choco. 
+\begin{note}
+  Standard backtracking or branch-and-bound approaches in constraint programming develop the enumeration tree in a \textbf{Depth-First Search (DFS)} manner:
+  \begin{enumerate}
+  \item \emph{evaluate} a node: run propagation 
+  \item if a failure occurs or if the search space cannot be separated then \emph{backtrack}: evaluate the next pending node
+  \item otherwise \emph{branch}: divide the search space and evaluate the first child node.
+  \end{enumerate}
+  With Choco, the search process of the \texttt{CPSolver} does not currently allow to explore the tree in a different manner, using Best-First Search for example. 
 
-\newglossaryentry{value selector}{name={value selector}, plural={value selector},description={heuristic specifying how to choose dynamically a value from a chosen variable at a fix point}}
-\newglossaryentry{value iterator}{name={value iterator}, plural={value iterators},description={heuristic specifying how to choose a value from a chosen variable, through an iterator, at a fix point }}
+  In addition, the common way of dividing the search space in CP-based backtracking/B\&B algorithms is \textbf{to assign a variable to a value or to forbid this assignment}. Choco provides such a branching strategy and the tools to easily customize the variable and value selection heuristics within this strategy. However, Choco makes possible to implement \textbf{more complex branching strategies} (e.g. constraint branching or dichotomy branching).
+\end{note}
+
+%The user may specify the sequence of branching strategies to be used to build the search tree. We will present in this section how to define your branching strategies.
+
+\subsection{Overriding the default search strategy}\label{solver:overridethedefaultsearchstrategy}\hypertarget{solver:overridethedefaultsearchstrategy}{}
+
+\newglossaryentry{value selector}{name={value selector}, plural={value selector},description={heuristic specifying how to choose a value from a chosen variable at a fix point}}
+\newglossaryentry{value iterator}{name={value iterator}, plural={value iterators},description={heuristic specifying how to choose a value from a chosen variable, through an iterator, at a fix point}}
 \newglossaryentry{variable selector}{name={variable selector}, plural={variable selectors},description={heuristic specifying how to choose a variable at a fix point}}
 
 
-Basically, a search strategy is the composition of three objects: a \gls{branching strategy}, a \gls{variable selector} and a \gls{value selector} (or a \gls{value iterator}). Some branching strategies simply assign a selected value to a selected variable, like \hyperlink{assignvar:assignvarbranchstrat}{AssignVar}, others branching strategies embed the variable selector, like \hyperlink{domoverwdeg:domoverwdegbranchstrat}{DomOverWDegBranchingNew}, or more, like  \hyperlink{impact:impactbranchstrat}{ImpactBasedBranching}.
+%Basically, a search strategy is the composition of three objects: a \gls{branching strategy}, a \gls{variable selector} and a \gls{value selector} (or a \gls{value iterator}). Some branching strategies simply assign a selected value to a selected variable, like \hyperlink{assignvar:assignvarbranchstrat}{AssignVar}, others branching strategies embed the variable selector, like \hyperlink{domoverwdeg:domoverwdegbranchstrat}{DomOverWDegBranchingNew}, or more, like  \hyperlink{impact:impactbranchstrat}{ImpactBasedBranching}.
+\paragraph{Branching, variable selection and value selection strategies.}
+Basically, a search strategy in Choco is a composition of \gls{branching strategy} objects, each defined on a given set of decision variables.
+The most common branching strategies are based on the assignment of a selected variable to one or several selected values (one assignment in each branch). 
+\begin{note}
+Branching strategies apply to \texttt{Solver} variables (not \texttt{Model} variables).
+\end{note}
+The variable and value selection heuristics can be defined separately in their own objects: a \gls{variable selector} and a \gls{value selector} or a \gls{value iterator}. 
+Branching strategy \hyperlink{assignvar:assignvarbranchstrat}{\tt AssignVar}, for example, can simply be customized via these embedded objects: the variable is first selected, then a value in the variable domain is selected. The two following instructions both create a $n$-ary branching strategy (\texttt{AssignVar}) selecting an integer decision variable of minimum domain size (\texttt{MinDomain} variable selector) and assigning it successively, in each branch, to one of its domain value, selected in increasing order (\texttt{IncreasingDomain} value iterator or \texttt{MinVal} value selector).
+\begin{lstlisting}
+  new AssignVar(new MinDomain(solver), new IncreasingDomain());
+  new AssignVar(new MinDomain(solver), new MinVal());
+\end{lstlisting}
+Note that this usual strategy is pre-defined in \texttt{BranchingFactory}, and may then also be declared as follows:
+\begin{lstlisting}
+  BranchingFactory.minDomMinVal(solver);
+\end{lstlisting}
+Sometimes, the choice of the variable may also depend on the choice of the value, or it may require specific computations before or after branching. In this case, the variable selection heuristic can directly be implemented in the branching strategy object, like e.g. in \hyperlink{domoverwdeg:domoverwdegbranchstrat}{DomOverWDegBranchingNew}. Both variable and value selection heuristics can be implemented directly within the branching strategy, like e.g in \hyperlink{impact:impactbranchstrat}{ImpactBasedBranching}.
 
-The default search strategies are: 
+\paragraph{Default strategies.}
+When no search strategy is specified, then default search strategies apply to all the decision variables of the solver.
+These strategies vary in function of the variable types: 
 
-\noindent\begin{tabular}{p{.4\linewidth}p{.6\linewidth}}
+\noindent\begin{tabular}{p{.25\linewidth}p{.7\linewidth}}
 \hline
-Variable &  Default strategy \\
+Variable type &  Default strategy \\
 \hline
-Integer & \hyperlink{domoverwdeg:domoverwdegbranchstrat}{DomOverWDegBranchingNew} +\hyperlink{increasingdomain:increasingdomainvaliterator}{IncreasingDomain}\\
 Set &   \hyperlink{assignsetvar:assignsetvarbranchstrat}{AssignSetVar} + \hyperlink{mindomset:mindomsetvarselector}{MinDomainSet} + \hyperlink{minenv:minenvvalselector}{MinEnv} \\
+Integer & \hyperlink{domoverwdeg:domoverwdegbranchstrat}{DomOverWDegBranchingNew} +\hyperlink{increasingdomain:increasingdomainvaliterator}{IncreasingDomain}\\
  Real &  \hyperlink{assigninterval:assignintervalbranchstrat}{AssignInterval} + \hyperlink{cyclicrealvarselector:cyclicrealvarselectorvarselector}{CyclicRealVarSelector}+ \hyperlink{realincreasingdomain:realincreasingdomainvaliterator}{RealIncreasingDomain} \\
 \hline\\
 \end{tabular}
+If the model has decision variables of different types, then these default branchings are evaluated in this order: first, the set decision variables are considered until they are all instantiated, then branching occurs on the pool of integer decision variables, and last on the pool of real decision variables.
 
-There are two ways to custom a search strategy: use one og those define in the factory \texttt{BranchingFactory} or build your own one. 
-A branching strategy can be added the following API (must be done before calling the resolution method):
+\paragraph{Decision variables.}
+Branchings apply to decision variables only. A branching can occur (i.e. the tree node can be separated according to this strategy) if and only if there exists a decision variable in its scope that is still not instantiated.
+The non-decision variables are also called \emph{implied variables} because it is expected that, all variables -- including these -- will be instantiated (i.e. they will form a solution) by propagation as soon as all the decision variables will be all instantiated. Consider for example, a problem with two sets of variables $x$ and $y$ linked by channeling or by some implication $x=S\implies y=T$ then the $x$ variables can be set as the decision variables, while the $y$ variables can be let implied. 
 
+By default, every solver variable belongs to the pool of decision variables, unless:
+\begin{itemize}
+\item it corresponds to a model variable created with flag \hyperlink{vnodecision:vnodecisionoptions}{\tt Options.V\_NO\_DECISION} set
+\item or it is internally created by the solver (e.g. when reading some model constraint) and explicitely excluded from the pool
+\item or the default branching strategies are overriden and the variable does not belong to the scope of one of the strategies specified by the user.
+\end{itemize}
+
+The scope of a branching strategy is defined at the creation of the strategy. For example,
 \begin{lstlisting}
-solver.addGoal(AbstractIntBranchingStrategy branching);
+  new AssignSetVar(new MinDomSet(solver, solver.getVar(svars)), new MinEnv()));
 \end{lstlisting}
-The initial list of goals is empty. If no goal is defined, default ones will be build from the current state of the Solver.
-\noindent To clear the list of goals, use:
+defines a branching strategy that only applies to the solver variables corresponding to the model set variables \texttt{svars} (even if they were defined with flag \hyperlink{vnodecision:vnodecisionoptions}{\tt Options.V\_NO\_DECISION}).
+
+Most branching strategies may be declared without specifying their scope. In this case, they apply to all the solver decision variables of the right type. For example, the branching strategy
 \begin{lstlisting}
-solver.clearGoals();
+  new AssignSetVar(new MinDomSet(solver), new MinEnv()));
+\end{lstlisting}
+now applies to all the solver decision set variables.
+
+If the default strategies of the solver are overridden by this strategy alone, then all other integer and real variables will automatically be removed from the decision pool: one has then to ensure that the instantiation of the set variables alone defines a complete solution.
+If it is not the case, the branching strategy must be combined with additional branching strategies holding on the remaining unimplied variables.
+\begin{note}
+  If the default strategies are overriden, then the pool of decision variables is overriden by the union of the scopes of the user-specified branching strategies.
+\end{note}
+As the branching strategies are evaluated sequentially, a variable may belong to the scope of two different strategies, but it will only be considered by the first strategy, unless this first (user-defined) strategy let the variable un-instantiated.
+
+\paragraph{Overriding the default search strategies.}
+A branching strategy is added to the solver, as a goal, using the following API of \texttt{Solver}:
+\begin{lstlisting}
+  void addGoal(AbstractIntBranchingStrategy branching);
+\end{lstlisting}
+This method must be called on the solver object \emph{before} calling the solving method.
+The initial list of goals is empty. If goals are specified, they are added to the list in the order of their declaration.
+Otherwise, the list is initialized with the default goals (in the order: set, integer, real).
+
+When one wants to relaunch the search, the list of goals of the solver can previously be reset using the following instruction:
+\begin{lstlisting}
+  solver.clearGoals();
 \end{lstlisting} 
 
-The following example add three branching objects on integer variables \emph{vars1}, \emph{vars2} and set variables \emph{svars} to solver \emph{s}. The first two branchings are both \texttt{AssignVar} but use two different variable/values selection strategies:
+\paragraph{Complete example.}
+The following example adds four branching objects to solver \texttt{s}. 
+%on integer variables \texttt{vars1}, \texttt{vars2} and set variables \texttt{svars} . 
+The first two branchings are both \texttt{AssignVar} strategies using different variable/value selection heuristics and applied to different scopes: the integer variables \texttt{vars1} and \texttt{vars2}, respectively. The third strategy applies to the set variables \texttt{svars}. The last random strategy applies to all the integer decision variables of the solver.
+%  s.addGoal(new AssignVar(new MinDomain(s,s.getVar(vars1)), new IncreasingDomain()));
 \begin{lstlisting}
-  s.addGoal(new AssignVar(new MinDomain(s,s.getVar(vars1)), new IncreasingDomain()));
-  s.addGoal(new AssignVar(new DomOverDeg(s,s.getVar(vars2)),new DecreasingDomain());
-  s.addGoal(new AssignSetVar(new MinDomSet(s,s.getVar(svars)), new MinEnv(s)));
+  s.addGoal(BranchingFactory.minDomMinVal(s, s.getVar(vars1)));
+  s.addGoal(new AssignVar(new DomOverDeg(s, s.getVar(vars2)), new DecreasingDomain()));
+  s.addGoal(new AssignSetVar(new MinDomSet(s, s.getVar(svars)), new MinEnv()));
+  s.addGoal(BranchingFactory.randomIntSearch(s, seed));
   s.solve();
 \end{lstlisting}
+The goals are evaluated in this order: first, variables \texttt{vars1} are considered until they are all instantiated, then branching occurs on variables \texttt{vars2}, then on variables \texttt{svars}. Finally, a random strategy is applied to all the integer decision variables of the solver that are not really instantiated, a fortiori, excluding variables \texttt{vars1} and \texttt{vars2}.
 
-\begin{note}
-Strategies are made of \texttt{Solver} variables (not \texttt{Model} variables).
-\end{note}
+\subsection{Pre-defined search strategies}\label{solver:predefinedsearchstrategy}\hypertarget{solver:predefinedsearchstrategy}{}
 
-\subsubsection{Branching strategy.}\label{solver:branchstrat}\hypertarget{solver:branchstrat}{}
-It defines the way to take a decision in a tree search node.
+This section presents the strategies available in Choco. These objects are also detailed in Part \hyperlink{part:elements}{Elements of Choco}.
+See Chapter \hyperlink{advanced}{advanced uses} for a description of how to write search strategies in Choco.
+
+\paragraph{Branching strategy}\label{solver:branchstrat}\hypertarget{solver:branchstrat}{}
+defines the way to branch from a tree search node.
   
 \noindent The \textbf{branching strategies} currently available in Choco are the following: 
 \begin{notedef}\tt
 \hyperlink{assigninterval:assignintervalbranchstrat}{AssignInterval}, \hyperlink{assignorforbidintvarval:assignorforbidintvarvalbranchstrat}{AssignOrForbidIntVarVal}, \hyperlink{assignorforbidintvarvalpair:assignorforbidintvarvalpairbranchstrat}{AssignOrForbidIntVarValPair}, \hyperlink{assignsetvar:assignsetvarbranchstrat}{AssignSetVar}, \hyperlink{assignvar:assignvarbranchstrat}{AssignVar}, \hyperlink{domoverwdeg:domoverwdegbranchstrat}{DomOverWDegBranchingNew}, \hyperlink{domoverwdegbin:domoverwdegbinbranchstrat}{DomOverWDegBinBranchingNew}, \hyperlink{impact:impactbranchstrat}{ImpactBasedBranching}, \hyperlink{packdynremovals:packdynremovalsbranchstrat}{PackDynRemovals}, \hyperlink{settimes:settimesbranchstrat}{SetTimes}, \hyperlink{taskdomoverwdeg:taskdomoverwdegbranchstrat}{TaskOverWDegBinBranching}.
-\end{notedef}    
+\end{notedef} 
+They implement interface \texttt{BranchingStrategy}.   
 
 
-\subsubsection{Variable selector.}\label{solver:variableselector}\hypertarget{solver:variableselector}{}
-It defines the way to choose the non instantiated variable on which the next decision will be made.
+\paragraph{Variable selector}\label{solver:variableselector}\hypertarget{solver:variableselector}{}
+defines the way to choose a non instantiated variable on which the next decision will be made.
 
-\noindent The \textbf{integer variable selectors} currently available in Choco are the following: 
+\noindent The \textbf{variable selectors} currently available in Choco are the following: 
+\begin{itemize}
+\item implementing interface \texttt{VarSelector<IntDomainVar>}:
 \begin{notedef}\tt
 \hyperlink{compositeintvarselector:compositeintvarselectorvarselector}{CompositeIntVarSelector}, \hyperlink{lexintvarselector:lexintvarselectorvarselector}{LexIntVarSelector}, \hyperlink{maxdomain:maxdomainvarselector}{MaxDomain}, \hyperlink{maxregret:maxregretvarselector}{MaxRegret}, \hyperlink{maxvaldomain:maxvaldomainvarselector}{MaxValueDomain}, \hyperlink{mindomain:mindomainvarselector}{MinDomain}, \hyperlink{minvaldomain:minvaldomainvarselector}{MinValueDomain}, \hyperlink{mostconstrained:mostconstrainedvarselector}{MostConstrained},  \hyperlink{randomvarint:randomvarintvarselector}{RandomIntVarSelector},  \hyperlink{staticvarorder:staticvarordervarselector}{StaticVarOrder}
 \end{notedef}
-
-\noindent The \textbf{set variable selectors} currently available in Choco are the following: 
+%\noindent The \textbf{set variable selectors} currently available in Choco are the following: 
+\item implementing interface \texttt{VarSelector<SetVar>}:   
 \begin{notedef}\tt
-\hyperlink{maxdomset:maxdomsetvarselector}{MaxDomainSet}, \hyperlink{maxregretset:maxregretsetvarselector}{MaxRegretSet}, \hyperlink{maxvaldomainset:maxvaldomainsetvarselector}{MaxValueDomainSet}, \hyperlink{mindomset:mindomsetvarselector}{MinDomainSet}, \hyperlink{minvaldomainset:minvaldomainsetvarselector}{MinValueDomainSet}, \hyperlink{mostconstrainedset:mostconstrainedsetvarselector}{MostConstrainedSet},  \hyperlink{randomvarset:randomvarsetvarselector}{RandomSetVarSelector},  \hyperlink{staticsetvarorder:staticsetvarordervarselector}{StaticSetVarOrder}
+\hyperlink{maxdomset:maxdomsetvarselector}{MaxDomSet}, \hyperlink{maxregretset:maxregretsetvarselector}{MaxRegretSet}, \hyperlink{maxvaldomset:maxvaldomsetvarselector}{MaxValueDomSet}, \hyperlink{mindomset:mindomsetvarselector}{MinDomSet}, \hyperlink{minvaldomset:minvaldomsetvarselector}{MinValueDomSet}, \hyperlink{mostconstrainedset:mostconstrainedsetvarselector}{MostConstrainedSet},  \hyperlink{randomvarset:randomvarsetvarselector}{RandomSetVarSelector},  \hyperlink{staticsetvarorder:staticsetvarordervarselector}{StaticSetVarOrder}
 \end{notedef}
-
-\noindent The \textbf{real variable selector} currently available in Choco is the following: 
+%\noindent The \textbf{real variable selector} currently available in Choco is the following: 
+\item implementing interface \texttt{VarSelector<RealVar>}:
 \begin{notedef}\tt
 \hyperlink{cyclicrealvarselector:cyclicrealvarselectorvarselector}{CyclicRealVarSelector}
 \end{notedef}
+\end{itemize}
 
 \subsubsection{Value iterator}\label{solver:valueiterator}\hypertarget{solver:valueiterator}{}
-Once the variable has been choosen, the Solver has to compute its value. The first way to do it is to schedule the value once and give an iterator to the solver.
+Once the variable has been choosen, the solver has to compute its value. The first way to do it is to schedule all the values once and to give an iterator to the solver.
 
-\noindent The \textbf{integer value iterator} currently available in Choco are the following: 
+\noindent The \textbf{value iterators} currently available in Choco are the following: 
+\begin{itemize}
+\item implementing interface \texttt{ValIterator<IntDomainVar>}:
 \begin{notedef}\tt
 \hyperlink{decreasingdomain:decreasingdomainvaliterator}{DecreasingDomain}, \hyperlink{increasingdomain:increasingdomainvaliterator}{IncreasingDomain}
 \end{notedef}
-
-\noindent The \textbf{real value iterator} currently available in Choco is the following: 
+\item implementing interface \texttt{ValIterator<RealVar>}:
 \begin{notedef}\tt
 \hyperlink{realincreasingdomain:realincreasingdomainvaliterator}{RealIncreasingDomain}
 \end{notedef}
-
-
-
+\end{itemize}
 
 \subsubsection{Value selector}\label{solver:valueselector}\hypertarget{solver:valueselector}{}
-The second way to do it is to compute the following value at each call.
+The second way to do it is to compute the next value at each call.
 
 \noindent The \textbf{integer value selector} currently available in Choco are the following: 
+\begin{itemize}
+\item implementing interface \texttt{ValSelector<IntDomainVar>}:
 \begin{notedef}\tt
-\hyperlink{bestfit:bestfitvalselector}{BestFit}, \hyperlink{costregularvalselector:costregularvalselectorvalselector}{CostRegularValSelector}, \hyperlink{fcostregularvalselector:fcostregularvalselectorvalselector}{FCostRegularValSelector}, \hyperlink{maxval:maxvalvalselector}{MaxVal}, \hyperlink{mcrvalselector:mcrvalselectorvalselector}{MCRValSelector}, \hyperlink{midval:midvalvalselector}{MidVal}, \hyperlink{minval:minvalvalselector}{MinVal}
+  \begin{itemize}
+  \item \hyperlink{maxval:maxvalvalselector}{MaxVal}, \hyperlink{midval:midvalvalselector}{MidVal}, \hyperlink{minval:minvalvalselector}{MinVal}
+  \item \hyperlink{bestfit:bestfitvalselector}{BestFit}, \hyperlink{costregularvalselector:costregularvalselectorvalselector}{CostRegularValSelector}, \hyperlink{fcostregularvalselector:fcostregularvalselectorvalselector}{FCostRegularValSelector}, %\hyperlink{mcrvalselector:mcrvalselectorvalselector}{MCRValSelector}, 
+  \end{itemize}
 \end{notedef}
-
-\noindent The \textbf{set value selector} currently available in Choco is the following: 
-\begin{notedef}\tt
+\item implementing interface \texttt{ValSelector<SetVar>}:
+  \begin{notedef}\tt
 \hyperlink{minenv:minenvvalselector}{MinEnv}, \hyperlink{randomsetvalselector:randomsetvalselectorvalselector}{RandomSetValSelector}
 \end{notedef}
+\end{itemize}
+
 
 \subsection{Why is it important to define a search strategy ?}\label{solver:whyisitimportanttodefineasearchstrategy}\hypertarget{solver:whyisitimportanttodefineasearchstrategy}{}
 
-In a partial instantiation, when a fix point has been reached, the Solver needs to take a decision to resume the search. The way decisions are chosen has a \textbf{real impact on the resolution step efficient}. 
+%At a In a partial instantiation, when a fix point has been reached, the Solver needs to take a decision to resume the search. The way decisions are chosen has a \textbf{real impact on the resolution step efficient}. 
 \begin{note}
 \emph{The search strategy should not be overlooked!!}
-An adapted search strategy can reduce: the execution time, the number of node expanded, the number of backtrack done.
+A suited search strategy can reduce: the execution time, the number of expanded nodes, the number of backtracks.
 \end{note}
 Let see that small example:
 \begin{lstlisting}
@@ -264,22 +385,30 @@ Let see that small example:
         goodStrat.addGoal(
                 new AssignVar(
                         new MinDomain(goodStrat, goodStrat.getVar(new IntegerVariable[]{var})), 
-                        new DecreasingDomain()
+                        new IncreasingDomain()
                 ));
         goodStrat.solve();
         goodStrat.printRuntimeStatistics();
 \end{lstlisting}
 
-This model ensures that $var = b_{0} + b_{1} + \ldots + b_{1000}$ where \emph{var} has a small domain and $b_{i}$ is a binary variable. The propagation has no effect on any domain and a fix point is reached at the beginning of the search. So, a decision has to be done choosing a variable and its value. If the variable selector is set to \texttt{MinDomain} (see below), the solver will iterate over the variables, starting by the 1000 binary variables and ending with \emph{var}, and 1001 nodes will be created.
+This model ensures that $var = b_{0} + b_{1} + \ldots + b_{1000}$ where $var$ is an integer variable with a small domain $[0,2]$ and $b_{i}$ are binary variables. No deduction arose from the propagation here, so a fix point is reached at the beginning of the search. A branching decision has to be taken, by selecting a variable and the first value to assign to it. Using the first strategy, the solver will find a solution after creating 1001 nodes: it iterates over all the variables, starting by assigning the 1000 binary variables $b_i$ (according to the \texttt{MinDomain} variable selector) to $0$ (according to the \texttt{IncreasingDomain} value iterator), variable $var$ is fixed to $0$ at the very last propagation. The second strategy finds the same solution with only two nodes: after branching first on $var=0$, propagation immediately fixes all the binary variables to $0$. 
 
 \subsection{Restarts}\label{solver:restarts}\hypertarget{solver:restarts}{}
 
-You can set geometric restarts by using the following API available on the solver:
+Restart means stopping the current tree search, then starting a new tree search from the root node.
+Restarting makes sense only when coupled with randomized dynamic branching strategies ensuring that the same enumeration tree is not constructed twice. The branching strategies based on the past experience of the search, such as \texttt{DomOverWDegBranching}, \texttt{DomOverWDegBinBranching} and \texttt{ImpactBasedBranching}, are still more accurate in combination with a restart approach.
+
+Unless the number of allowed restarts is limited, a tree search with restarts is not complete anymore. It is a good strategy, though, when optimizing a NP-hard problem in a limited time.
+
+
+Restarts can be set using the following API available on the \texttt{Solver}:
 \begin{lstlisting}
 setGeometricRestart(int base, double grow);
 setGeometricRestart(int base, double grow, int restartLimit);
 \end{lstlisting}
-It performs a search with restarts regarding the number of backtrack. An initial allowed number of backtrack is given (parameter base) and once this limit is reached a restart is performed and the new limit imposed to the search is increased by multiplying the previous limit with the parameter grow. restartLimit parameter states the maximum number of restarts. Restart strategies makes really sense with strategies that make choices based on the past experience of the search : \texttt{DomOverWdeg} or Impact based search. It could also be used with a random heuristic
+It performs a search with restarts regarding the number of backtracks. 
+Parameter \texttt{base} indicates the maximal number of backtracks allowed in the first search tree. Once this limit is reached, a restart occurs and the search continues until \texttt{base}*\texttt{grow} backtracks are done, and so on. After each restart, the limit number of backtracks is increased by the geometric factor \texttt{grow}. 
+\texttt{restartLimit} states the maximum number of restarts.
 \begin{lstlisting}
 	CPSolver s = new CPSolver();
 	s.read(model);
@@ -291,16 +420,19 @@ It performs a search with restarts regarding the number of backtrack. An initial
 	s.launch();
 \end{lstlisting}
 
-You can also set Luby restarts by using the following API available on the solver:
+The Luby's restart policy is an alternative to the geometric restart policy, and can be defined 
+using the following API available on the \texttt{Solver}:
 \begin{lstlisting}
 setLubyRestart(int base);
 setLubyRestart(int base, int grow);
 setLubyRestart(int base, int grow, int restartLimit);
 \end{lstlisting}
-it performs a search with restarts regarding the number of backtracks. One way to describe this strategy is to say that all run lengths are power of two, and that each time a pair of runs of a given length has been completed, a run of twice that length is immediatly executed. The limit is equals to \emph{length*base}.
+It performs a search with restarts regarding the number of backtracks. 
+The maximum number of backtracks allowed at a given restart iteration is given by \texttt{base} multiplied by the Las Vegas coefficient at this iteration. 
+The sequence of these coefficients is defined recursively on its prefix subsequences: starting from the first prefix $1$, the $(k+1)$-th prefix is the $k$-th prefix repeated \texttt{grow} times and immediately followed by coefficient \texttt{grow}$^k$.
 \begin{itemize}
-	\item \textbf{example with growing factor of 2 : [1, 1, 2, 1, 1, 2, 4, 1, 1, 2, 1, 1, 2, 4, 8, 1,...]}
-	\item \textbf{example with growing factor of 3 : [1, 1, 1, 3, 1, 1, 1, 3, 9,...]}
+	\item the first coefficients for \texttt{grow}=2 : [1, 1, 2, 1, 1, 2, 4, 1, 1, 2, 1, 1, 2, 4, 8, 1,...]
+	\item the first coefficients for \texttt{grow}=3 : [1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 9,...]
 \end{itemize}
 
 \begin{lstlisting}
@@ -315,35 +447,62 @@ it performs a search with restarts regarding the number of backtracks. One way t
 \end{lstlisting}
 
 \section{Limiting Search Space}\label{solver:limitingsearchspace}\hypertarget{solver:limitingsearchspace}{}
-The Solver class provides some limits on the search strategy that you can fix or just monitor.
-Limits may be imposed on the search algorithm to avoid spending too much time in the exploration. The limits are updated and checked each time a new node is created. It has to be specified before the resolution. 
-After having created the solver, you can specify whether or not you want to fix a limit:
-
+The \texttt{Solver} class provides ways to limit the tree search regarding different criteria.
+%Limits may be imposed on the search algorithm to avoid spending too much time in the exploration. 
+These limits have to be specified before the resolution. They are updated and checked each time a new node is created. 
+ Once a limit is reached, the search stops even if no solution is found.
 \begin{description}
-\item[time limit] State a time limit on tree search. When the execution time is equal to the time limit, the search stops whatever a solution is found or not. You can define a time limit with the following API : \mylst{setTimeLimit(int timeLimit)} where unit is millisecond. Or just monitor (or not) the search time with the API : \mylst{monitorTimeLimit(boolean b)}. The default value is set to \texttt{true}. Finally, you can get the time limit, once the solve method has been called, with the API: \mylst{getTimeCount()} 
-\item[node limit] State a node limit on tree search. When the number of nodes explored is equal to the node limit, the search stops whatever a solution is found or not. You can define a node limit with the following API: \mylst{setNodeLimit(int nodeLimit)} where unit is the number of nodes. Or just monitor (or not) the number of nodes explored with the API: \mylst{monitorNodeLimit(boolean b)}. The default value is set to \texttt{true}. Finally, you can get the node limit, once the solve method has been called, with the API: \mylst{getNodeCount()} 
-\item[backtrack limit] State a backtrack limit on tree search. When the number of backtracks done is equal to the backtrack limit, the search stops whatever a solution is found or not. You can define a backtrack limit with the following API: \mylst{setBackTrackLimit(int backtrackLimit)} where unit is the number of backtracks. Or just monitor (or not) the number of backtrack done with the API: \mylst{monitorBackTrackLimit(boolean b)}. The default value is set to \texttt{false}. Finally, you can get the backtrack limit, once the solve method has been called, with the API: \mylst{getBackTrackCount()} 
-\item[fail limit] State a fail limit on tree search. When the number of failure is equal to the fail limit, the search stops whatever a solution is found or not. You can define a fail limit with the following API : \mylst{setFailLimit(int failLimit)} where unit is the number of failure. Or just monitor (or not) the number of failure encountered with the API : \mylst{monitorFailLimit(boolean b)}. The default value is set to \texttt{false}. Finally, you can get the fail limit, once the solve method has been called, with the API : \mylst{getFailCount()} 
-%\item[CPU time limit] State a CPU limit on tree search. When the CPU time (user + system) is equal to the CPU time limit, the search stops whatever a solution is found or not. You can define a CPU time limit with the following API: \mylst{setCpuTimeLimit(int timeLimit)} where unit is millisecond. Or just monitor (or not) the search time with the API: \mylst{monitorCpuTimeLimit(boolean b)}. The default value is set to \texttt{false}. Finally, you can get the CPU time limit, once the solve method has been called, with the API: \mylst{getCpuTimeCount()} 
+\item[time limit:] concerns the ellapsed time from the beginning of the search (i.e. from the call to a resolution method).
+A time limit is set using the \texttt{Solver} API \mylst{setTimeLimit(int timeLimit)}, where unit is millisecond. 
+\mylst{getTimeCount()} returns the total solving time. 
+\item[node limit:] concerns the number of explored nodes.
+A node limit is set using the \texttt{Solver} API: \mylst{setNodeLimit(int nodeLimit)}.
+\mylst{getNodeCount()} returns the total number of explored nodes.
+\item[backtrack limit:] concerns the number of performed backtracks 
+A backtrack limit is set using the \texttt{Solver} API: \mylst{setBackTrackLimit(int backtrackLimit)}.
+\mylst{getBackTrackCount()} return the total number of backtracks.
+\item[fail limit:] concerns the number of failures.
+A fail limit is set using the \texttt{Solver} API : \mylst{setFailLimit(int failLimit)}.
+ where unit is the number of failure. Or just monitor (or not) t
+The number of failures can be monitored using \mylst{monitorFailLimit(true)}.
+\mylst{getFailCount()} returns the total number of failures.
 \end{description}
+\todo{Define all these notions more precisely and add an example.}
 
-\todo{add example}
 
 \section{Solve a problem}\label{solver:solveaproblem}\hypertarget{solver:solveaproblem}{}
-As Solver is the second element of a Choco program, the control of the search process without using predefined tools is made on the Solver.
+%As Solver is the second element of a Choco program, the control of the search process without using predefined tools is made on the Solver.
+
+Table below presents the different API offers by \texttt{Solver} to launch the problem resolution. All these methods return a \texttt{Boolean} object standing for the \emph{problem feasibility status} of the solver:
+$$\begin{cases}
+  \texttt{Boolean.TRUE} &\text{ if at least one feasible solution has been computed},\\
+  \texttt{Boolean.FALSE} &\text{ if the problem is proved to be infeasible},\\
+  \texttt{null} &\text{ otherwise, i.e. when a search limit has been reached before.}
+\end{cases}$$
 
 \noindent\begin{tabular}{p{.4\linewidth}p{.6\linewidth}}
   \hline
   \texttt{Solver} API & description \\
   \hline
-      \mylst{solve()} &  Compute the first solution of the Model, if the Model is feasible. \\
-      \mylst{solve(boolean all)} &  If \emph{all} is set to true, computes all solutions of the Model, if the Model is feasible. \\
-      \mylst{solveAll()} &  Computes all the solution of the Model, if the Model is feasible. \\
-      \mylst{propagate()} &  Computes initial propagation of the Model, and reachs the first Fix Point. It reduces variables Domain through constraints linked and other variables domain. Can throw a \texttt{ContradictionException} if the Solver detects a contradiction in the Model. \\
-      \mylst{maximize(Var obj, boolean restart)} &  Allows user to find a solution that maximizing the objective varible \emph{obj}. The optimization finds a first solution then finds a new solution that improves \emph{obj} and so on till no other solution can be found that improves \emph{obj}. Parameter \emph{restart} is a boolean indicating whether the Solver will restart the search after each solution found (if set to \texttt{true}) or if it will keep backtracking from the leaf of the last solution found. See \hyperlink{solver:optimization}{example}. \textbf{Beware}: the variable \emph{obj} expected must be a Solver variable and not a Model variable. \\
-      \mylst{minimize(Var obj, boolean restart)} &  Allows user to find a solution that minimizing the objective varible \emph{obj}. The optimization finds a first solution then finds a new solution that improves \emph{obj} and so on till no other solution can be found that improves \emph{obj}. Parameter \emph{restart} is a boolean indicating whether the Solver will restart the search after each solution found (if set to \texttt{true}) or if it will keep backtracking from the leaf of the last solution found. See \hyperlink{solver:optimization}{example}. \textbf{Beware}: the variable \emph{obj} expected must be a Solver variable and not a Model variable. \\
-      \mylst{nextSolution()} &  Allows the Solver to find the next solution, if one or more solution have already been find with \texttt{solve()} or \texttt{nextSolution()}. \\
-      \mylst{isFeasible()} &  Indicates whether or not the Model has at least one solution. \\
+      \mylst{solve()} or \mylst{solve(false)} &  runs backtracking until reaching \emph{a first feasible solution} (returns \texttt{Boolean.TRUE}) or the proof of infeasibility (returns \texttt{Boolean.FALSE}) or a search limit (returns \texttt{null}).\\[.3em]
+      \mylst{solveAll()} or \mylst{solve(true)} &  Runs backtracking until computing \emph{all feasible solutions}, or until proving infeasibility (returns \texttt{Boolean.FALSE}) or until reaching a search limit (returns \texttt{Boolean.TRUE} if at least one first solution was computed, and \texttt{null} otherwise).\\[.3em]
+%      \mylst{propagate()} &  Computes initial propagation of the Model, and reachs the first Fix Point. It reduces variables Domain through constraints linked and other variables domain. Can throw a \texttt{ContradictionException} if the Solver detects a contradiction in the Model. \\
+      \mylst{maximize(Var obj, boolean restart)} &  Runs branch-and-bound until reaching \emph{a feasible solution that is proved to maximize objective} \texttt{obj},  or until proving infeasibility (returns \texttt{Boolean.FALSE}) or until reaching a search limit (returns \texttt{Boolean.TRUE} if at least one first solution was computed, and \texttt{null} otherwise). It proceeds by successive improvements of the best solution found so far: each time a feasible solution is found at a leaf of the tree search, then the search follows for a new solution with a greater objective, until it proves that no such improving solution exists.
+Parameter \texttt{restart} is a boolean indicating whether the search continues from the solution leaf with a backtrack (if set to \texttt{false}) or if it is relaunch from the root node (if set to \texttt{true}).
+See \hyperlink{solver:optimization}{example}.\\[.3em]
+      \mylst{minimize(Var obj, boolean restart)} &  similar to \texttt{maximize} but for computing \emph{a feasible solution that is proved to minimize objective} \texttt{obj}.\\[.3em]
+      \mylst{nextSolution()} &  Can only be called after a \texttt{solve()} or a \texttt{nextSolution()} call that has returned \texttt{Boolean.TRUE}. Runs backtracking, from the solution leaf reached by the previous \texttt{solve()} or \texttt{nextSolution()} call, until reaching \emph{a new feasible solution} (returns \texttt{Boolean.TRUE}), or proving no such new solution exists (returns \texttt{Boolean.FALSE}), or reaching a search limit (returns \texttt{null}).\\[.3em]
+      \mylst{isFeasible()} &  Returns the feasibility status of the solver.\\
+      \hline\\
+	\end{tabular}
+
+The following  API are also useful to manipulate a \texttt{Solver} object:\\
+\noindent\begin{tabular}{p{.4\linewidth}p{.6\linewidth}}
+  \hline
+  \texttt{Solver} API & description \\
+  \hline
+      \mylst{propagate()} &  Launchs propagation by running, in turn, the domain reduction algorithms of the constraints until it reaches a fix point. Throws a \texttt{ContradictionException} when a contradiction is detected, i.e. a variable domain is emptied. This method is called at each node of the tree search constructed by the solving methods above.\\[.3em]
+      \mylst{isFeasible()} &  Returns the current feasibility status of the solver.\\
       \hline\\
 	\end{tabular}
 
