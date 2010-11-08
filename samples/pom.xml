@@ -23,6 +23,23 @@
         </dependency>
         <dependency>
             <groupId>choco</groupId>
+            <artifactId>choco-db</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>choco</groupId>
+            <artifactId>choco-parsers</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>choco</groupId>
+            <artifactId>choco-cli</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>choco</groupId>
             <artifactId>visu</artifactId>
             <version>${project.version}</version>
         </dependency>
