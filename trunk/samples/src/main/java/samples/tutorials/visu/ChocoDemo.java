@@ -1,4 +1,4 @@
-package samples;
+package samples.tutorials.visu;
 
 import choco.Choco;
 import choco.Options;
@@ -23,8 +23,6 @@ import java.awt.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static choco.visu.components.chart.ChocoChartFactory.createCumulativeChart;
-import static choco.visu.components.chart.ChocoChartFactory.createDeviationLineChart;
 
 public final class ChocoDemo {
 
@@ -42,7 +40,7 @@ public final class ChocoDemo {
 		cppack.setTimelimit(TIME_LIMIT);
 		cppack.cpPack();
 		final String title = "Bin Packing Constraint Visualization 1";
-		ChocoDemo.demo(title,ChocoChartFactory.createPackChart(title, cppack.solver,cppack.getModeler()));
+		ChocoDemo.demo(title, ChocoChartFactory.createPackChart(title, cppack.solver,cppack.getModeler()));
 	}
 
 	public static void packDemo2() {
@@ -88,14 +86,14 @@ public final class ChocoDemo {
 		s.printRuntimeStatistics();
 		if(LOGGER.isLoggable(Level.INFO)) LOGGER.info(s.solutionToString());
 		final String title = "Cumulative Resource Example";
-		demo(title,createCumulativeChart(title, s, rsc, true));
+		demo(title, ChocoChartFactory.createCumulativeChart(title, s, rsc, true));
 		
 	}
 
 	public static void deviationDemo() {
 			YIntervalSeriesCollection dataset = createDeviationDataset(10000, 10, new double[]{0.1,0.15,0.05});
 			String title = "Deviation Example";
-			demo(title,createDeviationLineChart(null, "X", "Y", dataset));
+			demo(title, ChocoChartFactory.createDeviationLineChart(null, "X", "Y", dataset));
 	}
 	
 	private static YIntervalSeriesCollection createDeviationDataset(int length, int stdDiv, double coeffs[]) {

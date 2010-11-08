@@ -50,17 +50,12 @@
         <dependencies>
             <dependency>
                 <groupId>choco</groupId>
-                <artifactId>choco-kernel</artifactId>
+                <artifactId>choco-solver</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>choco</groupId>
-                <artifactId>choco-cp</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>choco</groupId>
-                <artifactId>choco-parsers</artifactId>
+                <artifactId>choco-tools</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -70,15 +65,15 @@
             </dependency>
             <dependency>
                 <groupId>choco</groupId>
-                <artifactId>choco-contribs</artifactId>
+                <artifactId>samples</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>choco</groupId>
-                <artifactId>samples</artifactId>
+                <artifactId>choco-contribs</artifactId>
                 <version>${project.version}</version>
             </dependency>
-	    <dependency>
+            <dependency>
                 <groupId>choco</groupId>
                 <artifactId>dadcop-tracer</artifactId>
                 <version>${project.version}</version>
@@ -110,7 +105,7 @@
         <module>choco-visu</module>
         <module>choco-contribs</module>
         <module>samples</module>
-        <module>dadcop-tracer</module>	
+        <module>dadcop-tracer</module>
         <!--<module>choco-old_version</module>-->
     </modules>
     <distributionManagement>

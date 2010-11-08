@@ -158,8 +158,9 @@ public class ScalarAtMost extends AbstractLargeIntSConstraint {
             for (int i = 0; i < 2*n; i++) {
                 vs1[i] = makeIntVar("" + i, 0, 1);
             }
-            m.addConstraint(new ComponentConstraint(ScalarAtMostManager.class,  new Object[]{n, k}, vs1));
+            m.addConstraint(new ComponentConstraint(ScalarAtMostManager.class,  new int[]{n, k}, vs1));
             Solver s = new CPSolver();
+            s.read(m);
             s.setVarIntSelector(new RandomIntVarSelector(s, seed));
             s.setValIntSelector(new RandomIntValSelector(seed));
             s.solveAll();

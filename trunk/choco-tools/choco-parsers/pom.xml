@@ -13,12 +13,13 @@
     <dependencies>
         <dependency>
             <groupId>choco</groupId>
-            <artifactId>choco-cp</artifactId>
+            <artifactId>choco-db</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>choco</groupId>
-            <artifactId>choco-db</artifactId>
-            <version>${version}</version>
+            <artifactId>choco-cp</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>

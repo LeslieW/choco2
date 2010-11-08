@@ -20,17 +20,13 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.visu.papplet;
+package samples.tutorials.visu.brick;
 
+import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.kernel.solver.variables.Var;
-import choco.kernel.visu.components.IVisuVariable;
-import choco.visu.brick.PicrossBrick;
-import static choco.visu.components.ColorConstant.WHITE;
+import choco.visu.components.ColorConstant;
 import choco.visu.components.bricks.AChocoBrick;
 import choco.visu.components.papplets.AChocoPApplet;
-
-import java.awt.*;
-import java.util.ArrayList;
 /* ************************************************
  *           _       _                            *
  *          |  °(..)  |                           *
@@ -59,85 +55,53 @@ import java.util.ArrayList;
  * Date: 31 oct. 2008
  * Since : Choco 2.0.1
  *
- * {@code SudokuPApplet} is the {@code AChocoPApplet} that represents a sudoku grid where variables values are printed
- * inside a cell.
- *
+ * {@code ColorValueBrick} is a particular {@code IChocoBrick} where the domain of the variable is displayed as
+ * a colored square.
+ * A green square represents a value inside the domain,
+ * A blue one representes a value out of the domain.
+ * 
  * Powered by Processing    (http://processing.org/)
+ *
  */
 
-public final class PicrossPApplet extends AChocoPApplet{
+public final class PicrossBrick extends AChocoBrick{
 
-    private static final int SIZE = 15;
-    private static final int MARGE = 20;
-    private final int n;
-    private final int m;
+    private boolean isinstanciated;
 
-    public PicrossPApplet(final Object parameters) {
-        super(parameters);
-        int[] tmp = (int[])parameters;
-        n = tmp[0];
-        m = tmp[1];
+    /**
+     * Constructor of {@code ColorValueBrick}
+     * @param chopapplet
+     * @param var
+     */
+    public PicrossBrick(final AChocoPApplet chopapplet, final Var var) {
+        super(chopapplet, var);
+        this.isinstanciated = false;
     }
 
     /**
-     * Initialize the ChocoPApplet with the list of concerning VisuVariables
+     * Refresh data of the PApplet in order to refresh the visualization
      *
-     * @param list of visu variables o watch
+     * @param arg an object to precise the refreshing
      */
-    public final void initialize(final ArrayList<IVisuVariable> list) {
-        final Var[] vars = new Var[list.size()];
-        for(int i = 0; i < list.size(); i++){
-            vars[i] = list.get(i).getSolverVar();
+    public final void refresh(final Object arg) {
+        if(((IntDomainVarImpl)var).isInstantiatedTo(1)){
+            isinstanciated = true;
+        }else{
+            isinstanciated = false;
         }
-        bricks = new AChocoBrick[list.size()];
-        for(int i = 0; i < list.size(); i++){
-            IVisuVariable vv = list.get(i);
-            Var v = vv.getSolverVar();
-            bricks[i] = new PicrossBrick(this, v);
-            vv.addBrick(bricks[i]);
-        }
-        this.init();
     }
 
-    /**
-     * Return the ideal dimension of the chopapplet
-     *
-     * @return
-     */
-    public final Dimension getDimension() {
-        return new Dimension(n * SIZE, m * SIZE);
-    }
 
     /**
-     * build the specific PApplet.
-     * This method is called inside the {@code PApplet#setup()} method.
+     * Draw the graphic representation of the var associated to the brick
      */
-    public final void build() {
-        size(n * SIZE, m * SIZE);
-        background(WHITE);
-        textFont(font);
-        noStroke();
-    }
-
-    /**
-     * draws the back side of the representation.
-     * This method is called inside the {@code PApplet#draw()} method.
-     * For exemple, the sudoku grid is considered as a back side
-     */
-    public final void drawBackSide() {
-        background(WHITE);
-    }
-
-    /**
-     * draws the front side of the representation.
-     * This method is called inside the {@code PApplet#draw()} method.
-     * For exemple, values of cells in a sudoku are considered as a back side
-     */
-    public final void drawFrontSide() {
-        for(int x = 0; x < bricks.length; x++){
-            int i = x%n;
-            int j = x/m;
-            bricks[x].drawBrick(MARGE + (i* SIZE), MARGE + (j* SIZE), SIZE, SIZE);
-        }
+    public final void drawBrick(final int x, final int y, final int width, final int height) {
+        chopapplet.noStroke();
+        if(isinstanciated){
+                chopapplet.fill(ColorConstant.BLACK);
+            }else{
+                chopapplet.fill(ColorConstant.WHITE);
+            }
+            chopapplet.rect(y, x , width, height);
     }
 }
