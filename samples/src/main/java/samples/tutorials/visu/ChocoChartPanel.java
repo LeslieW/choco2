@@ -1,4 +1,4 @@
-package choco.visu.components.chart;
+package samples.tutorials.visu;
 
 import choco.cp.solver.constraints.global.pack.PackSConstraint;
 import choco.kernel.common.logging.ChocoLogging;
@@ -8,7 +8,8 @@ import choco.kernel.model.constraints.ConstraintType;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.global.scheduling.ICumulativeResource;
 import choco.kernel.solver.variables.scheduling.TaskVar;
-import choco.visu.components.chart.renderer.MyXYBarRenderer.ResourceRenderer;
+import choco.visu.components.chart.ChocoChartFactory;
+import choco.visu.components.chart.renderer.MyXYBarRenderer;
 import org.jfree.chart.ChartPanel;
 import org.jfree.data.general.Dataset;
 import org.jfree.ui.ApplicationFrame;
@@ -206,7 +207,7 @@ public class ChocoChartPanel extends JPanel implements TreeSelectionListener {
 
 		@Override
 		protected JComponent createViewPanel() {
-			return new ChartPanel(ChocoChartFactory.createUnaryChart(this.toString(), solver, ResourceRenderer.COORD));
+			return new ChartPanel(ChocoChartFactory.createUnaryChart(this.toString(), solver, MyXYBarRenderer.ResourceRenderer.COORD));
 		}
 
 	}

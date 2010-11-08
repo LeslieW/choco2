@@ -13,11 +13,8 @@
     <dependencies>
         <dependency>
             <groupId>choco</groupId>
-            <artifactId>choco-cp</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>choco</groupId>
-            <artifactId>samples</artifactId>
+            <artifactId>choco-solver</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.processing</groupId>

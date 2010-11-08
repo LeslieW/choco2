@@ -22,7 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.real.objective;
 
-import choco.kernel.solver.Solution;
 import choco.kernel.solver.variables.real.RealIntervalConstant;
 import choco.kernel.solver.variables.real.RealMath;
 import choco.kernel.solver.variables.real.RealVar;
@@ -50,7 +49,7 @@ public final class MaxRealObjManager extends RealObjectiveManager {
 	}
 
 	
-	private void setBoundInterval() {
+	protected void setBoundInterval() {
 		boundInterval = new RealIntervalConstant(targetBound, Double.POSITIVE_INFINITY);
 	}
 

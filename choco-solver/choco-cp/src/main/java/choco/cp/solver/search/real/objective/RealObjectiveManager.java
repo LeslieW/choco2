@@ -83,7 +83,11 @@ public abstract class RealObjectiveManager implements IObjectiveManager {
 		bound = getInitialBoundValue();
 		floorBound = getFloorValue();
 		targetBound = getCeilValue();
+        setBoundInterval();
 	}
+
+    protected abstract void setBoundInterval();
+
 	@Override
 	public final void postTargetBound() throws ContradictionException {
 		objective.intersect(boundInterval);

@@ -29,7 +29,6 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.preprocessor.PreProcessCPSolver;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Variable;
@@ -38,19 +37,19 @@ import choco.kernel.solver.Configuration;
 import choco.kernel.solver.ResolutionPolicy;
 import choco.kernel.solver.Solver;
 import choco.visu.components.panels.VarChocoPanel;
-import choco.visu.papplet.*;
+import choco.visu.papplet.ColoringPApplet;
+import choco.visu.papplet.KnapsackPApplet;
+import choco.visu.papplet.QueenBoardPApplet;
 import gnu.trove.TIntObjectHashMap;
 import gnu.trove.TObjectIntHashMap;
 import org.junit.Before;
 import org.junit.Test;
-import samples.tutorials.trunk.Picross;
 
 import java.awt.*;
 import java.util.logging.Logger;
 
 import static choco.Choco.*;
 import static choco.visu.components.papplets.ChocoPApplet.*;
-import static samples.tutorials.seminar.ExDonaldGeraldRobert.*;
 
 /*
  * Created by IntelliJ IDEA.
@@ -63,15 +62,15 @@ public class ExamplesTest {
     protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
     @Before
-    public void checkEnvironment(){
+    public void checkEnvironment() {
         GraphicsEnvironment ge = GraphicsEnvironment
-        .getLocalGraphicsEnvironment();
-        if(ge.isHeadlessInstance()){
+                .getLocalGraphicsEnvironment();
+        if (ge.isHeadlessInstance()) {
             System.exit(0);
         }
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         ExamplesTest e = new ExamplesTest();
         e.checkEnvironment();
 //        e.donaldGeraldRobert();
@@ -79,10 +78,8 @@ public class ExamplesTest {
 //        e.magicSquare();
 //        e.queens();
 //        e.sudokuAdvanced();
-//        e.usa();
-        e.testPicross();
+        e.usa();
     }
-
 
 
     @Test
@@ -253,85 +250,61 @@ public class ExamplesTest {
         v.kill();
     }
 
-    @Test
-    public void donaldGeraldRobert() {
-        Model m = modelIt2();
-        Solver s = new CPSolver();
-        s.read(m);
-        Visu v = Visu.createVisu(0, 0);
-        Variable[] vars = new Variable[]{
-                _d, _o, _n, _a, _l, _d,
-                _g, _e, _r, _a, _l, _d,
-                _r, _o, _b, _e, _r, _t
-        };
-        v.addPanel(new VarChocoPanel("Grid", vars, DonaldAndFriendsPApplet.class, null));
-        v.addPanel(new VarChocoPanel("TreeSearch", vars, TREESEARCH, null));
 
-        s.generateSearchStrategy();
-        s.visualize(v);
-        s.launch();
-        s.printRuntimeStatistics();
-        // Print name value
-        LOGGER.info("donald = " + s.getVar(_d).getVal() + s.getVar(_o).getVal() + s.getVar(_n).getVal() + s.getVar(_a).getVal() + s.getVar(_l).getVal() + s.getVar(_d).getVal());
-        LOGGER.info("gerald = " + s.getVar(_g).getVal() + s.getVar(_e).getVal() + s.getVar(_r).getVal() + s.getVar(_a).getVal() + s.getVar(_l).getVal() + s.getVar(_d).getVal());
-        LOGGER.info("robert = " + s.getVar(_r).getVal() + s.getVar(_o).getVal() + s.getVar(_b).getVal() + s.getVar(_e).getVal() + s.getVar(_r).getVal() + s.getVar(_t).getVal());
-        v.kill();
-    }
+    private static final TObjectIntHashMap<String> states;
 
-
-        private static final TObjectIntHashMap<String> states;
-    static{
+    static {
         states = new TObjectIntHashMap<String>();
-        states.put("WA",0);
-        states.put("OR",1);
-        states.put("CA",2);
-        states.put("ID",3);
-        states.put("NV",4);
-        states.put("MT",5);
-        states.put("WY",6);
-        states.put("UT",7);
-        states.put("AZ",8);
-        states.put("CO",9);
-        states.put("NM",10);
-        states.put("ND",11);
-        states.put("SD",12);
-        states.put("NE",13);
-        states.put("KS",14);
-        states.put("OK",15);
-        states.put("TX",16);
-        states.put("MN",17);
-        states.put("IA",18);
-        states.put("MO",19);
-        states.put("AR",20);
-        states.put("LA",21);
-        states.put("WI",22);
-        states.put("IL",23);
-        states.put("MS",24);
-        states.put("MI",25);
-        states.put("IN",26);
-        states.put("KY",27);
-        states.put("TN",28);
-        states.put("AL",29);
-        states.put("GA",30);
-        states.put("OH",31);
-        states.put("FL",32);
-        states.put("SC",33);
-        states.put("NC",34);
-        states.put("VA",35);
-        states.put("MD",36);
-        states.put("WV",37);
-        states.put("DE",38);
-        states.put("NJ",39);
-        states.put("PA",40);
-        states.put("NY",41);
-        states.put("VT",42);
-        states.put("ME",43);
-        states.put("NH",44);
-        states.put("MA",45);
-        states.put("CT",46);
-        states.put("RI",47);
-        states.put("AK",48);
-        states.put("HI",49);
+        states.put("WA", 0);
+        states.put("OR", 1);
+        states.put("CA", 2);
+        states.put("ID", 3);
+        states.put("NV", 4);
+        states.put("MT", 5);
+        states.put("WY", 6);
+        states.put("UT", 7);
+        states.put("AZ", 8);
+        states.put("CO", 9);
+        states.put("NM", 10);
+        states.put("ND", 11);
+        states.put("SD", 12);
+        states.put("NE", 13);
+        states.put("KS", 14);
+        states.put("OK", 15);
+        states.put("TX", 16);
+        states.put("MN", 17);
+        states.put("IA", 18);
+        states.put("MO", 19);
+        states.put("AR", 20);
+        states.put("LA", 21);
+        states.put("WI", 22);
+        states.put("IL", 23);
+        states.put("MS", 24);
+        states.put("MI", 25);
+        states.put("IN", 26);
+        states.put("KY", 27);
+        states.put("TN", 28);
+        states.put("AL", 29);
+        states.put("GA", 30);
+        states.put("OH", 31);
+        states.put("FL", 32);
+        states.put("SC", 33);
+        states.put("NC", 34);
+        states.put("VA", 35);
+        states.put("MD", 36);
+        states.put("WV", 37);
+        states.put("DE", 38);
+        states.put("NJ", 39);
+        states.put("PA", 40);
+        states.put("NY", 41);
+        states.put("VT", 42);
+        states.put("ME", 43);
+        states.put("NH", 44);
+        states.put("MA", 45);
+        states.put("CT", 46);
+        states.put("RI", 47);
+        states.put("AK", 48);
+        states.put("HI", 49);
     }
 
     @Test
@@ -340,14 +313,14 @@ public class ExamplesTest {
         Solver s = new PreProcessCPSolver();
         int nbColor = 4;
         TIntObjectHashMap<String> invStates = new TIntObjectHashMap<String>();
-        for(int i = 0; i< states.keys().length; i++){
+        for (int i = 0; i < states.keys().length; i++) {
             String name = (String) states.keys()[i];
             invStates.put(states.get(name), name);
         }
 
 
         IntegerVariable[] etats = new IntegerVariable[states.keys().length];
-        for(int i = 0; i < states.keys().length; i++){
+        for (int i = 0; i < states.keys().length; i++) {
             etats[i] = makeIntVar(invStates.get(i), 1, nbColor);
         }
         m.addVariables(etats);
@@ -524,26 +497,26 @@ public class ExamplesTest {
 
 
     @Test
-       public void queens(){
-    //public static void main(String [] ars){
+    public void queens() {
+        //public static void main(String [] ars){
         Model m = new CPModel();
         int n = 8;
         IntegerVariable[] queens = new IntegerVariable[n];
         for (int i = 0; i < n; i++) {
-            queens[i] = makeIntVar("Q" + (i+1), 1, n, Options.V_ENUM);
+            queens[i] = makeIntVar("Q" + (i + 1), 1, n, Options.V_ENUM);
         }
 
         for (int i = 0; i < n; i++) {
             for (int j = i + 1; j < n; j++) {
-            int k = j - i;
-            m.addConstraint(neq(queens[i], queens[j]));
-            m.addConstraint(neq(queens[i], plus(queens[j], k)));  // diagonal constraints
-            m.addConstraint(neq(queens[i], minus(queens[j], k))); // diagonal constraints
+                int k = j - i;
+                m.addConstraint(neq(queens[i], queens[j]));
+                m.addConstraint(neq(queens[i], plus(queens[j], k)));  // diagonal constraints
+                m.addConstraint(neq(queens[i], minus(queens[j], k))); // diagonal constraints
             }
         }
 
         Solver s = new CPSolver();
-        s.read(m);                                                                                
+        s.read(m);
 
         Visu v = Visu.createVisu(700, 700);
         v.addPanel(new VarChocoPanel("Damier", queens, QueenBoardPApplet.class, "./images/damier.svg"));
@@ -559,16 +532,16 @@ public class ExamplesTest {
     }
 
     @Test
-       public void xyz(){
+    public void xyz() {
 //    public static void main(String [] ars){
         Model m = new CPModel();
         int n = 3;
         IntegerVariable x = Choco.makeIntVar("x", 0, 3);
         IntegerVariable y = Choco.makeIntVar("y", 0, 3);
         IntegerVariable z = Choco.makeIntVar("z", 0, 3);
-        IntegerVariable[] vars = new IntegerVariable[]{x,y,z};
+        IntegerVariable[] vars = new IntegerVariable[]{x, y, z};
 
-        m.addConstraint(Choco.gt(x,y));
+        m.addConstraint(Choco.gt(x, y));
         m.addConstraint(Choco.gt(y, z));
 
         Solver s = new CPSolver();
@@ -588,9 +561,9 @@ public class ExamplesTest {
     }
 
     @Test
-    public void knapsack(){
+    public void knapsack() {
 //    public static void main(String[] args){
-         Model m = new CPModel();
+        Model m = new CPModel();
 
         IntegerVariable obj1 = makeIntVar("obj1", 0, 5);
         IntegerVariable obj2 = makeIntVar("obj2", 0, 7);
@@ -617,75 +590,7 @@ public class ExamplesTest {
         s.setDoMaximize(true);
         s.getConfiguration().putBoolean(Configuration.STOP_AT_FIRST_SOLUTION, false);
         s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MAXIMIZE);
-		s.setObjective(s.getVar(c));
-        s.generateSearchStrategy();
-        s.visualize(v);
-        s.launch();
-        v.kill();
-    }
-
-    @Test
-    public void testPicross() {
-        Solver s = new CPSolver();
-
-        int[][] cols = new int[][]{
-                {2, 2},
-                {2, 4},
-                {1, 2, 2},
-                {2, 1, 1, 2},
-                {1, 1, 1, 3, 1},
-                {2, 1, 2, 1, 5, 1, 1},
-                {1, 2, 2, 8, 1, 1},
-                {2, 2, 3, 6, 1, 1},
-                {2, 12, 1, 1},
-                {2, 10, 1},
-                {9, 5, 2},
-                {4, 2},
-                {3, 2, 8},
-                {3, 2, 1, 2},
-                {3, 3, 1, 5},
-                {2, 4, 1, 1, 2},
-                {2, 2, 1, 1, 1},
-                {1, 1, 4, 2, 2, 2},
-                {1, 1, 1, 2, 3},
-                {3, 2, 1},
-                {4, 3},
-                {8},
-                {5}
-        };
-        int[][] rows = new int[][]
-                {
-                        {0},
-                        {3, 2},
-                        {1, 2, 3, 4},
-                        {1, 2, 3, 3},
-                        {4, 2, 2, 6},
-                        {2, 1, 1, 2, 3},
-                        {5, 2, 1, 2, 3, 2},
-                        {2, 2, 1, 1, 2, 1, 1, 2},
-                        {1, 3, 1, 3, 2, 3},
-                        {2, 1, 2, 7},
-                        {9, 1, 2, 2},
-                        {2, 1, 3},
-                        {1, 8},
-                        {1, 6, 7},
-                        {2, 9, 2},
-                        {1, 10, 1},
-                        {6, 3, 2},
-                        {1, 5, 1, 1, 2},
-                        {2, 2, 1, 1},
-                        {7, 2, 1},
-                        {2, 2, 1},
-                        {6, 3},
-                        {0}
-                };
-
-
-        Picross p = new Picross(rows, cols, s);
-
-        Visu v = Visu.createVisu();
-        Variable[] vars = ArrayUtils.append(p.myvars);
-        v.addPanel(new VarChocoPanel("Picross", vars, PicrossPApplet.class, new int[]{rows.length, cols.length}));
+        s.setObjective(s.getVar(c));
         s.generateSearchStrategy();
         s.visualize(v);
         s.launch();

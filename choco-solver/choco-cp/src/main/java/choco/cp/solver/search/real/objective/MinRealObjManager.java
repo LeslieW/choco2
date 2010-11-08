@@ -22,8 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.real.objective;
 
-import choco.cp.solver.constraints.reified.leaves.bool.OppSignNode;
-import choco.kernel.solver.Solution;
 import choco.kernel.solver.variables.real.RealIntervalConstant;
 import choco.kernel.solver.variables.real.RealMath;
 import choco.kernel.solver.variables.real.RealVar;
@@ -49,8 +47,8 @@ public final class MinRealObjManager extends RealObjectiveManager {
 	public double getCeilValue() {
 		return objective.getSup();
 	}
-	
-	private void setBoundInterval() {
+
+    protected void setBoundInterval() {
 		boundInterval = new RealIntervalConstant(Double.NEGATIVE_INFINITY, targetBound);
 	}
 

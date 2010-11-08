@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<parent>
+    <parent>
         <groupId>choco</groupId>
         <artifactId>choco</artifactId>
         <version>2.1.1-SNAPSHOT</version>
@@ -11,13 +11,15 @@
     <name>Dynamic Analysis and Debugging of Constraint Programs tracer for CHOCO</name>
     <url>http://www.emn.fr/z-info/choco-solver/dadcop-tracer</url>
     <dependencies>
-<dependency>
+        <dependency>
             <groupId>choco</groupId>
             <artifactId>choco-kernel</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>choco</groupId>
             <artifactId>choco-cp</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.aspectj</groupId>
@@ -65,7 +67,7 @@
             </plugin>
         </plugins>
     </build>
-<reporting>
+    <reporting>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

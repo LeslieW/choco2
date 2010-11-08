@@ -22,7 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.tutorials.seminar.socialgolfer;
 
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
@@ -34,6 +33,8 @@ import choco.kernel.solver.Solver;
 
 import java.util.Arrays;
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
 
 /*
  * Created by IntelliJ IDEA.
@@ -107,7 +108,7 @@ public class ExSocialGolfer {
                         cpt++;
                     }
                 }
-                m.addConstraint(new ComponentConstraint(ScalarAtMost.ScalarAtMostManager.class, new Object[]{w * g, 1}, vars));
+                m.addConstraint(new ComponentConstraint(ScalarAtMost.ScalarAtMostManager.class, new int[]{w * g, 1}, vars));
             }
         }
 

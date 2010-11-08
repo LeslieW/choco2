@@ -10,10 +10,10 @@
     <name>CHOCO Tools</name>
     <packaging>pom</packaging>
     <url>http://www.emn.fr/z-info/choco-solver/choco-tools</url>
-     <modules>
+    <modules>
         <module>choco-db</module>
         <module>choco-parsers</module>
-         <module>choco-cli</module>
-     </modules>
+        <module>choco-cli</module>
+    </modules>
 
 </project>

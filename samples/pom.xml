@@ -13,15 +13,34 @@
     <dependencies>
         <dependency>
             <groupId>choco</groupId>
-            <artifactId>choco-cp</artifactId>
+            <artifactId>choco-kernel</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>choco</groupId>
-            <artifactId>choco-cli</artifactId>
-            <!-- why do I need to mention the version number ? 
-				same problem in choco-parsers.
-			-->
-			<version>${version}</version>
+            <artifactId>choco-cp</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>choco</groupId>
+            <artifactId>visu</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>jfree</groupId>
+            <artifactId>jfreechart</artifactId>
+            <version>1.0.13</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>jfree</groupId>
+            <artifactId>jcommon</artifactId>
+            <version>1.0.15</version>
+        </dependency>
+        <dependency>
+            <groupId>org.processing</groupId>
+            <artifactId>core</artifactId>
+            <version>1.0.9</version>
         </dependency>
     </dependencies>
     <reporting>

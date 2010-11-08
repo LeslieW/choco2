@@ -1,40 +1,33 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<parent>
-		<groupId>choco</groupId>
-		<artifactId>choco-tools</artifactId>
-		<version>2.1.1-SNAPSHOT</version>
-	</parent>
-	<modelVersion>4.0.0</modelVersion>
-	<artifactId>choco-cli</artifactId>
-	<packaging>jar</packaging>
-	<name>CHOCO Command Line Interpreter</name>
-	<url>http://www.emn.fr/z-info/choco-solver/choco-cli</url>
-	<dependencies>
-		<dependency>
-			<groupId>choco</groupId>
-			<artifactId>choco-db</artifactId>
-			<!-- why do I need to mention the version number ? 
-				same problem in choco-parsers.
-			-->
-			<version>${version}</version>
-		</dependency>
-		<dependency>
-			<groupId>choco</groupId>
-			<artifactId>choco-parsers</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>args4j</groupId>
-			<artifactId>args4j</artifactId>
-			<version>2.0.12</version>
-			<scope>compile</scope>
-		</dependency>
-	</dependencies>
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>choco</groupId>
+        <artifactId>choco-tools</artifactId>
+        <version>2.1.1-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>choco-cli</artifactId>
+    <packaging>jar</packaging>
+    <name>CHOCO Command Line Interpreter</name>
+    <url>http://www.emn.fr/z-info/choco-solver/choco-cli</url>
+    <dependencies>
+        <dependency>
+            <groupId>choco</groupId>
+            <artifactId>choco-parsers</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>args4j</groupId>
+            <artifactId>args4j</artifactId>
+            <version>2.0.12</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>
                     maven-project-info-reports-plugin
                 </artifactId>
                 <reportSets>
