@@ -1,0 +1,39 @@
+<document xmlns="http://maven.apache.org/changes/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
+  <properties>
+    <title>Changes Choco</title>
+    <author email="choco@emn.com">Choco team</author>
+  </properties>
+  <body>
+    <release version="2.1.1-20101108" date="2010-11-08" description="Small release (rev. 1686)">
+      <action dev="Charles Prud'homme" type="update">
+        Update website (publications page, changes report, link to sourceforge forums, licence text, etc).
+      </action>
+      <action dev="Sophie Demassey" type="update">
+        Update documentation (search strategies, variable selectors, value selectors, solver).
+      </action>
+      <action dev="Charles Prud'homme" type="update">
+        Update documentation (glossary).
+      </action>
+      <action dev="Charles Prud'homme" type="update">
+        Change class AbstractBinIntBranchingStrategy.
+      </action>
+      <action dev="Charles Prud'homme" type="update">
+        RandomIntVarSelector implements IntHeuristicIntVarSelector.
+      </action>
+      <action dev="Charles Prud'homme" type="update">
+        Change modules dependencies (requires "mvn install" command).
+      </action>
+      <action dev="Charles Prud'homme" type="remove">
+        Remove deprecated method #getBranching() from VarSelector.
+      </action>
+      <action dev="Charles Prud'homme" type="fix" issue="3092180">
+        Fix critical bug on DisposableIterator.
+      </action>
+    <action dev="Charles Prud'homme" type="fix" issue="3106016">
+        Fix critical bug on RealObjectiveManager (wrong initialisation of boundInterval).
+      </action>
+    </release>
+  </body>
+</document>

@@ -199,6 +199,28 @@
             </plugin>
         </plugins>
     </build>
+    <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-changes-plugin</artifactId>
+        <version>2.3</version>
+        <configuration>
+          <issueLinkTemplatePerSystem>
+          <default>
+          https://sourceforge.net/tracker/index.php?func=detail&amp;aid=%ISSUE%&amp;group_id=96738&amp;atid=615736
+          </default>
+          </issueLinkTemplatePerSystem>
+        </configuration>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>changes-report</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>    </plugins>
+  </reporting>
     <developers>
         <developer>
             <name>Francois Laburthe</name>
@@ -286,7 +308,7 @@
     </developers>
     <contributors>
         <contributor>
-            <name>Spohie Demassey</name>
+            <name>Sophie Demassey</name>
             <email>sophie.demassey@emn.fr</email>
             <url>http://www.emn.fr/x-info/sdemasse/</url>
             <organization>EMN Constraint</organization>

@@ -9,11 +9,13 @@ Download CHOCO
 
 * Most recent jar files:
 
-    * {{{http://sourceforge.net/projects/choco/files/choco/2.1.1/SNAPSHOT/20101004/choco-2.1.1-20101004.120108-16.jar}choco-2.1.1.jar}}
+    * {{{http://sourceforge.net/projects/choco/files/choco/2.1.1/SNAPSHOT/20101108/choco-2.1.1-20101108.160635-17.jar}choco-2.1.1.jar}}
 
-    * {{{http://sourceforge.net/projects/choco/files/choco/2.1.1/SNAPSHOT/20101004/choco-solver-2.1.1-20101004.120108-16.jar}choco-solver-2.1.1.jar}}
+    * {{{http://sourceforge.net/projects/choco/files/choco/2.1.1/SNAPSHOT/20101108/choco-solver-2.1.1-20101108.160543-4.jar}choco-solver-2.1.1.jar}}
     
-    * {{{http://sourceforge.net/projects/choco/files/choco/2.1.1/SNAPSHOT/20101004/}jars, md5 and sources}}
+    * {{{http://sourceforge.net/projects/choco/files/choco/2.1.1/SNAPSHOT/20101108/}jars, md5 and sources}}
+
+    You can also read the {{{changes-report.html}changes report}}.    
 
 * Previous files
 

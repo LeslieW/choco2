@@ -10,8 +10,7 @@
 
             <p>
                 <tt>choco</tt>
-                is a java library for constraint satisfaction problems (CSP),
-                constraint programming (CP) and explanation-based constraint solving (e-CP).
+                is a java library for constraint satisfaction problems (CSP) and constraint programming (CP).
                 <br/>
                 It is built on a event-based propagation mechanism with backtrackable structures.
             </p>
@@ -39,7 +38,7 @@
 
         </section>
 
-        <section name="CHOCO's environment">
+	<section name="CHOCO's environment">
             <p>
                 <tt>choco</tt>
                 is an open-source software, distributed under a
