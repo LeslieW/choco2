@@ -206,8 +206,7 @@
                 <aggregate>true</aggregate>
                 <properties>
                     <owner>Ecole des Mines de Nantes</owner>
-                    <year>${project.inceptionYear}</year>
-                    <email>choco@emn.fr</email>
+                    <year>2010</year>
                 </properties>
                 <strictCheck>true</strictCheck>
                 <includes>
@@ -216,7 +215,11 @@
                 <excludes>
                     <exclude>**/choco-ecp/**</exclude>
                     <exclude>**/site/**</exclude>
+                    <exclude>**/target/**</exclude>
                 </excludes>
+                <headerDefinitions>
+                    <headerDefinition>src/etc/old.xml</headerDefinition>
+                </headerDefinitions>
             </configuration>
         </plugin>
         </plugins>
