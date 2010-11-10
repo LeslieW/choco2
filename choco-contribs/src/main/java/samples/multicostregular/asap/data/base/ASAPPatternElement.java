@@ -1,5 +1,3 @@
-package samples.multicostregular.asap.data.base;
-
 /* * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
  *         |  °(..)  |                           *
@@ -22,7 +20,7 @@ package samples.multicostregular.asap.data.base;
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-
+package samples.multicostregular.asap.data.base;
 public interface ASAPPatternElement {
 
 

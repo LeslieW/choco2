@@ -1,4 +1,4 @@
-package samples.multicostregular.asap.hci.presentation;/* * * * * * * * * * * * * * * * * * * * * * * * *
+/* * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
  *         |  °(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
@@ -20,7 +20,7 @@ package samples.multicostregular.asap.hci.presentation;/* * * * * * * * * * * * 
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-
+package samples.multicostregular.asap.hci.presentation;
 import samples.multicostregular.asap.hci.abstraction.ASAPDataHandler;
 import samples.multicostregular.asap.hci.control.ASAPSummaryControl;
 import samples.multicostregular.asap.hci.control.ASAPButtonControl;

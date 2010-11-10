@@ -1,4 +1,3 @@
-package choco.cp.solver.constraints.global.automata.fast_multicostregular.example;
 /* * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
  *         |  °(..)  |                           *
@@ -21,7 +20,7 @@ package choco.cp.solver.constraints.global.automata.fast_multicostregular.exampl
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-
+package choco.cp.solver.constraints.global.automata.fast_multicostregular.example;
 import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
