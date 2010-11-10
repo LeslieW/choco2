@@ -1,4 +1,4 @@
-package choco.cp.solver.constraints.global.automata.fast_multicostregular.valselector;/* * * * * * * * * * * * * * * * * * * * * * * * *
+/* * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
  *         |  �(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
@@ -20,7 +20,7 @@ package choco.cp.solver.constraints.global.automata.fast_multicostregular.valsel
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-
+package choco.cp.solver.constraints.global.automata.fast_multicostregular.valselector;
 
 
 

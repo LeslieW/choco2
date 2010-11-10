@@ -1,4 +1,4 @@
-package parser.flatzinc;/* ************************************************
+/* ************************************************
 *           _       _                            *
 *          |  ?(..)  |                           *
 *          |_  J||L _|        CHOCO solver       *
@@ -20,7 +20,7 @@ package parser.flatzinc;/* ************************************************
 *     Copyright (C) F. Laburthe,                 *
 *                   N. Jussien    1999-2009      *
 **************************************************/
-
+package parser.flatzinc;
 /*
 * User : charles
 * Mail : cprudhom(a)emn.fr

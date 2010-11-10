@@ -1,4 +1,4 @@
-package common;/* * * * * * * * * * * * * * * * * * * * * * * * *
+/* * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
  *         |   (..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
@@ -20,6 +20,7 @@ package common;/* * * * * * * * * * * * * * * * * * * * * * * * *
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2010      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
+package common;
 
 import choco.cp.model.CPModel;
 import choco.kernel.common.logging.ChocoLogging;

@@ -1,4 +1,4 @@
-package common;/* * * * * * * * * * * * * * * * * * * * * * * * *
+/* * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
  *         |   (..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
@@ -20,7 +20,7 @@ package common;/* * * * * * * * * * * * * * * * * * * * * * * * *
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2010      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-
+package common;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.kernel.solver.Configuration;

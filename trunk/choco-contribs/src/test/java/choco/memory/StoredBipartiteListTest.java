@@ -1,5 +1,3 @@
-package choco.memory;
-
 /* * * * * * * * * * * * * * * * * * * * * * * * * 
  *          _       _                            *
  *         |  °(..)  |                           *
@@ -22,7 +20,7 @@ package choco.memory;
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-
+package choco.memory;
 
 import choco.Choco;
 import choco.kernel.common.logging.ChocoLogging;
