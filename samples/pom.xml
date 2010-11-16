@@ -40,7 +40,7 @@
 
         <dependency>
             <groupId>choco</groupId>
-            <artifactId>visu</artifactId>
+            <artifactId>choco-visu</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
