@@ -4,6 +4,7 @@
  */
 package choco.cp.solver.constraints.set;
 
+import choco.cp.solver.variables.set.SetVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.set.AbstractLargeSetSConstraint;
@@ -17,23 +18,29 @@ public final class AllDisjoint extends AbstractLargeSetSConstraint {
     public AllDisjoint(SetVar[] setvars) {
         super(setvars);
     }
-    
-    public void filter(int idx) throws ContradictionException {
-        DisposableIntIterator it = vars[idx].getDomain().getKernelIterator();
-        while (it.hasNext()) {
-            int val = it.next();
-            for (int idxi =0;idxi<vars.length;idxi++)
-                if (idxi != idx) vars[idxi].remFromEnveloppe(val, this, false);
-        }
-    }
-    
-    public void awakeOnKer(int varIdx, int x) throws ContradictionException {
-        for (int idx =0;idx<vars.length;idx++)
-            if (idx != varIdx) vars[idx].remFromEnveloppe(x, this, false);
+
+    @Override
+    public int getFilteredEventMask(int idx) {
+        return SetVarEvent.INSTSET_MASK + SetVarEvent.ADDKER_MASK;
     }
 
-    public void awakeOnEnvRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
-        //Nothing to do
+    public void filter(int idx) throws ContradictionException {
+        DisposableIntIterator it = vars[idx].getDomain().getKernelIterator();
+        try {
+            while (it.hasNext()) {
+                int val = it.next();
+                for (int idxi = 0; idxi < vars.length; idxi++)
+                    if (idxi != idx) vars[idxi].remFromEnveloppe(val, this, false);
+            }
+
+        } finally {
+            it.dispose();
+        }
+    }
+
+    public void awakeOnKer(int varIdx, int x) throws ContradictionException {
+        for (int idx = 0; idx < vars.length; idx++)
+            if (idx != varIdx) vars[idx].remFromEnveloppe(x, this, false);
     }
 
     public void awakeOnInst(int varIdx) throws ContradictionException {
@@ -41,36 +48,43 @@ public final class AllDisjoint extends AbstractLargeSetSConstraint {
     }
 
     public void propagate() throws ContradictionException {
-        for (int idx=0;idx<vars.length;idx++) 
+        for (int idx = 0; idx < vars.length; idx++)
             filter(idx);
     }
-    
+
     public boolean isSatisfied() {
-        Map<Integer,SetVar> map = new HashMap<Integer,SetVar>();
-        for(SetVar v : vars) {
-            DisposableIntIterator it = v.getDomain().getKernelIterator();
-            while (it.hasNext()) {
-                int val = it.next();
-                if (map.get(val) != null) return false;
-                map.put(val, v);
+        DisposableIntIterator it = null;
+        try {
+            Map<Integer, SetVar> map = new HashMap<Integer, SetVar>();
+            for (SetVar v : vars) {
+                it = v.getDomain().getKernelIterator();
+                while (it.hasNext()) {
+                    int val = it.next();
+                    if (map.get(val) != null) return false;
+                    map.put(val, v);
+                }
+                it.dispose();
             }
-        }
-        for(SetVar v : vars) {
-            DisposableIntIterator it2 = v.getDomain().getEnveloppeIterator();
-            while (it2.hasNext()) {
-                int val = it2.next();
-                SetVar v2 = map.get(val);
-                if (v2 != null && !v2.equals(v))
-                    return false;
+            for (SetVar v : vars) {
+                it = v.getDomain().getEnveloppeIterator();
+                while (it.hasNext()) {
+                    int val = it.next();
+                    SetVar v2 = map.get(val);
+                    if (v2 != null && !v2.equals(v))
+                        return false;
+                }
+                it.dispose();
             }
+            return true;
+        } finally {
+            it.dispose();
         }
-        return true;
     }
 
     public boolean isConsistent() {
         return isSatisfied();
     }
-    
+
     public String pretty() {
         StringBuilder sb = new StringBuilder();
         sb.append("AllDisjoint({");

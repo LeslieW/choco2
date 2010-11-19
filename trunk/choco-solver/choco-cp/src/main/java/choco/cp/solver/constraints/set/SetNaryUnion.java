@@ -4,15 +4,16 @@
  */
 package choco.cp.solver.constraints.set;
 
+import choco.cp.solver.variables.set.SetVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.set.AbstractLargeSetSConstraint;
 import choco.kernel.solver.variables.set.SetVar;
+import gnu.trove.TIntIntHashMap;
 
 import java.util.Arrays;
-import java.util.HashMap;
 
 public final class SetNaryUnion extends AbstractLargeSetSConstraint {
 
@@ -23,144 +24,198 @@ public final class SetNaryUnion extends AbstractLargeSetSConstraint {
      * in envellop of setvars set variables
      */
     protected IStateInt[] occurCpt;
+    protected int offset;
     protected final static int UNION_SET_INDEX = 0;
-    
+
+    protected final IEnvironment environment;
+
     public SetNaryUnion(SetVar[] vars, IEnvironment environment) {
         super(vars);
         unionSet = vars[UNION_SET_INDEX];
         setVars = Arrays.copyOfRange(vars, 1, vars.length);
-        HashMap<Integer,Integer> allValues = new HashMap<Integer,Integer>();
-        for(SetVar v : vars) { 
-            DisposableIntIterator it = v.getDomain().getEnveloppeIterator(); 
+        this.environment = environment;
+    }
+
+    @Override
+    public int getFilteredEventMask(int idx) {
+        return SetVarEvent.INSTSET_MASK + SetVarEvent.ADDKER_MASK + SetVarEvent.REMENV_MASK;
+    }
+
+    @Override
+    public void awake() throws ContradictionException {
+        TIntIntHashMap allValues = new TIntIntHashMap();
+        for (SetVar v : setVars) {
+            DisposableIntIterator it = v.getDomain().getEnveloppeIterator();
             while (it.hasNext()) {
                 int val = it.next();
-                if (allValues.containsKey(val)) allValues.put(val, allValues.get(val)+1);
-                else allValues.put(val,1);
+                if (allValues.containsKey(val)) {
+                    allValues.put(val, allValues.get(val) + 1);
+                } else allValues.put(val, 1);
             }
+            it.dispose();
         }
-        int max = 0;
-        for (int v : allValues.keySet())  max = (v > max ? v : max);
-        occurCpt = new IStateInt[max+1];
-        for (int v : allValues.keySet()) {
-            occurCpt[v] = environment.makeInt();
-            occurCpt[v].set(allValues.get(v));
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+        int[] values = allValues.keys();
+        for (int v : values) {
+            max = (v > max ? v : max);
+            min = (v < min ? v : min);
         }
+        occurCpt = new IStateInt[max - min + 1];
+        offset = min;
+        for (int v : values) {
+            occurCpt[v - offset] = environment.makeInt(allValues.get(v));
+        }
+        this.propagate();
     }
 
     /**
      * Default propagation on kernel modification: propagation on adding a value to the kernel.
      */
     public void awakeOnKer(int varIdx, int x) throws ContradictionException {
-        if (varIdx > UNION_SET_INDEX) 
+        if (varIdx > UNION_SET_INDEX)
             unionSet.addToKernel(x, this, false);
         else //x has been add to the unionSet kernel
             instanciateIfLastOccurence(x);
     }
-    
+
     /**
      * Default propagation on enveloppe modification: propagation on removing a value from the enveloppe.
      */
     public void awakeOnEnv(int varIdx, int x) throws ContradictionException {
-        if (varIdx == UNION_SET_INDEX) 
-            for (int idx = 0; idx < setVars.length; idx++) 
+        if (varIdx == UNION_SET_INDEX)
+            for (int idx = 0; idx < setVars.length; idx++)
                 setVars[idx].remFromEnveloppe(x, this, false);
-        else 
+        else
             decOccurence(x);
     }
+
     /**
      * Default propagation on instantiation.
      */
     public void awakeOnInst(int varIdx) throws ContradictionException { //FIXME
-        if (varIdx == UNION_SET_INDEX) {
-            DisposableIntIterator it = unionSet.getDomain().getKernelIterator();
-            while (it.hasNext()) {
-                int val = it.next();
-                instanciateIfLastOccurence(val);
+        DisposableIntIterator it = null;
+        try {
+            if (varIdx == UNION_SET_INDEX) {
+                it = unionSet.getDomain().getKernelIterator();
+                while (it.hasNext()) {
+                    int val = it.next();
+                    instanciateIfLastOccurence(val);
+                }
+            } else {
+                it = vars[varIdx].getDomain().getKernelIterator();
+                while (it.hasNext()) {
+                    int val = it.next();
+                    unionSet.addToKernel(val, this, false);
+                }
+                it.dispose();
+                it = vars[varIdx].getDomain().getEnveloppeIterator();
+                while (it.hasNext()) {
+                    int val = it.next();
+                    if (getNbOccurence(val) == 0) unionSet.remFromEnveloppe(val, this, false);
+                }
             }
-        } else {
-            DisposableIntIterator it1 = vars[varIdx].getDomain().getKernelIterator();
-            while (it1.hasNext()) {
-                int val = it1.next();
-                unionSet.addToKernel(val, this, false);
-            }
-            DisposableIntIterator it4 = vars[varIdx].getDomain().getEnveloppeIterator();
-            while (it4.hasNext()) {
-                int val = it4.next();
-                if (getNbOccurence(val) == 0) unionSet.remFromEnveloppe(val, this, false);
-            }
+        } finally {
+            it.dispose();
         }
     }
 
     public void propagate() throws ContradictionException {
-        for (int idx = 0; idx < setVars.length; idx++) {
-            DisposableIntIterator it = setVars[idx].getDomain().getKernelIterator();
+        DisposableIntIterator it = null;
+        try {
+            for (int idx = 0; idx < setVars.length; idx++) {
+                it = setVars[idx].getDomain().getKernelIterator();
+                while (it.hasNext()) {
+                    int val = it.next();
+                    unionSet.addToKernel(val, this, false);
+                }
+                it.dispose();
+            }
+
+            it = unionSet.getDomain().getKernelIterator();
             while (it.hasNext()) {
                 int val = it.next();
-                unionSet.addToKernel(val, this, false);
+                instanciateIfLastOccurence(val);
             }
-        }
-        
-        DisposableIntIterator it2 = unionSet.getDomain().getKernelIterator();
-        while (it2.hasNext()) {
-            int val = it2.next();
-            instanciateIfLastOccurence(val);
-        }
+            it.dispose();
 
-        DisposableIntIterator it4 = unionSet.getDomain().getEnveloppeIterator();
-        while (it4.hasNext()) {
-            int val = it4.next();
-            if (getNbOccurence(val) == 0) unionSet.remFromEnveloppe(val, this, false);
+            it = unionSet.getDomain().getEnveloppeIterator();
+            while (it.hasNext()) {
+                int val = it.next();
+                if (getNbOccurence(val) == 0) {
+                    unionSet.remFromEnveloppe(val, this, false);
+                }
+            }
+        } finally {
+            it.dispose();
         }
     }
-    
+
+    @SuppressWarnings({"ConstantConditions"})
     public boolean isSatisfied() {
-        for (int idx = 0; idx < setVars.length; idx++) {
-            DisposableIntIterator it = setVars[idx].getDomain().getKernelIterator();
+        DisposableIntIterator it = null;
+        try {
+            for (int idx = 0; idx < setVars.length; idx++) {
+                it = setVars[idx].getDomain().getKernelIterator();
+                while (it.hasNext()) {
+                    int val = it.next();
+                    if (!unionSet.isInDomainKernel(val)) return false;
+                }
+                it.dispose();
+            }
+            it = unionSet.getDomain().getKernelIterator();
             while (it.hasNext()) {
                 int val = it.next();
-                if(!unionSet.isInDomainKernel(val)) return false;
+                boolean isInASet = false;
+                for (int idx = 0; idx < setVars.length; idx++)
+                    if (setVars[idx].isInDomainKernel(val)) {
+                        isInASet = true;
+                        break;
+                    }
+                if (!isInASet) return false;
             }
+            return true;
+        } finally {
+            it.dispose();
         }
-        DisposableIntIterator it1 = unionSet.getDomain().getKernelIterator();
-        while (it1.hasNext()) {
-            int val = it1.next();
-            boolean isInASet = false;
-            for (int idx = 0; idx < setVars.length; idx++)
-                if (setVars[idx].isInDomainKernel(val)) {isInASet = true; break;}
-            if (!isInASet) return false;
-        }
-        return true;
     }
 
     public boolean isConsistent() {
         return isSatisfied();
     }
-    
+
     private int getNbOccurence(int x) {
-        return occurCpt[x].get();
+        if (x >= offset && x < offset + occurCpt.length) {
+            return occurCpt[x - offset].get();
+        }
+        return 0;
     }
+
     private void decOccurence(int x) throws ContradictionException {
-        occurCpt[x].add(-1);
+        occurCpt[x - offset].add(-1);
         instanciateIfLastOccurence(x);
     }
+
     private void instanciateIfLastOccurence(int x) throws ContradictionException {
-        if (occurCpt[x].get()<=1 && unionSet.isInDomainKernel(x)) {
-            if (occurCpt[x].get()<=0) {
+        if (occurCpt[x - offset].get() <= 1 && unionSet.isInDomainKernel(x)) {
+            if (occurCpt[x - offset].get() <= 0) {
                 fail();
             }
-            int removed=0;
+            int removed = 0;
             for (int idx = 0; idx < setVars.length; idx++) {
-                if(setVars[idx].isInDomainEnveloppe(x)) {
-                    removed ++; 
+                if (setVars[idx].isInDomainEnveloppe(x)) {
+                    removed++;
                     setVars[idx].addToKernel(x, this, false);
-                    }
+                }
+            }
+            if (removed == 0) {
+                fail();
             }
             assert (removed == 1);
         }
     }
-    
 
-    
+
     public String pretty() {
         StringBuilder sb = new StringBuilder();
         sb.append("Union({");
@@ -169,7 +224,7 @@ public final class SetNaryUnion extends AbstractLargeSetSConstraint {
             SetVar var = setVars[i];
             sb.append(var.pretty());
         }
-        sb.append("}) = "+unionSet.pretty());
+        sb.append("}) = " + unionSet.pretty());
         return sb.toString();
     }
 
@@ -182,5 +237,5 @@ public final class SetNaryUnion extends AbstractLargeSetSConstraint {
         autstring += unionSet;
         return autstring;
     }
-    
+
 }

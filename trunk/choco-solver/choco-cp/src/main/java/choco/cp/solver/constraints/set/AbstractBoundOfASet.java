@@ -33,7 +33,7 @@ public abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint
 	 */
 	public static final int VARS_OFFSET = 1;
 
-	protected final static int SET_EVENTMASK = SetVarEvent.INSTSETEVENT + SetVarEvent.KEREVENT + SetVarEvent.ENVEVENT;
+	protected final static int SET_EVENTMASK = SetVarEvent.INSTSET_MASK + SetVarEvent.ADDKER_MASK + SetVarEvent.REMENV_MASK;
 
 	protected final static int INT_EVENTMASK = IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK;
 

@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.set;
 
+import choco.cp.solver.variables.set.SetVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.set.AbstractTernSetSConstraint;
@@ -55,6 +56,11 @@ public final class SetIntersection extends AbstractTernSetSConstraint {
 	public SetIntersection(SetVar sv1, SetVar sv2, SetVar sv3) {
         super(sv1, sv2, sv3);
 	}
+
+    @Override
+    public int getFilteredEventMask(int idx) {
+        return SetVarEvent.ADDKER_MASK + SetVarEvent.REMENV_MASK + SetVarEvent.INSTSET_MASK;
+    }
 
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();

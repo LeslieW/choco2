@@ -22,6 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.set;
 
+import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.cp.solver.variables.set.SetVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.set.AbstractBinSetIntSConstraint;
@@ -50,6 +52,14 @@ public final class SetCard extends AbstractBinSetIntSConstraint {
 		this.inf = inf;
 		this.sup = sup;
 	}
+
+    @Override
+    public int getFilteredEventMask(int idx) {
+        if(idx == 0){
+            return IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK + IntVarEvent.REMVAL_MASK;
+        }
+        return SetVarEvent.ADDKER_MASK + SetVarEvent.REMENV_MASK + SetVarEvent.INSTSET_MASK;
+    }
 
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
@@ -157,6 +167,7 @@ public final class SetCard extends AbstractBinSetIntSConstraint {
 			v0.updateInf(kerSize, this, false);
 			reactOnSupAndKerEvents(kerSize);
 		}
+        deltaDomain.dispose();
 	}
 
 	public void awakeOnEnvRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
@@ -165,6 +176,7 @@ public final class SetCard extends AbstractBinSetIntSConstraint {
 			v0.updateSup(envSize, this, false);
 			reactOnInfAndEnvEvents(envSize);
 		}
+        deltaDomain.dispose();
 	}
 
 

@@ -2,7 +2,7 @@ public class IsOdd extends AbstractUnIntSConstraint {
 
     @Override
     public int getFilteredEventMask(int idx) {
-        return IntVarEvent.INSTINTbitvector;
+        return IntVarEvent.INSTINT_MASK;
     }
 
         public IsOdd(IntDomainVar v0) {
@@ -19,7 +19,7 @@ public class IsOdd extends AbstractUnIntSConstraint {
                 while(it.hasNext()){
                     int val = it.next();
                     if(val%2==0){
-                        v0.removeVal(val, cIdx0);
+                        v0.removeVal(val, this, false);
                     }
                 }
             }finally {

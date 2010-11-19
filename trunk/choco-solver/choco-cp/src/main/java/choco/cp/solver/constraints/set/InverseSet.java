@@ -22,6 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.set;
 
+import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.cp.solver.variables.set.SetVarEvent;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.set.AbstractLargeSetIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -50,9 +52,15 @@ public final class InverseSet extends AbstractLargeSetIntSConstraint {
 		init = true;
 	}
 
+    @Override
+    public int getFilteredEventMask(int idx) {
+        if(isSetVarIndex(idx)){
+            return SetVarEvent.ADDKER_MASK + SetVarEvent.REMENV_MASK + SetVarEvent.INSTSET_MASK;
+        }
+        return IntVarEvent.INSTINT_MASK + IntVarEvent.REMVAL_MASK;
+    }
 
-	
-	/**
+    /**
 	 * Filtering Rule 0 : i>s.length => x[j]!=i \forall j
 	 * j>x.length => j \not\in s[i] \forall i 
 	 */

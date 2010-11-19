@@ -22,6 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.set;
 
+import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.cp.solver.variables.set.SetVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.set.AbstractBinSetIntSConstraint;
@@ -46,7 +48,15 @@ public final class MemberXY extends AbstractBinSetIntSConstraint {
 		super(iv, set);
 	}
 
-	public void filter() throws ContradictionException {
+    @Override
+    public int getFilteredEventMask(int idx) {
+        if(idx == 0){
+            return IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK + IntVarEvent.REMVAL_MASK;
+        }
+        return SetVarEvent.REMENV_MASK + SetVarEvent.INSTSET_MASK;
+    }
+
+    public void filter() throws ContradictionException {
 		DisposableIntIterator it = v0.getDomain().getIterator();
 		int count = 0, val = Integer.MAX_VALUE;
 		while (it.hasNext()) {
@@ -76,10 +86,6 @@ public final class MemberXY extends AbstractBinSetIntSConstraint {
 	//TODO : Store the number of values shared by the Int and the Set domain
 	public void awakeOnRem(int idx, int x) throws ContradictionException {
 		filter();
-	}
-
-	public void awakeOnKer(int varIdx, int x) throws ContradictionException {
-		// Nothing to do
 	}
 
 	public void awakeOnEnv(int varIdx, int x) throws ContradictionException {

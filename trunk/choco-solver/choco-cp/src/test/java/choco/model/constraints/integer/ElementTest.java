@@ -23,7 +23,6 @@
 package choco.model.constraints.integer;
 
 import choco.Choco;
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
@@ -34,12 +33,14 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import org.junit.After;
 import org.junit.Assert;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Random;
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
+import static org.junit.Assert.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -395,7 +396,7 @@ public class ElementTest {
 	public void testNthManager3() {
 		IntegerVariable I = makeIntVar("index", 0, 2);
 		IntegerVariable V = makeIntVar("V", 0, 5);
-		m.addConstraint(nth(option,I, new IntegerVariable[]{makeIntVar("VV",0,1), makeIntVar("VV",1,2), makeIntVar("VV",2,3)}, V));
+        m.addConstraint(nth(option,I, new IntegerVariable[]{makeIntVar("VV",0,1), makeIntVar("VV",1,2), makeIntVar("VV",2,3)}, V));
 		s.read(m);
 		//ChocoLogging.setVerbosity(Verbosity.SOLUTION);
 		s.solveAll();
@@ -412,7 +413,9 @@ public class ElementTest {
             for(int i = 0; i < values.length; i++){
                 values[i] = r.nextInt(2);
             }
+            m = new CPModel();
             m.addConstraint(nth(option,index, values, val));
+            s = new CPSolver();
             s.read(m);
             s.solveAll();
             Assert.assertEquals("seed:"+j, 1, s.getSolutionCount());

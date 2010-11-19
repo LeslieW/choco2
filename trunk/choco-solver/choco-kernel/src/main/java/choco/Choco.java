@@ -2470,6 +2470,63 @@ public class Choco {
     /**
 	 * Concerns GCC and boundGCC
 	 * <p/>
+	 * Global cardinality : Given an array of variables vars, and an array of values, the constraint ensures that the number of occurences
+	 * of the value i among the variables is between low[i] and up[i]. Note that the length
+	 * of low and up and values should be the same.
+	 * <p/>
+	 * Bound Global cardinality : Given an array of variables vars and an array of values, the constraint ensures that the number of occurences
+	 * of the value i among the variables is between low[i] and up[i]. Note that the length
+	 * of low and up and values should be the same.
+     *
+	 * Use the propagator of :
+	 * C.-G. Quimper, P. van Beek, A. Lopez-Ortiz, A. Golynski, and S.B. Sadjad.
+	 * An efficient bounds consistency algorithm for the global cardinality constraint.
+	 * CP-2003.
+	 * <p/>
+	 * Available options are:
+	 * <ul>
+	 * <li><b>cp:ac</b> for Regin impelmentation</li>
+	 * <li><b>cp:bc</b> for bound consistency</li>
+	 * </ul>
+	 * @param vars list of variables
+	 * @param values restricted values
+     * @param low array of lower occurence
+	 * @param up array of upper occurence
+	 * @return Constraint
+	 */
+    public static Constraint globalCardinality(IntegerVariable[] vars, int[] values, int[] low, int[] up) {
+        return new ComponentConstraint(ConstraintType.GLOBALCARDINALITY,
+				new Object[]{ConstraintType.GLOBALCARDINALITYVALUES, values, low, up}, vars);
+	}
+
+    /**
+	 * * Bound Global cardinality : Given an array of variables vars, an array of values, an array of variables card to represent the cardinalities,
+     * the constraint ensures that the number of occurences
+	 * of the value i among the variables is equal to card[i].
+	 * this constraint enforces :
+	 * - Bound Consistency over vars regarding the lower and upper bounds of cards
+	 * - maintain the upperbound of card by counting the number of variables in which each value
+	 * can occur
+	 * - maintain the lowerbound of card by counting the number of variables instantiated to a value
+	 * - enforce card[0] + ... + card[m] = n (n = the number of variables, m = number of values)
+	 *
+	 * @param vars list of variables
+     * @param values restricted values
+	 * @param cards array of cardinality variables
+     * @return Constraint
+	 */
+    public static Constraint globalCardinality(IntegerVariable[] vars, int[] values, IntegerVariable[] cards) {
+        int n = vars.length;
+		IntegerVariable[] variables = new IntegerVariable[vars.length + cards.length];
+		arraycopy(vars, 0, variables, 0, n);
+		arraycopy(cards, 0, variables, n, cards.length);
+		return new ComponentConstraint(ConstraintType.GLOBALCARDINALITY,
+				new Object[]{ConstraintType.GLOBALCARDINALITYVARVALUES, values, n}, variables);
+	}
+
+    /**
+	 * Concerns GCC and boundGCC
+	 * <p/>
 	 * Global cardinality : Given an array of variables vars, the constraint ensures that the number of occurences
 	 * of the value i among the variables is between low[i - min] and up[i - min]. Note that the length
 	 * of low and up should be max - min + 1. (min is the minimal value over all variables,

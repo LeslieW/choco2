@@ -1942,7 +1942,7 @@ public class CPSolver implements Solver {
 						((SetVar) p.getVar(1)).getEnveloppeSup());
 				int lb = Math.min(((SetVar) p.getVar(0)).getEnveloppeInf(),
 						((SetVar) p.getVar(1)).getEnveloppeInf());
-				SetVar z = this.createBoundSetVar("var_inter: " + p, lb, ub);
+				SetVar z = this.createBoundSetVar(StringUtils.randomName(), lb, ub);
 				setVars.add(z);
 				intVars.add(z.getCard());
 				post(new SetUnion((SetVar) p.getVar(0), (SetVar) p.getVar(1), z));

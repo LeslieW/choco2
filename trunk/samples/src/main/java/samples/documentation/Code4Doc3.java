@@ -23,7 +23,6 @@
 package samples.documentation;
 
 import choco.Choco;
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -37,6 +36,8 @@ import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.Solver;
 
 import java.util.ArrayList;
+
+import static choco.Choco.*;
 
 /*
 * User : charles
@@ -117,6 +118,40 @@ public class Code4Doc3 {
         m.addConstraint(Options.C_GCC_BC, globalCardinality(vars, cards, 1));
         s.read(m);
         s.solve();
+        //totex
+    }
+
+    public void cglobalcardinality3(){
+        //totex cglobalcardinality3
+        int[] values = {1,3};
+        int[] occmin = {1, 2};
+        int[] occmax = {3, 2};
+
+        Model m = new CPModel();
+        IntegerVariable[] vars = makeIntVarArray("var", 7, 1, 4);
+        m.addConstraint(globalCardinality(vars, values, occmin, occmax));
+
+        Solver s = new CPSolver();
+        s.read(m);
+        s.solveAll();
+        //totex
+    }
+
+    public void cglobalcardinality4(){
+        //totex cglobalcardinality4
+        int[] values = {1,3};
+
+        Model m = new CPModel();
+        IntegerVariable[] vars = makeIntVarArray("var", 7, 1, 4);
+        IntegerVariable[] cards = makeIntVarArray("card", 2, 1, 3);
+
+        m.addConstraint(globalCardinality(vars, values, cards));
+        m.addConstraint(member(cards[0], new int[]{1, 2, 3}));
+        m.addConstraint(eq(cards[1], 2));
+
+        Solver s = new CPSolver();
+        s.read(m);
+        s.solveAll();
         //totex
     }
 

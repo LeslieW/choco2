@@ -141,10 +141,13 @@ public class BasicVarEventQueue implements VarEventQueue {
 			lastPopped.clear();
 		}
 
-		for (PropagationEvent event : queue) {
-			event.clear();
-		}
-		queue.clear();
+        while(!queue.isEmpty()){
+            queue.remove().clear();
+        }
+//        for (PropagationEvent event : queue) {
+//			event.clear();
+//		}
+//		queue.clear();
 	}
 
 	/**

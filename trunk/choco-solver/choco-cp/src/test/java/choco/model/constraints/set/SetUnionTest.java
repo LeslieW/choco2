@@ -29,7 +29,6 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.set.RandomSetValSelector;
 import choco.cp.solver.search.set.RandomSetVarSelector;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -41,7 +40,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.Random;
 import java.util.logging.Logger;
 
@@ -128,10 +126,9 @@ public class SetUnionTest {
 
     @Test
     public void pprossertest() {
-        Random r = new Random();
-        ChocoLogging.toQuiet();
-        for (int i = 3; i < 20; i++) {
-            for (int b = 0; b < 20; b++) {
+        Random r = new Random(0);
+        for (int i = 3; i < 7; i++) {
+            for (int b = 0; b < 10; b++) {
                 System.out.printf("%d - %d\n", i, b);
                 int[][] pairs = buildEdges(r, i);
 
@@ -184,8 +181,8 @@ public class SetUnionTest {
 //                s2.setVarSetSelector(new MinDomSet(s2, s2.getVar(c)));
                 s2.minimize(true);
 
-                Assert.assertEquals(Arrays.toString(ArrayUtils.flatten(pairs))+'\n'+s1.pretty()+'\n'+s2.pretty(), s1.isFeasible(), s2.isFeasible());
-                Assert.assertEquals(Arrays.toString(ArrayUtils.flatten(pairs))+'\n'+s1.pretty()+'\n'+s2.pretty(),s1.getVar(nbColors1).getVal(), s2.getVar(nbColors2).getVal());
+                Assert.assertEquals(s1.isFeasible(), s2.isFeasible());
+                Assert.assertEquals(s1.getVar(nbColors1).getVal(), s2.getVar(nbColors2).getVal());
             }
         }
 
@@ -208,7 +205,7 @@ public class SetUnionTest {
         try {
             s.propagate();
         } catch (ContradictionException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
         s.solveAll();
         Assert.assertEquals("nb of solutions", 19, s.getNbSolutions());
@@ -229,6 +226,32 @@ public class SetUnionTest {
         } catch (ContradictionException e) {
             //OK    
         }
+    }
+
+    @Test
+    public void randomTest() {
+        for (int seed = 2; seed < 20; seed++) {
+            Random r = new Random(seed);
+            CPModel m = new CPModel();
+            CPSolver s = new CPSolver();
+            int nv = r.nextInt(5)+1;
+            SetVariable[] vars = makeSetVarArray("v", nv, 1, r.nextInt(nv)+1);
+            SetVariable union = makeSetVar("u", 1, nv);
+
+            Constraint c1 = setUnion(vars, union);
+            m.addConstraint(c1);
+            s.read(m);
+            String bu = s.pretty();
+            s.setVarSetSelector(new RandomSetVarSelector(s, seed));
+            s.setValSetSelector(new RandomSetValSelector(seed + 1));
+            s.solve();
+            if(Boolean.TRUE.equals(s.isFeasible())){
+                do{
+                    Assert.assertTrue(bu+'\n'+s.pretty(), s.getCstr(c1).isSatisfied());
+                }while(Boolean.TRUE.equals(s.nextSolution()));
+            }
+        }
+
     }
 
 

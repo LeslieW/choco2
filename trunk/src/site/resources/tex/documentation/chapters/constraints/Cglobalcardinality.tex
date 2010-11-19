@@ -31,7 +31,9 @@ The APIs are duplicated to define options.
       \begin{itemize}
 	\item \mylst{globalCardinality(IntegerVariable[] x, int[] low, int[] up, int offset)}
 	\item \mylst{globalCardinality(String options, IntegerVariable[] x, int[] low, int[] up, int offset)}
+	\item \mylst{globalCardinality(IntegerVariable[] x, int[] values, int[] low, int[] up)}
 	\item \mylst{globalCardinality(IntegerVariable[] x, IntegerVariable[] card, int offset)}
+	\item \mylst{globalCardinality(IntegerVariable[] x, int[] values, IntegerVariable[] card)}
       \end{itemize}
 	\item \textbf{return type} : \texttt{Constraint}
 	\item \textbf{options}:
@@ -62,3 +64,15 @@ The APIs are duplicated to define options.
 \end{itemize}
 
 \lstinputlisting{java/cglobalcardinality2.j2t}
+
+\begin{itemize}
+	\item example3:
+\end{itemize}
+
+\lstinputlisting{java/cglobalcardinality3.j2t}
+
+\begin{itemize}
+	\item example4:
+\end{itemize}
+
+\lstinputlisting{java/cglobalcardinality4.j2t}

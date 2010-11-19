@@ -22,6 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.set;
 
+import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.cp.solver.variables.set.SetVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.set.AbstractBinSetIntSConstraint;
@@ -45,7 +47,15 @@ public final class NotMemberXY extends AbstractBinSetIntSConstraint {
 		super(iv, set);
 	}
 
-	/**
+    @Override
+    public int getFilteredEventMask(int idx) {
+        if(idx == 0){
+            return IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK + IntVarEvent.REMVAL_MASK;
+        }
+        return SetVarEvent.ADDKER_MASK + SetVarEvent.REMENV_MASK + SetVarEvent.INSTSET_MASK;
+    }
+
+    /**
 	 * if only one value out of the kernel, then this value can be removed from the enveloppe
 	 *
 	 * @throws ContradictionException
