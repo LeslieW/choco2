@@ -27,6 +27,7 @@ import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.structure.Couple;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.AbstractSConstraint;
+import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.propagation.listener.SetPropagator;
 
@@ -37,93 +38,102 @@ import choco.kernel.solver.propagation.listener.SetPropagator;
  * Since : Choco 2.0.0
  *
  */
+
 @SuppressWarnings({"unchecked"})
-public class SetVarEvent <C extends AbstractSConstraint & SetPropagator> extends VarEvent<SetVarImpl> {
+public class SetVarEvent<C extends AbstractSConstraint & SetPropagator> extends VarEvent<SetVarImpl> {
 
-	/**
-	 * Constants for the <i>eventType</i> bitvector: index of bit for events on SetVars
-	 */
-	public static final int REMENV = 0;
-	public static final int ADDKER = 1;
-	public static final int INSTSET = 2;
+    /**
+     * Constants for the <i>eventType</i> bitvector: index of bit for events on SetVars
+     */
+    public static final int REMENV = 0;
+    public static final int ADDKER = 1;
+    public static final int INSTSET = 2;
 
-	public static final int ENVEVENT = 1;
-	public static final int KEREVENT = 2;
-	public static final int BOUNDSEVENT = 3;
-	public static final int INSTSETEVENT = 4;
+    public static final int REMENV_MASK = 1;
+    @Deprecated
+    public static final int ENVEVENT = REMENV_MASK;
 
-	public SetVarEvent(SetVarImpl var) {
-		super(var);
-		eventType = EMPTYEVENT;
-	}
+    public static final int ADDKER_MASK = 2;
+    @Deprecated
+    public static final int KEREVENT = ADDKER_MASK;
 
-	/**
-	 * useful for debugging
-	 */
-	public String toString() {
-		return ("VarEvt(" + modifiedVar.toString() + ")[" + eventType + ":"
-				+ ((eventType & ENVEVENT) != 0 ? "E" : "")
-				+ ((eventType & KEREVENT) != 0 ? "K" : "")
-				+ ((eventType & INSTSETEVENT) != 0 ? "X" : "")
-				+ "]");
-	}
+    public static final int INSTSET_MASK = 4;
+    @Deprecated
+    public static final int INSTSETEVENT = INSTSET_MASK;
 
-	/**
-	 * Clears the var: delegates to the basic events.
-	 */
-	public void clear() {
-		this.eventType = EMPTYEVENT;
+    public SetVarEvent(SetVarImpl var) {
+        super(var);
+        eventType = EMPTYEVENT;
+    }
+
+    /**
+     * useful for debugging
+     */
+    public String toString() {
+        return ("VarEvt(" + modifiedVar.toString() + ")[" + eventType + ":"
+                + ((eventType & REMENV_MASK) != 0 ? "E" : "")
+                + ((eventType & ADDKER_MASK) != 0 ? "K" : "")
+                + ((eventType & INSTSET_MASK) != 0 ? "X" : "")
+                + "]");
+    }
+
+    /**
+     * Clears the var: delegates to the basic events.
+     */
+    public void clear() {
+        this.eventType = EMPTYEVENT;
         cause = null;
-		(modifiedVar.getDomain()).getEnveloppeDomain().clearDeltaDomain();
-		(modifiedVar.getDomain()).getKernelDomain().clearDeltaDomain();
-	}
+        (modifiedVar.getDomain()).getEnveloppeDomain().clearDeltaDomain();
+        (modifiedVar.getDomain()).getKernelDomain().clearDeltaDomain();
+    }
 
 
-	protected void freeze() {
-		(modifiedVar.getDomain()).getEnveloppeDomain().freezeDeltaDomain();
-		(modifiedVar.getDomain()).getKernelDomain().freezeDeltaDomain();
-		cause = null;
-		eventType = 0;
-	}
+    protected void freeze() {
+        (modifiedVar.getDomain()).getEnveloppeDomain().freezeDeltaDomain();
+        (modifiedVar.getDomain()).getKernelDomain().freezeDeltaDomain();
+        cause = null;
+        eventType = 0;
+    }
 
-	protected boolean release() {
-		return modifiedVar.getDomain().getEnveloppeDomain().releaseDeltaDomain() &&
-		modifiedVar.getDomain().getKernelDomain().releaseDeltaDomain();
-	}
+    protected boolean release() {
+        return modifiedVar.getDomain().getEnveloppeDomain().releaseDeltaDomain() &&
+                modifiedVar.getDomain().getKernelDomain().releaseDeltaDomain();
+    }
 
-	public boolean getReleased() {
-		return (modifiedVar.getDomain()).getEnveloppeDomain().getReleasedDeltaDomain() &&
-		(modifiedVar.getDomain()).getKernelDomain().getReleasedDeltaDomain();
-	}
+    public boolean getReleased() {
+        return (modifiedVar.getDomain()).getEnveloppeDomain().getReleasedDeltaDomain() &&
+                (modifiedVar.getDomain()).getKernelDomain().getReleasedDeltaDomain();
+    }
 
-	public DisposableIntIterator getEnvEventIterator() {
-		return ( modifiedVar.getDomain()).getEnveloppeDomain().getDeltaIterator();
-	}
+    public DisposableIntIterator getEnvEventIterator() {
+        return (modifiedVar.getDomain()).getEnveloppeDomain().getDeltaIterator();
+    }
 
-	public DisposableIntIterator getKerEventIterator() {
-		return (modifiedVar.getDomain()).getKernelDomain().getDeltaIterator();
-	}
+    public DisposableIntIterator getKerEventIterator() {
+        return (modifiedVar.getDomain()).getKernelDomain().getDeltaIterator();
+    }
 
-	/**
-	 * Propagates the event through calls to the propagation engine.
-	 *
-	 * @return true if the event has been fully propagated (and can thus be discarded), false otherwise
-	 * @throws choco.kernel.solver.ContradictionException
-	 */
-	@Override
-	public boolean propagateEvent() throws ContradictionException {
-		// /!\  Logging statements really decrease performance
-		//if(LOGGER.isLoggable(Level.FINER)) {LOGGER.log(Level.FINER, "propagate {0}", this);}
-		// first, mark event
-		int evtType = eventType;
-		C evtCause = (C)cause;
-		freeze();
+    /**
+     * Propagates the event through calls to the propagation engine.
+     *
+     * @return true if the event has been fully propagated (and can thus be discarded), false otherwise
+     * @throws choco.kernel.solver.ContradictionException
+     *
+     */
+    @Override
+    public boolean propagateEvent() throws ContradictionException {
+        // /!\  Logging statements really decrease performance
+        //if(LOGGER.isLoggable(Level.FINER)) {LOGGER.log(Level.FINER, "propagate {0}", this);}
+        // first, mark event
+        int evtType = eventType;
+        C evtCause = (C) cause;
+        freeze();
 
-        if ((propagatedEvents & INSTSETEVENT) != 0 && (evtType & INSTSETEVENT) != 0)
+        if ((propagatedEvents & INSTSET_MASK) != 0 && (evtType & INSTSET_MASK) != 0)
             propagateInstEvent(evtCause);
-        if ((propagatedEvents & ENVEVENT) != 0 && (evtType & ENVEVENT) != 0)
+        if ((propagatedEvents & REMENV_MASK) != 0 && (evtType & REMENV_MASK) != 0)
             propagateEnveloppeEvents(evtCause);
-        if ((propagatedEvents & KEREVENT) != 0 && (evtType & KEREVENT) != 0)
+        if ((propagatedEvents & ADDKER_MASK) != 0 && (evtType & ADDKER_MASK) != 0)
             propagateKernelEvents(evtCause);
 
 //		if (evtType >= INSTSETEVENT)
@@ -139,60 +149,94 @@ public class SetVarEvent <C extends AbstractSConstraint & SetPropagator> extends
 //			}
 //		}
 
-		// last, release event
-		return release();
-	}
+        // last, release event
+        return release();
+    }
 
-	/**
-	 * Propagates the instantiation event
-	 */
-	public void propagateInstEvent(C evtCause) throws ContradictionException {
-		SetVarImpl v = getModifiedVar();
+    /**
+     * Propagates the instantiation event
+     */
+    public void propagateInstEvent(C evtCause) throws ContradictionException {
+        SetVarImpl v = getModifiedVar();
         DisposableIterator<Couple<C>> cit = v.getActiveConstraints(evtCause);
 
-        try{
-            while(cit.hasNext()){
+        try {
+            while (cit.hasNext()) {
                 Couple<C> cc = cit.next();
                 cc.c.awakeOnInst(cc.i);
             }
-        }finally{
+        } finally {
             cit.dispose();
         }
-	}
+    }
 
-	/**
-	 * Propagates a set of value removals
-	 */
-	public void propagateKernelEvents(C evtCause) throws ContradictionException {
-		SetVarImpl v = getModifiedVar();
+    /**
+     * Propagates a set of value removals
+     */
+    public void propagateKernelEvents(C evtCause) throws ContradictionException {
+        SetVarImpl v = getModifiedVar();
         DisposableIterator<Couple<C>> cit = v.getActiveConstraints(evtCause);
 
-        try{
-            while(cit.hasNext()){
+        try {
+            while (cit.hasNext()) {
                 Couple<C> cc = cit.next();
                 cc.c.awakeOnkerAdditions(cc.i, this.getKerEventIterator());
             }
-        }finally{
+        } finally {
             cit.dispose();
         }
-	}
+    }
 
-	/**
-	 * Propagates a set of value removals
-	 */
-	public void propagateEnveloppeEvents(C evtCause) throws ContradictionException {
-		SetVarImpl v = getModifiedVar();
+    /**
+     * Propagates a set of value removals
+     */
+    public void propagateEnveloppeEvents(C evtCause) throws ContradictionException {
+        SetVarImpl v = getModifiedVar();
         DisposableIterator<Couple<C>> cit = v.getActiveConstraints(evtCause);
 
-        try{
-            while(cit.hasNext()){
+        try {
+            while (cit.hasNext()) {
                 Couple<C> cc = cit.next();
                 cc.c.awakeOnEnvRemovals(cc.i, this.getEnvEventIterator());
 
             }
-        }finally {
+        } finally {
             cit.dispose();
         }
-	}
+    }
+
+    private int promoteEvent(int basicEvt) {
+        switch (basicEvt) {
+            case INSTSET:
+                return INSTSET_MASK + ADDKER_MASK + REMENV_MASK;
+
+            case ADDKER:
+                return ADDKER_MASK;
+
+            case REMENV:
+                return REMENV_MASK;
+
+            default:
+                return 1 << basicEvt;
+        }
+    }
+
+    public void recordEventTypeAndCause(int basicEvt, final SConstraint constraint, final boolean forceAwake) {
+        if (eventType == EMPTYEVENT) {
+            // the varevent is reduced to basicEvt, and the cause is recorded
+            eventType = promoteEvent(basicEvt);
+            if (!forceAwake) {
+                cause = constraint;
+            }
+        } else {
+            // otherwise, this basic event is added to all previous updates that are possibly mending on the same variable
+            eventType = (eventType | promoteEvent(basicEvt));
+            // in case the cause of this update is different from the previous cause, all causes are forgotten
+            // (so that the constraints that caused the event will be reawaken)
+            if (cause != constraint) {
+                cause = null;
+            }
+        }
+    }
 
 }

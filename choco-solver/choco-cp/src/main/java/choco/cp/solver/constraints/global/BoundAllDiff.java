@@ -41,7 +41,6 @@ public final class BoundAllDiff extends AbstractLargeIntSConstraint {
 
     int nbBounds;
 
-    Interval[] intervals;
     Interval[] minsorted;
     Interval[] maxsorted;
 
@@ -60,7 +59,7 @@ public final class BoundAllDiff extends AbstractLargeIntSConstraint {
         h = new int[2 * n + 2];
         bounds = new int[2 * n + 2];
 
-        intervals = new Interval[n];
+        Interval[] intervals = new Interval[n];
         minsorted = new Interval[n];
         maxsorted = new Interval[n];
 

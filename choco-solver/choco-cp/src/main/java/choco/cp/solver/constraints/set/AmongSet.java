@@ -23,6 +23,7 @@
 package choco.cp.solver.constraints.set;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.cp.solver.variables.set.SetVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBitSet;
@@ -80,7 +81,6 @@ public final class AmongSet extends AbstractMixedSetIntSConstraint {
     /**
      * Constructs a constraint with the specified priority.
      *
-     * @param priority The wished priority.
      */
     @SuppressWarnings({"SuspiciousSystemArraycopy"})
     public AmongSet(Var[] vars, IEnvironment environment) {
@@ -96,6 +96,9 @@ public final class AmongSet extends AbstractMixedSetIntSConstraint {
 
     @Override
     public int getFilteredEventMask(int idx) {
+        if(idx == idxS){
+            return SetVarEvent.ADDKER_MASK + SetVarEvent.REMENV_MASK + SetVarEvent.INSTSET_MASK;
+        }
         return IntVarEvent.REMVAL_MASK;
     }
 

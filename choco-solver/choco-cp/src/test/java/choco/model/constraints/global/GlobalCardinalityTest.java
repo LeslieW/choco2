@@ -23,7 +23,6 @@
 package choco.model.constraints.global;
 
 import choco.Choco;
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -43,7 +42,6 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.junit.Assert;
-import static org.junit.Assert.*;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -51,6 +49,9 @@ import java.text.MessageFormat;
 import java.util.Date;
 import java.util.Random;
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
+import static org.junit.Assert.*;
 
 /**
  * Tests for the GlobalCardinality constraint.
@@ -1122,5 +1123,87 @@ public class GlobalCardinalityTest {
 
         s.solve();
         Assert.assertTrue(s.getNbSolutions()>0);
+    }
+
+    /**
+     * JSR331
+     */
+    @Test
+    public void testJSR331_1() {
+        int[] values = {1,3};
+        int[] occmin = {1, 2};
+        int[] occmax = {3, 2};
+
+        IntegerVariable[] vars = makeIntVarArray("var", 7, 1, 4);
+
+        Constraint c2 = globalCardinality(vars, values, occmin, occmax);
+
+        Model m = new CPModel();
+
+        m.addConstraint(c2);
+
+
+        Solver s = new CPSolver();
+
+        s.read(m);
+
+        s.solveAll();
+        Assert.assertEquals(4200, s.getSolutionCount());
+        Assert.assertEquals(6156, s.getNodeCount());
+    }
+
+    /**
+     * JSR331
+     */
+    @Test
+    public void testJSR331_base() {
+        int[] occmin = {1, 0, 2, 0};
+        int[] occmax = {3, 7, 2, 7};
+
+        IntegerVariable[] vars = makeIntVarArray("var", 7, 1, 4);
+
+        Constraint c2 = globalCardinality(vars, occmin, occmax, 1);
+
+        Model m = new CPModel();
+
+        m.addConstraint(c2);
+
+
+        Solver s = new CPSolver();
+
+        s.read(m);
+
+        s.solveAll();
+        Assert.assertEquals(4200, s.getSolutionCount());
+        Assert.assertEquals(6156, s.getNodeCount());
+
+    }
+
+    /**
+     * JSR331
+     */
+    @Test
+    public void testJSR331_2() {
+        int[] values = {1,3};
+
+        IntegerVariable[] vars = makeIntVarArray("var", 7, 1, 4);
+        IntegerVariable[] cards = makeIntVarArray("card", 2, 1, 3);
+
+
+        Constraint c2 = globalCardinality(vars, values, cards);
+
+        Model m = new CPModel();
+
+        m.addConstraint(c2);
+        m.addConstraint(member(cards[0], new int[]{1, 2, 3}));
+        m.addConstraint(member(cards[1], new int[]{2}));
+
+        Solver s = new CPSolver();
+
+        s.read(m);
+
+        s.solveAll();
+        Assert.assertEquals(4200, s.getSolutionCount());
+        Assert.assertEquals(7632, s.getNodeCount());
     }
 }

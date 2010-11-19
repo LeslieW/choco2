@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.set;
 
+import choco.cp.solver.variables.set.SetVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.set.AbstractBinSetSConstraint;
@@ -56,6 +57,12 @@ public final class SetNotEq extends AbstractBinSetSConstraint {
 		}
 		return false;
 	}
+
+    @Override
+    public int getFilteredEventMask(int idx) {
+        return SetVarEvent.ADDKER_MASK + SetVarEvent.REMENV_MASK + SetVarEvent.INSTSET_MASK;
+    }
+
 
 	public static boolean checkAreNotEqual(SetVar instVar, SetVar otherVar) {
 		DisposableIntIterator it1 = instVar.getDomain().getKernelIterator();

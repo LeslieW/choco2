@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.set;
 
+import choco.cp.solver.variables.set.SetVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.set.AbstractBinSetSConstraint;
@@ -43,7 +44,15 @@ public final class IsIncluded extends AbstractBinSetSConstraint {
         super(sv1, sv2);
 	}
 
-	public void filter(int idx) throws ContradictionException {
+    @Override
+    public int getFilteredEventMask(int idx) {
+        if(idx == 0){
+            return SetVarEvent.ADDKER_MASK + SetVarEvent.INSTSET_MASK;
+        }
+        return SetVarEvent.REMENV_MASK + SetVarEvent.INSTSET_MASK;
+    }
+
+    public void filter(int idx) throws ContradictionException {
 		if (idx == 0) {
 			DisposableIntIterator it1 = v0.getDomain().getKernelIterator();
 			try{

@@ -25,9 +25,9 @@ package choco.cp.solver.search.set;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.variables.set.SetVar;
+import gnu.trove.TIntArrayList;
 
 import java.util.Random;
-import java.util.Vector;
 
 public class RandomSetValSelector implements ValSelector<SetVar> {
   protected Random random;
@@ -47,10 +47,12 @@ public class RandomSetValSelector implements ValSelector<SetVar> {
     random = new Random(seed);
   }
 
+    TIntArrayList vector = new TIntArrayList();
+
   public int getBestVal(SetVar v) {
       int value = Integer.MIN_VALUE;
-      Vector<Integer> vector;
-      vector = new Vector<Integer>();
+
+      vector.clear();
       DisposableIntIterator it = v.getDomain().getEnveloppeIterator();
       while (it.hasNext()){
           int val = it.next();
@@ -59,7 +61,7 @@ public class RandomSetValSelector implements ValSelector<SetVar> {
           }
       }
       it.dispose();
-      if(vector.size()>0)value = Integer.valueOf(vector.get(random.nextInt(vector.size())));
+      if(vector.size()>0)value = vector.get(random.nextInt(vector.size()));
       return value;
   }
 }
