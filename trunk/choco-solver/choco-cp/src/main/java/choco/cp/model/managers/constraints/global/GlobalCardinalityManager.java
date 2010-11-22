@@ -106,10 +106,10 @@ public final class GlobalCardinalityManager extends IntConstraintManager {
                         int[] _up = new int[max - min + 1];
                         Arrays.fill(_up, vars.length);
                         k = 0;
-                        for (int i = 0; i < _low.length; i++) {
-                            if (i == values[k]) {
-                                _low[i] = low[k];
-                                _up[i] = up[k];
+                        for (int i = min; i <= max; i++) {
+                            if (k < low.length && i == values[k]) {
+                                _low[i - min] = low[k];
+                                _up[i - min] = up[k];
                                 k++;
                             }
                         }
@@ -160,12 +160,12 @@ public final class GlobalCardinalityManager extends IntConstraintManager {
                         }
                         IntDomainVar[] _card = new IntDomainVar[max - min + 1];
                         k = 0;
-                        for (int i = 0; i < _card.length; i++) {
-                            if (i == values[k]) {
-                                _card[i] = card[k];
+                        for (int i = min; i <= max; i++) {
+                            if (k < values.length && i == values[k]) {
+                                _card[i - min] = card[k];
                                 k++;
                             } else {
-                                _card[i] = solver.createBoundIntVar(StringUtils.randomName(), 0, varT.length);
+                                _card[i - min] = solver.createBoundIntVar(StringUtils.randomName(), 0, varT.length);
                             }
                         }
 
