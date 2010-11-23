@@ -217,7 +217,7 @@ public abstract class AbstractDetector {
             if(LOGGER.isLoggable(Level.CONFIG)) {
                 LOGGER.config(String.format("..delete variable : %s", v.pretty()));
             }
-        } 
+        }  
     }
 
     /**

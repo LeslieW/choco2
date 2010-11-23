@@ -77,7 +77,7 @@ public class DisjunctiveWebEx extends PatternExample {
 				tasks[i] = makeTaskVar("t"+i, RELEASE_DATES_DATA[i], 20, durations[i]);
 			}
 			//post the disjunctive
-			model.addConstraint(disjunctive("unique unary resource", tasks, USAGES));
+			model.addConstraint(disjunctive("unary resource", tasks, USAGES));
 			//
 		}else {
 			durations = new IntegerVariable[N];
@@ -90,7 +90,7 @@ public class DisjunctiveWebEx extends PatternExample {
 				model.addConstraint(boolChanneling(USAGES[i], durations[i], DURATIONS_DATA[i]));
 			}
 			//post the disjunctive
-			model.addConstraint(disjunctive("unique unary resource", tasks));
+			model.addConstraint(disjunctive("unary resource", tasks));
 			
 		}
 		//state the objective function
@@ -102,7 +102,6 @@ public class DisjunctiveWebEx extends PatternExample {
 	public void buildSolver() {
 		solver = new CPSolver();
 		solver.read(model);
-		//System.out.println(solver.pretty());
 	}
 
 	@Override

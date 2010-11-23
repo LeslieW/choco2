@@ -23,24 +23,26 @@
 package choco.model.constraints.global;
 
 import choco.Choco;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.SettingType;
 import choco.cp.solver.constraints.global.pack.PackSConstraint;
 import choco.cp.solver.search.integer.branching.PackDynRemovals;
 import choco.cp.solver.search.integer.valselector.BestFit;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.util.bitmask.StringMask;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.model.Model;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.constraints.pack.PackModeler;
+import choco.kernel.model.constraints.pack.PackModel;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
+import choco.kernel.solver.Configuration;
 import choco.kernel.solver.Solver;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -82,36 +84,35 @@ public class PackTest {
 
 	protected CPModel model;
 
-	protected PackModeler modeler;
+	protected PackModel modeler;
 
 	protected List<CPModel> models = new ArrayList<CPModel>();
 
 	protected List<CPSolver> solvers = new ArrayList<CPSolver>();
 
 
-	private CPModel initializeModel(Constraint[] cstr,SettingType... options) {
+	private CPModel initializeModel(Constraint[] cstr,StringMask... options) {
 		CPModel m =new CPModel();
 		Constraint pack = pack(modeler);
-		for (SettingType o : options) {
-			pack.addOption(o.getOptionName());
+		for (StringMask o : options) {
+			pack.addOption(o.getOption());
 		}
 		m.addConstraint(pack);
 		if(cstr!=null) {m.addConstraints(cstr);}
 		return m;
 	}
 
-	private void initializeModels(Constraint[] cstr) {
+	private void initializeModels(Constraint... cstr) {
 		models.add(initializeModel(cstr));
-		models.add(initializeModel(cstr,SettingType.ADDITIONAL_RULES));
-		models.add(initializeModel(cstr,SettingType.DYNAMIC_LB));
-		models.add(initializeModel(cstr,SettingType.DYNAMIC_LB,SettingType.ADDITIONAL_RULES));
+		models.add(initializeModel(cstr,PackSConstraint.ADDITIONAL_RULES));
+		models.add(initializeModel(cstr,PackSConstraint.DYNAMIC_LB));
+		models.add(initializeModel(cstr,PackSConstraint.DYNAMIC_LB,PackSConstraint.ADDITIONAL_RULES));
 	}
 
 	private void initializeModels(int[] sizes,int nbBins,int capacity) {
-		modeler = new PackModeler(sizes, nbBins, capacity);
-		modeler.setDefaultDecisionVariable();
+		modeler = new PackModel(sizes, nbBins, capacity);
 		models.clear();
-		initializeModels(null);
+		initializeModels();
 	}
 
 
@@ -136,10 +137,11 @@ public class PackTest {
 			solver.setRandomSelectors(seed);
 		}
 		if(!set) {
-			solver.attachGoal(solver.generateDefaultIntGoal());
+			solver.clearGoals();
+			solver.addGoal(solver.generateDefaultIntGoal());
 			solver.addGoal(solver.generateSetDefaultGoal());
 		}
-		solver.setFirstSolution(false);
+		solver.getConfiguration().putFalse(Configuration.STOP_AT_FIRST_SOLUTION);
 		solver.generateSearchStrategy();
 		return solver;
 	}
@@ -170,7 +172,7 @@ public class PackTest {
 	public void notSorted() {
 		model = new CPModel();
 		IntegerConstantVariable[] s= constantArray(new int[]{3,3,3,4,3});
-		Constraint pack = pack(Choco.makeSetVarArray("set",s.length, 0, 1),s,s,s);
+		Constraint pack = pack(Choco.makeSetVarArray("set",s.length, 0, 1),s,s,s,s[0]);
 		model.addConstraint(pack);
 
 	}
@@ -179,7 +181,7 @@ public class PackTest {
 	public void increasing() {
 		model = new CPModel();
 		IntegerConstantVariable[] s= constantArray(new int[]{2,3,3,4,6});
-		Constraint pack = pack(Choco.makeSetVarArray("set",s.length, 0, 1),s,s,s);
+		Constraint pack = pack(Choco.makeSetVarArray("set",s.length, 0, 1),s,s,s,s[0]);
 		model.addConstraint(pack);
 	}
 
@@ -216,9 +218,9 @@ public class PackTest {
 		int[] sizes={7,4,4,3,3,2};
 		initializeModels(sizes, 3, 10);
 		for (CPModel model : models) {
-			model.addConstraints( eq(modeler.loads[0], 8),
-					eq(modeler.loads[1], 6),
-					geq(modeler.loads[2], 9));
+			model.addConstraints( eq(modeler.getLoads()[0], 8),
+					eq(modeler.getLoads()[1], 6),
+					geq(modeler.getLoads()[2], 9));
 		}
 		testAll(1);
 	}
@@ -230,10 +232,10 @@ public class PackTest {
 		initializeModels(sizes,3,12);
 		for (CPModel model : models) {
 			model.addConstraints(
-					geq(modeler.loads[0], 11),
-					leq(modeler.loads[1], 3),
-					geq(modeler.loads[2], 9),
-					leq(modeler.loads[2], 11));
+					geq(modeler.getLoads()[0], 11),
+					leq(modeler.getLoads()[1], 3),
+					geq(modeler.getLoads()[2], 9),
+					leq(modeler.getLoads()[2], 11));
 		}
 		testAll(6);
 	}
@@ -254,22 +256,20 @@ public class PackTest {
 	}
 
 	private void initializeRandomModels(int[] sizes,int nbBins,int capacity) {
-		modeler = new PackModeler(sizes, nbBins, capacity);
-		modeler.setDefaultDecisionVariable();
+		modeler = new PackModel(sizes, nbBins, capacity);
 		models.clear();
-		initializeModels(null);
-		initializeModels(modeler.getNbNonEmptyBinsRC());
-		initializeModels(modeler.getLoadOrderingSBC(true));
-		initializeModels(modeler.getPackLargeItemsSBC(true));
-		initializeModels(modeler.getEqualSizedItemsSBC(0));
-		initializeModels(new Constraint[]{modeler.getAllDiffLargeItemsRC("")});
+		initializeModels();
+		initializeModels(modeler.decreasingLoads(0));
+		initializeModels(modeler.packLargeItems());
+		initializeModels(modeler.orderEqualSizedItems(0));
+		initializeModels(new Constraint[]{modeler.allDiffLargeItems()});
 	}
 
 
 
 	protected void testRandom() {
 		LOGGER.info("%%%%%%%% TEST RANDOM %%%%%%%%");
-		int ub = modeler.nbBins;
+		int ub = modeler.getNbBins();
 		CPSolver last;
 		do {
 			LOGGER.info("\n%%%%%% ub = "+ub+"\n");
@@ -385,42 +385,41 @@ public class PackTest {
 	};
 	//optval = 401
 
-	public Solver packing(PackModeler packM) {
+	public Solver packing(PackModel packM) {
 		final CPModel m = new CPModel();
 		final Constraint pc = Choco.pack(packM
-				,SettingType.ADDITIONAL_RULES.getOptionName(),
-				SettingType.DYNAMIC_LB.getOptionName(), 
-				SettingType.FILL_BIN.getOptionName());
+				,Options.C_PACK_AR, Options.C_PACK_DLB, Options.C_PACK_FB);
 		m.addConstraint(pc);
 		final CPSolver s = new CPSolver();
 		s.read(m);
 
 		final PackSConstraint spc = (PackSConstraint) s.getCstr(pc);
-		s.attachGoal(new PackDynRemovals(new StaticVarOrder(s,s.getVar(packM.bins)), new BestFit(spc), spc));
+		s.clearGoals();
+		s.addGoal(new PackDynRemovals(new StaticVarOrder(s,s.getVar(packM.bins)), new BestFit(spc), spc));
 		return s;
 	}
 
 	@Test
 	public void testHadrien1() {
-		Solver s = packing( new PackModeler(SIZES_1, 20, CAPACITY_1));
+		Solver s = packing( new PackModel(SIZES_1, 20, CAPACITY_1));
 		assertEquals(Boolean.TRUE, s.solve());
 	}
 
 	@Test
 	public void testHadrien2() {
-		Solver s = packing( new PackModeler(SIZES_2, 20, CAPACITY_1));
+		Solver s = packing( new PackModel(SIZES_2, 20, CAPACITY_1));
 		assertEquals(Boolean.TRUE, s.solve());
 	}
 
 	@Test
 	public void testHadrien3() {
-		Solver s = packing( new PackModeler(SIZES_3, 101, CAPACITY_2));
+		Solver s = packing( new PackModel(SIZES_3, 101, CAPACITY_2));
 		assertEquals(Boolean.TRUE, s.solve());
 	}
 
 	//@Test
 	public void testHadrien4() {
-		Solver s = packing( new PackModeler(SIZES_4, 401, CAPACITY_2));
+		Solver s = packing( new PackModel(SIZES_4, 401, CAPACITY_2));
 		//ChocoLogging.setVerbosity(Verbosity.SEARCH);
 		assertEquals(Boolean.TRUE, s.solve());
 	}
@@ -438,7 +437,7 @@ public class PackTest {
         IntegerConstantVariable[] sizes = constantArray(_sizes);
 
 
-        Constraint cc = Choco.pack(itemSets, loads, bins, sizes);
+        Constraint cc = Choco.pack(new PackModel(bins, sizes, loads, itemSets));
         Model m = new CPModel();
         m.addConstraint(cc);
 
@@ -459,8 +458,7 @@ public class PackTest {
         Arrays.fill(_sizes, 5);
         IntegerConstantVariable[] sizes = constantArray(_sizes);
 
-
-        Constraint cc = Choco.pack(itemSets, loads, bins, sizes);
+        Constraint cc = Choco.pack(new PackModel(bins, sizes, loads, itemSets));
         Model m = new CPModel();
         m.addConstraint(cc);
 

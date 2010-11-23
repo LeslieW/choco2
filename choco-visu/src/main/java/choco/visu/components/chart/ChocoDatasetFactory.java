@@ -21,7 +21,7 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.pack.PackSConstraint;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintType;
-import choco.kernel.model.constraints.pack.PackModeler;
+import choco.kernel.model.constraints.pack.PackModel;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
@@ -164,8 +164,8 @@ public final class ChocoDatasetFactory {
 		return dataset;
 	}
 
-	public static CategoryDataset createPackDataset(Solver s,PackModeler modeler) {
-		return createPackDataset(modeler.nbBins, s.getVar(modeler.bins), s.getVar(modeler.sizes));
+	public static CategoryDataset createPackDataset(Solver s,PackModel modeler) {
+		return createPackDataset(modeler.getNbBins(), s.getVar(modeler.getBins()), s.getVar(modeler.getSizes()));
 	}
 
 	//*****************************************************************//

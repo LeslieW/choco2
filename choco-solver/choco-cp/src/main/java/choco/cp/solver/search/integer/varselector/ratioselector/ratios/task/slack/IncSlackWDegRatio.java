@@ -22,25 +22,25 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.varselector.ratioselector.ratios.task.slack;
 
+import choco.cp.solver.constraints.global.scheduling.precedence.ITemporalSRelation;
 import choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils;
 import choco.cp.solver.search.integer.varselector.ratioselector.ratios.task.AbstractPrecedenceRatio;
 import choco.kernel.common.util.tools.TaskUtils;
-import choco.kernel.solver.constraints.global.scheduling.IPrecedence;
 
 
 public final class IncSlackWDegRatio extends AbstractPrecedenceRatio {
 
-	public IncSlackWDegRatio(IPrecedence precedence) {
+	public IncSlackWDegRatio(ITemporalSRelation precedence) {
 		super(precedence);
 	}
 
 	@Override
-	public int getDividend() {
-		return TaskUtils.getTotalSlack(precedence);
+	public int initializeDividend() {
+		return precedence.getTotalSlack();
 	}
 		
 	@Override
-	public int getDivisor() {
+	public int initializeDivisor() {
 		return DomWDegUtils.getVarExtension(getIntVar()).get();
 	}
 }

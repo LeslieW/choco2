@@ -32,7 +32,7 @@ public final class DomWDegRatio extends DomDegRatio {
 	}
 
 	@Override
-	public int getDivisor() {
+	public int initializeDivisor() {
 		return computeWeightedDegreeFromScratch(var);
 	}
 	

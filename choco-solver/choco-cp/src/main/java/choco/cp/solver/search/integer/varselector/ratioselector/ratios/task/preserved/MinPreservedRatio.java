@@ -22,12 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.varselector.ratioselector.ratios.task.preserved;
 
-import java.util.Random;
-
+import choco.cp.solver.constraints.global.scheduling.precedence.ITemporalSRelation;
 import choco.cp.solver.search.integer.varselector.ratioselector.ratios.task.AbstractPrecedenceRatio;
-import choco.kernel.common.util.tools.TaskUtils;
-import choco.kernel.solver.constraints.global.scheduling.IPrecedence;
-import choco.kernel.solver.variables.scheduling.TaskVar;
 
 /**
  * Must handle properly integer overflow.
@@ -35,59 +31,22 @@ import choco.kernel.solver.variables.scheduling.TaskVar;
  * @since 26 mars 2010 version 2.1.1</br>
  * @version 2.1.1</br>
  */
-public class MinPreservedRatio extends AbstractPrecedenceRatio {
-
-	public final static int NULL = -1;
+public final class MinPreservedRatio extends AbstractPrecedenceRatio {
 	
-	private final static int DIVISOR = 1 << 10;
-		
-	private int dividend;
-	
-	public MinPreservedRatio(IPrecedence precedence) {
+	public MinPreservedRatio(ITemporalSRelation precedence) {
 		super(precedence);
 	}
 
 	@Override
-	public int getDividend() {
-		return dividend;
+	public int initializeDividend() {
+		return (int) Math.floor(ITemporalSRelation.PRESERVED_PRECISION * Math.min(precedence.getBackwardPreserved(),precedence.getForwardPreserved()));
 	}
 
 	@Override
-	public int getDivisor() {
-		return DIVISOR;
-	}
-
-
-	public final int getBestVal(Random randomBreakTie) {
-		return getBestVal(randomBreakTie, precedence.getOrigin(), precedence.getDestination());
-	}
-
-	public final int getBestVal(Random randomBreakTie, TaskVar t1, TaskVar t2) {
-		final double leftM = TaskUtils.getPreserved(t1, t2);
-		final double rightM = TaskUtils.getPreserved(t2, t1);
-		if( isUp(leftM, rightM) ) return 1;
-		else if(leftM == rightM) return randomBreakTie.nextBoolean() ? 1 : 0;
-		else return 0;
-	}
-
-	protected boolean isUp(double leftM, double rightM) {
-		return leftM <= rightM;
+	protected int initializeDivisor() {
+		return 1;
 	}
 	
-	@Override
-	public final boolean isActive() {
-		if(precedence.getBoolVar().isInstantiated()) return false;
-		else {
-			final TaskVar t1 = precedence.getOrigin();
-			final TaskVar t2 = precedence.getDestination();
-			final double leftM = TaskUtils.getPreserved(t1 , t2);
-			final double rightM = TaskUtils.getPreserved(t2, t1);
-			if( isUp(leftM, rightM) ) {
-				dividend=  (int) (leftM * DIVISOR) ;
-			}else {
-				dividend=  (int) (rightM * DIVISOR) ;
-			}
-			return true;
-		}
-	}
+	
+
 }

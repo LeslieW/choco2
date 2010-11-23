@@ -34,19 +34,16 @@ public class DomDegRatio extends AbstractRatio {
 		this.var = var;
 	}
 
-
 	@Override
-	public int getDividend() {
+	public int initializeDividend() {
 		return var.getDomainSize();
 	}
 	
 	@Override
-	public int getDivisor() {
+	public int initializeDivisor() {
 		return var.getNbConstraints();
 	}
 
-
-	
 	@Override
 	public final IntDomainVar getIntVar() {
 		return var;

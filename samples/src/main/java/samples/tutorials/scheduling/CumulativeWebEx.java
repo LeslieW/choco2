@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.tutorials.scheduling;
 
+
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -40,23 +41,22 @@ public class CumulativeWebEx extends PatternExample {
 
 	protected final static int NT = 11, NF = 3, N =  NT + NF;
 
-	protected final static int[] HEIGHTS_DATA =  new int[]{2, 1, 4, 2, 3, 1, 5, 6, 2, 1, 3, 1, 1, 2};
+	private final static int[] HEIGHTS_DATA =  new int[]{2, 1, 4, 2, 3, 1, 5, 6, 2, 1, 3, 1, 1, 2};
 	                        
-	protected final static int[] DURATIONS_DATA =  new int[]{1, 1, 1, 2, 1, 3, 1, 1, 3, 4, 2, 3, 1, 1};
+	private final static int[] DURATIONS_DATA =  new int[]{1, 1, 1, 2, 1, 3, 1, 1, 3, 4, 2, 3, 1, 1};
 	                        
-
-	protected final static IntegerVariable CAPACITY = constant(7);
-	
-	protected IntegerVariable[] usages, heights;
+	private final static int HORIZON = 6;
+	private final static IntegerVariable CAPACITY = constant(7);
 	
 	//the fake tasks to establish the profile capacity of the ressource are the NF firsts.
-	protected final static TaskVariable[] TASKS = makeTaskVarArray("t", 0, 6, DURATIONS_DATA, Options.V_BOUND);
+	private final static TaskVariable[] TASKS = makeTaskVarArray("t", 0, 6, DURATIONS_DATA, Options.V_BOUND);
 
-	protected final static IntegerVariable OBJ = makeIntVar("obj", 0, NT, Options.V_BOUND, Options.V_OBJECTIVE);
-
-	protected boolean useAlternativeResource;
+	private final static IntegerVariable OBJ = makeIntVar("obj", 0, NT, Options.V_BOUND, Options.V_OBJECTIVE);
 	
-	
+	private IntegerVariable[] usages, heights;
+		
+	private boolean useAlternativeResource;
+		
 	@Override
 	public void setUp(Object parameters) {
 		if (parameters instanceof Boolean) {
@@ -70,41 +70,31 @@ public class CumulativeWebEx extends PatternExample {
 	@Override
 	public void buildModel() {
 		model = new CPModel();
+		//set fake tasks to establish the profile capacity
+		model.addConstraints(
+				startsAt(TASKS[0], 1),
+				startsAt(TASKS[1], 2),
+				startsAt(TASKS[2], 3)
+		);
+		usages = makeBooleanVarArray("U", NT);
+		//state the objective function
+		model.addConstraint(eq( sum(usages), OBJ));
+		
 		if(useAlternativeResource) {
-			usages = makeBooleanVarArray("U", NT);
 			heights = constantArray(HEIGHTS_DATA);
-			//post the cumulative
-			model.addConstraint(cumulativeMax("unique renewable resource", TASKS, heights, usages, CAPACITY, ""));
-			//set fake tasks to establish the profile capacity
-			model.addConstraints(
-					eq(TASKS[0].start(), 1),
-					eq(TASKS[1].start(), 2),
-					eq(TASKS[2].start(), 3)
-			);
-			//state the objective function
-			model.addConstraint(eq( sum(usages), OBJ));
+			model.addConstraint(cumulativeMax("alt-cumulative", TASKS, heights, usages, CAPACITY, ""));
+			
 		}else {
-			usages = makeBooleanVarArray("U", N);
 			heights = new IntegerVariable[N];
-
-			//post the channeling to know if the task is scheduled or not
-			for (int i = 0; i < N; i++) {
-				heights[i] =  makeIntVar("H_" + i, new int[]{0, HEIGHTS_DATA[i]});
-				model.addConstraint(boolChanneling(usages[i], heights[i], HEIGHTS_DATA[i]));
+			//post the channeling to know if the task uses the resource or not.
+			for (int i = 0; i < NF; i++) {
+				heights[i] = constant(HEIGHTS_DATA[i]);
 			}
-			//post the cumulative
-			model.addConstraint(cumulativeMax("unique renewable resource", TASKS, heights, CAPACITY, ""));
-			//set fake tasks to establish the profile capacit
-			model.addConstraints(
-					eq(usages[0], 1),
-					eq(TASKS[0].start(), 1),
-					eq(usages[1], 1),
-					eq(TASKS[1].start(), 2),
-					eq(usages[2], 1),
-					eq(TASKS[2].start(), 3)
-			);
-			//state the objective function
-			model.addConstraint(eq(minus(sum(usages),NF), OBJ));
+			for (int i = NF; i < N; i++) {
+				heights[i] =  makeIntVar("H_" + i, new int[]{0, HEIGHTS_DATA[i]});
+				model.addConstraint(boolChanneling(usages[i- NF], heights[i], HEIGHTS_DATA[i]));
+			}
+			model.addConstraint(cumulativeMax("cumulative", TASKS, heights, CAPACITY, ""));
 		}
 
 	}
@@ -113,7 +103,6 @@ public class CumulativeWebEx extends PatternExample {
 	public void buildSolver() {
 		solver = new CPSolver();
 		solver.read(model);
-		//System.out.println(solver.pretty());
 	}
 
 	@Override

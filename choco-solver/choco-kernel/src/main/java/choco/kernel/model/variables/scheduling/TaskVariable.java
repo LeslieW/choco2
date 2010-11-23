@@ -24,6 +24,9 @@ package choco.kernel.model.variables.scheduling;
 
 import java.util.Properties;
 
+import choco.kernel.common.IDotty;
+import choco.kernel.common.util.tools.StringUtils;
+import choco.kernel.common.util.tools.TaskUtils;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.ManagerFactory;
 import choco.kernel.model.variables.MultipleVariables;
@@ -38,7 +41,7 @@ import choco.kernel.model.variables.integer.IntegerVariable;
  * Since : Choco 2.0.1
  * Update : Choco 2.0.1
  */
-public class TaskVariable extends MultipleVariables implements ITaskVariable<IntegerVariable>{
+public class TaskVariable extends MultipleVariables implements ITaskVariable<IntegerVariable>, IDotty {
 
 	protected String variableManager;
 
@@ -103,6 +106,19 @@ public class TaskVariable extends MultipleVariables implements ITaskVariable<Int
 		buffer.append(" = ").append(end().pretty());
 		buffer.append('}');
 		return buffer.toString();
+	}
+
+	
+	@Override
+	public String toDotty() {
+		final StringBuilder b = new StringBuilder(); 	
+		b.append(getHook()).append("[ shape=record,");
+		b.append("label=\"{").append(getName());
+		b.append("|{").append(start().getLowB());
+		b.append("|").append(StringUtils.format(duration()));
+		b.append("|").append(end().getUppB());
+		b.append("}}];");
+		return b.toString();
 	}
 
 	@Override

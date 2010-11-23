@@ -22,8 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.search.measure;
 
-import choco.IPretty;
-import choco.kernel.solver.search.limit.Limit;
 
 
 public interface ISearchMeasures {

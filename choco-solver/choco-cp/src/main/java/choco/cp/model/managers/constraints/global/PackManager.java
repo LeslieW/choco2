@@ -24,8 +24,9 @@ package choco.cp.model.managers.constraints.global;
 
 import choco.cp.model.managers.MixedConstraintManager;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.BitFlags;
 import choco.cp.solver.constraints.global.pack.PackSConstraint;
+import choco.kernel.common.util.bitmask.BitMask;
+import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -66,14 +67,14 @@ public final class PackManager extends MixedConstraintManager {
 				final int v1 = 2 * m;
 				final int v2 = v1 + n;
 				final int v3 = v2 + n;
-				SetVar[] itemSets = getSetVar(s, variables, 0, m);
-				IntDomainVar[] loads = getIntVar(s, variables, m, v1);
-				IntDomainVar[] bins = getIntVar(s, variables, v1, v2);
-				IntDomainVar[] sizes = getIntVar(s, variables, v2, v3);
-				IntDomainVar  nbNonEmpty = solver.getVar((IntegerVariable)variables[v3]);
-				BitFlags flags = new BitFlags();
-				flags.readPackOptions(options);
-				return new PackSConstraint(s.getEnvironment(), itemSets, loads, sizes, bins, nbNonEmpty, flags);
+				final SetVar[] itemSets = getSetVar(s, variables, 0, m);
+				final IntDomainVar[] loads = getIntVar(s, variables, m, v1);
+				final IntDomainVar[] bins = getIntVar(s, variables, v1, v2);
+				final IntDomainVar[] sizes = getIntVar(s, variables, v2, v3);
+				final IntDomainVar  nbNonEmpty = solver.getVar((IntegerVariable)variables[v3]);
+				final PackSConstraint ct = new PackSConstraint(s.getEnvironment(), itemSets, loads, sizes, bins, nbNonEmpty);
+				ct.readOptions(options);	
+				return ct;
 			}
 		}
 		return fail("pack");

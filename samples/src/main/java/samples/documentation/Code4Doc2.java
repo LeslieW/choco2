@@ -1,6 +1,6 @@
 /* ************************************************
  *           _       _                            *
- *          |  °(..)  |                           *
+ *          |  ï¿½(..)  |                           *
  *          |_  J||L _|        CHOCO solver       *
  *                                                *
  *     Choco is a java library for constraint     *
@@ -22,12 +22,47 @@
  **************************************************/
 package samples.documentation;
 
+import static choco.Choco.abs;
+import static choco.Choco.allDifferent;
+import static choco.Choco.among;
+import static choco.Choco.and;
+import static choco.Choco.atMostNValue;
+import static choco.Choco.boolChanneling;
+import static choco.Choco.clause;
+import static choco.Choco.constant;
+import static choco.Choco.costRegular;
+import static choco.Choco.cumulative;
+import static choco.Choco.disjoint;
+import static choco.Choco.distanceEQ;
+import static choco.Choco.distanceGT;
+import static choco.Choco.distanceLT;
+import static choco.Choco.distanceNEQ;
+import static choco.Choco.domainChanneling;
+import static choco.Choco.eq;
+import static choco.Choco.eqCard;
+import static choco.Choco.equation;
+import static choco.Choco.feasPairAC;
+import static choco.Choco.feasTupleAC;
+import static choco.Choco.feasTupleFC;
+import static choco.Choco.makeBooleanVarArray;
+import static choco.Choco.makeIntVar;
+import static choco.Choco.makeIntVarArray;
+import static choco.Choco.makeSetVar;
+import static choco.Choco.member;
+import static choco.Choco.minus;
+import static choco.Choco.notMember;
+import static choco.Choco.plus;
+import static choco.Choco.sum;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.Vector;
+
 import choco.Choco;
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.SettingType;
 import choco.cp.solver.constraints.global.geost.Constants;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
@@ -44,11 +79,6 @@ import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Vector;
 
 /*
 * User : charles
@@ -316,7 +346,7 @@ public class Code4Doc2 {
         IntegerVariable obj = makeIntVar("obj", 0, n, Options.V_BOUND, Options.V_OBJECTIVE);
         //post the cumulative
         m.addConstraint(cumulative("cumulative", tasks, height, constant(0), capa,
-                SettingType.TASK_INTERVAL.getOptionName()));
+        		Options.C_CUMUL_TI));
         //post the channeling to know if the task is scheduled or not
         for (int i = 0; i < n; i++) {
             m.addConstraint(boolChanneling(bool[i], height[i], heights_data[i]));

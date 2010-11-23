@@ -36,48 +36,48 @@ import choco.kernel.memory.trailing.trail.*;
 public final class EnvironmentTrailing extends AbstractEnvironment {
 
 
-    /**
+	/**
 	 * The maximum numbers of worlds that a
 	 * {@link ITrailStorage} can handle.
 	 */
-    private int maxWorld = 100; //1000;
+	private int maxWorld = 100; //1000;
 
-    /**
+	/**
 	 * The maximum numbers of updates that a
 	 * {@link ITrailStorage} can handle.
 	 */
-    private static final int MaxHist = 5000;
+	private static final int MaxHist = 5000;
 
-    //Contains all the {@link ITrailStorage} trails for
+	//Contains all the {@link ITrailStorage} trails for
 	// storing different kinds of data.
 	private final StoredIntTrail intTrail;
-    private final StoredBoolTrail boolTrail;
-    private final StoredVectorTrail vectorTrail;
-    private final StoredIntVectorTrail intVectorTrail;
-    private final StoredLongVectorTrail longVectorTrail;
-    private final StoredDoubleVectorTrail doubleVectorTrail;
-    private final StoredDoubleTrail doubleTrail;
+	private final StoredBoolTrail boolTrail;
+	private final StoredVectorTrail vectorTrail;
+	private final StoredIntVectorTrail intVectorTrail;
+	private final StoredLongVectorTrail longVectorTrail;
+	private final StoredDoubleVectorTrail doubleVectorTrail;
+	private final StoredDoubleTrail doubleTrail;
 
-    private final StoredLongTrail longTrail;
+	private final StoredLongTrail longTrail;
 
-    private final StoredBinaryTreeTrail btreeTrail;
-    /**
+	private final StoredBinaryTreeTrail btreeTrail;
+	/**
 	 * Contains all the {@link ITrailStorage} trails for
 	 * storing different kinds of data.
 	 */
 	private final ITrailStorage[] trails;
 
-    /**
+	/**
 	 * Constructs a new <code>IEnvironment</code> with
 	 * the default stack sizes : 50000 and 1000.
 	 */
 
 	public EnvironmentTrailing() {
-        boolTrail = new StoredBoolTrail(this, MaxHist, maxWorld);
+		boolTrail = new StoredBoolTrail(this, MaxHist, maxWorld);
 		intTrail = new StoredIntTrail(this, MaxHist, maxWorld);
 		vectorTrail = new StoredVectorTrail(this, MaxHist, maxWorld);
 		intVectorTrail = new StoredIntVectorTrail(this, MaxHist, maxWorld);
-                longVectorTrail = new StoredLongVectorTrail(this,MaxHist,maxWorld);
+		longVectorTrail = new StoredLongVectorTrail(this,MaxHist,maxWorld);
 		doubleVectorTrail = new StoredDoubleVectorTrail(this, MaxHist, maxWorld);
 		doubleTrail = new StoredDoubleTrail(this, MaxHist, maxWorld);
 		longTrail = new StoredLongTrail(this, MaxHist, maxWorld);
@@ -87,7 +87,7 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 				doubleVectorTrail, doubleTrail,longTrail,btreeTrail
 		};
 	}
-	
+
 	@Override
 	public void worldPush() {
 		//code optim.: replace loop by enumeration
@@ -95,7 +95,7 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 		boolTrail.worldPush();
 		vectorTrail.worldPush();
 		intVectorTrail.worldPush();
-                longVectorTrail.worldPush();
+		longVectorTrail.worldPush();
 		doubleVectorTrail.worldPush();
 		doubleTrail.worldPush();
 		longTrail.worldPush();
@@ -114,13 +114,13 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 		boolTrail.worldPop();
 		vectorTrail.worldPop();
 		intVectorTrail.worldPop();
-                longVectorTrail.worldPop();
+		longVectorTrail.worldPop();
 		doubleVectorTrail.worldPop();
 		doubleTrail.worldPop();
 		longTrail.worldPop();
 		btreeTrail.worldPop();
 		currentWorld--;
-   	}
+	}
 
 	@Override
 	public void worldCommit() {
@@ -132,13 +132,13 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 		boolTrail.worldCommit();
 		vectorTrail.worldCommit();
 		intVectorTrail.worldCommit();
-                longVectorTrail.worldCommit();
+		longVectorTrail.worldCommit();
 		doubleVectorTrail.worldCommit();
 		doubleTrail.worldCommit();
 		longTrail.worldCommit();
 		btreeTrail.worldCommit();
 		currentWorld--;
-   	}
+	}
 
 	@Override
 	public IStateInt makeInt() {
@@ -175,7 +175,7 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 	public IStateIntVector makeIntVector(final int[] entries) {
 		return new StoredIntVector(this, entries);
 	}
-        @Override
+	@Override
 	public IStateLongVector makeLongVector() {
 		return new StoredLongVector(this);
 	}
@@ -192,21 +192,21 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 
 
 	@Override
-    public IStateDoubleVector makeDoubleVector() {
-        return new StoredDoubleVector(this);
-    }
+	public IStateDoubleVector makeDoubleVector() {
+		return new StoredDoubleVector(this);
+	}
 
-    @Override
-    public IStateDoubleVector makeDoubleVector(final int size, final double initialValue) {
-        return new StoredDoubleVector(this, size, initialValue);
-    }
+	@Override
+	public IStateDoubleVector makeDoubleVector(final int size, final double initialValue) {
+		return new StoredDoubleVector(this, size, initialValue);
+	}
 
-    @Override
-    public IStateDoubleVector makeDoubleVector(final double[] entries) {
-        return new StoredDoubleVector(this, entries);
-    }
+	@Override
+	public IStateDoubleVector makeDoubleVector(final double[] entries) {
+		return new StoredDoubleVector(this, entries);
+	}
 
-    @Override
+	@Override
 	public <T> IStateVector<T> makeVector() {
 		return new StoredVector<T>(this);
 	}
@@ -265,9 +265,9 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 	public int getIntVectorTrailSize() {
 		return intVectorTrail.getSize();
 	}
-    public int getDoubleVectorTrailSize() {
-        return doubleVectorTrail.getSize();
-    }
+	public int getDoubleVectorTrailSize() {
+		return doubleVectorTrail.getSize();
+	}
 
 	public int getFloatTrailSize() {
 		return doubleTrail.getSize();
@@ -346,7 +346,7 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 	public void savePreviousState(final StoredDoubleVector v,
 			final int index, final double oldValue, final int oldStamp) {
 		doubleVectorTrail.savePreviousState(v, index, oldValue, oldStamp);
-		
+
 	}
 }
 

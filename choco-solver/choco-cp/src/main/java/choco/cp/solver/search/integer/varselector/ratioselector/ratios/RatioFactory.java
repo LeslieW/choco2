@@ -22,18 +22,18 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.varselector.ratioselector.ratios;
 
+import choco.cp.solver.constraints.global.scheduling.precedence.ITemporalSRelation;
 import choco.cp.solver.search.integer.varselector.ratioselector.ratios.degree.DomDegRatio;
 import choco.cp.solver.search.integer.varselector.ratioselector.ratios.degree.DomDynDegRatio;
 import choco.cp.solver.search.integer.varselector.ratioselector.ratios.degree.DomWDegRatio;
 import choco.cp.solver.search.integer.varselector.ratioselector.ratios.degree.IncDomWDegRatio;
-import choco.cp.solver.search.integer.varselector.ratioselector.ratios.task.IPrecedenceRatio;
+import choco.cp.solver.search.integer.varselector.ratioselector.ratios.task.ITemporalRatio;
 import choco.cp.solver.search.integer.varselector.ratioselector.ratios.task.preserved.IncPreservedWDegRatio;
 import choco.cp.solver.search.integer.varselector.ratioselector.ratios.task.preserved.MaxPreservedRatio;
 import choco.cp.solver.search.integer.varselector.ratioselector.ratios.task.preserved.MinPreservedRatio;
 import choco.cp.solver.search.integer.varselector.ratioselector.ratios.task.preserved.PreservedWDegRatio;
 import choco.cp.solver.search.integer.varselector.ratioselector.ratios.task.slack.IncSlackWDegRatio;
 import choco.cp.solver.search.integer.varselector.ratioselector.ratios.task.slack.SlackWDegRatio;
-import choco.kernel.solver.constraints.global.scheduling.IPrecedence;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 public final class RatioFactory {
@@ -87,9 +87,9 @@ public final class RatioFactory {
 	}
 
 
-	public static IPrecedenceRatio[] createSlackWDegRatio(IPrecedence[] precedences, boolean incremental) {
+	public static ITemporalRatio[] createSlackWDegRatio(ITemporalSRelation[] precedences, boolean incremental) {
 		final int n = precedences.length;
-		final IPrecedenceRatio[] ratios = new IPrecedenceRatio[n];
+		final ITemporalRatio[] ratios = new ITemporalRatio[n];
 		if(incremental) {
 			for (int i = 0; i < n; i++) {
 				ratios[i] = new IncSlackWDegRatio(precedences[i]);
@@ -102,9 +102,9 @@ public final class RatioFactory {
 		return ratios;
 	}
 
-	public static IPrecedenceRatio[] createPreservedWDegRatio(IPrecedence[] precedences,boolean incremental) {
+	public static ITemporalRatio[] createPreservedWDegRatio(ITemporalSRelation[] precedences,boolean incremental) {
 		final int n = precedences.length;
-		final IPrecedenceRatio[] ratios = new IPrecedenceRatio[n];
+		final ITemporalRatio[] ratios = new ITemporalRatio[n];
 		if(incremental) {
 			for (int i = 0; i < n; i++) {
 				ratios[i] = new IncPreservedWDegRatio(precedences[i]);
@@ -117,7 +117,7 @@ public final class RatioFactory {
 		return ratios;
 	}
 
-	public static MaxPreservedRatio[] createMaxPreservedRatio(IPrecedence[] precedences) {
+	public static MaxPreservedRatio[] createMaxPreservedRatio(ITemporalSRelation[] precedences) {
 		final int n = precedences.length;
 		final MaxPreservedRatio[] ratios = new MaxPreservedRatio[n];
 		for (int i = 0; i < n; i++) {
@@ -126,7 +126,7 @@ public final class RatioFactory {
 		return ratios;
 	}
 
-	public static MinPreservedRatio[] createMinPreservedRatio(IPrecedence[] precedences) {
+	public static MinPreservedRatio[] createMinPreservedRatio(ITemporalSRelation[] precedences) {
 		final int n = precedences.length;
 		final MinPreservedRatio[] ratios = new MinPreservedRatio[n];
 		for (int i = 0; i < n; i++) {

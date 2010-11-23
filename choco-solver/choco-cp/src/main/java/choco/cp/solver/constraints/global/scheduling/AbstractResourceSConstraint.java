@@ -22,8 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling;
 
-import choco.cp.solver.constraints.BitFlags;
 import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.kernel.common.util.bitmask.BitMask;
 import choco.kernel.common.util.tools.IteratorUtils;
 import static choco.kernel.common.util.tools.TaskUtils.hasEnumeratedDomain;
 import choco.kernel.memory.IEnvironment;
@@ -56,7 +56,7 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 
 	protected final String name;
 
-	protected final BitFlags flags;
+	protected final BitMask flags;
 
 	private final int nbRegularTasks;
 
@@ -93,7 +93,7 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		//TODO checkIntVars !
 		this.indexUnit = getNbVars()-1;
 		this.indexUB = indexUnit - 1;
-		this.flags = new BitFlags();
+		this.flags = new BitMask();
 		this.rtasks = new RTask[getNbTasks()];
 		final IEnvironment env = solver.getEnvironment();
 		if(enableHypotheticalDomain) {
@@ -112,7 +112,8 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		this.makespan = new RMakespan();
 	}
 
-
+	public abstract void readOptions(List<String> options);
+	
 	public final int indexOf(TaskVar task) {
 		//FIXME temporary implementation
 		for (int i = 0; i < getNbTasks(); i++) {
@@ -153,6 +154,7 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 	protected final int getHeightIndex(final int taskIdx) {
 		return enableHeights ? taskIntVarOffset + nbOptionalTasks + taskIdx : indexUnit;
 	}
+	 
 
 	public final void enforceTaskConsistency() throws ContradictionException {
 		for (IRTask rt : rtasks) {
@@ -160,7 +162,7 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		}
 	}
 
-	public final BitFlags getFlags() {
+	public final BitMask getFlags() {
 		return flags;
 	}
 
@@ -251,6 +253,7 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 				end = Math.max(end,  tuple[getEndIndex(tidx)]);
 			}
 		}
+		if(end > tuple[indexUB]) return false;
 		if(start < end) {
 			//compute the profile
 			int[] load = new int[end - start];

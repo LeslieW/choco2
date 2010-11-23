@@ -24,7 +24,9 @@ package choco.shaker.tools.factory;
 
 import choco.Choco;
 import choco.Options;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.shaker.tools.factory.beta.IVariableFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,7 +39,7 @@ import java.util.Random;
 * Since : Choco 2.0.1
 * Update : Choco 2.0.1
 */
-public class VariableFactory {
+public class VariableFactory implements IVariableFactory<IntegerVariable> {
 
     public ArrayList<IntegerVariable> pool;
 
@@ -57,12 +59,12 @@ public class VariableFactory {
         BOOLVAR, CST, ENUMVAR, BOUNDVAR, BTREEVAR, BLISTVAR, LINKVAR, UNBOUNDED
     }
 
-
+    
     /**
      * Define a specific scope of variable to pick up in
      * @param variables the pool of variables
      */
-    public void defines(IntegerVariable... variables){
+    public void definePool(IntegerVariable... variables){
         this.pool = new ArrayList<IntegerVariable>();
         this.pool.addAll(Arrays.asList(variables));
     }
@@ -71,7 +73,7 @@ public class VariableFactory {
      * Set a maximum number of created variables
      * @param n the maximum number of created variables
      */
-    public void limits(int n){
+    public void setMaxCreated(int n){
         maxcreation = n;
     }
 
@@ -79,7 +81,7 @@ public class VariableFactory {
      * Set a maximum domain size
      * @param n the domain size
      */
-    public void domainesize(int n){
+    public void setMaxDomSize(int n){
         dsize = n;
     }
 
@@ -208,5 +210,54 @@ public class VariableFactory {
         }
         return variables;
     }
+
+	@Override
+	public void addScope(String... options) {
+		throw new ModelException("Not Implemented");
+		
+	}
+
+	@Override
+	public void cancelScope() {
+		scope.clear();
+		
+	}
+
+	@Override
+	public void cancelValueOffset() {
+		throw new ModelException("Not Implemented");
+	}
+
+	@Override
+	public void clearPool() {
+		pool.clear();
+		
+	}
+
+	@Override
+	public IntegerVariable[] make(String option, int nb, Random r) {
+		throw new ModelException("Not Implemented");
+	}
+
+	@Override
+	public IntegerVariable make(String option, Random r) {
+		throw new ModelException("Not Implemented");
+	}
+
+	@Override
+	public void remScope(String... options) {
+		throw new ModelException("Not Implemented");
+	}
+
+	@Override
+	public void setScope(String... options) {
+		throw new ModelException("Not Implemented");
+		
+	}
+
+	@Override
+	public void setValueOffset(int valOffset) {
+		throw new ModelException("Not Implemented");
+	}
 
 }

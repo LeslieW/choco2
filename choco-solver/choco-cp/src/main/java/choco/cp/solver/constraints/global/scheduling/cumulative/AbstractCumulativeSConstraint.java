@@ -22,7 +22,15 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling.cumulative;
 
+import static choco.Options.C_CUMUL_EF;
+import static choco.Options.C_CUMUL_STI;
+import static choco.Options.C_CUMUL_TI;
+import static choco.Options.C_CUMUL_VEF;
+
+import java.util.List;
+
 import choco.cp.solver.constraints.global.scheduling.AbstractResourceSConstraint;
+import choco.kernel.common.util.bitmask.StringMask;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBool;
@@ -40,7 +48,11 @@ import choco.kernel.solver.variables.scheduling.TaskVar;
  */
 public abstract class AbstractCumulativeSConstraint extends AbstractResourceSConstraint implements ICumulativeResource<TaskVar> {
 
-
+	public final static StringMask TASK_INTERVAL = new StringMask(C_CUMUL_TI,1);
+	public final static StringMask TASK_INTERVAL_SLOW = new StringMask(C_CUMUL_STI,1 << 2);
+	public final static StringMask VILIM_CEF_ALGO = new StringMask(C_CUMUL_VEF,1 << 3);
+	public final static StringMask VHM_CEF_ALGO_N2K = new StringMask(C_CUMUL_EF,1 << 4);
+	
 	/** indicates if all heights are instantiated (lazy computation) */
 	private final IStateBool fixedHeights;
 
@@ -49,7 +61,6 @@ public abstract class AbstractCumulativeSConstraint extends AbstractResourceSCon
 
 	/** indicates if at least one regular tasks has a negative height (lazy computation) */
 	private final IStateBool regularWithNegativeHeight;
-
 
 	protected final int indexConsumption;
 
@@ -68,7 +79,15 @@ public abstract class AbstractCumulativeSConstraint extends AbstractResourceSCon
 
 
 	}
+
 	
+	@Override
+	public void readOptions(List<String> options) {
+		flags.read(options, TASK_INTERVAL, TASK_INTERVAL_SLOW, VHM_CEF_ALGO_N2K, VILIM_CEF_ALGO);
+	}
+
+
+
 	@Override
 	public boolean isTaskConsistencyEnforced() {
 		return true;

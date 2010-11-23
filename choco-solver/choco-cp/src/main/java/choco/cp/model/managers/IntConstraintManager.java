@@ -23,7 +23,6 @@
 package choco.cp.model.managers;
 
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.SettingType;
 import choco.cp.solver.constraints.reified.leaves.ConstraintLeaf;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintManager;
@@ -55,10 +54,6 @@ public abstract class IntConstraintManager extends ConstraintManager<IntegerVari
         return getACFavoriteIntDomains();
     }
 
-
-    public static void readSetting(Set<String> source, Set<SettingType> dest, SettingType setting) {
-		if(source.contains(setting.getOptionName()) ) {dest.add(setting);}
-	}
 
     /**
      * Build arithm node from a IntegerExpressionVariable

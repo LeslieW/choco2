@@ -420,6 +420,7 @@ public final class ChocoLogging {
 		}
 	}
 
+	
 	public final static String toDotty() {
 		final StringBuilder b = new StringBuilder();
 		final TObjectIntHashMap<Logger> indexMap = new TObjectIntHashMap<Logger>(CHOCO_LOGGERS.length);
@@ -441,7 +442,9 @@ public final class ChocoLogging {
 		return new String(b);
 	}
 
+	
 	public static void main(String[] args) {
 		System.out.println(toDotty());
 	}
+	
 }

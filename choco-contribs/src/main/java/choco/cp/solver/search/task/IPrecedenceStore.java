@@ -22,13 +22,14 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.task;
 
+import choco.cp.solver.constraints.global.scheduling.precedence.ITemporalSRelation;
 import choco.kernel.common.IDotty;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.ITask;
 
 public interface IPrecedenceStore extends IDotty {
 
-	StoredPrecedence getStoredPrecedence(ITask t1, ITask t2);
+	ITemporalSRelation getStoredPrecedence(ITask t1, ITask t2);
 	
 	void addPrecedence(ITask t1, ITask t2, IntDomainVar direction);
 
@@ -38,6 +39,6 @@ public interface IPrecedenceStore extends IDotty {
 	
 	boolean containsReifiedPrecedence();
 
-	StoredPrecedence[] getValues();
+	ITemporalSRelation[] getValues();
 }
 

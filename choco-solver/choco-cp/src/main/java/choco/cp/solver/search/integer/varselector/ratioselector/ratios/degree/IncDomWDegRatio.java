@@ -10,7 +10,7 @@ public final class IncDomWDegRatio extends DomDegRatio {
 	}
 
 	@Override
-	public int getDivisor() {
+	public int initializeDivisor() {
 		return DomWDegUtils.getVarExtension(var).get();
 	}
 	

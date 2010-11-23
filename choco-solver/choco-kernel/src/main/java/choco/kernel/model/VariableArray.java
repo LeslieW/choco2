@@ -1,5 +1,9 @@
 package choco.kernel.model;
 
+import java.io.Serializable;
+import java.util.Iterator;
+
+import choco.Choco;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.IteratorUtils;
@@ -7,21 +11,20 @@ import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Variable;
 
-import java.io.Serializable;
-import java.util.Iterator;
-
 public class VariableArray implements IVariableArray, Serializable {
-	
+
+	private static final long serialVersionUID = -4465055351650054924L;
+
 	protected final static Constraint[] NO_CONSTRAINTS = {};
-	
+
 	private Variable[] variables;
 	private Variable[] extractedVariables;
 
-	
+
 	public VariableArray() {
 		super();
 	}
-	
+
 	public VariableArray(final Variable[] variables) {
 		super();
 		this.variables = variables;
@@ -49,27 +52,44 @@ public class VariableArray implements IVariableArray, Serializable {
 
 	protected final void setVariables(final Variable variable) {
 		this.variables = new Variable[]{variable};
-		extractedVariables = null;
-	}
-	
-	protected final void setVariables(final Variable[] variables) {
-		this.variables = variables;
-		extractedVariables = null;
+		cancelExtractVariables();
 	}
 
-    public final void replaceBy(final Variable outVar, final Variable inVar){
-        final long idx = outVar.getIndex();
-        for(int i = 0; i < variables.length; i++){
-            if(variables[i].getIndex() == idx){
-                variables[i] = inVar;
-            }
-        }
-    }
+	protected final void setVariables(final Variable[] variables) {
+		this.variables = variables;
+		cancelExtractVariables();
+	}
+
+	public final void replaceBy(final Variable outVar, final Variable inVar){
+		//if(inVar.getIndex() != outVar.getIndex()) { ??
+		final long idx = outVar.getIndex();
+		for(int i = 0; i < variables.length; i++){
+			if(variables[i].getIndex() == idx){
+				variables[i] = inVar;
+			}
+		}
+		cancelExtractVariables();
+	}
+
+	protected final void replaceByConstantAt(final int outVarIndex, final int val){
+		variables[outVarIndex] = Choco.constant(val);
+		cancelExtractVariables(); 
+	}
+
 
 	protected Variable[] doExtractVariables() {
 		return ArrayUtils.getNonRedundantObjects(Variable.class, variables);
 	}
 	
+	protected void cancelExtractVariables() {
+		extractedVariables = null;
+	}
+	
+	protected void forceExtractVariables() {
+		cancelExtractVariables();
+		extractedVariables = doExtractVariables();
+	}
+
 	@Override
 	public final Variable[] extractVariables() {
 		if(extractedVariables == null){
@@ -78,9 +98,9 @@ public class VariableArray implements IVariableArray, Serializable {
 		return extractedVariables;
 	}
 
-    protected final class VConstraintsDataStructure implements IConstraintList {
+	protected final class VConstraintsDataStructure implements IConstraintList {
 
-		
+
 
 		public VConstraintsDataStructure() {
 			super();
@@ -100,17 +120,17 @@ public class VariableArray implements IVariableArray, Serializable {
 			}			
 		}
 
-        @Override
-        public boolean _contains(final Constraint c) {
-            for(final Variable v : variables){
+		@Override
+		public boolean _contains(final Constraint c) {
+			for(final Variable v : variables){
 				if(!v._contains(c)){
-                    return false;
-                }
-		    }
-            return true;
-        }
+					return false;
+				}
+			}
+			return true;
+		}
 
-        @Override
+		@Override
 		public void removeConstraints() {
 			for(final Variable v : variables){
 				v.removeConstraints();
@@ -181,7 +201,7 @@ public class VariableArray implements IVariableArray, Serializable {
 	public String pretty() {
 		return StringUtils.pretty(variables);
 	}
-	
-	
+
+
 
 }

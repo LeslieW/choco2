@@ -22,12 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.branching.domwdeg;
 
+import choco.cp.solver.constraints.global.scheduling.precedence.ITemporalSRelation;
 import choco.cp.solver.search.integer.varselector.ratioselector.ratios.IntRatio;
-import choco.cp.solver.search.integer.varselector.ratioselector.ratios.task.IPrecedenceRatio;
+import choco.cp.solver.search.integer.varselector.ratioselector.ratios.task.ITemporalRatio;
 import choco.cp.solver.search.task.OrderingValSelector;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.constraints.global.scheduling.IPrecedence;
 import choco.kernel.solver.search.IntBranchingDecision;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -35,21 +35,21 @@ public class TaskOverWDegBinBranching extends AbstractDomOverWDegBinBranching {
 
 	private final OrderingValSelector precValSelector;
 
-	public TaskOverWDegBinBranching(Solver solver, IPrecedenceRatio[] varRatios, OrderingValSelector valHeuri, Number seed) {
+	public TaskOverWDegBinBranching(Solver solver, ITemporalRatio[] varRatios, OrderingValSelector valHeuri, Number seed) {
 		super(solver, varRatios, seed);
 		this.precValSelector = valHeuri;
 	}
 
 	public void setFirstBranch(final IntBranchingDecision decision) {
-		final IPrecedence brObj =  (IPrecedence) decision.getBranchingObject();
+		final ITemporalSRelation brObj =  (ITemporalSRelation) decision.getBranchingObject();
 		decision.setBranchingValue(precValSelector.getBestVal( brObj));
-		decreaseVarWeights( brObj.getBoolVar());
+		decreaseVarWeights( brObj.getDirection());
 	}
 
 	@Override
 	public void setNextBranch(IntBranchingDecision decision) {
 		if( updateWeightsCount == getExpectedUpdateWeightsCount() ) {
-			increaseVarWeights( ((IPrecedence) decision.getBranchingObject()).getBoolVar());
+			increaseVarWeights( ((ITemporalSRelation) decision.getBranchingObject()).getDirection());
 		} else updateWeightsCount = Integer.MIN_VALUE;
 		super.setNextBranch(decision);
 	}
@@ -58,7 +58,7 @@ public class TaskOverWDegBinBranching extends AbstractDomOverWDegBinBranching {
 
 	@Override
 	public void goDownBranch(final IntBranchingDecision decision) throws ContradictionException {
-		final IntDomainVar v = ( (IPrecedence) decision.getBranchingObject()).getBoolVar();
+		final IntDomainVar v = ( (ITemporalSRelation) decision.getBranchingObject()).getDirection();
 		if (decision.getBranchIndex() == 0) {
 			v.setVal(decision.getBranchingValue());
 		} else {
@@ -71,7 +71,7 @@ public class TaskOverWDegBinBranching extends AbstractDomOverWDegBinBranching {
 	public Object selectBranchingObject() throws ContradictionException {
 		reinitBranching();
 		IntRatio best = getRatioSelector().selectIntRatio();
-		return best == null ? null :  ( (IPrecedenceRatio) best).getPrecedence();
+		return best == null ? null :  ( (ITemporalRatio) best).getTemporalRelation();
 	}
 
 

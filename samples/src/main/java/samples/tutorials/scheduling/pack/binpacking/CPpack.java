@@ -22,10 +22,18 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.tutorials.scheduling.pack.binpacking;
 
+import static choco.Choco.geq;
+import static choco.Choco.leq;
+import static choco.Choco.pack;
+import gnu.trove.TIntArrayList;
+
+import java.util.Arrays;
+import java.util.logging.Logger;
+
+import samples.tutorials.PatternExample;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.SettingType;
 import choco.cp.solver.constraints.global.pack.PackSConstraint;
 import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.branching.PackDynRemovals;
@@ -36,18 +44,11 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.opres.pack.BestFit1BP;
 import choco.kernel.common.opres.pack.LowerBoundFactory;
 import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.constraints.pack.PackModeler;
+import choco.kernel.model.constraints.pack.PackModel;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.search.ValSelector;
-import gnu.trove.TIntArrayList;
-import samples.tutorials.PatternExample;
-
-import java.util.Arrays;
-import java.util.logging.Logger;
-
-import static choco.Choco.*;
 
 /**
  * @author Arnaud Malapert</br>
@@ -106,7 +107,7 @@ public class CPpack extends PatternExample{
 	//////////////// MODEL /////////////////
 
 	/** variables of the model*/
-	protected PackModeler modeler;
+	protected PackModel modeler;
 
 	protected Constraint pack;
 
@@ -170,24 +171,22 @@ public class CPpack extends PatternExample{
 				geq(o,ilb),
 				leq(o,iub-1)
 		);
-		model.addConstraints(modeler.getNbNonEmptyBinsRC());
 	}
 
     @Override
 	public void buildModel() {
 		model = new CPModel();
-		modeler = new PackModeler(sizes,iub-1,capacity);
-		pack = pack(modeler, SettingType.ADDITIONAL_RULES.getOptionName(),SettingType.DYNAMIC_LB.getOptionName());
-		pack.addOption(SettingType.FILL_BIN.getOptionName());
+		modeler = new PackModel(sizes,iub-1,capacity);
+		pack = pack(modeler, Options.C_PACK_AR, Options.C_PACK_DLB, Options.C_PACK_FB);
 		setObjective();
-		modeler.statePackLargeItems(model, false, true); // best symmetry breaking ? seems better than sorting bins method
+		model.addConstraints( modeler.packLargeItems()); // best symmetry breaking ? seems better than sorting bins method
 		model.addConstraint(pack);
 	}
 
 
 	public void makeBranching(Solver s) {
 		final PackSConstraint cstr = (PackSConstraint) s.getCstr(pack);
-		VarSelector varsel = new StaticVarOrder(s, s.getVar(modeler.bins));
+		VarSelector varsel = new StaticVarOrder(s, s.getVar(modeler.getBins()));
 		ValSelector valsel= branching==Branching.BASIC ? new MinVal() : new BestFit(cstr);
 		s.attachGoal( branching==Branching.DYN_RM ?
 					new PackDynRemovals(varsel,valsel,cstr) :
@@ -253,7 +252,7 @@ public class CPpack extends PatternExample{
 	}
 
 
-    public PackModeler getModeler(){
+    public PackModel getModeler(){
         return modeler;
     }
 

@@ -22,27 +22,27 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.varselector.ratioselector.ratios.task;
 
+import choco.cp.solver.constraints.global.scheduling.precedence.ITemporalSRelation;
 import choco.cp.solver.search.integer.varselector.ratioselector.ratios.AbstractRatio;
-import choco.kernel.solver.constraints.global.scheduling.IPrecedence;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-public abstract class AbstractPrecedenceRatio extends AbstractRatio implements IPrecedenceRatio {
+public abstract class AbstractPrecedenceRatio extends AbstractRatio implements ITemporalRatio {
 	
-	public final IPrecedence precedence;
+	public final ITemporalSRelation precedence;
 		
-	public AbstractPrecedenceRatio(IPrecedence precedence) {
+	public AbstractPrecedenceRatio(ITemporalSRelation precedence) {
 		super();
 		this.precedence = precedence;
 	}
 	
 	@Override
-	public final IPrecedence getPrecedence() {
+	public final ITemporalSRelation getTemporalRelation() {
 		return precedence;
 	}
 
 	@Override
 	public final IntDomainVar getIntVar() {
-		return  precedence.getBoolVar();
+		return  precedence.getDirection();
 	}
 		
 }

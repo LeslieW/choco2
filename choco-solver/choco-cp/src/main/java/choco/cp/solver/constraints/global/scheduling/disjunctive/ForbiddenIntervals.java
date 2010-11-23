@@ -31,6 +31,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 
 import java.util.BitSet;
+import java.util.List;
 
 
 /**
@@ -65,6 +66,10 @@ public class ForbiddenIntervals extends AbstractResourceSConstraint {
 		bell.run();
 		forbidden=new ExtendedBitSet(bell.getCoveredSet(),load);
 	}
+
+	
+	@Override
+	public void readOptions(List<String> options) {}
 
 
 	private boolean checkHead(final int head, final int ub) {

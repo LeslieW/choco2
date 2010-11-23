@@ -33,6 +33,7 @@ import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.Model;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.constraints.pack.PackModel;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -293,7 +294,7 @@ public class VariablesTest {
         for (int i = 0; i < n; i++) {
             size[i] = Choco.constant(sizes[i]);
         }
-        m.addConstraint(Choco.pack(setbin,load, items, size, "cp:pack:ar", "cp:pack:dlb","cp:pack:fill"));
+        m.addConstraint(Choco.pack(new PackModel(items, size, load, setbin), Options.C_PACK_AR, Options.C_PACK_DLB,Options.C_PACK_FB));
 
         CPSolver s = new CPSolver();
         s.read(m);

@@ -22,18 +22,16 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.pack;
 
-import static choco.cp.solver.SettingType.ADDITIONAL_RULES;
-import static choco.cp.solver.SettingType.FILL_BIN;
-import choco.cp.solver.constraints.BitFlags;
+import java.awt.Point;
+import java.util.ListIterator;
+
 import choco.kernel.common.opres.nosum.INoSumCell;
 import choco.kernel.common.opres.nosum.NoSumList;
+import choco.kernel.common.util.bitmask.BitMask;
 import choco.kernel.memory.IStateIntVector;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-
-import java.awt.*;
-import java.util.ListIterator;
 
 
 /**
@@ -64,7 +62,7 @@ public final class PackFiltering {
 
 	public final IPackSConstraint cstr;
 
-	protected final BitFlags flags;
+	protected final BitMask flags;
 
 	/** The sizes of the items. */
 	protected final IntDomainVar[] sizes;
@@ -89,7 +87,7 @@ public final class PackFiltering {
 	 * Instantiates a new 1BP constraint.
 	 * @param environment
 	 */
-	public PackFiltering(IPackSConstraint cstr, BitFlags flags) {
+	public PackFiltering(IPackSConstraint cstr, BitMask flags) {
 		this.cstr = cstr;
 		this.sizes = cstr.getSizes();
 		this.loads = cstr.getLoads();
@@ -331,9 +329,9 @@ public final class PackFiltering {
 		loadSizeAndCoherence(bin);
 		reuseStatus = cstr.getStatus(bin);
 		loadMaintenance(bin);
-		if(flags.contains(FILL_BIN)) {singleItemEliminationAndCommitmentAndFill(bin);}
+		if(flags.contains(PackSConstraint.FILL_BIN)) {singleItemEliminationAndCommitmentAndFill(bin);}
 		else {singleItemEliminationAndCommitment(bin);}
-		if( flags.contains(ADDITIONAL_RULES) && reuseStatus.getNbCandidates() > 1) {
+		if( flags.contains(PackSConstraint.ADDITIONAL_RULES) && reuseStatus.getNbCandidates() > 1) {
 			noSumPruningRule(reuseStatus,bin);
 			noSumBinLoads(reuseStatus,bin);
 			noSumItemEliminationAndCommitment(reuseStatus, bin);

@@ -124,7 +124,6 @@ public class ResourceAllocation extends PatternExample {
 
 	@Override
 	public void solve() {
-		ChocoLogging.setVerbosity(Verbosity.SOLUTION);
 		solver.generateSearchStrategy();
 		solver.launch();
 	}

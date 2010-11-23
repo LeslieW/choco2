@@ -439,7 +439,7 @@ public class CumulRules implements ICumulRules {
 
 	@Override
 	public boolean vilimEndEF() throws ContradictionException {
-		throw new UnsupportedOperationException("Vilim version of edge finding for the ending dates remain to be done");
+		throw new UnsupportedOperationException("Vilim version of edge finding for the ending dates remains to be done");
 	}
 
 

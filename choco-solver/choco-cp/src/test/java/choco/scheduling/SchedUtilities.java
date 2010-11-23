@@ -22,25 +22,24 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.scheduling;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import gnu.trove.TIntArrayList;
+
+import java.awt.Point;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import choco.Choco;
 import choco.Options;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.constraints.global.scheduling.ICumulativeResource;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.AbstractTask;
-import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.ITask;
-import gnu.trove.TIntArrayList;
-import static org.junit.Assert.*;
-
-import java.awt.*;
-import java.util.*;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 /**
@@ -92,7 +91,7 @@ public final class SchedUtilities {
 			if(nbsol > 0) {
 				assertEquals(String.format("check-cmp NbSols %s", str),nbsol,s.getSolutionCount());
 				assertTrue("isFeasible", s.isFeasible());
-			}else if(nbsol>=0) {
+			}else if(nbsol==0) {
 				assertEquals(String.format("check-cmp NbSols %s", str),nbsol,s.getSolutionCount());
 				assertFalse("isFeasible", s.isFeasible());
 				
@@ -146,211 +145,3 @@ public final class SchedUtilities {
 }
 
 
-class SimpleTask extends AbstractTask {
-
-	private static int nextID;
-
-	private final Point domain;
-
-	private final int duration;
-
-
-    /**
-     *
-     * @param est
-     * @param lst
-     * @param duration
-     */
-	public SimpleTask(final int est, final int lst, final int duration) {
-		super(nextID++, "T"+nextID);
-		this.domain = new Point(est, lst>=est ? lst :est);
-		this.duration = duration>0 ? duration : 0;
-	}
-
-
-	/**
-	 * @see ITask#getECT()
-	 */
-	@Override
-	public int getECT() {
-		return domain.x+duration;
-	}
-
-	/**
-	 * @see ITask#getEST()
-	 */
-	@Override
-	public int getEST() {
-		return domain.x;
-	}
-
-	/**
-	 * @see ITask#getLCT()
-	 */
-	@Override
-	public int getLCT() {
-		return domain.y+duration;
-	}
-
-	/**
-	 * @see ITask#getLST()
-	 */
-	@Override
-	public int getLST() {
-		return domain.y;
-	}
-
-	/**
-	 * @see ITask#getMinDuration()
-	 */
-	@Override
-	public int getMinDuration() {
-		return duration;
-	}
-
-	/**
-	 * @see ITask#hasConstantDuration()
-	 */
-	@Override
-	public boolean hasConstantDuration() {
-		return true;
-	}
-
-	/**
-	 * @see ITask#isScheduled()
-	 */
-	@Override
-	public boolean isScheduled() {
-		return domain.x==domain.y;
-	}
-
-	/**
-	 * @see ITask#getMaxDuration()
-	 */
-	@Override
-	public int getMaxDuration() {
-		return duration;
-	}
-
-
-}
-
-
-class SimpleResource implements ICumulativeResource<SimpleTask> {
-
-	
-	public final List<SimpleTask> tasksL;
-
-	public int[] heights;
-	
-	public int capacity;
-	
-	
-	public SimpleResource(final List<SimpleTask> tasksL, final int[] heights, final int capacity) {
-		super();
-		this.tasksL = tasksL;
-		this.heights = heights;
-		this.capacity = capacity;
-	}
-
-	public SimpleResource(final List<SimpleTask> tasksL) {
-		super();
-		this.tasksL=new ArrayList<SimpleTask>(tasksL);
-		this.capacity = 1;
-		this.heights = new int[tasksL.size()];
-		Arrays.fill(heights, 1);
-	}
-
-	
-	@Override
-	public IRTask getRTask(final int idx) {
-		return null;
-	}
-
-
-	@Override
-	public List<IRTask> asRTaskList() {
-		return Collections.emptyList();
-	}
-
-	@Override
-	public int getNbTasks() {
-		return tasksL.size();
-	}
-
-	@Override
-	public String getRscName() {
-		return "internal resource (test)";
-	}
-
-	@Override
-	public SimpleTask getTask(final int idx) {
-		return tasksL.get(idx);
-	}
-
-	@Override
-	public Iterator<SimpleTask> getTaskIterator() {
-		return tasksL.listIterator();
-	}
-	
-	@Override
-	public List<SimpleTask> asTaskList() {
-		return Collections.unmodifiableList(tasksL);
-	}
-
-	@Override
-	public IntDomainVar getCapacity() {
-		return null;
-	}
-	@Override
-	
-	public int getMaxCapacity() {
-		return capacity;
-	}
-
-	@Override
-	public int getMinCapacity() {
-		return getCapacity().getInf();
-	}
-
-	public IntDomainVar getHeight(final int idx) {
-		return null;
-	}
-	
-	
-	@Override
-	public IntDomainVar getConsumption() {
-		return null;
-	}
-
-	@Override
-	public int getMaxConsumption() {
-		return 0;
-	}
-
-	@Override
-	public int getMinConsumption() {
-		return 0;
-	}
-
-	@Override
-	public boolean isInstantiatedHeights() {
-		return true;
-	}
-
-	@Override
-	public boolean hasOnlyPosisiveHeights() {
-		return true;
-	}
-	
-	@Override
-	public int getNbOptionalTasks() {
-		return 0;
-	}
-
-	@Override
-	public int getNbRegularTasks() {
-		return getNbTasks();
-	}
-
-}

@@ -22,18 +22,24 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.common;
 
-import static choco.cp.solver.SettingType.*;
-import choco.cp.solver.constraints.BitFlags;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.comparator.IPermutation;
+import static choco.cp.solver.constraints.global.scheduling.disjunctive.Disjunctive.*;
 import static choco.kernel.common.util.tools.MathUtils.combinaison;
 import static choco.kernel.common.util.tools.MathUtils.factoriel;
-import choco.kernel.common.util.tools.PermutationUtils;
-import static org.junit.Assert.*;
-import org.junit.Test;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.logging.Logger;
+
+import org.junit.Test;
+
+import choco.cp.solver.constraints.global.pack.PackSConstraint;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.util.bitmask.BitMask;
+import choco.kernel.common.util.comparator.IPermutation;
+import choco.kernel.common.util.tools.PermutationUtils;
 
 
 /**
@@ -96,24 +102,24 @@ public class TestSortingTool {
 
 	@Test
 	public void testBitFlags() {
-		BitFlags flags = new BitFlags();
+		BitMask flags = new BitMask();
 		
-		flags.set(ADDITIONAL_RULES,	DETECTABLE_PRECEDENCE, EDGE_FINDING_D);
+		flags.set(NF_NL, DETECTABLE_PRECEDENCE, EDGE_FINDING_D);
 		//get ans set
-		assertTrue( "get", flags.contains(ADDITIONAL_RULES));
+		assertTrue( "get", flags.contains(NF_NL));
 		assertTrue( "get", flags.contains(DETECTABLE_PRECEDENCE));
 		assertTrue( "get", flags.contains(EDGE_FINDING_D));
-		assertFalse( "get" , flags.contains(FILL_BIN));
+		assertFalse( "get" , flags.contains(OVERLOAD_CHECKING));
 		//toggle
-		flags.toggle(ADDITIONAL_RULES.getBitMask());
-		assertFalse( "get", flags.contains(ADDITIONAL_RULES));
-		flags.toggle(ADDITIONAL_RULES.getBitMask());
-		assertTrue( "get", flags.contains(ADDITIONAL_RULES));
+		flags.toggle(NF_NL.getBitMask());
+		assertFalse( "get", flags.contains(NF_NL));
+		flags.toggle(NF_NL.getBitMask());
+		assertTrue( "get", flags.contains(NF_NL));
 		//unset 
-		flags.unset(ADDITIONAL_RULES.getBitMask());
+		flags.unset(NF_NL.getBitMask());
 		flags.unset(DETECTABLE_PRECEDENCE.getBitMask());
 		
-		assertFalse( "get", flags.contains(ADDITIONAL_RULES));
+		assertFalse( "get", flags.contains(NF_NL));
 		assertFalse( "get", flags.contains(DETECTABLE_PRECEDENCE));
 		assertTrue( "get", flags.contains(EDGE_FINDING_D));
 		

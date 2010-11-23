@@ -1,6 +1,6 @@
 package choco.kernel.common.opres.pack;
 
-public class FirstFit1BP extends AbstractHeurisic1BP {
+public class FirstFit1BP extends AbstractHeuristic1BP {
 
 	public FirstFit1BP(int capacity) {
 		super(capacity);

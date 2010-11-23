@@ -27,7 +27,6 @@ import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.model.managers.operators.SqrtManager;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.SettingType;
 import choco.cp.solver.constraints.integer.bool.BoolIntLinComb;
 import choco.cp.solver.search.integer.branching.ImpactBasedBranching;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
@@ -834,7 +833,7 @@ public class ReifiedSomeTest {
             }
 
             int capa = 6;
-            final String option = SettingType.TASK_INTERVAL.getOptionName();
+            final String option = Options.C_CUMUL_TI;
             final TaskVariable[] tasks = Choco.makeTaskVarArray("T", vars, ends, durs);
             m.addConstraint(cumulativeMax(tasks, heights_1, capa, option));
             m.addConstraint(cumulativeMax(tasks, heights_2, capa, option));
