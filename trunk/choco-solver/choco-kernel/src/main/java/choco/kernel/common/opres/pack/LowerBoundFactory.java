@@ -70,7 +70,7 @@ public static int  computeL_DFF_1BP(final int[] sizes,final int capacity,final i
 	return computeL_DFF(items, capacity, ub);
 }
 
-private static int  computeL_DFF(final TIntArrayList sizes,final int capacity,final int ub) {
+public static int  computeL_DFF(final TIntArrayList sizes,final int capacity,final int ub) {
 	PackDDFF ddffs = new PackDDFF(capacity);
 	ddffs.setItems(sizes);
 	ddffs.setUB(ub);

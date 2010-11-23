@@ -4,7 +4,7 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.pack.PackSConstraint;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintType;
-import choco.kernel.model.constraints.pack.PackModeler;
+import choco.kernel.model.constraints.pack.PackModel;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.global.scheduling.ICumulativeResource;
@@ -116,17 +116,17 @@ public final class ChocoChartFactory {
 
 
 
-	public static JFreeChart createPackChart(String title, Solver s,PackModeler modeler) {
-		return createPackChart(title, createPackDataset(s,modeler), modeler.maxCapacity, false);
+	public static JFreeChart createPackChart(String title, Solver s,PackModel modeler) {
+		return createPackChart(title, createPackDataset(s,modeler), modeler.getMaxCapacity(), false);
 	}
 
-	public static JFreeChart createPackChart(String title, Solver s,PackModeler... modelers) {
+	public static JFreeChart createPackChart(String title, Solver s,PackModel... modelers) {
 		final int n = modelers.length;
 		CategoryDataset[] datasets = new CategoryDataset[n];
 		int capa[] = new int[n];
 		for (int i = 0; i < n; i++) {
 			datasets[i] = createPackDataset(s,modelers[i]);
-			capa[i] = modelers[i].maxCapacity;
+			capa[i] = modelers[i].getMaxCapacity();
 		}
 		return createPackChart(title, datasets, capa, false);
 	}

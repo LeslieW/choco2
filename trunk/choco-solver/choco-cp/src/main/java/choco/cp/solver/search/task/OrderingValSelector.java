@@ -22,15 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.task;
 
-import choco.kernel.solver.constraints.global.scheduling.IPrecedence;
-import choco.kernel.solver.variables.scheduling.TaskVar;
+import choco.cp.solver.constraints.global.scheduling.precedence.ITemporalSRelation;
 
 
 
 public interface OrderingValSelector {
 
-	int getBestVal(IPrecedence precedence);
+	int getBestVal(ITemporalSRelation precedence);
 	
-	int getBestVal(TaskVar t1, TaskVar t2);
-
 }

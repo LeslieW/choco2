@@ -27,8 +27,6 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 
 public final class SimpleRatio extends AbstractRatio {
 
-	public int dividend, divisor;
-
 	public SimpleRatio() {
 		super();
 	}
@@ -45,48 +43,18 @@ public final class SimpleRatio extends AbstractRatio {
 	}
 	
 	@Override
+	protected int initializeDividend() {
+		return initailizeDividend();
+	}
+
+	@Override
+	protected int initializeDivisor() {
+		return getDivisor();
+	}
+
+	@Override
 	public boolean isActive() {
 		return true;
 	}
 
-	public final int getDividend() {
-		return dividend;
-	}
-	
-	
-	public final void setMaxRatioValue() {
-		this.dividend= 1;
-		this.divisor=0;
-	}
-	
-	public final void setZeroRatioValue() {
-		this.dividend= 0;
-		this.divisor=1;
-	}
-
-	public final void setRatio(IntRatio ratio) {
-		setDividend(ratio.getDividend());
-		setDivisor(ratio.getDivisor());
-	}
-
-	public final void setDividend(int dividend) {
-		assert dividend >= 0;
-		this.dividend = dividend;
-	}
-	
-	public final int getDivisor() {
-		return divisor;
-	}
-
-	public final void setDivisor(int divisor) {
-		assert divisor >= 0;
-		this.divisor = divisor;
-	}
-
-	@Override
-	public String toString() {
-		return getDividend()+"/"+getDivisor();
-	}
-	
-	
 }

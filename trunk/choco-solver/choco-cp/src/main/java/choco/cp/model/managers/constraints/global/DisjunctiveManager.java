@@ -22,16 +22,19 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.global;
 
+import static choco.kernel.common.util.tools.VariableUtils.getIntVar;
+import static choco.kernel.common.util.tools.VariableUtils.getTaskVar;
+
+import java.util.List;
+
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.SettingType;
 import choco.cp.solver.constraints.global.scheduling.disjunctive.AltDisjunctive;
 import choco.cp.solver.constraints.global.scheduling.disjunctive.Disjunctive;
 import choco.kernel.model.variables.Variable;
-import choco.kernel.solver.Solver;
-import choco.kernel.solver.constraints.global.scheduling.RscData;
-
-import java.util.List;
-import java.util.logging.Level;
+import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.constraints.global.scheduling.ResourceParameters;
+import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.kernel.solver.variables.scheduling.TaskVar;
 
 /**
  * @author Arnaud Malapert
@@ -40,47 +43,21 @@ import java.util.logging.Level;
 public final class DisjunctiveManager extends AbstractResourceManager {
 
 
-	@Override
-	protected void makeDecompositionConstraint(CPSolver solver,
-			Variable[] variables, RscData rdata, List<String> options) {
-		if( rdata.isAlternative()) {
-			LOGGER.log(Level.INFO, "no decomposition available: use {0} instead",  SettingType.MIXED);
-			makeMixedConstraint(solver, variables, rdata, options);
-		}else {
-			makeDecompositionDisjunctive(solver, rdata);
-		}
-	}
-
-	@Override
-	protected void makeGlobalConstraint(CPSolver solver,
-			Variable[] variables, RscData rdata, List<String> options) {
-		makeDisjunctive(solver, rdata, options);
-	}
-
-	@Override
-	protected void makeMixedConstraint(CPSolver solver,
-			Variable[] variables, RscData rdata, List<String> options) {
-		makeGlobalConstraint(solver, variables, rdata, options);
-		makeDecompositionDisjunctive(solver, rdata);
-	}
 	
-	
-	protected final void makeDisjunctive(Solver solver, RscData rdata, List<String> options) {
+	@Override
+	protected SConstraint makeConstraint(CPSolver solver,
+			Variable[] variables, ResourceParameters rdata, List<String> options) {
+		final int n = rdata.getUsagesOffset();
+		final TaskVar[] tasks = getTaskVar(solver, variables, 0, n);
+		final IntDomainVar[] usages = getIntVar(solver, variables, n, rdata.getHeightsOffset());
+		final IntDomainVar horizon = getHorizon(solver, variables, rdata);
 		final Disjunctive cstr = (
 				rdata.isAlternative() ? 
-						new AltDisjunctive((CPSolver) solver, rdata.getRscName(), tasks, usages, uppBound) :
-							new Disjunctive(rdata.getRscName(), tasks, uppBound, solver)
+						new AltDisjunctive((CPSolver) solver, rdata.getRscName(), tasks, usages, horizon) :
+							new Disjunctive(rdata.getRscName(), tasks, horizon, solver)
 		);
-		cstr.getFlags().readDisjunctiveOptions(options);
-		constraints.addFirst(cstr);
+		cstr.readOptions(options);
+		return cstr;
 	}
 	
-	protected void makeDecompositionDisjunctive(CPSolver s, RscData rdata) {
-		final int n = rdata.getNbRegularTasks();
-		for (int i = 0; i < n; i++) {
-			for (int j = i+1; j < n; j++) {
-				constraints.add( s.preceding(null, tasks[i], 0, tasks[j], 0));
-			}
-		}
-	}
 }

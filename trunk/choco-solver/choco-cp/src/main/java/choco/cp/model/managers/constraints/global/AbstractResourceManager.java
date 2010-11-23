@@ -22,23 +22,24 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.global;
 
-import choco.cp.model.managers.MixedConstraintManager;
-import choco.cp.solver.CPSolver;
-import choco.cp.solver.SettingType;
-import choco.kernel.model.variables.Variable;
-import choco.kernel.solver.Solver;
-import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.constraints.global.MetaSConstraint;
-import choco.kernel.solver.constraints.global.scheduling.RscData;
-import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.solver.variables.scheduling.TaskVar;
+import static choco.kernel.common.util.tools.VariableUtils.getIntVar;
+import static choco.kernel.common.util.tools.VariableUtils.getTaskVar;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 
-import static choco.kernel.common.util.tools.VariableUtils.getIntVar;
-import static choco.kernel.common.util.tools.VariableUtils.getTaskVar;
+import choco.Options;
+import choco.cp.model.managers.MixedConstraintManager;
+import choco.cp.solver.CPSolver;
+import choco.kernel.model.variables.Variable;
+import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.constraints.global.MetaSConstraint;
+import choco.kernel.solver.constraints.global.scheduling.ResourceParameters;
+import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.kernel.solver.variables.scheduling.TaskVar;
 
 
 /**
@@ -49,71 +50,29 @@ import static choco.kernel.common.util.tools.VariableUtils.getTaskVar;
 public abstract class AbstractResourceManager extends MixedConstraintManager {
 
 
-
-	protected LinkedList<SConstraint> constraints = new LinkedList<SConstraint>();
-
-	protected TaskVar[] tasks;
-
-	protected IntDomainVar[] usages;
-
-	protected IntDomainVar uppBound;
-	
-	protected String name;
-
-	protected void initialize(CPSolver solver, Variable[] variables, RscData rdata) {
-		final int n = rdata.getNbTasks();
-		constraints.clear();
-		tasks = getTaskVar(solver, variables, 0, n);
-		usages = getIntVar(solver, variables, n, n + rdata.getNbOptionalTasks());
-		uppBound =  getUppBound(solver, rdata);
-		name =rdata.getRscName();
-
-	}
-
 	@Override
 	public SConstraint makeConstraint(Solver solver, Variable[] variables,
 			Object parameters, List<String> options) {
 		if(solver instanceof CPSolver){
 			CPSolver s = (CPSolver) solver;
-			if (parameters instanceof RscData) {
-				RscData rdata = (RscData) parameters;
-				initialize(s, variables, rdata);
-				if(options.contains(SettingType.GLOBAL.getOptionName()) ) {
-					makeGlobalConstraint(s, variables, rdata, options);
-				} else if(options.contains(SettingType.MIXED.getOptionName()) ) {
-					makeMixedConstraint(s, variables, rdata, options);
-				} else if( options.contains(SettingType.DECOMP.getOptionName())) {
-					makeDecompositionConstraint(s, variables, rdata, options);
-				}else {
-					makeDefaultConstraint(s, variables, rdata, options);
-				}
+			if (parameters instanceof ResourceParameters) {
+				ResourceParameters rdata = (ResourceParameters) parameters;
+				return makeConstraint(s, variables, rdata, options);
 			}else {
 				LOGGER.log(Level.WARNING, "unknown parameter for resource constraint: {0}", parameters);
 			}
-
 		}
-		final int n = constraints.size();
-		if( n == 0) return fail("resource constraint");
-		else if(n == 1) return constraints.getFirst();
-		else return new MetaSConstraint( name, constraints.toArray(new SConstraint[n]), tasks, null);
+		return null;
 	}
 
-	protected abstract void makeDecompositionConstraint(CPSolver solver, Variable[] variables, RscData rdata, List<String> options);
+	protected abstract SConstraint makeConstraint(CPSolver solver, Variable[] variables, ResourceParameters rdata, List<String> options);
 
-	protected abstract void makeGlobalConstraint(CPSolver solver, Variable[] variables, RscData rdata, List<String> options);
-
-	protected abstract void makeMixedConstraint(CPSolver solver, Variable[] variables, RscData rdata, List<String> options);
-
-	protected void makeDefaultConstraint(CPSolver solver, Variable[] variables, RscData rdata, List<String> options) {
-		 makeGlobalConstraint(solver, variables, rdata, options);
+	protected final IntDomainVar getHorizon(CPSolver s, Variable[] variables, ResourceParameters p) {
+		return  p.isHorizonDefined() ? s.getVar((IntegerVariable) variables[variables.length-1]) : s.createMakespan();
 	}
-
-	private IntDomainVar getUppBound(CPSolver s, RscData p) {
-		return  p.getUppBound() == null ? s.createMakespan() : s.getVar( p.getUppBound());
-	}
-
 
 	/**
+	 * Bounded.
 	 * @see choco.kernel.model.constraints.ConstraintManager#getFavoriteDomains(java.util.List
 	 */
 	@Override

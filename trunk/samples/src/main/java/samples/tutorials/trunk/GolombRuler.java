@@ -80,13 +80,10 @@ public class GolombRuler extends PatternExample {
     public void buildSolver() {
        solver = new CPSolver();
        solver.read(model);
-        solver.monitorBackTrackLimit(true);
     }
 
     @Override
     public void solve() {
-    	//ChocoLogging.setVerbosity(Verbosity.SEARCH);
-    	//ChocoLogging.setLoggingMaxDepth(3);
     	solver.solveAll();
     }
 

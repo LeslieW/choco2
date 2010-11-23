@@ -30,7 +30,7 @@ public interface IntRatio extends Comparable<IntRatio> {
 	
 	boolean isActive();
 	
-	int getDividend();
+	int initailizeDividend();
 
 	int getDivisor();
 

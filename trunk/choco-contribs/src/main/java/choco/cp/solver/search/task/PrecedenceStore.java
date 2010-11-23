@@ -27,12 +27,12 @@ import gnu.trove.TObjectProcedure;
 
 import java.util.HashSet;
 
-import static choco.kernel.common.util.tools.TaskUtils.*;
+import choco.cp.solver.constraints.global.scheduling.precedence.ITemporalSRelation;
 import choco.kernel.common.util.tools.StringUtils;
+import choco.kernel.model.constraints.ITemporalRelation;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.ITask;
-import choco.kernel.solver.variables.scheduling.TaskVar;
 
 public class PrecedenceStore implements IPrecedenceStore {
 
@@ -40,7 +40,7 @@ public class PrecedenceStore implements IPrecedenceStore {
 
 	private final static ReifiedCounter COUNT = new ReifiedCounter();
 
-	private final TIntObjectHashMap<StoredPrecedence> precMap = new TIntObjectHashMap<StoredPrecedence>();
+	private final TIntObjectHashMap<ITemporalSRelation> precMap = new TIntObjectHashMap<ITemporalSRelation>();
 
 	private final int offset;
 
@@ -54,7 +54,7 @@ public class PrecedenceStore implements IPrecedenceStore {
 	}
 
 	@Override
-	public StoredPrecedence getStoredPrecedence(ITask t1, ITask t2) {
+	public ITemporalSRelation getStoredPrecedence(ITask t1, ITask t2) {
 		return precMap.get(getTaskPairKey(t1, t2));
 	}
 
@@ -65,16 +65,16 @@ public class PrecedenceStore implements IPrecedenceStore {
 		if(precMap.contains(key)) {
 			throw new SolverException("duplicate or opposite precedence");
 		}
-		precMap.put(key, new StoredPrecedence(t1, t2, direction));
+		//FIXME precMap.put(key, new StoredPrecedence(t1, t2, direction));
 
 	}
 
 	
 	@Override
 	public boolean isReified(ITask t1, ITask t2) {
-		final StoredPrecedence prec = getStoredPrecedence(t1, t2);
+		final ITemporalSRelation prec = getStoredPrecedence(t1, t2);
 		if(prec == null) {return false;}
-		return ! prec.direction.isInstantiated();
+		return ! prec.getDirection().isInstantiated();
 	}
 
 	
@@ -94,8 +94,8 @@ public class PrecedenceStore implements IPrecedenceStore {
 
 
 	@Override
-	public StoredPrecedence[] getValues() {
-		return precMap.getValues(new StoredPrecedence[precMap.size()]);
+	public ITemporalSRelation[] getValues() {
+		return precMap.getValues(new ITemporalSRelation[precMap.size()]);
 	}
 
 	@Override
@@ -105,26 +105,26 @@ public class PrecedenceStore implements IPrecedenceStore {
 		return td.toString();
 	}
 	
-	private static class ReifiedCounter implements TObjectProcedure<StoredPrecedence> {
+	private static class ReifiedCounter implements TObjectProcedure<ITemporalSRelation> {
 
 		public int count = 0;
 		
 		@Override
-		public boolean execute(StoredPrecedence arg0) {
-			if(!arg0.direction.isInstantiated()) {count++;}
+		public boolean execute(ITemporalSRelation arg0) {
+			if(!arg0.getDirection().isInstantiated()) {count++;}
 			return true;
 		}
 	}
 
-	private static class ReifiedChecker implements TObjectProcedure<StoredPrecedence> {
+	private static class ReifiedChecker implements TObjectProcedure<ITemporalSRelation> {
 
 		@Override
-		public boolean execute(StoredPrecedence arg0) {
-			return arg0.direction.isInstantiated();
+		public boolean execute(ITemporalSRelation arg0) {
+			return arg0.getDirection().isInstantiated();
 		}
 	}
 
-	private static final class DotProcedure implements TObjectProcedure<StoredPrecedence> {
+	private static final class DotProcedure implements TObjectProcedure<ITemporalSRelation> {
 
 		private final StringBuilder dotGraph = new StringBuilder();
 		private final HashSet<ITask> nodeM = new HashSet<ITask>();
@@ -145,11 +145,11 @@ public class PrecedenceStore implements IPrecedenceStore {
 		
 		
 		@Override
-		public boolean execute(StoredPrecedence arg0) {
+		public boolean execute(ITemporalSRelation arg0) {
 			if( nodeM.add(arg0.getOrigin()) ) writeNode(arg0.getOrigin());
 			if( nodeM.add(arg0.getDestination()) ) writeNode(arg0.getDestination());
-			if(arg0.direction.isInstantiatedTo(0)) writeArc(arg0.getOrigin(), arg0.getDestination());
-			else if(arg0.direction.isInstantiatedTo(1)) writeArc(arg0.getDestination(), arg0.getOrigin());
+			if(arg0.getDirection().isInstantiatedTo(0)) writeArc(arg0.getOrigin(), arg0.getDestination());
+			else if(arg0.getDirection().isInstantiatedTo(1)) writeArc(arg0.getDestination(), arg0.getOrigin());
 			else dotGraph.append(StringUtils.getDotEdge(arg0.getOrigin(), arg0.getDestination()));
 			dotGraph.append('\n');
 			return true;

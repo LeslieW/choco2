@@ -1,6 +1,6 @@
 /* ************************************************
  *           _       _                            *
- *          |  °(..)  |                           *
+ *          |  ï¿½(..)  |                           *
  *          |_  J||L _|        CHOCO solver       *
  *                                                *
  *     Choco is a java library for constraint     *
@@ -22,28 +22,54 @@
  **************************************************/
 package samples.documentation;
 
+import static choco.Choco.allDifferent;
+import static choco.Choco.eq;
+import static choco.Choco.leq;
+import static choco.Choco.makeBooleanVarArray;
+import static choco.Choco.makeIntVar;
+import static choco.Choco.makeIntVarArray;
+import static choco.Choco.makeSetVar;
+import static choco.Choco.mult;
+import static choco.Choco.oppositeSign;
+import static choco.Choco.or;
+import static choco.Choco.pack;
+import static choco.Choco.plus;
+import static choco.Choco.precedenceReified;
+import static choco.Choco.regular;
+import static choco.Choco.reifiedConstraint;
+import static choco.Choco.relationPairAC;
+import static choco.Choco.relationTupleAC;
+import static choco.Choco.relationTupleFC;
+import static choco.Choco.setDisjoint;
+import static choco.Choco.setInter;
+import static choco.Choco.setUnion;
+import static choco.Choco.sorting;
+import static choco.Choco.stretchPath;
+import static choco.Choco.times;
+import static choco.Choco.xnor;
+import static choco.Choco.xor;
+
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.LinkedList;
+import java.util.List;
+
 import choco.Choco;
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.SettingType;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.automaton.DFA;
 import choco.kernel.model.constraints.automaton.Transition;
+import choco.kernel.model.constraints.pack.PackModel;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.model.variables.tree.TreeParametersObject;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.integer.extension.CouplesTest;
 import choco.kernel.solver.constraints.integer.extension.TuplesTest;
-
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.LinkedList;
-import java.util.List;
 
 
 /*
@@ -83,8 +109,8 @@ public class Code4Doc5 {
     public void cpack(){
         //totex cpack
         Model m = new CPModel();
-        m.addConstraint(pack(new int[]{5,3,2,6,8,5},5,10, SettingType.ADDITIONAL_RULES.
-            getOptionName()));
+        PackModel pm = new PackModel(new int[]{5,3,2,6,8,5},5,10);
+        m.addConstraint(pack(pm, Options.C_PACK_AR));
         Solver s = new CPSolver();
         s.read(m);
         s.solve();

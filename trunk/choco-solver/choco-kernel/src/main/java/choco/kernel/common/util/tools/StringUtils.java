@@ -22,17 +22,22 @@
  **************************************************/
 package choco.kernel.common.util.tools;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Queue;
+
 import choco.IPretty;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.common.util.iterators.EmptyIterator;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
+import choco.kernel.model.variables.MultipleVariables;
+import choco.kernel.model.variables.Variable;
+import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.search.limit.Limit;
 import choco.kernel.solver.search.measure.ISearchMeasures;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.ITask;
-
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Queue;
 
 /*
  * User : charles
@@ -305,16 +310,26 @@ public class StringUtils {
 	}
 
 	private static long next;
+	
+	
 	/**
 	 * Return a generated short, random string
 	 * @return String
 	 */
 	public static String randomName(){
-		return "TMP_" + next++;
+		return "TMP_" + next++ ;
 	}
 	
-	private static String format(int lb, int ub) {
+	public static String format(int lb, int ub) {
 		return lb == ub ? String.valueOf(lb) : lb + ".."+ub ;	
+	}
+
+	public static String format(IntegerVariable iv) {
+		return format(iv.getLowB(), iv.getUppB());	
+	}
+
+	public static String format(IntDomainVar iv) {
+		return format(iv.getInf(), iv.getSup());	
 	}
 
 	public static String pretty(ITask t) {
@@ -326,7 +341,17 @@ public class StringUtils {
 		return new String(b);
 	}
 	
-	
+	public static String toDotty(Iterator<MultipleVariables> iter) {
+		StringBuilder b = new StringBuilder();
+		while(iter.hasNext()) {
+			final MultipleVariables mv = iter.next();
+			if (mv instanceof TaskVariable) {
+				TaskVariable tv = (TaskVariable) mv;
+				b.append(tv.toDotty()).append("\n");
+			}
+		}
+		return b.toString();
+	}
 	/**
 	 * convert a task into .dot format.
 	 * @param label  information appended to the default label
@@ -379,5 +404,9 @@ public class StringUtils {
 
 	public static String getDotEdge(ITask t1, ITask t2) {
 		return getDotBase(t1, t2) + "[arrowhead=none, style=dotted];";
+	}
+	
+	public static String dirRandomName(String n1, String n2){
+		return randomName()+"-dir-" + n1 + "-" + n2 ;
 	}
 }

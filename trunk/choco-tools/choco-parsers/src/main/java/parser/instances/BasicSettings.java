@@ -5,6 +5,7 @@ import choco.kernel.solver.Configuration;
 import choco.kernel.solver.search.limit.Limit;
 
 import java.io.File;
+import java.io.IOException;
 
 
 public class BasicSettings extends PreProcessConfiguration{
@@ -114,6 +115,5 @@ public class BasicSettings extends PreProcessConfiguration{
 		if( conf.readBoolean(RANDOM_TIE_BREAKING)) b.append("RAND_TIE_BREAKING");
 		return new String(b);
 	}
-
-
+	
 }

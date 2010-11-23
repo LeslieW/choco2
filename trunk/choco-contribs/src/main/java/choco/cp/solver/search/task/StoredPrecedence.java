@@ -1,7 +1,7 @@
 package choco.cp.solver.search.task;
 
-import choco.kernel.common.util.tools.TaskUtils;
-import choco.kernel.solver.constraints.global.scheduling.IPrecedence;
+import choco.IPretty;
+import choco.kernel.model.constraints.ITemporalRelation;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.ITask;
 import choco.kernel.solver.variables.scheduling.TaskVar;
@@ -13,7 +13,7 @@ import choco.kernel.solver.variables.scheduling.TaskVar;
  * @since 18 juin 2009 version 2.1.0</br>
  * @version 2.1.0</br>
  */
-public final class StoredPrecedence implements IPrecedence {
+public final class StoredPrecedence implements IPretty, ITemporalRelation<TaskVar<?>, IntDomainVar> {
 
 	private final ITask t1;
 
@@ -36,12 +36,8 @@ public final class StoredPrecedence implements IPrecedence {
 		return (TaskVar) t2;
 	}
 
-	public final IntDomainVar getBoolVar() {
+	public final IntDomainVar getDirectionVar() {
 		return direction;
-	}
-	
-	public final int getDomMesure() {
-		return TaskUtils.getSlack(t1) + TaskUtils.getSlack(t2) + 2;
 	}
 	
 	@Override
@@ -53,7 +49,44 @@ public final class StoredPrecedence implements IPrecedence {
 	public String pretty() {
 		return toString();
 	}
+
+
+	@Override
+	public boolean isBackward() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean IsFixed() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isForward() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public IntDomainVar getDirection() {
+		return direction;
+	}
+
+	@Override
+	public int backwardSetup() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int forwardSetup() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 	
+
 	
 	
 }

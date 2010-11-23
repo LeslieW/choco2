@@ -413,8 +413,8 @@ public class CPSolver implements Solver {
 		return uniqueReading;
 	}
 
-	public final void setUniqueReading(boolean multipleReading) {
-		this.uniqueReading = multipleReading;
+	public final void setUniqueReading(boolean uniqueReading) {
+		this.uniqueReading = uniqueReading;
 	}
 
 	/**
@@ -1739,8 +1739,14 @@ public class CPSolver implements Solver {
 	public final DisposableIterator<RealVar> getRealVarIterator() {
 		return floatVars.quickIterator();
 	}
+	
+	
+    @Override
+	public DisposableIterator<TaskVar> getTaskVarIterator() {
+    	return taskVars.quickIterator();
+	}
 
-    /**
+	/**
      * @deprecated
      */
     @Deprecated

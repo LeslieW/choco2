@@ -22,13 +22,14 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package common;
 
-import choco.cp.solver.CPSolver;
-import choco.kernel.model.Model;
-import org.junit.Test;
-import samples.tutorials.scheduling.pert.DeterministicPert;
-import scheduling.SchedUtilities;
-
 import java.util.Random;
+
+import junit.framework.Assert;
+
+import org.junit.Test;
+
+import samples.tutorials.scheduling.PertCPM;
+import choco.cp.solver.CPSolver;
 
 /**
  * User : cprudhom<br/>
@@ -38,65 +39,36 @@ import java.util.Random;
  */
 public class TestPrecedences {
 
-    public Model m;
+	
+    private final static Random RANDOM = new Random();
 
-    public CPSolver s;
-
-    final static Random RANDOM = new Random();
-
-    public void solve(int nbSol) {
-        for (int i = 0; i < 5; i++) {
-            long seed = RANDOM.nextLong();
-            s = new CPSolver();
-            s.read(m);
-            s.setRandomSelectors(seed);
-            SchedUtilities.solveRandom(s, nbSol, -1, "Pert");
-        }
+    private void testPertCPM(int horizon, int nbSol) {
+    	PertCPM ex = new PertCPM(horizon);
+        ex.buildModel();
+    	for (int i = 0; i < 5; i++) {
+        	ex.buildSolver();
+        	CPSolver s = (CPSolver) ex.solver;
+        	s.setRandomSelectors(RANDOM.nextLong());
+        	Assert.assertEquals(s.solveAll().booleanValue(), nbSol > 0);
+        	Assert.assertEquals(s.getSolutionCount(), nbSol);
+    	}
     }
 
     @Test
-    public void testIlogExample1() {
-        DeterministicPert ex = new DeterministicPert(17);
-        ex.buildModel();
-        m = ex.model;
-        solve(0);
+    public void testPert1() {
+    	testPertCPM(17, 0);
     }
 
     @Test
-    public void testIlogExample2() {
-        DeterministicPert ex = new DeterministicPert(18);
-        ex.buildModel();
-        m = ex.model;
-        solve(154);
+    public void testPert2() {
+    	testPertCPM(18, 154);
 
     }
 
     @Test
-    public void testIlogExample3() {
-        DeterministicPert ex = new DeterministicPert(19);
-        ex.buildModel();
-        m = ex.model;
-        solve(1764);
-
+    public void testPert3() {
+    	testPertCPM(19, 1764);
     }
 
-    @Test
-    public void testIlogExample4() {
-        DeterministicPert ex = new DeterministicPert(28);
 
-        ex.buildModel();
-        ex.requireUnaryResource();
-        m = ex.model;
-        solve(0);
-
-    }
-
-    @Test
-    public void testIlogExample5() {
-        DeterministicPert ex = new DeterministicPert(29);
-        ex.buildModel();
-        ex.requireUnaryResource();
-        m = ex.model;
-        solve(112);
-    }
 }

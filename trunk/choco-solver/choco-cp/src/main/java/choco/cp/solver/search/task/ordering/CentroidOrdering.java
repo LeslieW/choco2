@@ -23,8 +23,8 @@
 
 package choco.cp.solver.search.task.ordering;
 
-import static choco.kernel.common.util.tools.TaskUtils.getCentroidMultByTwo;
-import choco.kernel.solver.variables.scheduling.TaskVar;
+import static choco.kernel.common.util.tools.TaskUtils.getDoubleCentroid;
+import choco.cp.solver.constraints.global.scheduling.precedence.ITemporalSRelation;
 public class CentroidOrdering extends RandomOrdering {
 
 
@@ -33,8 +33,8 @@ public class CentroidOrdering extends RandomOrdering {
 	}
 
 	@Override
-	public int getBestVal(TaskVar t1, TaskVar t2) {
-		return getMaxVal(getCentroidMultByTwo(t1), getCentroidMultByTwo(t2));
+	public int getBestVal(ITemporalSRelation rel) {
+		return getMaxVal(getDoubleCentroid(rel.getOrigin()), getDoubleCentroid(rel.getDestination()));
 	}
 
 }

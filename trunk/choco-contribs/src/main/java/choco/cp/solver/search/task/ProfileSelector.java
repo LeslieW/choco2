@@ -25,11 +25,12 @@ package choco.cp.solver.search.task;
 import java.util.Iterator;
 import java.util.List;
 
+import choco.cp.solver.constraints.global.scheduling.precedence.ITemporalSRelation;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintType;
+import choco.kernel.model.constraints.ITemporalRelation;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.constraints.global.scheduling.IPrecedence;
 import choco.kernel.solver.constraints.global.scheduling.IResource;
 import choco.kernel.solver.search.integer.IntVarValPair;
 import choco.kernel.solver.search.integer.VarValPairSelector;
@@ -95,14 +96,11 @@ public final class ProfileSelector implements VarValPairSelector {
 				}
 			}
 			if(st1 != null) {
-				final IPrecedence prec = precStore.getStoredPrecedence(st1, st2);
-				return new IntVarValPair(prec.getBoolVar(), precSelector.getBestVal(prec));
+				final ITemporalSRelation prec = precStore.getStoredPrecedence(st1, st2);
+				return new IntVarValPair(prec.getDirection(), precSelector.getBestVal(prec));
 			}
 		}
-		if(!precStore.containsReifiedPrecedence()) {
-			System.out.println();
-		}
-        //assert(!precStore.containsReifiedPrecedence());
+		assert(!precStore.containsReifiedPrecedence());
 		return null;
 	}
 

@@ -3,14 +3,12 @@ package choco.cp.solver.search;
 import static choco.cp.solver.search.integer.varselector.ratioselector.ratios.RatioFactory.createDomDegRatio;
 import static choco.cp.solver.search.integer.varselector.ratioselector.ratios.RatioFactory.createDomDynDegRatio;
 import static choco.cp.solver.search.integer.varselector.ratioselector.ratios.RatioFactory.createMinPreservedRatio;
+import choco.cp.solver.constraints.global.scheduling.precedence.ITemporalSRelation;
 import choco.cp.solver.search.integer.varselector.ratioselector.DomOverWDegSelector;
 import choco.cp.solver.search.integer.varselector.ratioselector.MinRatioSelector;
 import choco.cp.solver.search.integer.varselector.ratioselector.RandDomOverWDegSelector;
 import choco.cp.solver.search.integer.varselector.ratioselector.RandMinRatioSelector;
-import choco.cp.solver.search.task.OrderingValSelector;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.constraints.global.scheduling.IPrecedence;
-import choco.kernel.solver.search.integer.VarValPairSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 public final class VarSelectorFactory {
@@ -52,21 +50,21 @@ public final class VarSelectorFactory {
 	
 	//*************************************************************************//
 	
-	public static MinRatioSelector minPreserved(Solver solver, IPrecedence[] precedences) {
+	public static MinRatioSelector minPreserved(Solver solver, ITemporalSRelation[] precedences) {
 		return new MinRatioSelector(solver, createMinPreservedRatio(precedences));
 	}
 	
-	public static RandMinRatioSelector minPreserved(Solver solver, IPrecedence[] precedences, long seed) {
+	public static RandMinRatioSelector minPreserved(Solver solver, ITemporalSRelation[] precedences, long seed) {
 		return new RandMinRatioSelector(solver, createMinPreservedRatio(precedences), seed);
 	}
 	
 //*************************************************************************//
 	
-	public static MinRatioSelector maxPreserved(Solver solver, IPrecedence[] precedences) {
+	public static MinRatioSelector maxPreserved(Solver solver, ITemporalSRelation[] precedences) {
 		return new MinRatioSelector(solver, createMinPreservedRatio(precedences));
 	}
 	
-	public static RandMinRatioSelector maxPreserved(Solver solver, IPrecedence[] precedences, long seed) {
+	public static RandMinRatioSelector maxPreserved(Solver solver, ITemporalSRelation[] precedences, long seed) {
 		return new RandMinRatioSelector(solver, createMinPreservedRatio(precedences), seed);
 	}
 		

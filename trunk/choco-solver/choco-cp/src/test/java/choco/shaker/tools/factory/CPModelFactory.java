@@ -22,154 +22,175 @@
  **************************************************/
 package choco.shaker.tools.factory;
 
+import java.util.Random;
+
 import choco.cp.model.CPModel;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
-
-import java.util.Random;
+import choco.shaker.tools.factory.ConstraintFactory.C;
+import choco.shaker.tools.factory.beta.BetaVariableFactory;
 
 /*
-* User : charles
-* Mail : cprudhom(a)emn.fr
-* Date : 12 mars 2009
-* Since : Choco 2.0.1
-* Update : Choco 2.0.1
-*/
+ * User : charles
+ * Mail : cprudhom(a)emn.fr
+ * Date : 12 mars 2009
+ * Since : Choco 2.0.1
+ * Update : Choco 2.0.1
+ */
 public class CPModelFactory {
 
-    VariableFactory vf = new VariableFactory();
-    ConstraintFactory cf = new ConstraintFactory();
-    OperatorFactory of = new OperatorFactory();
-    MetaConstraintFactory mcf = new MetaConstraintFactory();
+	VariableFactory vf = new VariableFactory();
 
-    //********************************************
-    //********* METACONSTRAINTS ******************
-    //********************************************
-    /**
-     * Declare specific metaconstraints to use
-     * @param mcs metaconstraint types
-     */
-    public void uses(MetaConstraintFactory.MC... mcs){
-        mcf.scopes(mcs);
-    }
+	BetaVariableFactory bvf = new BetaVariableFactory();
 
-    /**
-     * Force use of metacontraints
-     */
-    public void includesMetaconstraints(){
-        mcf.scopes(MetaConstraintFactory.MC.values());
-    }
+	ConstraintFactory cf = new ConstraintFactory();
+	OperatorFactory of = new OperatorFactory();
+	MetaConstraintFactory mcf = new MetaConstraintFactory();
 
-    //********************************************
-    //************* CONSTRAINTS ******************
-    //********************************************
-    /**
-     * Declare specific constraints to use
-     * @param cs constraint types
-     */
-    public void uses(ConstraintFactory.C... cs){
-        cf.scopes(cs);
-    }
-
-    //********************************************
-    //*************** OPERATORS ******************
-    //********************************************
-    /**
-     * Declare specific operators to use
-     * @param os operator types
-     */
-    public void uses(OperatorFactory.O... os){
-        of.scopes(os);
-    }
-
-    /**
-     * Force use of operators
-     */
-    public void includesOperators(){
-        of.scopes(OperatorFactory.O.values());
-    }
-
-    //********************************************
-    //**************** VARIABLES *****************
-    //********************************************
-
-    /**
-     * Declare specific variables to use
-     * @param vs variable types
-     */
-    public void uses(VariableFactory.V... vs){
-        vf.scopes(vs);
-    }
-
-    /**
-     * Define the pool of variables to use
-     * @param vars variables
-     */
-    public void defines(IntegerVariable... vars){
-        vf.defines(vars);
-    }
-
-    /**
-     * Limit the number of variables created to nb
-     * @param nb max number of created variables
-     */
-    public void limits(int nb){
-        vf.limits(nb);
-    }
-
-    /**
-     * Set the maximum domain size
-     * @param size domain size
-     */
-    public void domain(int size){
-        vf.domainesize(size);
-    }
-
-    //********************************************
-    //************** PARAMATERS ******************
-    //********************************************
-
-    /**
-     * Declare a specific depth for expressions
-     * default = 2
-     * @param d max depth
-     */
-    public void depth(int d){
-        of.depth(d);
-    }
+	//********************************************
+	//********* METACONSTRAINTS ******************
+	//********************************************
 
 
-    /**
-     * Initialize data structures
-     */
-    private void init(){
-        // declare dependencies
-        mcf.depends(cf);
-        cf.depends(of, vf);
-        of.depends(vf, cf);
+	public void setSchedulingVarFactory() {
+		bvf.setValueOffset(1);
+	}
 
-        // If no metaconstraints must be used...
-        if(mcf.scope.size()==0){
-            mcf.scope.add(MetaConstraintFactory.MC.NONE);
-        }
-        // If no operators must be used...
-        if(of.scope.size()==0){
-            of.scope.add(OperatorFactory.O.NONE);
-        }
-    }
+	/**
+	 * Declare specific metaconstraints to use
+	 * @param mcs metaconstraint types
+	 */
+	public void uses(MetaConstraintFactory.MC... mcs){
+		mcf.scopes(mcs);
+	}
 
+	/**
+	 * Force use of metacontraints
+	 */
+	public void includesMetaconstraints(){
+		mcf.scopes(MetaConstraintFactory.MC.values());
+	}
 
-    /**
-     * Create a random model
-     * @param r random
-     * @return a CPModel
-     */
-    public CPModel model(Random r){
-        init();
-        CPModel m = new CPModel();
-        Constraint c = mcf.make(r);
-        m.addConstraint(c);
-        return m;
-    }
+	//********************************************
+	//************* CONSTRAINTS ******************
+	//********************************************
+	/**
+	 * Declare specific constraints to use
+	 * @param cs constraint types
+	 */
+	public void uses(ConstraintFactory.C... cs){
+		cf.scopes(cs);
+	}
+
+	//********************************************
+	//*************** OPERATORS ******************
+	//********************************************
+	/**
+	 * Declare specific operators to use
+	 * @param os operator types
+	 */
+	public void uses(OperatorFactory.O... os){
+		of.scopes(os);
+	}
+
+	/**
+	 * Force use of operators
+	 */
+	public void includesOperators(){
+		of.scopes(OperatorFactory.O.values());
+	}
+
+	//********************************************
+	//**************** VARIABLES *****************
+	//********************************************
+
+	/**
+	 * Declare specific variables to use
+	 * @param vs variable types
+	 */
+	public void uses(VariableFactory.V... vs){
+		vf.scopes(vs);
+		bvf.scopes(vs);
+	}
+
+	/**
+	 * Define the pool of variables to use
+	 * @param vars variables
+	 */
+	public void defines(IntegerVariable... vars){
+		vf.definePool(vars);
+		bvf.definePool(vars);
+	}
+
+	/**
+	 * Limit the number of variables created to nb
+	 * @param nb max number of created variables
+	 */
+	public void limits(int nb){
+		vf.setMaxCreated(nb);
+		bvf.setMaxCreated(nb);
+	}
+
+	/**
+	 * Set the maximum domain size
+	 * @param size domain size
+	 */
+	public void domain(int size){
+		vf.setMaxDomSize(size);
+		bvf.setMaxDomSize(size);
+	}
+
+	//********************************************
+	//************** PARAMATERS ******************
+	//********************************************
+
+	/**
+	 * Declare a specific depth for expressions
+	 * default = 2
+	 * @param d max depth
+	 */
+	public void depth(int d){
+		of.depth(d);
+	}
+
+	/**
+	 * Initialize data structures
+	 */
+	private void init(){
+		// declare dependencies
+		mcf.depends(cf);
+		cf.depends(of, vf);
+		cf.depends(bvf);
+		of.depends(vf, cf);
+
+		// If no metaconstraints must be used...
+		if(mcf.scope.size()==0){
+			mcf.scope.add(MetaConstraintFactory.MC.NONE);
+		}
+		// If no operators must be used...
+		if(of.scope.size()==0){
+			of.scope.add(OperatorFactory.O.NONE);
+		}
+	}
+
+	/**
+	 * Create a random model
+	 * @param r random
+	 * @return a CPModel
+	 */
+	public CPModel model(Random r){
+		init();
+		CPModel m = new CPModel();
+		Constraint c = mcf.make(r);
+		m.addConstraint(c);
+		return m;
+	}
+
+	public CPModel model(int n, Random r){
+		init();
+		CPModel m = new CPModel();
+		m.addConstraints( cf.make(n, r));
+		return m;
+	}
 
 }

@@ -1,6 +1,13 @@
 package choco.kernel.common.util.tools;
 
-import choco.kernel.solver.constraints.global.scheduling.IPrecedence;
+import choco.kernel.model.constraints.ComponentConstraint;
+import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.constraints.ConstraintType;
+import choco.kernel.model.constraints.ITemporalRelation;
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.constraints.global.scheduling.FakeResource;
+import choco.kernel.solver.constraints.global.scheduling.IResource;
+import choco.kernel.solver.constraints.global.scheduling.ResourceParameters;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.ITask;
@@ -11,15 +18,41 @@ public final class TaskUtils {
 	private TaskUtils() {
 		super();
 	}
+
+	//*****************************************************************//
+	//*********** Fake Resource (Branching Utilities)  ***************//
+	//***************************************************************//
+
+	public static IResource<TaskVar> createFakeResource(Solver s, Constraint c) {
+		if (c.getConstraintType() == ConstraintType.DISJUNCTIVE &&
+				c instanceof ComponentConstraint) {
+			ComponentConstraint ct = (ComponentConstraint) c;
+			if (ct.getParameters() instanceof ResourceParameters) {
+				ResourceParameters params = (ResourceParameters) ct.getParameters();
+				if(params.isRegular()) {
+					return new FakeResource<TaskVar>(VariableUtils.getTaskVar(s, ct.getVariables(), 0, params.getNbRegularTasks()));
+				}
+			}
+		}
+		return null;
+	}
+
+	public static IResource<?>[] createFakeResources(Solver s, Constraint... c) {
+		final IResource<?>[] r = new IResource[c.length];
+		for (int i = 0; i < c.length; i++) {
+			r[i] = createFakeResource(s, c[i]);
+		}
+		return r;
+	}
 	
 	//*****************************************************************//
 	//*******************  Utilities  ********************************//
 	//***************************************************************//
-	
+
 	public static boolean hasCompulsoryPart(final ITask t) {
 		return t.getECT() > t.getLST();
 	}
-	
+
 	public static boolean hasEnumeratedDomain(TaskVar task) {
 		return task.start().hasEnumeratedDomain() || task.end().hasEnumeratedDomain();
 	}
@@ -55,11 +88,9 @@ public final class TaskUtils {
 	//*****************************************************************//
 	//*******************  Centroid Measure **************************//
 	//***************************************************************//
-	public static double getCentroid(final ITask t) {
-		return ( (double) getCentroidMultByTwo(t) )/2;
-	}
 	
-	public static int getCentroidMultByTwo(final ITask t) {
+
+	public static int getDoubleCentroid(final ITask t) {
 		return t.getECT()+ t.getLST();
 	}
 	//*****************************************************************//
@@ -69,20 +100,16 @@ public final class TaskUtils {
 	public static int getSlack(final ITask t) {
 		return t.getLST()- t.getEST();
 	}
-	
+
 	public static int getTotalSlack(final ITask t1, final ITask t2) {
 		return getSlack(t1) + getSlack(t2);
 	}
-	
-	public static int getTotalSlack(IPrecedence prec) {
-		return getTotalSlack(prec.getOrigin(), prec.getDestination());
-	}
-	
+
 
 	//*****************************************************************//
 	//*******************  Preserved Measure  ************************//
 	//***************************************************************//
-	
+
 
 	public static long getA(IntDomainVar x, IntDomainVar y) {
 		return ( (long) (y.getSup() - y.getInf() + 1) ) * (x.getSup() - x.getInf() + 1);

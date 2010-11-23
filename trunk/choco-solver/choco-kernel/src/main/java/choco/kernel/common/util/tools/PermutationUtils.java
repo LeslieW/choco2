@@ -27,6 +27,7 @@ import choco.kernel.common.util.comparator.IPermutation;
 import choco.kernel.common.util.comparator.Identity;
 import choco.kernel.common.util.comparator.IntPermutation;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
+import choco.kernel.model.variables.integer.IntegerVariable;
 
 /*
 * User : charles
@@ -47,6 +48,10 @@ public final class PermutationUtils {
         return Identity.SINGLETON;
     }
 
+	public static IPermutation replaceByIdentity(IPermutation permutation) {
+        return permutation.isIdentity() ? Identity.SINGLETON : permutation;
+    }
+
     public static IPermutation getSortingPermuation(int[] criteria) {
         return getSortingPermuation(criteria, false);
     }
@@ -62,7 +67,16 @@ public final class PermutationUtils {
     public static IntegerConstantVariable[] applyPermutation(IPermutation permutation, IntegerConstantVariable[] source) {
         if(permutation.isIdentity()) {return source;}
         else {
-            IntegerConstantVariable[] dest = new IntegerConstantVariable[source.length];
+            final IntegerConstantVariable[] dest = new IntegerConstantVariable[source.length];
+            permutation.applyPermutation(source,dest);
+            return dest;
+        }
+    }
+    
+    public static IntegerVariable[] applyPermutation(IPermutation permutation, IntegerVariable[] source) {
+        if(permutation.isIdentity()) {return source;}
+        else {
+            final IntegerVariable[] dest = new IntegerVariable[source.length];
             permutation.applyPermutation(source,dest);
             return dest;
         }

@@ -23,7 +23,7 @@ public final class VariableUtils {
     private VariableUtils() {
         super();
     }
-
+    
     public static Var[] getVar(Solver solver, Variable[] variables, int begin, int end) {
         if (end > begin && begin >= 0 && end <= variables.length) {
             Var[] vars = new Var[end - begin];
@@ -232,8 +232,7 @@ public final class VariableUtils {
     }
 
     public static IntDomainVar createDirectionVar(Solver solver, TaskVar t1, TaskVar t2) {
-        String name = "dir-" + t1.getName() + '-' + t2.getName();
-        return solver.createBooleanVar(name);
+    	return solver.createBooleanVar(StringUtils.dirRandomName(t1.getName(), t2.getName()));
     }
 
     public static IntegerVariable[] getStartVars(TaskVariable... tasks) {
@@ -402,4 +401,18 @@ public final class VariableUtils {
             return decisions.toArray(tmp);
         }
     }
+    
+    public static IntegerVariable[] getCardinalities(SetVariable... vars) {
+    	final IntegerVariable[] cards =new IntegerVariable[vars.length];
+		for (int i = 0; i < vars.length; i++) {
+			cards[i]=vars[i].getCard();
+		}
+		return cards;
+	}
+    
+
+    public static boolean checkConstant(IntegerVariable v, int value) {
+        return v.isConstant() && v.getLowB() == value;
+    }
+
 }

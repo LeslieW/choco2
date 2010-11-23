@@ -22,19 +22,24 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.varselector.ratioselector.ratios.task.preserved;
 
-import choco.kernel.solver.constraints.global.scheduling.IPrecedence;
+import choco.cp.solver.constraints.global.scheduling.precedence.ITemporalSRelation;
+import choco.cp.solver.search.integer.varselector.ratioselector.ratios.task.AbstractPrecedenceRatio;
 
-public final class MaxPreservedRatio extends MinPreservedRatio {
+public final class MaxPreservedRatio extends AbstractPrecedenceRatio {
 
-	public MaxPreservedRatio(IPrecedence precedence) {
+	public MaxPreservedRatio(ITemporalSRelation precedence) {
 		super(precedence);
 	}
 
 	@Override
-	protected boolean isUp(double leftM, double rightM) {
-		return leftM >= rightM;
+	public int initializeDividend() {
+		return (int) Math.floor(ITemporalSRelation.PRESERVED_PRECISION * Math.max(precedence.getBackwardPreserved(),precedence.getForwardPreserved()));
 	}
-	
-	
+
+	@Override
+	protected int initializeDivisor() {
+		return 1;
+	}
+		
 
 }

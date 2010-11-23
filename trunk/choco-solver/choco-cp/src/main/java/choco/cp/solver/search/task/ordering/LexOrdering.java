@@ -23,22 +23,13 @@
 
 package choco.cp.solver.search.task.ordering;
 
+import choco.cp.solver.constraints.global.scheduling.precedence.ITemporalSRelation;
 import choco.cp.solver.search.task.OrderingValSelector;
-import choco.kernel.solver.constraints.global.scheduling.IPrecedence;
-import choco.kernel.solver.variables.scheduling.TaskVar;
 
 public final class LexOrdering implements OrderingValSelector {
 
 	@Override
-	public final int getBestVal(IPrecedence p) {
+	public final int getBestVal(ITemporalSRelation p) {
 		return 0;
 	}
-
-	@Override
-	public int getBestVal(TaskVar t1, TaskVar t2) {
-		return 0;
-	}
-
-	
-	
 }

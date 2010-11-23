@@ -2,14 +2,14 @@ package choco.cp.solver.constraints.global.scheduling.precedence;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.model.constraints.ITemporalRelation;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.constraints.global.scheduling.IPrecedence;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 
 public abstract class AbstractPrecedenceSConstraint extends AbstractLargeIntSConstraint 
-implements IPrecedence {
+implements ITemporalRelation<TaskVar<?>, IntDomainVar> {
 
 	protected final static int BIDX = 0;
 
@@ -42,7 +42,24 @@ implements IPrecedence {
 		return task2;
 	}
 
-	public final IntDomainVar getBoolVar() {
+	@Deprecated
+	public final IntDomainVar getDirectionVar() {
+		return vars[BIDX];
+	}
+	
+
+	@Override
+	public final int backwardSetup() {
+		throw new UnsupportedOperationException("not yet implemented");
+	}
+
+	@Override
+	public final int forwardSetup() {
+		throw new UnsupportedOperationException("not yet implemented");
+	}
+
+	@Override
+	public IntDomainVar getDirection() {
 		return vars[BIDX];
 	}
 
@@ -195,6 +212,22 @@ implements IPrecedence {
 
 	protected final String pretty(String name, String trueStr, String falseStr) {
 		return name + " "+vars[BIDX]+"( "+trueStr+" || "+falseStr+" )";
+	}
+
+	
+	@Override
+	public final boolean isBackward() {
+		return vars[BIDX].isInstantiatedTo(0);
+	}
+
+	@Override
+	public final boolean IsFixed() {
+		return vars[BIDX].isInstantiated();
+	}
+
+	@Override
+	public final boolean isForward() {
+		return vars[BIDX].isInstantiatedTo(1);
 	}
 
 	@Override

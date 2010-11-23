@@ -31,6 +31,7 @@ import choco.kernel.model.variables.VariableType;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.real.RealConstantVariable;
+import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.model.variables.set.SetConstantVariable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.variables.real.RealMath;
@@ -263,6 +264,128 @@ public class DeprecatedChoco extends Choco{
 //    public static RealVariable makeRealVar(String name, double binf, double bsup) {
 //		return new RealVariable(name, binf, bsup);
 //	}
+
+	/**
+		 * @see {@link Choco#precedence(TaskVariable, TaskVariable)}
+		 */
+		@Deprecated 
+		public static Constraint preceding(TaskVariable t1, TaskVariable t2) {
+			return Choco.precedenceDisjoint(t1, t2, Choco.constant(1));
+		}
+
+
+		/**
+		 * @see {@link Choco#precedenceDisjoint(IntegerVariable, int, IntegerVariable, int, IntegerVariable)}
+		 */
+		@Deprecated 
+		public static Constraint preceding(IntegerVariable v1, int dur1, IntegerVariable v2, int dur2, IntegerVariable bool) {
+			return Choco.precedenceDisjoint(v1, dur1, v2, dur2, bool);
+		}
+
+
+		/**
+		 * @see {@link Choco#precedenceDisjoint(TaskVariable, TaskVariable, IntegerVariable)}
+		 */
+		@Deprecated 
+		public static Constraint preceding(TaskVariable t1, TaskVariable t2, IntegerVariable direction) {
+			return Choco.precedenceDisjoint(t1, t2, direction);
+		}
+
+
+	@Deprecated
+		public static Constraint cumulative(String name, TaskVariable[] tasks, IntegerVariable[] heights, IntegerVariable capa, String... options) {
+			return Choco.cumulative(name, tasks, heights,null, Choco.constant(0),  capa, null, options);
+		}
+
+
+		@Deprecated
+		public static Constraint cumulative(TaskVariable[] tasks, int[] heights, int capa, String... options) {
+			return Choco.cumulative(null, tasks, Choco.constantArray(heights), null, Choco.constant(0),Choco.constant(capa), null,options);
+		}
+
+
+		@Deprecated
+		public static Constraint cumulative(String name, IntegerVariable[] starts, IntegerVariable[] ends, IntegerVariable[] durations, IntegerVariable[] heights, IntegerVariable capa, String... options) {
+			final TaskVariable[] tasks = Choco.makeTaskVarArray("t", starts, ends, durations);
+			return Choco.cumulative(name, tasks, heights, Choco.constant(0), capa, options);
+		
+		}
+
+
+		@Deprecated
+		public static Constraint cumulative(IntegerVariable[] starts, IntegerVariable[] ends, IntegerVariable[] durations, IntegerVariable[] heights, IntegerVariable capa, String... options) {
+			TaskVariable[] t = new TaskVariable[starts.length];
+			for(int i = 0; i < starts.length; i++){
+				t[i] = Choco.makeTaskVar("", starts[i], ends[i], durations[i]);
+			}
+			return Choco.cumulative(null, t, heights, Choco.constant(0), capa, options);
+		}
+
+
+		@Deprecated
+		public static Constraint cumulative(IntegerVariable[] starts, IntegerVariable[] ends, IntegerVariable[] durations, int[] heights, int capa, String... options) {
+			TaskVariable[] t = new TaskVariable[starts.length];
+			for(int i = 0; i < starts.length; i++){
+				t[i] = Choco.makeTaskVar("", starts[i], ends[i], durations[i]);
+			}
+			return Choco.cumulative(null, t, Choco.constantArray(heights), Choco.constant(0), Choco.constant(capa), options);
+		}
+
+
+		@Deprecated
+		public static Constraint cumulative(IntegerVariable[] starts, IntegerVariable[] durations, IntegerVariable[] heights, IntegerVariable capa, String... options) {
+			TaskVariable[] t = new TaskVariable[starts.length];
+			for(int i = 0; i < starts.length; i++){
+				t[i] = Choco.makeTaskVar("", starts[i], durations[i]);
+			}
+			return Choco.cumulative(null, t, heights, Choco.constant(0),capa, options);
+		}
+
+
+	/**
+		 * Returns a disjunctive constraint
+		 *
+		 * @param starts to schedule
+		 * @param durations of each task
+		 * @param options options of the variable
+		 * @return the disjunctive constraint
+		 */
+		@Deprecated
+		public static Constraint disjunctive(IntegerVariable[] starts, int[] durations,String...options) {
+			TaskVariable[] t = new TaskVariable[starts.length];
+			for(int i = 0; i < starts.length; i++){
+				t[i] = Choco.makeTaskVar("", starts[i], Choco.constant(durations[i]));
+			}
+			return Choco.disjunctive(null, t,  null, options);
+		}
+
+
+		@Deprecated
+		public static Constraint disjunctive(IntegerVariable[] starts, IntegerVariable[] durations, String... options) {
+			TaskVariable[] t = new TaskVariable[starts.length];
+			for(int i = 0; i < starts.length; i++){
+				t[i] = Choco.makeTaskVar("", starts[i], durations[i]);
+			}
+			return Choco.disjunctive(null, t,  null, options);
+		}
+
+
+		@Deprecated
+		public static Constraint disjunctive(IntegerVariable[] starts, IntegerVariable[] ends, IntegerVariable[] durations,String... options) {
+			TaskVariable[] t = new TaskVariable[starts.length];
+			for(int i = 0; i < starts.length; i++){
+				t[i] = Choco.makeTaskVar("", starts[i], ends[i], durations[i]);
+			}
+			return Choco.disjunctive(null, t,  null, options);
+		}
+
+
+		@Deprecated
+		public static Constraint disjunctive(String name, IntegerVariable[] starts, IntegerVariable[] ends, IntegerVariable[] durations,IntegerVariable uppBound, String... options) {
+			final TaskVariable[] tasks = Choco.makeTaskVarArray("task-", starts, ends, durations);
+			return Choco.disjunctive(name, tasks,null, uppBound, options);
+		}
+
 
 	/******** SET ***********/
     @Deprecated

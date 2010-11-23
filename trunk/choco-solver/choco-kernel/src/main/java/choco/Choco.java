@@ -25,6 +25,7 @@ package choco;
 import choco.kernel.common.IndexFactory;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.tools.ArrayUtils;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.*;
@@ -35,7 +36,7 @@ import choco.kernel.model.constraints.geost.GeostOptions;
 import choco.kernel.model.constraints.geost.externalConstraints.DistGeqModel;
 import choco.kernel.model.constraints.geost.externalConstraints.DistLeqModel;
 import choco.kernel.model.constraints.geost.externalConstraints.IExternalConstraint;
-import choco.kernel.model.constraints.pack.PackModeler;
+import choco.kernel.model.constraints.pack.PackModel;
 import choco.kernel.model.variables.ConstantFactory;
 import choco.kernel.model.variables.Operator;
 import choco.kernel.model.variables.Variable;
@@ -55,7 +56,7 @@ import choco.kernel.model.variables.tree.TreeParametersObject;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.Arc;
 import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.Node;
-import choco.kernel.solver.constraints.global.scheduling.RscData;
+import choco.kernel.solver.constraints.global.scheduling.ResourceParameters;
 import choco.kernel.solver.constraints.integer.extension.*;
 import gnu.trove.TIntArrayList;
 import org.jgrapht.graph.DirectedMultigraph;
@@ -77,9 +78,9 @@ import static java.lang.System.arraycopy;
  */
 public class Choco {
 
-    Choco() {}
+	Choco() {}
 
-    protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
+	protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
 	public final static int MIN_LOWER_BOUND  = Integer.MIN_VALUE / 100;
 
@@ -167,7 +168,7 @@ public class Choco {
 	public static IntegerVariable makeIntVar(String name, String... options) {
 		return makeIntVar(name, MIN_LOWER_BOUND, MAX_UPPER_BOUND, options);
 	}
-	
+
 
 	private static int[] makeValues(int[] valuesArray) {
 		final int[] values = ArrayUtils.getNonRedundantSortedValues(valuesArray);
@@ -213,9 +214,9 @@ public class Choco {
 		checkIntVarBounds(values[0], values[values.length-1]);
 		return unsafeMakeIntVar(name, values, options);
 	}
-	
-	
-	
+
+
+
 
 	/**
 	 * Make an integer variable
@@ -509,7 +510,7 @@ public class Choco {
 			for (int j = 0; j < vars[i].length; j++) {
 				vars[i][j] = unsafeMakeIntVar(name + "_" + i+"_"+j, Arrays.copyOf(values, values.length), options);
 			}
-			
+
 		}
 		return vars;
 	}
@@ -674,9 +675,7 @@ public class Choco {
 	 */
 	public static TaskVariable makeTaskVar(final String name,final IntegerVariable start, final IntegerVariable end, final IntegerVariable duration, String... options) {
 		final TaskVariable tv = new TaskVariable(name,start, end, duration);
-		for (String opt : options) {
-			tv.addOption(opt);
-		}
+		tv.addOptions(options);
 		return tv;
 	}
 
@@ -800,37 +799,37 @@ public class Choco {
 	 * ***** Constant **********
 	 */
 
-    /**
-     * Create a integer constant
-     * @param value constant value
-     * @return IntegerConstantVariable
-     */
+	/**
+	 * Create a integer constant
+	 * @param value constant value
+	 * @return IntegerConstantVariable
+	 */
 	public static IntegerConstantVariable constant(int value) {
 		return ConstantFactory.getConstant(value);
 	}
 
-    /**
-     * Create a set constant
-     * @param values array of constant values
-     * @return IntegerConstantVariable
-     */
+	/**
+	 * Create a set constant
+	 * @param values array of constant values
+	 * @return IntegerConstantVariable
+	 */
 	public static SetConstantVariable constant(int[] values) {
 		return ConstantFactory.getConstant(values);
 	}
 
-    /**
-     * Create an empty set constant
-     * @return SetConstantVariable
-     */
+	/**
+	 * Create an empty set constant
+	 * @return SetConstantVariable
+	 */
 	public static SetConstantVariable emptySet() {
 		return ConstantFactory.getConstant(new int[0]);
 	}
 
-    /**
-     * Create a real constant
-     * @param value constant value
-     * @return RealConstantVariable
-     */
+	/**
+	 * Create a real constant
+	 * @param value constant value
+	 * @return RealConstantVariable
+	 */
 	public static RealConstantVariable constant(double value) {
 		return ConstantFactory.getConstant(value);
 	}
@@ -1162,19 +1161,19 @@ public class Choco {
 			if (couple.length != 2) {
 				throw new ModelException("Wrong dimension : " + couple.length + " for a couple");
 			}
-            if(between(couple[0], min[0],max[0])
-                    && between(couple[1], min[1],max[1])){
-            relation.setCouple(couple[0], couple[1]);
-            }else{
-                LOGGER.warning("{"+couple[0] +","+couple[1]+"} will not be added, because it doesn't respect domain bounds");
-		}
+			if(between(couple[0], min[0],max[0])
+					&& between(couple[1], min[1],max[1])){
+				relation.setCouple(couple[0], couple[1]);
+			}else{
+				LOGGER.warning("{"+couple[0] +","+couple[1]+"} will not be added, because it doesn't respect domain bounds");
+			}
 		}
 		return relation;
 	}
 
-    private static boolean between(int v, int low, int upp){
-        return (low <= v) && (v <= upp);
-    }
+	private static boolean between(int v, int low, int upp){
+		return (low <= v) && (v <= upp);
+	}
 
 
 	/**
@@ -1614,106 +1613,106 @@ public class Choco {
 		return makeTupleACFC(options, vs, rela, false);
 	}
 
-    /**
-     * VAR takes it value in VALUES
-     * @param var int variable
-     * @param values array of int
-     * @return AMONG constraint
-     */
-    public static Constraint member(IntegerVariable var, int[] values){
-        if(values.length == 0){
-            throw new ModelException("AMONG requirement : |values| > 0");
-        }
-        return new ComponentConstraint(ConstraintType.AMONG, values, new IntegerVariable[]{var});
-    }
+	/**
+	 * VAR takes it value in VALUES
+	 * @param var int variable
+	 * @param values array of int
+	 * @return AMONG constraint
+	 */
+	public static Constraint member(IntegerVariable var, int[] values){
+		if(values.length == 0){
+			throw new ModelException("AMONG requirement : |values| > 0");
+		}
+		return new ComponentConstraint(ConstraintType.AMONG, values, new IntegerVariable[]{var});
+	}
 
-    /**
-     * VAR takes it value in VALUES
-     * @param var int variable
-     * @param values array of int
-     * @return AMONG constraint
-     * @deprecated use member
-     */
-    @Deprecated
-    public static Constraint among(IntegerVariable var, int[] values){
-        if(values.length == 0){
-            throw new ModelException("AMONG requirement : |values| > 0");
-        }
-        return new ComponentConstraint(ConstraintType.AMONG, values, new IntegerVariable[]{var});
-    }
+	/**
+	 * VAR takes it value in VALUES
+	 * @param var int variable
+	 * @param values array of int
+	 * @return AMONG constraint
+	 * @deprecated use member
+	 */
+	@Deprecated
+	public static Constraint among(IntegerVariable var, int[] values){
+		if(values.length == 0){
+			throw new ModelException("AMONG requirement : |values| > 0");
+		}
+		return new ComponentConstraint(ConstraintType.AMONG, values, new IntegerVariable[]{var});
+	}
 
 
-    /**
-     * NVAR is the number of variables of the collection VARIABLES that take their value in VALUES.
-     * @param nvar counter
-     * @param variables collection of variables
-     * @param values array of values
-     * @return AMONG constraint
-     */
-    public static Constraint among(IntegerVariable nvar, IntegerVariable[] variables, int[] values){
-        if(nvar.getLowB()<0){
-            throw new ModelException("AMONG requirement: nvar >=0 ");
-        }
-        if(nvar.getUppB()> variables.length){
-            throw new ModelException("AMONG requirement : nvar <= |variables|");
-        }
-        if(variables.length == 0){
-            throw new ModelException("AMONG requirement : |variables| > 0");
-        }
-        return new ComponentConstraint(ConstraintType.AMONG, values, ArrayUtils.append(variables,new IntegerVariable[]{nvar}));
-    }
+	/**
+	 * NVAR is the number of variables of the collection VARIABLES that take their value in VALUES.
+	 * @param nvar counter
+	 * @param variables collection of variables
+	 * @param values array of values
+	 * @return AMONG constraint
+	 */
+	public static Constraint among(IntegerVariable nvar, IntegerVariable[] variables, int[] values){
+		if(nvar.getLowB()<0){
+			throw new ModelException("AMONG requirement: nvar >=0 ");
+		}
+		if(nvar.getUppB()> variables.length){
+			throw new ModelException("AMONG requirement : nvar <= |variables|");
+		}
+		if(variables.length == 0){
+			throw new ModelException("AMONG requirement : |variables| > 0");
+		}
+		return new ComponentConstraint(ConstraintType.AMONG, values, ArrayUtils.append(variables,new IntegerVariable[]{nvar}));
+	}
 
-    /**
-     * NVAR is the number of variables of the collection VARIABLES that take their value in SVAR.
-     * @param nvar counter
-     * @param variables collection of variables
-     * @param svar set variable
-     * @return AMONG constraint
-     */
-    public static Constraint among(IntegerVariable nvar, IntegerVariable[] variables, SetVariable svar){
-        if(nvar.getLowB()<0){
-            throw new ModelException("AMONG requirement: nvar >=0 ");
-        }
-        if(nvar.getUppB()> variables.length){
-            throw new ModelException("AMONG requirement : nvar <= |variables|");
-        }
-        if(variables.length == 0){
-            throw new ModelException("AMONG requirement : |variables| > 0");
-        }
-        if(svar.getLowB()<0){
-            throw new ModelException("AMONG requirement : svar > 0");
-        }
-        if(svar.getCard().getDomainSize()<1){
-            throw new ModelException("AMONG requirement : |svar| > 0");
-        }
-        Variable[] vars = new Variable[variables.length+2];
-        System.arraycopy(variables, 0, vars, 0, variables.length);
-        vars[variables.length] = svar;
-        vars[variables.length+1] = nvar;
-        return new ComponentConstraint(ConstraintType.AMONGSET, null, vars);
-    }
+	/**
+	 * NVAR is the number of variables of the collection VARIABLES that take their value in SVAR.
+	 * @param nvar counter
+	 * @param variables collection of variables
+	 * @param svar set variable
+	 * @return AMONG constraint
+	 */
+	public static Constraint among(IntegerVariable nvar, IntegerVariable[] variables, SetVariable svar){
+		if(nvar.getLowB()<0){
+			throw new ModelException("AMONG requirement: nvar >=0 ");
+		}
+		if(nvar.getUppB()> variables.length){
+			throw new ModelException("AMONG requirement : nvar <= |variables|");
+		}
+		if(variables.length == 0){
+			throw new ModelException("AMONG requirement : |variables| > 0");
+		}
+		if(svar.getLowB()<0){
+			throw new ModelException("AMONG requirement : svar > 0");
+		}
+		if(svar.getCard().getDomainSize()<1){
+			throw new ModelException("AMONG requirement : |svar| > 0");
+		}
+		Variable[] vars = new Variable[variables.length+2];
+		System.arraycopy(variables, 0, vars, 0, variables.length);
+		vars[variables.length] = svar;
+		vars[variables.length+1] = nvar;
+		return new ComponentConstraint(ConstraintType.AMONGSET, null, vars);
+	}
 
-    /**
-     * VAR takes it value out of VALUES
-     * @param var int variable
-     * @param values array of int
-     * @return DISJOINT constraint
-     */
-    public static Constraint notMember(IntegerVariable var, int[] values){
-        return new ComponentConstraint(ConstraintType.DISJOINT, values, new IntegerVariable[]{var});
-    }
+	/**
+	 * VAR takes it value out of VALUES
+	 * @param var int variable
+	 * @param values array of int
+	 * @return DISJOINT constraint
+	 */
+	public static Constraint notMember(IntegerVariable var, int[] values){
+		return new ComponentConstraint(ConstraintType.DISJOINT, values, new IntegerVariable[]{var});
+	}
 
-    /**
-     * VAR takes it value out of VALUES
-     * @param var int variable
-     * @param values array of int
-     * @return DISJOINT constraint
-     * @deprecated rename as notMember
-     */
-    @Deprecated
-    public static Constraint disjoint(IntegerVariable var, int[] values){
-        return new ComponentConstraint(ConstraintType.DISJOINT, values, new IntegerVariable[]{var});
-    }
+	/**
+	 * VAR takes it value out of VALUES
+	 * @param var int variable
+	 * @param values array of int
+	 * @return DISJOINT constraint
+	 * @deprecated rename as notMember
+	 */
+	@Deprecated
+	public static Constraint disjoint(IntegerVariable var, int[] values){
+		return new ComponentConstraint(ConstraintType.DISJOINT, values, new IntegerVariable[]{var});
+	}
 
 	/**
 	 * Ensures |x-y| = c;
@@ -1862,7 +1861,7 @@ public class Choco {
 	public static Constraint min(SetVariable svar,IntegerVariable[] vars, IntegerVariable min) {
 		return min(svar, vars, min, null);
 	}
-	
+
 	/**
 	 * Ensures the variable min to represent the minimum value in vars that occurs in the sublist associated with set.
 	 * An element vars[i] belongs to the sublist if the set contains i.
@@ -1907,7 +1906,7 @@ public class Choco {
 	public static Constraint max(SetVariable svar,IntegerVariable[] vars, IntegerVariable max) {
 		return max(svar, vars, max, null);
 	}
-	
+
 	/**
 	 * Ensures the variable "max" to represent the maximum value vars that occurs in the sublist associated with the set.
 	 * An element vars[i] belongs to the sublist if the set contains i.
@@ -1924,7 +1923,7 @@ public class Choco {
 		tmp[tmp.length - 1] = svar;
 		return new ComponentConstraint(ConstraintType.MAX, new Object[]{false, defaultValueEmptySet}, tmp);
 	}
-	
+
 	/**
 	 * Ensures the variable "max" to represent the maximum value
 	 * that occurs in the list vars
@@ -2036,24 +2035,24 @@ public class Choco {
 		return new ComponentConstraint(ConstraintType.OCCURRENCE, 0, variables);
 	}
 
-    /**
-     * Ensures that the occurrence variable contains the number of occurrences of the given value in the list of
-     * variables
-     *
-     * @param vars       List of variables where the value can appear
-     * @param occurrence The variable that should contain the occurrence number
-     * @param value     the observed value
-     * @return Constraint
-     */
+	/**
+	 * Ensures that the occurrence variable contains the number of occurrences of the given value in the list of
+	 * variables
+	 *
+	 * @param vars       List of variables where the value can appear
+	 * @param occurrence The variable that should contain the occurrence number
+	 * @param value     the observed value
+	 * @return Constraint
+	 */
 
-    public static Constraint occurrence(IntegerVariable occurrence, IntegerVariable[] vars, int value) {
-        return occurrence(value, occurrence, vars);
-    }
+	public static Constraint occurrence(IntegerVariable occurrence, IntegerVariable[] vars, int value) {
+		return occurrence(value, occurrence, vars);
+	}
 
 	/**
 	 * Ensures that the lower bound of occurrence is at most equal to the number of occurrences
 	 * size{forall v in vars | v = value} >= occurrence
-     *
+	 *
 	 * @param value the observed value
 	 * @param occurrence the variable that should contain the occurrence number
 	 * @param vars list of variable where the value can appear
@@ -2067,23 +2066,23 @@ public class Choco {
 		return new ComponentConstraint(ConstraintType.OCCURRENCE, -1, variables);
 	}
 
-    /**
-     * Ensures that the lower bound of occurrence is at most equal to the number of occurrences
-     * size{forall v in vars | v = value} >= occurrence
-     *
-     * @param occurrence the variable that should contain the occurrence number
-     * @param vars list of variable where the value can appear
-     * @param value the observed value
-     * @return Constraint
-     */
-    public static Constraint occurrenceMin(IntegerVariable occurrence, IntegerVariable[] vars, int value) {
-        return occurrenceMin(value, occurrence, vars);
-    }
+	/**
+	 * Ensures that the lower bound of occurrence is at most equal to the number of occurrences
+	 * size{forall v in vars | v = value} >= occurrence
+	 *
+	 * @param occurrence the variable that should contain the occurrence number
+	 * @param vars list of variable where the value can appear
+	 * @param value the observed value
+	 * @return Constraint
+	 */
+	public static Constraint occurrenceMin(IntegerVariable occurrence, IntegerVariable[] vars, int value) {
+		return occurrenceMin(value, occurrence, vars);
+	}
 
 	/**
 	 * Ensures that the upper bound of occurrence is at least equal to the number of occurrences
 	 * size{forall v in vars | v = value} <= occurrence
-     *
+	 *
 	 * @param value the observed value
 	 * @param occurrence the variable that should contain the occurrence number
 	 * @param vars list of variable where the value can appear
@@ -2097,51 +2096,51 @@ public class Choco {
 		return new ComponentConstraint(ConstraintType.OCCURRENCE, 1, variables);
 	}
 
-    /**
-     * Ensures that the upper bound of occurrence is at least equal to the number of occurrences
-     * size{forall v in vars | v = value} <= occurrence
-     *
-     * @param occurrence the variable that should contain the occurence number
-     * @param vars list of variable where the value can appear
-     * @param value the observed value
-     * @return Constraint
-     */
-    public static Constraint occurrenceMax(IntegerVariable occurrence, IntegerVariable[] vars, int value) {
-        return occurrenceMax(value, occurrence, vars);
-    }
+	/**
+	 * Ensures that the upper bound of occurrence is at least equal to the number of occurrences
+	 * size{forall v in vars | v = value} <= occurrence
+	 *
+	 * @param occurrence the variable that should contain the occurence number
+	 * @param vars list of variable where the value can appear
+	 * @param value the observed value
+	 * @return Constraint
+	 */
+	public static Constraint occurrenceMax(IntegerVariable occurrence, IntegerVariable[] vars, int value) {
+		return occurrenceMax(value, occurrence, vars);
+	}
 
-    /**
-     * Ensures that N variables of the VARIABLES collection are assigned to value VALUE.
-     * @param occurrence counter
-     * @param variables collection of variables
-     * @param value int
-     * @return EXACTLY constraint
-     */
-    public static Constraint occurrence(int occurrence, IntegerVariable[] variables, int value){
-        if(occurrence<0){
-            throw new ModelException("EXACTLY requirement: n >=0 ");
-        }
-        if(occurrence > variables.length){
-            throw new ModelException("EXACTLY requirement : nvar <= |variables|");
-        }
-        if(variables.length == 0){
-            throw new ModelException("EXACTLY requirement : |variables| > 0");
-        }
-        return new ComponentConstraint(ConstraintType.EXACTLY, new int[]{occurrence, value},variables);
-    }
+	/**
+	 * Ensures that N variables of the VARIABLES collection are assigned to value VALUE.
+	 * @param occurrence counter
+	 * @param variables collection of variables
+	 * @param value int
+	 * @return EXACTLY constraint
+	 */
+	public static Constraint occurrence(int occurrence, IntegerVariable[] variables, int value){
+		if(occurrence<0){
+			throw new ModelException("EXACTLY requirement: n >=0 ");
+		}
+		if(occurrence > variables.length){
+			throw new ModelException("EXACTLY requirement : nvar <= |variables|");
+		}
+		if(variables.length == 0){
+			throw new ModelException("EXACTLY requirement : |variables| > 0");
+		}
+		return new ComponentConstraint(ConstraintType.EXACTLY, new int[]{occurrence, value},variables);
+	}
 
-    /**
-     * Ensures that N variables of the VARIABLES collection are assigned to value VALUE.
-     * @param occurrence counter
-     * @param variables collection of variables
-     * @param value int
-     * @return EXACTLY constraint
-     * @deprecated see among
-     */
-    @Deprecated
-    public static Constraint exactly(int occurrence, IntegerVariable[] variables, int value){
-        return occurrence(occurrence, variables, value);
-    }
+	/**
+	 * Ensures that N variables of the VARIABLES collection are assigned to value VALUE.
+	 * @param occurrence counter
+	 * @param variables collection of variables
+	 * @param value int
+	 * @return EXACTLY constraint
+	 * @deprecated see among
+	 */
+	@Deprecated
+	public static Constraint exactly(int occurrence, IntegerVariable[] variables, int value){
+		return occurrence(occurrence, variables, value);
+	}
 
 
 
@@ -2156,7 +2155,7 @@ public class Choco {
 		return nth(index, values, val, 0);
 	}
 
-    /**
+	/**
 	 * subscript constraint: accessing an array with a variable index
 	 * @param index the index variable
 	 * @param values the possible value
@@ -2165,8 +2164,8 @@ public class Choco {
 	 */
 	public static Constraint nth(String options, IntegerVariable index, int[] values, IntegerVariable val) {
 		Constraint c = nth(index, values, val, 0);
-        c.addOption(options);
-        return c;
+		c.addOption(options);
+		return c;
 	}
 
 	/**
@@ -2199,7 +2198,7 @@ public class Choco {
 		return nth(index, varArray, val, 0);
 	}
 
-    /**
+	/**
 	 * subscript constraint: accessing an array of variables with a variable index
 	 * @param index the index variable
 	 * @param varArray array of possible variables
@@ -2208,8 +2207,8 @@ public class Choco {
 	 */
 	public static Constraint nth(String option, IntegerVariable index, IntegerVariable[] varArray, IntegerVariable val) {
 		Constraint c = nth(index, varArray, val, 0);
-        c.addOption(option);
-        return c;
+		c.addOption(option);
+		return c;
 	}
 
 	/**
@@ -2238,7 +2237,7 @@ public class Choco {
 		return new ComponentConstraint(ConstraintType.NTH, offset, vars);
 	}
 
-    /**
+	/**
 	 * subscript constraint: accessing an array of variables with a variable index
 	 * The offset can be used when the index variable needs to be shifted of a given value (the offset)
 	 * @param index index variable in the array
@@ -2249,8 +2248,8 @@ public class Choco {
 	 */
 	public static Constraint nth(String options, IntegerVariable index, IntegerVariable[] varArray, IntegerVariable val, int offset) {
 		Constraint c = nth(index, varArray, val, offset);
-        c.addOption(options);
-        return c;
+		c.addOption(options);
+		return c;
 	}
 
 
@@ -2280,13 +2279,13 @@ public class Choco {
 		}
 		return new ComponentConstraint(ConstraintType.INVERSECHANNELING, ConstraintType.INVERSECHANNELING, ArrayUtils.append(x, y));
 	}
-	
+
 	/**
 	 * state a channeling between the domain of the variable x and the array of boolean variables b which enforce:
 	 * x = i <=> b[i] = 1
-     * @param x  domain variable
-     * @param b 0-1 variables for potential values
-     * @return DomainConstraint
+	 * @param x  domain variable
+	 * @param b 0-1 variables for potential values
+	 * @return DomainConstraint
 	 */
 	public static Constraint domainChanneling(IntegerVariable x, IntegerVariable[] b) {
 		return new ComponentConstraint(
@@ -2294,23 +2293,23 @@ public class Choco {
 				ArrayUtils.append(b, new IntegerVariable[]{x}));
 	}
 
-    /**
-     * state a channeling between the domain of the variable x and the array of boolean variables b which enforce:
-     * x = i <=> b[i] = 1
-     * @param x  domain variable
-     * @param b 0-1 variables for potential values
-     * @return DomainConstraint
-     * @deprecated see domainChannelling
-     */
-    @Deprecated
-    public static Constraint domainConstraint(IntegerVariable x, IntegerVariable[] b) {
-        return new ComponentConstraint(
-                ConstraintType.DOMAIN_CHANNELING, ConstraintType.DOMAIN_CHANNELING,
-                ArrayUtils.append(b, new IntegerVariable[]{x}));
-    }
+	/**
+	 * state a channeling between the domain of the variable x and the array of boolean variables b which enforce:
+	 * x = i <=> b[i] = 1
+	 * @param x  domain variable
+	 * @param b 0-1 variables for potential values
+	 * @return DomainConstraint
+	 * @deprecated see domainChannelling
+	 */
+	@Deprecated
+	public static Constraint domainConstraint(IntegerVariable x, IntegerVariable[] b) {
+		return new ComponentConstraint(
+				ConstraintType.DOMAIN_CHANNELING, ConstraintType.DOMAIN_CHANNELING,
+				ArrayUtils.append(b, new IntegerVariable[]{x}));
+	}
 
 
-    /**
+	/**
 	 * All different constraints with a global filtering :
 	 * v1 != v2, v1 != v3, v2 != v3 ... For each (i,j), v_i != v_j
 	 * If vars is a table of BoundIntegerVariable a dedicated algorithm is used. In case
@@ -2432,7 +2431,7 @@ public class Choco {
 		return c;
 	}
 
-    /**
+	/**
 	 * Concerns GCC and boundGCC
 	 * <p/>
 	 * Global cardinality : Given an array of variables vars, the constraint ensures that the number of occurences
@@ -2457,17 +2456,17 @@ public class Choco {
 	 * @param vars list of variables
 	 * @param low array of lower occurence
 	 * @param up array of upper occurence
-     * @param offset first value constrained by {@code low[0]} and {@code up[0]}
+	 * @param offset first value constrained by {@code low[0]} and {@code up[0]}
 	 * @return Constraint
 	 */
 	public static Constraint globalCardinality(IntegerVariable[] vars, int[] low, int[] up, int offset) {
 		globalCardinalityTest(vars, low, up);
-        int max = low.length-1 + offset;
-        return new ComponentConstraint(ConstraintType.GLOBALCARDINALITY,
+		int max = low.length-1 + offset;
+		return new ComponentConstraint(ConstraintType.GLOBALCARDINALITY,
 				new Object[]{ConstraintType.GLOBALCARDINALITYMAX, offset, max, low, up}, vars);
 	}
 
-    /**
+	/**
 	 * Concerns GCC and boundGCC
 	 * <p/>
 	 * Global cardinality : Given an array of variables vars, and an array of values, the constraint ensures that the number of occurences
@@ -2550,7 +2549,7 @@ public class Choco {
 	 * @param vars list of variables
 	 * @param low array of lower occurence
 	 * @param up array of upper occurence
-     * @param offset first value constrained by {@code low[0]} and {@code up[0]}
+	 * @param offset first value constrained by {@code low[0]} and {@code up[0]}
 	 * @return Constraint
 	 */
 	public static Constraint globalCardinality(String options, IntegerVariable[] vars, int[] low, int[] up, int offset) {
@@ -2586,7 +2585,7 @@ public class Choco {
 		return new ComponentConstraint(ConstraintType.GLOBALCARDINALITY, new Object[]{ConstraintType.GLOBALCARDINALITYVAR, min, max, n}, variables);
 	}
 
-    /**
+	/**
 	 * * Bound Global cardinality : Given an array of variables vars, an array of variables card to represent the cardinalities, the constraint ensures that the number of occurences
 	 * of the value i among the variables is equal to card[i].
 	 * this constraint enforces :
@@ -2599,7 +2598,7 @@ public class Choco {
 	 * @param vars list of variables
 	 * @param card array of cardinality variables
 	 * @param offset first value constrained by {@code card[0]}
-     * @return Constraint
+	 * @return Constraint
 	 */
 	public static Constraint globalCardinality(IntegerVariable[] vars, IntegerVariable[] card, int offset) {
 		int n = vars.length;
@@ -2625,121 +2624,107 @@ public class Choco {
 		return new ComponentConstraint(ConstraintType.STRETCHPATH, stretchesParameters, vars);
 	}
 
-    /**
-     * The variables of the collection VARIABLES are increasing.
-     * In addition, NVAL is the number of distinct values taken by the variables of the collection VARIABLES.
-     * @param option  Available options are:
+	/**
+	 * The variables of the collection VARIABLES are increasing.
+	 * In addition, NVAL is the number of distinct values taken by the variables of the collection VARIABLES.
+	 * @param option  Available options are:
 	 * <ul>
 	 * <li><b>cp:atleast</b>: filter on lower bound only</li>
-     * <li><b>cp:atmost</b>:  filter on upper bound only</li>
-     * <li><b>cp:both</b>: (default value) filter on lower bound and upper bound</li>
-     * </ul>
-     * @param nval number of distinct values
-     * @param vars collection of variables
-     * @return increasing n value constraint
-     */
-    public static Constraint increasingNValue(String option, IntegerVariable nval, IntegerVariable[] vars){
-        Constraint c = increasingNValue(nval, vars);
-        c.addOption(option);
-        return c;
-    }
-
-    /**
-     * The variables of the collection VARIABLES are increasing.
-     * In addition, NVAL is the number of distinct values taken by the variables of the collection VARIABLES.
-     * @param nval number of distinct values
-     * @param vars collection of variables
-     * @return increasing n value constraint
-     */
-    public static Constraint increasingNValue(IntegerVariable nval, IntegerVariable[] vars){
-        return new ComponentConstraint(ConstraintType.INCREASINGNVALUE, null,
-                ArrayUtils.append(new IntegerVariable[]{nval},vars));
-    }
-
-    /**
-     * The variables of the collection VARIABLES are increasing.
-     * In addition, NVAL is the number of distinct values taken by the variables of the collection VARIABLES.
-     * @param nval number of distinct values
-     * @param vars collection of variables
-     * @deprecated use increasingNValue
-     */
-    @Deprecated
-    public static Constraint increasing_nvalue(IntegerVariable nval, IntegerVariable[] vars){
-        return Choco.increasingNValue(nval, vars);
-    }
-
-    /**
-     * The variables of the collection VARIABLES are increasing.
-     * In addition, NVAL is the number of distinct values taken by the variables of the collection VARIABLES.
-     * @param option  Available options are:
-     * <ul>
-     * <li><b>cp:atleast</b>: filter on lower bound only</li>
-     * <li><b>cp:atmost</b>:  filter on upper bound only</li>
-     * <li><b>cp:both</b>: (default value) filter on lower bound and upper bound</li>
-     * </ul>
-     * @param nval number of distinct values
-     * @param vars collection of variables
-     * @return increasing n value constraint
-     * @deprecated use increasingNValue
-     */
-    @Deprecated
-    public static Constraint increasing_nvalue(String option, IntegerVariable nval, IntegerVariable[] vars){
-        return Choco.increasingNValue(option, nval, vars);
-    }
-
-
-	public static Constraint pack(int[] sizes, int nbBins, int capacity, String... options) {
-		return pack(new PackModeler(sizes, nbBins, capacity),options);
+	 * <li><b>cp:atmost</b>:  filter on upper bound only</li>
+	 * <li><b>cp:both</b>: (default value) filter on lower bound and upper bound</li>
+	 * </ul>
+	 * @param nval number of distinct values
+	 * @param vars collection of variables
+	 * @return increasing n value constraint
+	 */
+	public static Constraint increasingNValue(String option, IntegerVariable nval, IntegerVariable[] vars){
+		Constraint c = increasingNValue(nval, vars);
+		c.addOption(option);
+		return c;
 	}
 
-	public static Constraint pack(PackModeler modeler,String... options) {
-		return pack(modeler.itemSets, modeler.loads, modeler.bins, modeler.sizes, modeler.nbNonEmpty, options);
+	/**
+	 * The variables of the collection VARIABLES are increasing.
+	 * In addition, NVAL is the number of distinct values taken by the variables of the collection VARIABLES.
+	 * @param nval number of distinct values
+	 * @param vars collection of variables
+	 * @return increasing n value constraint
+	 */
+	public static Constraint increasingNValue(IntegerVariable nval, IntegerVariable[] vars){
+		return new ComponentConstraint(ConstraintType.INCREASINGNVALUE, null,
+				ArrayUtils.append(new IntegerVariable[]{nval},vars));
 	}
-	public static Constraint pack(SetVariable[] itemSets, IntegerVariable[] loads, IntegerVariable[] bins, IntegerConstantVariable[] sizes, String... options) {
-		return pack(itemSets, loads, bins, sizes, makeIntVar("nbNonEmpty", 0,loads.length,"cp:bound"),options);
+
+	/**
+	 * The variables of the collection VARIABLES are increasing.
+	 * In addition, NVAL is the number of distinct values taken by the variables of the collection VARIABLES.
+	 * @param nval number of distinct values
+	 * @param vars collection of variables
+	 * @deprecated use increasingNValue
+	 */
+	@Deprecated
+	public static Constraint increasing_nvalue(IntegerVariable nval, IntegerVariable[] vars){
+		return Choco.increasingNValue(nval, vars);
+	}
+
+	/**
+	 * The variables of the collection VARIABLES are increasing.
+	 * In addition, NVAL is the number of distinct values taken by the variables of the collection VARIABLES.
+	 * @param option  Available options are:
+	 * <ul>
+	 * <li><b>cp:atleast</b>: filter on lower bound only</li>
+	 * <li><b>cp:atmost</b>:  filter on upper bound only</li>
+	 * <li><b>cp:both</b>: (default value) filter on lower bound and upper bound</li>
+	 * </ul>
+	 * @param nval number of distinct values
+	 * @param vars collection of variables
+	 * @return increasing n value constraint
+	 * @deprecated use increasingNValue
+	 */
+	@Deprecated
+	public static Constraint increasing_nvalue(String option, IntegerVariable nval, IntegerVariable[] vars){
+		return Choco.increasingNValue(option, nval, vars);
 	}
 
 	public static Constraint pack(SetVariable[] itemSets, IntegerVariable[] loads, IntegerVariable[] bins, IntegerConstantVariable[] sizes,IntegerVariable nbNonEmpty, String... options) {
-		//check pre-conditions
-		if(itemSets.length!=loads.length || bins.length != sizes.length){
-			throw new ModelException("lenght of arrays are invalid");
-		}
-		final int n= bins.length;
-		final int m=loads.length;
-		for (int i = 1; i < n; i++) {
-			if(sizes[i].getValue() > sizes[i-1].getValue()) {
-				throw new ModelException("sizes must be sorted according to non increasing order.");
-			}
-		}
-		Variable[] vars = new Variable[2*(n+m)+1];
-		arraycopy(itemSets, 0, vars, 0, m);
-		arraycopy(loads, 0, vars, m, m);
-		arraycopy(bins, 0, vars, 2*m, n);
-		arraycopy(sizes, 0, vars, 2*m+n,n);
-		vars[vars.length-1]=nbNonEmpty;
-		Constraint pack = new ComponentConstraint(ConstraintType.PACK, new Object[]{n,m},vars);
+		return pack(new PackModel(bins, sizes, loads, itemSets, nbNonEmpty), options);
+	}
+
+
+	public static Constraint pack(PackModel packMod,String... options) {
+		Constraint pack = new ComponentConstraint(ConstraintType.PACK, 
+				new Object[]{packMod.getNbItems(), packMod.getNbBins()},
+				packMod.getVariables());
 		pack.addOptions(options);
 		return pack;
 	}
 
-	//Cumulative Min-Max
+	//Build Cumulative
 	/**
-	 * Cumulative : Given a set of tasks defined by their starting dates, ending dates, durations and
+	 * Builds Alternative cumulative Min-Max. 
+	 * <br/><b>cumulative</b> : Given a array of tasks defined by their starting dates, ending dates, durations and
 	 * heights, the cumulative ensures that at any time t, the sum of the heights of the tasks
-	 * which are executed at time t does not exceed a given limit C (the capacity of the ressource) and is not lower than C2 (minimal consumption of the resource).
-	 * The implementation is based on the paper of Bediceanu and al :
-	 * "A new multi-resource cumulatives constraint with negative heights" in CP02
+	 * which are executed at time t does not exceed a given limit C (the capacity of the ressource) 
+	 * and stays greater than C2 (the minimal consumption of the resource).
+	 * <br>The <b>Implementation</b> is based on the paper of Bediceanu and al :
+	 * "A new multi-resource cumulatives constraint with negative heights" in CP02.
+	 * Other optional filtering policies include Task Intervals and Edge Finding.
 	 * @param name name of the resource (<code>null</code> is authorized)
 	 * @param tasks the set of involved tasks
 	 * @param heights the heights of the tasks for the given resource
-	 * @param usages is a boolean variable array which indicates if tasks are used by the resource. If usages.lenght is lower than tasks.length, then the usages.length last tasks are optional and the first ones are regular tasks.
-	 * @param consumption the minimal consumption required for the resource
+	 * @param usages are boolean variables which indicates if optional tasks are executed by the resource.
+	 * If usages.length is lower than tasks.length, then the last tasks are optional whereas the first ones are regular.
+	 * @param consumption the minimal consumption of resource
 	 * @param capacity the capacity of the resource
-	 * @param uppBound An upper bound for the makespan of the given resource. If the value is  (<code>null</code>, then we set the global solver makespan variable.
-	 * @param options filtering options, see SettingType enum.
+	 * @param uppBound an upper bound for the makespan of the resource. 
+	 * If the value is <code>null</code>, then we set the project makespan variable (solver level).
+	 * @param options filtering options, see Options class.
 	 * @return Constraint
 	 */
-	public static Constraint cumulative(String name, TaskVariable[] tasks, IntegerVariable[] heights, IntegerVariable[] usages, IntegerVariable consumption, IntegerVariable capacity, IntegerVariable uppBound, String... options) {
+	public static Constraint cumulative(String name, TaskVariable[] tasks, 
+			IntegerVariable[] heights, IntegerVariable[] usages, 
+			IntegerVariable consumption, IntegerVariable capacity,
+			IntegerVariable uppBound, String... options) {
 		//check parameters
 		if(tasks == null || heights == null || tasks.length == 0 || tasks.length != heights.length) {
 			throw new ModelException("can't build cumulative constraint "+name+" : Tasks and heights arrays are nil or have different size.");
@@ -2756,193 +2741,167 @@ public class Choco {
 			consumption = constant(MAX_UPPER_BOUND);
 		}
 		//build constraint
-		RscData param = new RscData(name, tasks, usages, uppBound);
+		ResourceParameters param = new ResourceParameters(name, tasks, usages, uppBound);
 		final Variable[] vars=  ArrayUtils.append(tasks, usages, heights, new IntegerVariable[]{consumption, capacity}, uppBound == null ? null : new IntegerVariable[]{uppBound});
 		final ComponentConstraint c=new ComponentConstraint(ConstraintType.CUMULATIVE, param,vars);
 		c.addOptions(options);
 		return c;
-
-	}
-
-	public static Constraint cumulative(String name, TaskVariable[] tasks, IntegerVariable[] heights, IntegerVariable[] usages, IntegerVariable consumption, IntegerVariable capacity, String... options) {
-		return cumulative(name, tasks, heights, usages, consumption, capacity, null, options);
 	}
 
 
+	/**
+	 * Cumulative Min-Max : usages = <code>null</code>, uppBound = <code>null</code>.
+	 * @see Choco#cumulative(String, TaskVariable[], IntegerVariable[], IntegerVariable[], IntegerVariable, IntegerVariable, IntegerVariable, String...)
+	 * @return Constraint
+	 */
 	public static Constraint cumulative(String name, TaskVariable[] tasks, IntegerVariable[] heights, IntegerVariable consumption, IntegerVariable capacity, String... options) {
 		return cumulative(name, tasks, heights,null, consumption, capacity, null, options);
 	}
 
-	//Cumulative Max
-	public static Constraint cumulativeMax(String name, TaskVariable[] tasks, IntegerVariable[] heights, IntegerVariable[] usages, IntegerVariable capacity, String... options) {
-		return cumulative(name, tasks, heights, usages, constant(0), capacity, null, options);
-	}
-
+	/**
+	 * Cumulative Max : consumption=0, usages = <code>null</code>, uppBound = <code>null</code>.
+	 * @see Choco#cumulative(String, TaskVariable[], IntegerVariable[], IntegerVariable[], IntegerVariable, IntegerVariable, IntegerVariable, String...)
+	 * @return Constraint
+	 */
 	public static Constraint cumulativeMax(String name, TaskVariable[] tasks, IntegerVariable[] heights, IntegerVariable capacity, String... options) {
 		return cumulative(name, tasks, heights, null, constant(0), capacity, null, options);
 	}
 
+	/**
+	 * Cumulative Max : consumption=0, usages = <code>null</code>, uppBound = <code>null</code>.
+	 * @see Choco#cumulative(String, TaskVariable[], IntegerVariable[], IntegerVariable[], IntegerVariable, IntegerVariable, IntegerVariable, String...)
+	 * @return Constraint
+	 */
 	public static Constraint cumulativeMax(TaskVariable[] tasks, int[] heights, int capacity, String... options) {
 		return cumulativeMax(null, tasks, constantArray(heights), constant(capacity), options);
 	}
 
-	//Cumulative Min
-	public static Constraint cumulativeMin(String name, TaskVariable[] tasks, IntegerVariable[] heights, IntegerVariable[] usages, IntegerVariable consumption, String... options) {
-		return cumulative(name, tasks, heights, usages, consumption, constant(Integer.MAX_VALUE), null, options);
-	}
-
+	/**
+	 * Cumulative Min : capacity=infinity, usages = <code>null</code>, uppBound = <code>null</code>.
+	 * @see Choco#cumulative(String, TaskVariable[], IntegerVariable[], IntegerVariable[], IntegerVariable, IntegerVariable, IntegerVariable, String...)
+	 * @return Constraint
+	 */
 	public static Constraint cumulativeMin(String name, TaskVariable[] tasks, IntegerVariable[] heights, IntegerVariable consumption, String... options) {
-		return cumulative(name, tasks, heights, null, consumption, constant(Integer.MAX_VALUE), null, options);
+		return cumulative(name, tasks, heights, null, consumption, constant(Choco.MAX_UPPER_BOUND), null, options);
 	}
 
+	/**
+	 * Cumulative Min : capacity=infinity, usages = <code>null</code>, uppBound = <code>null</code>.
+	 * @see Choco#cumulative(String, TaskVariable[], IntegerVariable[], IntegerVariable[], IntegerVariable, IntegerVariable, IntegerVariable, String...)
+	 * @return Constraint
+	 */
 	public static Constraint cumulativeMin(TaskVariable[] tasks, int[] heights, int consumption, String... options) {
 		return cumulativeMin(null, tasks, constantArray(heights), constant(consumption), options);
 	}
 
 
 
-	@Deprecated
-	public static Constraint cumulative(String name, TaskVariable[] tasks, IntegerVariable[] heights, IntegerVariable capa, String... options) {
-		return cumulative(name, tasks, heights,null, constant(0),  capa, null, options);
-	}
-
-	@Deprecated
-	public static Constraint cumulative(TaskVariable[] tasks, int[] heights, int capa, String... options) {
-		return cumulative(null, tasks, constantArray(heights), null, constant(0),constant(capa), null,options);
-	}
-
-	@Deprecated
-	public static Constraint cumulative(String name, IntegerVariable[] starts, IntegerVariable[] ends, IntegerVariable[] durations, IntegerVariable[] heights, IntegerVariable capa, String... options) {
-		final TaskVariable[] tasks = makeTaskVarArray("t", starts, ends, durations);
-		return cumulative(name, tasks, heights, constant(0), capa, options);
-
-	}
-	@Deprecated
-	public static Constraint cumulative(IntegerVariable[] starts, IntegerVariable[] ends, IntegerVariable[] durations, IntegerVariable[] heights, IntegerVariable capa, String... options) {
-		TaskVariable[] t = new TaskVariable[starts.length];
-		for(int i = 0; i < starts.length; i++){
-			t[i] = makeTaskVar("", starts[i], ends[i], durations[i]);
-		}
-		return cumulative(null, t, heights, constant(0), capa, options);
-	}
-	@Deprecated
-	public static Constraint cumulative(IntegerVariable[] starts, IntegerVariable[] ends, IntegerVariable[] durations, int[] heights, int capa, String... options) {
-		TaskVariable[] t = new TaskVariable[starts.length];
-		for(int i = 0; i < starts.length; i++){
-			t[i] = makeTaskVar("", starts[i], ends[i], durations[i]);
-		}
-		return cumulative(null, t, constantArray(heights), constant(0), constant(capa), options);
-	}
-	@Deprecated
-	public static Constraint cumulative(IntegerVariable[] starts, IntegerVariable[] durations, IntegerVariable[] heights, IntegerVariable capa, String... options) {
-		TaskVariable[] t = new TaskVariable[starts.length];
-		for(int i = 0; i < starts.length; i++){
-			t[i] = makeTaskVar("", starts[i], durations[i]);
-		}
-		return cumulative(null, t, heights, constant(0),capa, options);
-	}
-
-
-
 	/**
-	 * Returns a disjunctive constraint
-	 *
-	 * @param starts to schedule
-	 * @param durations of each task
-	 * @param options options of the variable
-	 * @return the disjunctive constraint
+	 * Alternative Cumulative Min-Max : uppBound = <code>null</code>.
+	 * @see Choco#cumulative(String, TaskVariable[], IntegerVariable[], IntegerVariable[], IntegerVariable, IntegerVariable, IntegerVariable, String...)
+	 * @return Constraint
 	 */
-	@Deprecated
-	public static Constraint disjunctive(IntegerVariable[] starts, int[] durations,String...options) {
-		TaskVariable[] t = new TaskVariable[starts.length];
-		for(int i = 0; i < starts.length; i++){
-			t[i] = makeTaskVar("", starts[i], constant(durations[i]));
-		}
-		return disjunctive(null, t,  null, options);
-	}
-
-	@Deprecated
-	public static Constraint disjunctive(IntegerVariable[] starts, IntegerVariable[] durations, String... options) {
-		TaskVariable[] t = new TaskVariable[starts.length];
-		for(int i = 0; i < starts.length; i++){
-			t[i] = makeTaskVar("", starts[i], durations[i]);
-		}
-		return disjunctive(null, t,  null, options);
-	}
-
-	@Deprecated
-	public static Constraint disjunctive(IntegerVariable[] starts, IntegerVariable[] ends, IntegerVariable[] durations,String... options) {
-		TaskVariable[] t = new TaskVariable[starts.length];
-		for(int i = 0; i < starts.length; i++){
-			t[i] = makeTaskVar("", starts[i], ends[i], durations[i]);
-		}
-		return disjunctive(null, t,  null, options);
-	}
-
-	@Deprecated
-	public static Constraint disjunctive(String name, IntegerVariable[] starts, IntegerVariable[] ends, IntegerVariable[] durations,IntegerVariable uppBound, String... options) {
-		final TaskVariable[] tasks = makeTaskVarArray("task-", starts, ends, durations);
-		return disjunctive(name, tasks,null, uppBound, options);
-	}
-
-	public static Constraint disjunctive(TaskVariable[] tasks, String... options) {
-		return disjunctive(null, tasks, options);
-	}
-
-	public static Constraint disjunctive(String name, TaskVariable[] tasks, String... options) {
-		return disjunctive(name, tasks,null, options);
-	}
-
-
-	public static Constraint disjunctive(TaskVariable[] tasks,IntegerVariable[] usages, String... options) {
-		return disjunctive(null, tasks, usages, options);
-	}
-
-	public static Constraint disjunctive(String name, TaskVariable[] tasks,IntegerVariable[] usages, String... options) {
-		return disjunctive(name, tasks, usages, null, options);
+	public static Constraint cumulative(String name, TaskVariable[] tasks, IntegerVariable[] heights, IntegerVariable[] usages, IntegerVariable consumption, IntegerVariable capacity, String... options) {
+		return cumulative(name, tasks, heights, usages, consumption, capacity, null, options);
 	}
 
 	/**
-	 * create a disjunctive constraint. A disjunctive constraint holds if All the regular tasks that have a duration strictly greater than 0 should not overlap.
+	 * Alternative Cumulative Max : consumption=0, uppBound = <code>null</code>.
+	 * @see Choco#cumulative(String, TaskVariable[], IntegerVariable[], IntegerVariable[], IntegerVariable, IntegerVariable, IntegerVariable, String...)
+	 * @return Constraint
+	 */
+	public static Constraint cumulativeMax(String name, TaskVariable[] tasks, IntegerVariable[] heights, IntegerVariable[] usages, IntegerVariable capacity, String... options) {
+		return cumulative(name, tasks, heights, usages, constant(0), capacity, null, options);
+	}
+
+	/**
+	 * Alternative Cumulative Min : capacity=infinity, uppBound = <code>null</code>.
+	 * @see Choco#cumulative(String, TaskVariable[], IntegerVariable[], IntegerVariable[], IntegerVariable, IntegerVariable, IntegerVariable, String...)
+	 * @return Constraint
+	 */
+	public static Constraint cumulativeMin(String name, TaskVariable[] tasks, IntegerVariable[] heights, IntegerVariable[] usages, IntegerVariable consumption, String... options) {
+		return cumulative(name, tasks, heights, usages, consumption, constant(Integer.MAX_VALUE), null, options);
+	}
+
+	//Builds Disjunctive
+
+	/**
+	 * Builds Alternative disjunctive. 
+	 * <br/><b>disjunctive</b> : Given a array of tasks defined by their starting dates, ending dates, durations and
+	 * heights, the disjunctive ensures that all pairs of regular tasks that have a duration strictly greater than 0 do not overlap.
+	 * <br>The <b>Implementation</b> is based on the balanced binary trees proposed by P. Vilim.
+	 * Filtering policies are overload checking, not first/not last, edge finding, detectable precedence. 
 	 * @param name name of the resource (<code>null</code> is authorized)
 	 * @param tasks the set of involved tasks
-	 * @param usages is a boolean variable array which indicates if tasks are used by the resource. If usages.lenght is lower than tasks.length, then the usages.length last tasks are optional and the first ones are regular tasks.
-	 * @param uppBound An upper bound for the makespan of the given resource. If the value is  (<code>null</code>, then we set the global solver makespan variable.
-	 * @param options filtering options, see SettingType enum.
+	 * @param usages are boolean variables which indicates if optional tasks are executed by the resource.
+	 * If usages.length is lower than tasks.length, then the last tasks are optional whereas the first ones are regular.
+	 * @param uppBound an upper bound for the makespan of the resource. 
+	 * If the value is <code>null</code>, then we set the project makespan variable (solver level).
+	 * @param options filtering options, see Options class.
 	 * @return Constraint
 	 */
 	public static Constraint disjunctive(String name, TaskVariable[] tasks,IntegerVariable[] usages, IntegerVariable uppBound, String... options) {
-		RscData param = new RscData(name, tasks, usages, uppBound);
+		ResourceParameters param = new ResourceParameters(name, tasks, usages, uppBound);
 		Variable[] vars = uppBound==null ? ArrayUtils.<Variable>append(tasks, usages) :   ArrayUtils.append(tasks, usages, new IntegerVariable[]{ uppBound});
 		final ComponentConstraint c=new ComponentConstraint(ConstraintType.DISJUNCTIVE, param,vars);
 		c.addOptions(options);
 		return c;
 	}
-	
-		
-	
-	public static Constraint forbiddenInterval(TaskVariable[] tasks) {
-		return forbiddenInterval(null, tasks);
+	/**
+	 * Disjunctive : name = <code>null</code>, usages = <code>null</code>, uppBound = <code>null</code>.
+	 * @see Choco#disjunctive(String, TaskVariable[], IntegerVariable[], IntegerVariable, String...)
+	 * @return Constraint
+	 */
+	public static Constraint disjunctive(TaskVariable[] tasks, String... options) {
+		return disjunctive(null, tasks, options);
 	}
+
+	/**
+	 * Disjunctive : usages = <code>null</code>, uppBound = <code>null</code>.
+	 * @see Choco#disjunctive(String, TaskVariable[], IntegerVariable[], IntegerVariable, String...)
+	 * @return Constraint
+	 */
+	public static Constraint disjunctive(String name, TaskVariable[] tasks, String... options) {
+		return disjunctive(name, tasks, null, options);
+	}
+
+	/**
+	 * Alternative Disjunctive : name = <code>null</code>, uppBound = <code>null</code>.
+	 * @see Choco#disjunctive(String, TaskVariable[], IntegerVariable[], IntegerVariable, String...)
+	 * @return Constraint
+	 */
+	public static Constraint disjunctive(TaskVariable[] tasks,IntegerVariable[] usages, String... options) {
+		return disjunctive(null, tasks, usages, options);
+	}
+
+	/**
+	 * Alternative Disjunctive : uppBound = <code>null</code>.
+	 * @see Choco#disjunctive(String, TaskVariable[], IntegerVariable[], IntegerVariable, String...)
+	 * @return Constraint
+	 */
+	public static Constraint disjunctive(String name, TaskVariable[] tasks,IntegerVariable[] usages, String... options) {
+		return disjunctive(name, tasks, usages, null, options);
+	}
+
 
 	/**
 	 * This redundant constraints applies additional search tree reduction 
 	 * based on Time intervals are in which no operation can start or end in an optimal solution. 
 	 * The tasks must all belong to one disjunctive resource and have fixed durations.
 	 */
-	public static Constraint forbiddenInterval(String name, TaskVariable[] tasks) {
+	public static Constraint forbiddenIntervals(String name, TaskVariable[] tasks) {
 		return new ComponentConstraint(ConstraintType.FORBIDDEN_INTERVALS, name, tasks);
 	}
-	
+
 
 
 	/**
 	 * Each task of the collection tasks1 should not overlap any task of the collection tasks2.
 	 * The model only provides a decomposition with reified precedences because the coloured cumulative is not available.
 	 * @param tasks1 first set of tasks
-     * @param tasks2 second set of tasks
-     * @see {http://www.emn.fr/x-info/sdemasse/gccat/Cdisjoint_tasks.html#uid11633}
-     * @return Constraint disjoint
+	 * @param tasks2 second set of tasks
+	 * @see {http://www.emn.fr/x-info/sdemasse/gccat/Cdisjoint_tasks.html#uid11633}
+	 * @return Constraint disjoint
 	 */
 	public static Constraint[] disjoint(TaskVariable[] tasks1,TaskVariable[] tasks2) {
 		final Constraint[] decomp = new Constraint[tasks1.length * tasks2.length];
@@ -2958,32 +2917,24 @@ public class Choco {
 
 
 	/**
-	 * @see {@link Choco#precedence(TaskVariable, TaskVariable)}
-	 */
-	@Deprecated 
-	public static Constraint preceding(TaskVariable t1, TaskVariable t2) {
-		return precedenceDisjoint(t1, t2, constant(1));
-	}
-
-
-	/**
 	 * T1 ends before t2 starts or t1 precedes t2.
-     * @param t1 a task
-     * @param t2 another task
-     * @return precedence constraint
-     */
+	 * @param t1 a task
+	 * @param t2 another task
+	 * @return precedence constraint
+	 */
 	public static Constraint precedence(TaskVariable t1, TaskVariable t2) {
 		return precedenceDisjoint(t1, t2, ONE);
 	}
 
 	/**
-	 * @see {@link Choco#precedenceDisjoint(IntegerVariable, int, IntegerVariable, int, IntegerVariable)}
+	 * T1 ends before t2 starts or t1 precedes t2.
+	 * @param t1 a task
+	 * @param t2 another task
+	 * @return precedence constraint
 	 */
-	@Deprecated 
-	public static Constraint preceding(IntegerVariable v1, int dur1, IntegerVariable v2, int dur2, IntegerVariable bool) {
-		return precedenceDisjoint(v1, dur1, v2, dur2, bool);
+	public static Constraint precedence(TaskVariable t1, TaskVariable t2, int setupTime) {
+		return precedenceDisjoint(t1, t2, ONE, setupTime, 0);
 	}
-
 
 	/**
 	 * 
@@ -2998,21 +2949,12 @@ public class Choco {
 
 
 	/**
-	 * @see {@link Choco#precedenceDisjoint(TaskVariable, TaskVariable, IntegerVariable)}
-	 */
-	@Deprecated 
-	public static Constraint preceding(TaskVariable t1, TaskVariable t2, IntegerVariable direction) {
-		return precedenceDisjoint(t1, t2, direction);
-	}
-
-
-	/**
 	 * represents a disjunction without setup times
-     * @param t1 a task
-     * @param t2 another task
-     * @param direction
-     * @return precedence disjoint constraint
-     */
+	 * @param t1 a task
+	 * @param t2 another task
+	 * @param direction
+	 * @return precedence disjoint constraint
+	 */
 	public static Constraint precedenceDisjoint(TaskVariable t1, TaskVariable t2, IntegerVariable direction) {
 		return precedenceDisjoint(t1, t2, direction, 0, 0);
 	}
@@ -3029,23 +2971,20 @@ public class Choco {
 	 * @param direction  boolean variable which reified the precedence relation. 
 	 * @param forwardSetup setup times between t1 and t2
 	 * @param backwardSetup setup times between t2 and t1.
-     * @return precedence disjoint constraint
+	 * @return precedence disjoint constraint
 	 */
 	public static Constraint precedenceDisjoint(TaskVariable t1, TaskVariable t2, IntegerVariable direction, int forwardSetup, int backwardSetup) {
-		return new ComponentConstraint(ConstraintType.PRECEDENCE_DISJOINT, Boolean.TRUE, new Variable[]{t1,constant(forwardSetup), t2, constant(backwardSetup), direction});
+		return new TemporalConstraint(ConstraintType.PRECEDENCE_DISJOINT, Boolean.TRUE, new Variable[]{t1,constant(forwardSetup), t2, constant(backwardSetup), direction});
 	}
 
 
+	/**
+	 * @see Reformulation#disjunctive(TaskVariable[], String...)
+	 * @return Constraint[]
+	 */
+	@Deprecated
 	public static Constraint[] precedenceDisjoint(TaskVariable[] clique, String... boolvarOptions) {
-		final int n = clique.length;
-		Constraint[] cstr = new Constraint[ (n * (n-1) )/2];
-		int idx = 0;
-		for (int i = 0; i < n; i++) {
-			for (int j = i+1; j < n; j++) {
-				cstr[idx++] = precedenceDisjoint(clique[i], clique[j], VariableUtils.createDirectionVar(clique[i], clique[j], boolvarOptions));
-			}
-		}
-		return cstr;
+		return Reformulation.disjunctive(clique, boolvarOptions);
 	}
 
 
@@ -3074,7 +3013,7 @@ public class Choco {
 	 * </ul>  
 	 */
 	public static Constraint precedenceReified(TaskVariable t1, int k1, TaskVariable t2, IntegerVariable b) {
-		return new ComponentConstraint(ConstraintType.PRECEDENCE_REIFIED, Boolean.TRUE, new Variable[]{t1, constant(k1), t2, ZERO, b});
+		return new TemporalConstraint(ConstraintType.PRECEDENCE_REIFIED, Boolean.TRUE, new Variable[]{t1, constant(k1), t2, ZERO, b});
 	}
 
 	/**
@@ -3096,24 +3035,24 @@ public class Choco {
 	 * </ul>  
 	 */
 	public static Constraint precedenceImplied(TaskVariable t1, int k1, TaskVariable t2, IntegerVariable b) {
-		return new ComponentConstraint(ConstraintType.PRECEDENCE_IMPLIED, Boolean.TRUE, new Variable[]{t1, constant(k1), t2, ZERO, b});
+		return new TemporalConstraint(ConstraintType.PRECEDENCE_IMPLIED, Boolean.TRUE, new Variable[]{t1, constant(k1), t2, ZERO, b});
 	}
 
-    @SuppressWarnings({"deprecation"})
-    @Deprecated
-    public static Constraint geost(int dim, Vector<GeostObject> objects, Vector<ShiftedBox> shiftedBoxes, Vector<IExternalConstraint> eCtrs) {
+	@SuppressWarnings({"deprecation"})
+	@Deprecated
+	public static Constraint geost(int dim, Vector<GeostObject> objects, Vector<ShiftedBox> shiftedBoxes, Vector<IExternalConstraint> eCtrs) {
 		return geost(dim, objects, shiftedBoxes, eCtrs, null);
 	}
 
-    @SuppressWarnings({"deprecation"})
-    @Deprecated
-    public static Constraint geost(int dim, Vector<GeostObject> objects, Vector<ShiftedBox> shiftedBoxes, Vector<IExternalConstraint> eCtrs, Vector<int[]> ctrlVs) {
+	@SuppressWarnings({"deprecation"})
+	@Deprecated
+	public static Constraint geost(int dim, Vector<GeostObject> objects, Vector<ShiftedBox> shiftedBoxes, Vector<IExternalConstraint> eCtrs, Vector<int[]> ctrlVs) {
 		return geost(dim, objects, shiftedBoxes, eCtrs, ctrlVs, null);
 	}
 
-    @Deprecated
+	@Deprecated
 	public static Constraint geost(int dim, Vector<GeostObject> objects, Vector<ShiftedBox> shiftedBoxes,
-                                   Vector<IExternalConstraint> eCtrs, Vector<int[]> ctrlVs, GeostOptions opt) {
+			Vector<IExternalConstraint> eCtrs, Vector<int[]> ctrlVs, GeostOptions opt) {
 		int originOfObjects = objects.size() * dim; //Number of domain variables to represent the origin of all objects
 		int otherVariables = objects.size() * 4; //each object has 4 other variables: shapeId, start, duration; end
 
@@ -3160,10 +3099,10 @@ public class Choco {
 			ind++;
 		}
 
-        List nObjects = Collections.list(objects.elements());
-        List nShiftedBoxes = Collections.list(shiftedBoxes.elements());
-        List nECtrs = Collections.list(eCtrs.elements());
-        List nCtrlVs = Collections.list(ctrlVs.elements());
+		List nObjects = Collections.list(objects.elements());
+		List nShiftedBoxes = Collections.list(shiftedBoxes.elements());
+		List nECtrs = Collections.list(eCtrs.elements());
+		List nCtrlVs = Collections.list(ctrlVs.elements());
 
 		return new ComponentConstraint(ConstraintType.GEOST, new Object[]{dim, nShiftedBoxes, nECtrs, nObjects, nCtrlVs, opt}, vars);
 	}
@@ -3219,7 +3158,7 @@ public class Choco {
 			}
 			if (ectr instanceof DistGeqModel) {
 				vars[originOfObjects + otherVariables  +ind] = (( DistGeqModel) ectr).getDistanceVar();
-            }
+			}
 
 			ind++;
 		}
@@ -3241,20 +3180,20 @@ public class Choco {
 		return new ComponentConstraint(ConstraintType.LEX, new Object[]{ConstraintType.LEXEQ, offset}, ArrayUtils.append(v1, v2));
 	}
 
-    /**
-     * Enforce a lexicographic ordering on two vectors of integer
-     * variables x <_lex y with x = <x_0, ..., x_n>, and y = <y_0, ..., y_n>.
-     * ref : Global Constraints for Lexicographic Orderings (Frisch and al)
-     * @param v1 the first array of variables
-     * @param v2 the second array of variables
-     * @return Constraint
-     * @deprecated see lexEq
-     */
-    @Deprecated
-    public static Constraint lexeq(IntegerVariable[] v1, IntegerVariable[] v2) {
-        int offset = v1.length;
-        return new ComponentConstraint(ConstraintType.LEX, new Object[]{ConstraintType.LEXEQ, offset}, ArrayUtils.append(v1, v2));
-    }
+	/**
+	 * Enforce a lexicographic ordering on two vectors of integer
+	 * variables x <_lex y with x = <x_0, ..., x_n>, and y = <y_0, ..., y_n>.
+	 * ref : Global Constraints for Lexicographic Orderings (Frisch and al)
+	 * @param v1 the first array of variables
+	 * @param v2 the second array of variables
+	 * @return Constraint
+	 * @deprecated see lexEq
+	 */
+	@Deprecated
+	public static Constraint lexeq(IntegerVariable[] v1, IntegerVariable[] v2) {
+		int offset = v1.length;
+		return new ComponentConstraint(ConstraintType.LEX, new Object[]{ConstraintType.LEXEQ, offset}, ArrayUtils.append(v1, v2));
+	}
 
 	/**
 	 * Enforce a strict lexicographic ordering on two vectors of integer
@@ -3379,20 +3318,20 @@ public class Choco {
 		return new ComponentConstraint(ConstraintType.ATMOSTNVALUE, null, tmp);
 	}
 
-    /**
-     * Enforce the number of distinct values among vars to be less than nvalue;
-     * @param vars list of variables
-     * @param nvalue number of distinct values
-     * @return Constraint
-     * @deprecated reorder parameters
-     */
-    @Deprecated
-    public static Constraint atMostNValue(IntegerVariable[] vars, IntegerVariable nvalue) {
-        IntegerVariable[] tmp = new IntegerVariable[vars.length + 1];
-        arraycopy(vars, 0, tmp, 0, vars.length);
-        tmp[tmp.length - 1] = nvalue;
-        return new ComponentConstraint(ConstraintType.ATMOSTNVALUE, null, tmp);
-    }
+	/**
+	 * Enforce the number of distinct values among vars to be less than nvalue;
+	 * @param vars list of variables
+	 * @param nvalue number of distinct values
+	 * @return Constraint
+	 * @deprecated reorder parameters
+	 */
+	@Deprecated
+	public static Constraint atMostNValue(IntegerVariable[] vars, IntegerVariable nvalue) {
+		IntegerVariable[] tmp = new IntegerVariable[vars.length + 1];
+		arraycopy(vars, 0, tmp, 0, vars.length);
+		tmp[tmp.length - 1] = nvalue;
+		return new ComponentConstraint(ConstraintType.ATMOSTNVALUE, null, tmp);
+	}
 
 	// ------------- Constraints over sets -------------------------------
 	/**
@@ -3419,11 +3358,11 @@ public class Choco {
 		return new ComponentConstraint(ConstraintType.SETUNION, null, new SetVariable[]{union, sv1, sv2});
 	}
 
-    /**
+	/**
 	 * Enforce a set to be the union of n others
 	 *
 	 * @param sv array of set variables
-     * @param union the union of {@code sv}
+	 * @param union the union of {@code sv}
 	 * @return the union constraint
 	 */
 	public static Constraint setUnion(SetVariable[] sv, SetVariable union) {
@@ -3459,7 +3398,7 @@ public class Choco {
 	 */
 	public static Constraint eqCard(SetVariable sv, int val) {
 		//        return new GenericConstraint<Variable>(ConstraintType.EQCARD, sv, constant(val));
-        return new ComponentConstraint(ConstraintType.EQ, ConstraintType.EQ, new Variable[]{sv, constant(val)});
+		return new ComponentConstraint(ConstraintType.EQ, ConstraintType.EQ, new Variable[]{sv, constant(val)});
 	}
 
 	/**
@@ -3501,15 +3440,15 @@ public class Choco {
 		return new ComponentConstraint(ConstraintType.LEQ, ConstraintType.LEQ, new Variable[]{sv, constant(val)});
 	}
 
-    /**
-     * Ensure every set of {@code sv} are disjoints from each other.
-     * @param sv array of set variables
-     * @return disjoint constraint
-     */
-    public static Constraint setDisjoint(SetVariable... sv) {
-        if(sv.length < 2){
-            throw new ModelException("setDisjoint : bad number of arguments (>=2)");
-        }
+	/**
+	 * Ensure every set of {@code sv} are disjoints from each other.
+	 * @param sv array of set variables
+	 * @return disjoint constraint
+	 */
+	public static Constraint setDisjoint(SetVariable... sv) {
+		if(sv.length < 2){
+			throw new ModelException("setDisjoint : bad number of arguments (>=2)");
+		}
 		return new ComponentConstraint(ConstraintType.SETDISJOINT, null, sv);
 	}
 
@@ -3617,7 +3556,7 @@ public class Choco {
 	 */
 	public static Constraint inverseSet(IntegerVariable[] iv, SetVariable[] sv) {
 		return new ComponentConstraint(ConstraintType.INVERSE_SET,
-                iv.length, ArrayUtils.<Variable>append(iv, sv));
+				iv.length, ArrayUtils.<Variable>append(iv, sv));
 	}
 	/**
 	 * Ensure that the two variables are not equal (not exactly the same values in the set)
@@ -3659,7 +3598,7 @@ public class Choco {
 	}
 
 
-    /**
+	/**
 	 * Create a Regular constraint that enforce the sequence of variables to be a word
 	 * recognized by the dfa auto.
 	 * For example regexp = "(1|2)(3*)(4|5)";
@@ -3676,20 +3615,20 @@ public class Choco {
 
 
 
-    /**
-     * Create a Regular constraint that enforce the sequence of variables to be a word
-     * recognized by the dfa auto.
-     * For example regexp = "(1|2)(3*)(4|5)";
-     * The same dfa can be used for different propagators.
-     *
-     * @param vars the variables of the constraint
-     * @param auto the DFA
-     * @return the new constraint
-     */
-    public static Constraint regular(IntegerVariable[] vars, DFA auto) {
-        return new ComponentConstraint(ConstraintType.REGULAR,
-                auto, vars);
-    }
+	/**
+	 * Create a Regular constraint that enforce the sequence of variables to be a word
+	 * recognized by the dfa auto.
+	 * For example regexp = "(1|2)(3*)(4|5)";
+	 * The same dfa can be used for different propagators.
+	 *
+	 * @param vars the variables of the constraint
+	 * @param auto the DFA
+	 * @return the new constraint
+	 */
+	public static Constraint regular(IntegerVariable[] vars, DFA auto) {
+		return new ComponentConstraint(ConstraintType.REGULAR,
+				auto, vars);
+	}
 
 	/**
 	 * Create a Regular constraint that enforce the sequence of variables to match the regular
@@ -3705,57 +3644,57 @@ public class Choco {
 				regexp, vars);
 	}
 
-    /**
-     * Create a Regular constraint that enforce the sequence of variables to be a word
-     * recognized by the dfa auto.
-     * For example regexp = "(1|2)(3*)(4|5)";
-     * The same dfa can be used for different propagators.
-     *
-     * @param auto the DFA
-     * @param vars the variables of the constraint
-     * @return the new constraint
-     * @deprecated reorder parameters
-     */
-    @Deprecated
-    public static Constraint regular(DFA auto, IntegerVariable[] vars) {
-        return new ComponentConstraint(ConstraintType.REGULAR,
-                auto, vars);
-    }
+	/**
+	 * Create a Regular constraint that enforce the sequence of variables to be a word
+	 * recognized by the dfa auto.
+	 * For example regexp = "(1|2)(3*)(4|5)";
+	 * The same dfa can be used for different propagators.
+	 *
+	 * @param auto the DFA
+	 * @param vars the variables of the constraint
+	 * @return the new constraint
+	 * @deprecated reorder parameters
+	 */
+	@Deprecated
+	public static Constraint regular(DFA auto, IntegerVariable[] vars) {
+		return new ComponentConstraint(ConstraintType.REGULAR,
+				auto, vars);
+	}
 
-    /**
-     * Create a Regular constraint that enforce the sequence of variables to be a word
-     * recognized by the dfa auto.
-     * For example regexp = "(1|2)(3*)(4|5)";
-     * The same dfa can be used for different propagators.
-     *
-     * @param auto the DFA
-     * @param vars the variables of the constraint
-     * @return the new constraint
-     * @deprecated reorder parameters
-     */
-    @Deprecated
-    public static Constraint regular(FiniteAutomaton auto, IntegerVariable[] vars) {
-        return new ComponentConstraint(ConstraintType.FASTREGULAR,
-                auto, vars);
-    }
+	/**
+	 * Create a Regular constraint that enforce the sequence of variables to be a word
+	 * recognized by the dfa auto.
+	 * For example regexp = "(1|2)(3*)(4|5)";
+	 * The same dfa can be used for different propagators.
+	 *
+	 * @param auto the DFA
+	 * @param vars the variables of the constraint
+	 * @return the new constraint
+	 * @deprecated reorder parameters
+	 */
+	@Deprecated
+	public static Constraint regular(FiniteAutomaton auto, IntegerVariable[] vars) {
+		return new ComponentConstraint(ConstraintType.FASTREGULAR,
+				auto, vars);
+	}
 
 
 
-    /**
-     * Create a Regular constraint that enforce the sequence of variables to match the regular
-     * expression.
-     *
-     * @param regexp a regexp for the DFA
-     * @param vars   the variables of the constraint
-     * @return the new constraint
-     * @deprecated reorder parameters
-     */
-    @Deprecated
-    public static Constraint regular(String regexp, IntegerVariable[] vars) {
-        //return new Regular2Constraint(vars, regexp);
-        return new ComponentConstraint(ConstraintType.REGULAR,
-                regexp, vars);
-    }
+	/**
+	 * Create a Regular constraint that enforce the sequence of variables to match the regular
+	 * expression.
+	 *
+	 * @param regexp a regexp for the DFA
+	 * @param vars   the variables of the constraint
+	 * @return the new constraint
+	 * @deprecated reorder parameters
+	 */
+	@Deprecated
+	public static Constraint regular(String regexp, IntegerVariable[] vars) {
+		//return new Regular2Constraint(vars, regexp);
+		return new ComponentConstraint(ConstraintType.REGULAR,
+				regexp, vars);
+	}
 
 	/**
 	 * A Regular constraint based on a DFA which is built from a list of FEASIBLE tuples.
@@ -3795,140 +3734,140 @@ public class Choco {
 				new Object[]{tuples, min, max}, vars);
 	}
 
-    /**
-     * costRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
-     * and that the sum of the costs associated to each assignment is bounded by the cost variable.
-     * @param costVar the cost variable
-     * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
-     * @param auto  the automaton defining the regular language
-     * @param costs the assignment costs: costs[i][j] is the cost associated to the assignment of variable i to value j
-     * @return an instance of the costRegular constraint
-     */
-    public static Constraint costRegular(IntegerVariable costVar, IntegerVariable[] vars, FiniteAutomaton auto, int[][] costs){
+	/**
+	 * costRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
+	 * and that the sum of the costs associated to each assignment is bounded by the cost variable.
+	 * @param costVar the cost variable
+	 * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
+	 * @param auto  the automaton defining the regular language
+	 * @param costs the assignment costs: costs[i][j] is the cost associated to the assignment of variable i to value j
+	 * @return an instance of the costRegular constraint
+	 */
+	public static Constraint costRegular(IntegerVariable costVar, IntegerVariable[] vars, FiniteAutomaton auto, int[][] costs){
 		return new ComponentConstraint(ConstraintType.COSTREGULAR, new Object[]{auto, costs},
 				ArrayUtils.append(vars, new IntegerVariable[]{costVar}));
 	}
 
-    /**
-     * costRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
-     * and that the sum of the costs associated to each assignment is bounded by the cost variable.
-     * This version allows to specify different costs according to the automaton state at which the assignment occurs (i.e. the transition starts)
-     * @param costVar the cost variable
-     * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
-     * @param auto  the automaton defining the regular language
-     * @param costs the assignment costs: costs[i][j][s] is the cost associated to the assignment of variable i to value j at state s
-     * @return an instance of the costRegular constraint
-     */
+	/**
+	 * costRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
+	 * and that the sum of the costs associated to each assignment is bounded by the cost variable.
+	 * This version allows to specify different costs according to the automaton state at which the assignment occurs (i.e. the transition starts)
+	 * @param costVar the cost variable
+	 * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
+	 * @param auto  the automaton defining the regular language
+	 * @param costs the assignment costs: costs[i][j][s] is the cost associated to the assignment of variable i to value j at state s
+	 * @return an instance of the costRegular constraint
+	 */
 	public static Constraint costRegular(IntegerVariable costVar, IntegerVariable[] vars, FiniteAutomaton auto, int[][][] costs){
 		return new ComponentConstraint(ConstraintType.FASTCOSTREGULAR, new Object[]{auto, costs},
 				ArrayUtils.append(vars, new IntegerVariable[]{costVar}));
 	}
 
-    /**
-     * costRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
-     * and that the sum of the costs associated to each assignment is bounded by the cost variable.
-     * In this version, the specified DFA is already unfolded as a layered multi-graph so as it recognizes only words of fixed length vars.length
-     * @param costVar the cost variable
-     * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
-     * @param graph  a layered directed multigraph
-     * @param source the source node of the graph
-     * @return an instance of the costRegular constraint
-     */
+	/**
+	 * costRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
+	 * and that the sum of the costs associated to each assignment is bounded by the cost variable.
+	 * In this version, the specified DFA is already unfolded as a layered multi-graph so as it recognizes only words of fixed length vars.length
+	 * @param costVar the cost variable
+	 * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
+	 * @param graph  a layered directed multigraph
+	 * @param source the source node of the graph
+	 * @return an instance of the costRegular constraint
+	 */
 	public static Constraint costRegular(IntegerVariable costVar, IntegerVariable[] vars, DirectedMultigraph<Node, Arc> graph, Node source){
 		return new ComponentConstraint(ConstraintType.FASTCOSTREGULAR, new Object[]{graph, source},
 				ArrayUtils.append(vars, new IntegerVariable[]{costVar}));
 	}
 
-    /**
-     * costRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
-     * and that the sum of the costs associated to each assignment is bounded by the cost variable.
-     * @param costVar the cost variable
-     * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
-     * @param auto  the automaton defining the regular language
-     * @param costs the assignment costs: costs[i][j] is the cost associated to the assignment of variable i to value j
-     * @return an instance of the costRegular constraint
-     * @deprecated reorder parameters
-     */
-    @Deprecated
-    public static Constraint costRegular(IntegerVariable[] vars, IntegerVariable costVar, FiniteAutomaton auto, int[][] costs){
-        return new ComponentConstraint(ConstraintType.COSTREGULAR, new Object[]{auto, costs},
-                ArrayUtils.append(vars, new IntegerVariable[]{costVar}));
-    }
+	/**
+	 * costRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
+	 * and that the sum of the costs associated to each assignment is bounded by the cost variable.
+	 * @param costVar the cost variable
+	 * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
+	 * @param auto  the automaton defining the regular language
+	 * @param costs the assignment costs: costs[i][j] is the cost associated to the assignment of variable i to value j
+	 * @return an instance of the costRegular constraint
+	 * @deprecated reorder parameters
+	 */
+	@Deprecated
+	public static Constraint costRegular(IntegerVariable[] vars, IntegerVariable costVar, FiniteAutomaton auto, int[][] costs){
+		return new ComponentConstraint(ConstraintType.COSTREGULAR, new Object[]{auto, costs},
+				ArrayUtils.append(vars, new IntegerVariable[]{costVar}));
+	}
 
-    /**
-     * costRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
-     * and that the sum of the costs associated to each assignment is bounded by the cost variable.
-     * This version allows to specify different costs according to the automaton state at which the assignment occurs (i.e. the transition starts)
-     * @param costVar the cost variable
-     * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
-     * @param auto  the automaton defining the regular language
-     * @param costs the assignment costs: costs[i][j][s] is the cost associated to the assignment of variable i to value j at state s
-     * @return an instance of the costRegular constraint
-     * @deprecated reorder parameters
-     */
-    @Deprecated
-    public static Constraint costRegular(IntegerVariable[] vars, IntegerVariable costVar, FiniteAutomaton auto, int[][][] costs){
-        return new ComponentConstraint(ConstraintType.FASTCOSTREGULAR, new Object[]{auto, costs},
-                ArrayUtils.append(vars, new IntegerVariable[]{costVar}));
-    }
+	/**
+	 * costRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
+	 * and that the sum of the costs associated to each assignment is bounded by the cost variable.
+	 * This version allows to specify different costs according to the automaton state at which the assignment occurs (i.e. the transition starts)
+	 * @param costVar the cost variable
+	 * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
+	 * @param auto  the automaton defining the regular language
+	 * @param costs the assignment costs: costs[i][j][s] is the cost associated to the assignment of variable i to value j at state s
+	 * @return an instance of the costRegular constraint
+	 * @deprecated reorder parameters
+	 */
+	@Deprecated
+	public static Constraint costRegular(IntegerVariable[] vars, IntegerVariable costVar, FiniteAutomaton auto, int[][][] costs){
+		return new ComponentConstraint(ConstraintType.FASTCOSTREGULAR, new Object[]{auto, costs},
+				ArrayUtils.append(vars, new IntegerVariable[]{costVar}));
+	}
 
-    /**
-     * costRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
-     * and that the sum of the costs associated to each assignment is bounded by the cost variable.
-     * In this version, the specified DFA is already unfolded as a layered multi-graph so as it recognizes only words of fixed length vars.length
-     * @param costVar the cost variable
-     * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
-     * @param graph  a layered directed multigraph
-     * @param source the source node of the graph
-     * @return an instance of the costRegular constraint
-     * @deprecated reorder parameters
-     */
-    @Deprecated
-    public static Constraint costRegular(IntegerVariable[] vars, IntegerVariable costVar, DirectedMultigraph<Node, Arc> graph, Node source){
-        return new ComponentConstraint(ConstraintType.FASTCOSTREGULAR, new Object[]{graph, source},
-                ArrayUtils.append(vars, new IntegerVariable[]{costVar}));
-    }
+	/**
+	 * costRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
+	 * and that the sum of the costs associated to each assignment is bounded by the cost variable.
+	 * In this version, the specified DFA is already unfolded as a layered multi-graph so as it recognizes only words of fixed length vars.length
+	 * @param costVar the cost variable
+	 * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
+	 * @param graph  a layered directed multigraph
+	 * @param source the source node of the graph
+	 * @return an instance of the costRegular constraint
+	 * @deprecated reorder parameters
+	 */
+	@Deprecated
+	public static Constraint costRegular(IntegerVariable[] vars, IntegerVariable costVar, DirectedMultigraph<Node, Arc> graph, Node source){
+		return new ComponentConstraint(ConstraintType.FASTCOSTREGULAR, new Object[]{graph, source},
+				ArrayUtils.append(vars, new IntegerVariable[]{costVar}));
+	}
 
-    /**
-     * The knapsack problem constraint ensures that costVar is the sum of the vars weighted by the costs and that weightVar is the sum of vars weighted by the weights
-     * Based on costRegular, it simulates Tricks's dynamic programming approach.
-     * @param costVar cost variable
-     * @param weightVar weight variable
-     * @param vars item variables
-     * @param costs cost coefficients
-     * @param weights weight coefficients
-     * @return an instance of a knapsack problem constraint.
-     */
-    public static Constraint knapsackProblem(IntegerVariable costVar, IntegerVariable weightVar, IntegerVariable[] vars, int[] costs, int[] weights)
-    {
-       return new ComponentConstraint(ConstraintType.COSTKNAPSACK,new Object[]{costs,weights},
-              ArrayUtils.append(vars,new IntegerVariable[]{costVar,weightVar}));
-    }
+	/**
+	 * The knapsack problem constraint ensures that costVar is the sum of the vars weighted by the costs and that weightVar is the sum of vars weighted by the weights
+	 * Based on costRegular, it simulates Tricks's dynamic programming approach.
+	 * @param costVar cost variable
+	 * @param weightVar weight variable
+	 * @param vars item variables
+	 * @param costs cost coefficients
+	 * @param weights weight coefficients
+	 * @return an instance of a knapsack problem constraint.
+	 */
+	public static Constraint knapsackProblem(IntegerVariable costVar, IntegerVariable weightVar, IntegerVariable[] vars, int[] costs, int[] weights)
+	{
+		return new ComponentConstraint(ConstraintType.COSTKNAPSACK,new Object[]{costs,weights},
+				ArrayUtils.append(vars,new IntegerVariable[]{costVar,weightVar}));
+	}
 
-    /**
-     * The knapsack problem constraint ensures that costVar is the sum of the vars weighted by the costs and that weightVar is the sum of vars weighted by the weights
-     * Based on costRegular, it simulates Tricks's dynamic programming approach.
-     * @param vars item variables
-     * @param costVar cost variable
-     * @param weightVar weight variable
-     * @param costs cost coefficients
-     * @param weights weight coefficients
-     * @return an instance of a knapsack problem constraint.
-     * @deprecated reorder parameters
-     */
-    @Deprecated
-    public static Constraint knapsackProblem(IntegerVariable[] vars, IntegerVariable costVar, IntegerVariable weightVar, int[] costs, int[] weights)
-    {
-        return new ComponentConstraint(ConstraintType.COSTKNAPSACK,new Object[]{costs,weights},
-                ArrayUtils.append(vars,new IntegerVariable[]{costVar,weightVar}));
-    }
+	/**
+	 * The knapsack problem constraint ensures that costVar is the sum of the vars weighted by the costs and that weightVar is the sum of vars weighted by the weights
+	 * Based on costRegular, it simulates Tricks's dynamic programming approach.
+	 * @param vars item variables
+	 * @param costVar cost variable
+	 * @param weightVar weight variable
+	 * @param costs cost coefficients
+	 * @param weights weight coefficients
+	 * @return an instance of a knapsack problem constraint.
+	 * @deprecated reorder parameters
+	 */
+	@Deprecated
+	public static Constraint knapsackProblem(IntegerVariable[] vars, IntegerVariable costVar, IntegerVariable weightVar, int[] costs, int[] weights)
+	{
+		return new ComponentConstraint(ConstraintType.COSTKNAPSACK,new Object[]{costs,weights},
+				ArrayUtils.append(vars,new IntegerVariable[]{costVar,weightVar}));
+	}
 
 
 	/**
 	 * multiCostRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
 	 * and that the sum of the cost vectors associated to each assignment is bounded by the cost variable vector
 	 * @param costVars the cost variable vector
-     * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
+	 * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
 	 * @param auto  the automaton defining the regular language
 	 * @param costs the assignment cost vectors: costs[i][j][k] is the k-th element of the cost vector associated to the assignment of variable i to value j
 	 * @return an instance of the multiCostRegular constraint
@@ -3937,29 +3876,29 @@ public class Choco {
 		return new ComponentConstraint(ConstraintType.MULTICOSTREGULAR, new Object[]{vars.length,auto,costs},
 				ArrayUtils.append(vars, costVars));
 	}
-    /**
-     * multiCostRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
-     * and that the sum of the cost vectors associated to each assignment is bounded by the cost variable vector.
-     * This version allows to specify different costs according to the automaton state at which the assignment occurs (i.e. the transition starts)
-     * @param costVars the cost variable vector
-     * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
-     * @param auto  the automaton defining the regular language
-     * @param costs the assignment cost vectors: costs[i][j][k][s] is the k-th element of the cost vector associated to the assignment of variable i to value j at state s of the DFA
-     * @return an instance of the multiCostRegular constraint
-     */
+	/**
+	 * multiCostRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
+	 * and that the sum of the cost vectors associated to each assignment is bounded by the cost variable vector.
+	 * This version allows to specify different costs according to the automaton state at which the assignment occurs (i.e. the transition starts)
+	 * @param costVars the cost variable vector
+	 * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
+	 * @param auto  the automaton defining the regular language
+	 * @param costs the assignment cost vectors: costs[i][j][k][s] is the k-th element of the cost vector associated to the assignment of variable i to value j at state s of the DFA
+	 * @return an instance of the multiCostRegular constraint
+	 */
 	public static Constraint multiCostRegular(IntegerVariable[] costVars, IntegerVariable[] vars, FiniteAutomaton auto, int[][][][] costs){
-                int[][][][] copy = ArrayUtils.swallowCopy(costs);
+		int[][][][] copy = ArrayUtils.swallowCopy(costs);
 		return new ComponentConstraint(ConstraintType.MULTICOSTREGULAR, new Object[]{vars.length,auto,copy},
 				ArrayUtils.append(vars, costVars));
 	}
 
 	public static Constraint softMultiCostRegular(IntegerVariable[] vars, IntegerVariable[] counters, IntegerVariable[] penaltyVars, IntegerVariable globalPenalty, PenaltyFunction[] pfunction ,FiniteAutomaton auto, int[][][][] costs){
-                int[][][][] copy = ArrayUtils.swallowCopy(costs);
+		int[][][][] copy = ArrayUtils.swallowCopy(costs);
 		return new ComponentConstraint(ConstraintType.SOFTMULTICOSTREGULAR, new Object[]{vars.length,counters.length,pfunction,auto,copy}, ArrayUtils.append(vars,counters,penaltyVars,new IntegerVariable[]{globalPenalty}));
 	}
 
-        public static Constraint softMultiCostRegular(IntegerVariable[] vars, IntegerVariable[] counters, IntegerVariable[] penaltyVars, IntegerVariable globalPenalty, PenaltyFunction[] pfunction ,FiniteAutomaton auto, int[][][][] costs,int... sumDimension){
-                int[][][][] copy = ArrayUtils.swallowCopy(costs);
+	public static Constraint softMultiCostRegular(IntegerVariable[] vars, IntegerVariable[] counters, IntegerVariable[] penaltyVars, IntegerVariable globalPenalty, PenaltyFunction[] pfunction ,FiniteAutomaton auto, int[][][][] costs,int... sumDimension){
+		int[][][][] copy = ArrayUtils.swallowCopy(costs);
 		return new ComponentConstraint(ConstraintType.SOFTMULTICOSTREGULAR, new Object[]{vars.length,counters.length,sumDimension,pfunction,auto,copy}, ArrayUtils.append(vars,counters,penaltyVars,new IntegerVariable[]{globalPenalty}));
 	}
 
@@ -3971,7 +3910,7 @@ public class Choco {
 	}
 
 
-       /*     Commented, waiting pending license auhtorization
+	/*     Commented, waiting pending license auhtorization
         public static Constraint flow(CapaEdge[][] graph, IntegerVariable flow)
         {
                 throw new UnsupportedOperationException();
@@ -3993,71 +3932,71 @@ public class Choco {
 				new int[][]{coeffs, new int[]{val}}, vars);
 	}
 
-    /**
-     * State a constraint to enforce GAC on Sum_i coeffs[i] * vars[i] = z.
-     * It is using the regular to state a "knapsack" constraint.
-     * @param z    : the result variable
-     * @param vars   : a table of variables
-     * @param coeffs : a table of coefficients
-     * @return a constraint
-     */
-    public static Constraint equation(IntegerVariable z, IntegerVariable[] vars, int[] coeffs) {
-        IntegerVariable[] v = new IntegerVariable[vars.length+1];
-        System.arraycopy(v, 0, vars, 0, vars.length);
-        v[vars.length] = z;
-        int[] c = new int[coeffs.length+1];
-        System.arraycopy(c, 0, coeffs, 0, coeffs.length);
-        c[coeffs.length] = -1;
-        return Choco.equation(0, v, c);
-    }
+	/**
+	 * State a constraint to enforce GAC on Sum_i coeffs[i] * vars[i] = z.
+	 * It is using the regular to state a "knapsack" constraint.
+	 * @param z    : the result variable
+	 * @param vars   : a table of variables
+	 * @param coeffs : a table of coefficients
+	 * @return a constraint
+	 */
+	public static Constraint equation(IntegerVariable z, IntegerVariable[] vars, int[] coeffs) {
+		IntegerVariable[] v = new IntegerVariable[vars.length+1];
+		System.arraycopy(v, 0, vars, 0, vars.length);
+		v[vars.length] = z;
+		int[] c = new int[coeffs.length+1];
+		System.arraycopy(c, 0, coeffs, 0, coeffs.length);
+		c[coeffs.length] = -1;
+		return Choco.equation(0, v, c);
+	}
 
-    /**
-     * State constraint Sum_i coeffs[i] * vars[i] = val.
-     * The option can be set to either :
-     * <ul>
-     * <li><b> cp:ac</b> for using regular
-     * <li><b> cp:bc</b> for using linear equation
-     * </ul>
-     * @param val    : the value to reach
-     * @param vars   : a table of variables
-     * @param coeffs : a table of coefficients
-     * @return a constraint
-     */
-    public static Constraint equation(String option, int val, IntegerVariable[] vars, int[] coeffs) {
-        return (option.equals("cp:bc")) ? Choco.eq(val, Choco.scalar(coeffs, vars)) : Choco.equation(val, vars, coeffs);
-    }
+	/**
+	 * State constraint Sum_i coeffs[i] * vars[i] = val.
+	 * The option can be set to either :
+	 * <ul>
+	 * <li><b> cp:ac</b> for using regular
+	 * <li><b> cp:bc</b> for using linear equation
+	 * </ul>
+	 * @param val    : the value to reach
+	 * @param vars   : a table of variables
+	 * @param coeffs : a table of coefficients
+	 * @return a constraint
+	 */
+	public static Constraint equation(String option, int val, IntegerVariable[] vars, int[] coeffs) {
+		return (option.equals("cp:bc")) ? Choco.eq(val, Choco.scalar(coeffs, vars)) : Choco.equation(val, vars, coeffs);
+	}
 
-    /**
-     * State constraint Sum_i coeffs[i] * vars[i] = z.
-     * The option can be set to either :
-     * <ul>
-     * <li><b> cp:ac</b> for using regular
-     * <li><b> cp:bc</b> for using linear equation
-     * </ul>
-     * @param option : the consistency level to achieve
-     * @param z    : the result variable
-     * @param vars   : a table of variables
-     * @param coeffs : a table of coefficients
-     * @return a constraint
-     */
-    public static Constraint equation(String option, IntegerVariable z, IntegerVariable[] vars, int[] coeffs) {
-            return (option.equals("cp:bc")) ? Choco.eq(z, Choco.scalar(coeffs, vars)) : Choco.equation(z, vars, coeffs);
-    }
+	/**
+	 * State constraint Sum_i coeffs[i] * vars[i] = z.
+	 * The option can be set to either :
+	 * <ul>
+	 * <li><b> cp:ac</b> for using regular
+	 * <li><b> cp:bc</b> for using linear equation
+	 * </ul>
+	 * @param option : the consistency level to achieve
+	 * @param z    : the result variable
+	 * @param vars   : a table of variables
+	 * @param coeffs : a table of coefficients
+	 * @return a constraint
+	 */
+	public static Constraint equation(String option, IntegerVariable z, IntegerVariable[] vars, int[] coeffs) {
+		return (option.equals("cp:bc")) ? Choco.eq(z, Choco.scalar(coeffs, vars)) : Choco.equation(z, vars, coeffs);
+	}
 
-    /**
-     * State a constraint to enforce GAC on Sum_i coeffs[i] * vars[i] = val.
-     * It is using the regular to state a "knapsack" constraint.
-     * @param vars   : a table of variables
-     * @param coeffs : a table of coefficients
-     * @param val    : the value to reach
-     * @return a constraint
-     * @deprecated reorder parameters
-     */
-    @Deprecated
-    public static Constraint equation(IntegerVariable[] vars,int[] coeffs, int val) {
-        return new ComponentConstraint(ConstraintType.REGULAR,
-                new int[][]{coeffs,new int[]{val}}, vars);
-    }
+	/**
+	 * State a constraint to enforce GAC on Sum_i coeffs[i] * vars[i] = val.
+	 * It is using the regular to state a "knapsack" constraint.
+	 * @param vars   : a table of variables
+	 * @param coeffs : a table of coefficients
+	 * @param val    : the value to reach
+	 * @return a constraint
+	 * @deprecated reorder parameters
+	 */
+	@Deprecated
+	public static Constraint equation(IntegerVariable[] vars,int[] coeffs, int val) {
+		return new ComponentConstraint(ConstraintType.REGULAR,
+				new int[][]{coeffs,new int[]{val}}, vars);
+	}
 
 	public static Constraint sameSign(IntegerExpressionVariable n1, IntegerExpressionVariable n2) {
 		return new ComponentConstraint(ConstraintType.SIGNOP, true, new Variable[]{n1, n2});
@@ -4071,18 +4010,18 @@ public class Choco {
 		return new ComponentConstraint(ConstraintType.MOD, null, new IntegerVariable[]{v0, v1, constant(c)});
 	}
 
-    @Deprecated
+	@Deprecated
 	public static Constraint reifiedIntConstraint(IntegerVariable binVar, Constraint cst) {
 		Variable[] vars = ArrayUtils.append(new IntegerVariable[]{binVar}, cst.getVariables());
 		return new ComponentConstraintWithSubConstraints(ConstraintType.REIFIEDCONSTRAINT, vars, null, cst);
 	}
 
-    @Deprecated
+	@Deprecated
 	public static Constraint reifiedIntConstraint(IntegerVariable binVar, Constraint cst, Constraint oppCst) {
 		return new ComponentConstraintWithSubConstraints(ConstraintType.REIFIEDCONSTRAINT, new IntegerVariable[]{binVar}, null, cst, oppCst);
 	}
 
-    public static Constraint reifiedConstraint(IntegerVariable binVar, Constraint cst) {
+	public static Constraint reifiedConstraint(IntegerVariable binVar, Constraint cst) {
 		Variable[] vars = ArrayUtils.append(new IntegerVariable[]{binVar}, cst.getVariables());
 		return new ComponentConstraintWithSubConstraints(ConstraintType.REIFIEDCONSTRAINT, vars, null, cst);
 	}
@@ -4103,18 +4042,18 @@ public class Choco {
 
 	}
 
-    /**
+	/**
 	 * A global constraint to store and propagate all clauses
-     * The option can contain the folowing String :
+	 * The option can contain the folowing String :
 	 * <ul>
 	 * <li><b> cp:entail</b> ensure quick entailment tests
 	 * </ul>
-     * @param option option of the constraint
+	 * @param option option of the constraint
 	 * @param positiveLiterals list of positive literals
 	 * @param negativeLiterals list of negative lliterals
 	 * @return Constraint
-     *
-     *
+	 *
+	 *
 	 */
 	public static Constraint clause(String option, IntegerVariable[] positiveLiterals, IntegerVariable[] negativeLiterals){
 		Constraint c = clause(positiveLiterals, negativeLiterals);
@@ -4123,226 +4062,226 @@ public class Choco {
 
 	}
 
-    /**
-     * A constraint for logical disjunction between boolean variables
-     * lit1 OR lit2 OR ... OR litn
-     * @param literals list of boolean variables
-     * @return Constraint
-     */
-    public static Constraint or(IntegerVariable... literals){
-        for(IntegerVariable lit : literals){
-            if(!lit.isBoolean())throw new ModelException("OR constraint must be used with boolean variables");
-        }
-        return new ComponentConstraint(ConstraintType.OR, null, literals);
-    }
+	/**
+	 * A constraint for logical disjunction between boolean variables
+	 * lit1 OR lit2 OR ... OR litn
+	 * @param literals list of boolean variables
+	 * @return Constraint
+	 */
+	public static Constraint or(IntegerVariable... literals){
+		for(IntegerVariable lit : literals){
+			if(!lit.isBoolean())throw new ModelException("OR constraint must be used with boolean variables");
+		}
+		return new ComponentConstraint(ConstraintType.OR, null, literals);
+	}
 
-    /**
-     * A reified constraint for logical disjunction between boolean variables
-     * binVar = lit1 OR lit2 OR ... OR litn
-     * @param binVar reified variable
-     * @param literals list of boolean variables
-     * @return Constraint
-     */
-    public static Constraint reifiedOr(IntegerVariable binVar, IntegerVariable... literals){
-        IntegerVariable[] vars = ArrayUtils.append(new IntegerVariable[]{binVar}, literals);
-        for(IntegerVariable var : vars){
-            if(!var.isBoolean())throw new ModelException("reifiedOr constraint must be used with boolean variables");
-        }
-        return new ComponentConstraint(ConstraintType.REIFIEDOR, null, vars);
-    }
+	/**
+	 * A reified constraint for logical disjunction between boolean variables
+	 * binVar = lit1 OR lit2 OR ... OR litn
+	 * @param binVar reified variable
+	 * @param literals list of boolean variables
+	 * @return Constraint
+	 */
+	public static Constraint reifiedOr(IntegerVariable binVar, IntegerVariable... literals){
+		IntegerVariable[] vars = ArrayUtils.append(new IntegerVariable[]{binVar}, literals);
+		for(IntegerVariable var : vars){
+			if(!var.isBoolean())throw new ModelException("reifiedOr constraint must be used with boolean variables");
+		}
+		return new ComponentConstraint(ConstraintType.REIFIEDOR, null, vars);
+	}
 
-    /**
-     * A constraint for logical conjunction between boolean variables
-     * lit1 AND lit2 AND ... AND litn
-     * @param literals list of boolean variables
-     * @return Constraint
-     */
-    public static Constraint and(IntegerVariable... literals){
-        for(IntegerVariable lit : literals){
-            if(!lit.isBoolean())throw new ModelException("AND constraint must be used with boolean variables");
-        }
-        return new ComponentConstraint(ConstraintType.AND, null, literals);
-    }
+	/**
+	 * A constraint for logical conjunction between boolean variables
+	 * lit1 AND lit2 AND ... AND litn
+	 * @param literals list of boolean variables
+	 * @return Constraint
+	 */
+	public static Constraint and(IntegerVariable... literals){
+		for(IntegerVariable lit : literals){
+			if(!lit.isBoolean())throw new ModelException("AND constraint must be used with boolean variables");
+		}
+		return new ComponentConstraint(ConstraintType.AND, null, literals);
+	}
 
-    /**
-     * A reified constraint for logical conjunction between boolean variables
-     * binVar = lit1 AND lit2 AND ... AND litn
-     * @param binVar reified variable
-     * @param literals list of boolean variables
-     * @return Constraint
-     */
-    public static Constraint reifiedAnd(IntegerVariable binVar, IntegerVariable... literals){
-        IntegerVariable[] vars = ArrayUtils.append(new IntegerVariable[]{binVar}, literals);
-        for(IntegerVariable var : vars){
-            if(!var.isBoolean())throw new ModelException("reifiedAnd constraint must be used with boolean variables");
-        }
-        return new ComponentConstraint(ConstraintType.REIFIEDAND, null, vars);
-    }
+	/**
+	 * A reified constraint for logical conjunction between boolean variables
+	 * binVar = lit1 AND lit2 AND ... AND litn
+	 * @param binVar reified variable
+	 * @param literals list of boolean variables
+	 * @return Constraint
+	 */
+	public static Constraint reifiedAnd(IntegerVariable binVar, IntegerVariable... literals){
+		IntegerVariable[] vars = ArrayUtils.append(new IntegerVariable[]{binVar}, literals);
+		for(IntegerVariable var : vars){
+			if(!var.isBoolean())throw new ModelException("reifiedAnd constraint must be used with boolean variables");
+		}
+		return new ComponentConstraint(ConstraintType.REIFIEDAND, null, vars);
+	}
 
-    /**
-     * A constraint for logical conjunction between boolean variables
-     * lit1 NAND lit2 NAND ... NAND litn
-     * @param literals list of boolean variables
-     * @return Constraint
-     */
-    public static Constraint nand(IntegerVariable... literals){
-        for(IntegerVariable lit : literals){
-            if(!lit.isBoolean())throw new ModelException("NAND constraint must be used with boolean variables");
-        }
-        return new ComponentConstraint(ConstraintType.NAND, null, literals);
-    }
+	/**
+	 * A constraint for logical conjunction between boolean variables
+	 * lit1 NAND lit2 NAND ... NAND litn
+	 * @param literals list of boolean variables
+	 * @return Constraint
+	 */
+	public static Constraint nand(IntegerVariable... literals){
+		for(IntegerVariable lit : literals){
+			if(!lit.isBoolean())throw new ModelException("NAND constraint must be used with boolean variables");
+		}
+		return new ComponentConstraint(ConstraintType.NAND, null, literals);
+	}
 
-    /**
-     * A reified constraint for logical conjunction between boolean variables
-     * binVar = lit1 NAND lit2 NAND ... NAND litn
-     * @param binVar reified variable
-     * @param literals list of boolean variables
-     * @return Constraint
-     */
-    public static Constraint reifiedNand(IntegerVariable binVar, IntegerVariable... literals){
-        IntegerVariable[] vars = ArrayUtils.append(new IntegerVariable[]{binVar}, literals);
-        for(IntegerVariable var : vars){
-            if(!var.isBoolean())throw new ModelException("reifiedNand constraint must be used with boolean variables");
-        }
-        return new ComponentConstraint(ConstraintType.REIFIEDNAND, null, vars);
-    }
+	/**
+	 * A reified constraint for logical conjunction between boolean variables
+	 * binVar = lit1 NAND lit2 NAND ... NAND litn
+	 * @param binVar reified variable
+	 * @param literals list of boolean variables
+	 * @return Constraint
+	 */
+	public static Constraint reifiedNand(IntegerVariable binVar, IntegerVariable... literals){
+		IntegerVariable[] vars = ArrayUtils.append(new IntegerVariable[]{binVar}, literals);
+		for(IntegerVariable var : vars){
+			if(!var.isBoolean())throw new ModelException("reifiedNand constraint must be used with boolean variables");
+		}
+		return new ComponentConstraint(ConstraintType.REIFIEDNAND, null, vars);
+	}
 
-    /**
-     * A constraint for logical conjunction between boolean variables
-     * lit1 NOR lit2 NOR ... NOR litn
-     * @param literals list of boolean variables
-     * @return Constraint
-     */
-    public static Constraint nor(IntegerVariable... literals){
-        for(IntegerVariable lit : literals){
-            if(!lit.isBoolean())throw new ModelException("NOR constraint must be used with boolean variables");
-        }
-        return new ComponentConstraint(ConstraintType.NOR, null, literals);
-    }
+	/**
+	 * A constraint for logical conjunction between boolean variables
+	 * lit1 NOR lit2 NOR ... NOR litn
+	 * @param literals list of boolean variables
+	 * @return Constraint
+	 */
+	public static Constraint nor(IntegerVariable... literals){
+		for(IntegerVariable lit : literals){
+			if(!lit.isBoolean())throw new ModelException("NOR constraint must be used with boolean variables");
+		}
+		return new ComponentConstraint(ConstraintType.NOR, null, literals);
+	}
 
-    /**
-     * A reified constraint for logical conjunction between boolean variables
-     * binVar = lit1 NOR lit2 NOR ... NOR litn
-     * @param binVar reified variable
-     * @param literals list of boolean variables
-     * @return Constraint
-     */
-    public static Constraint reifiedNor(IntegerVariable binVar, IntegerVariable... literals){
-        IntegerVariable[] vars = ArrayUtils.append(new IntegerVariable[]{binVar}, literals);
-        for(IntegerVariable var : vars){
-            if(!var.isBoolean())throw new ModelException("reifiedNor constraint must be used with boolean variables");
-        }
-        return new ComponentConstraint(ConstraintType.REIFIEDNOR, null, vars);
-    }
+	/**
+	 * A reified constraint for logical conjunction between boolean variables
+	 * binVar = lit1 NOR lit2 NOR ... NOR litn
+	 * @param binVar reified variable
+	 * @param literals list of boolean variables
+	 * @return Constraint
+	 */
+	public static Constraint reifiedNor(IntegerVariable binVar, IntegerVariable... literals){
+		IntegerVariable[] vars = ArrayUtils.append(new IntegerVariable[]{binVar}, literals);
+		for(IntegerVariable var : vars){
+			if(!var.isBoolean())throw new ModelException("reifiedNor constraint must be used with boolean variables");
+		}
+		return new ComponentConstraint(ConstraintType.REIFIEDNOR, null, vars);
+	}
 
-    /**
-     * A reified constraint for logical negation
-     * binVar = NOT(lit)
-     * @param binVar reified variable
-     * @param lit literal
-     * @return Constraint
-     */
-    public static Constraint reifiedNot(IntegerVariable binVar, IntegerVariable lit) {
+	/**
+	 * A reified constraint for logical negation
+	 * binVar = NOT(lit)
+	 * @param binVar reified variable
+	 * @param lit literal
+	 * @return Constraint
+	 */
+	public static Constraint reifiedNot(IntegerVariable binVar, IntegerVariable lit) {
 		IntegerVariable[] vars = new IntegerVariable[]{binVar, lit};
-        for(IntegerVariable var : vars){
-            if(!var.isBoolean())throw new ModelException("xor constraint must be used with boolean variables");
-        }
-        return new ComponentConstraint(ConstraintType.XOR, null, vars);
+		for(IntegerVariable var : vars){
+			if(!var.isBoolean())throw new ModelException("xor constraint must be used with boolean variables");
+		}
+		return new ComponentConstraint(ConstraintType.XOR, null, vars);
 	}
 
-    /**
-     * A reified constraint for logical exclusive disjunctive
-     * lit1 XOR lit2
-     * @param lit1 literal
-     * @param lit2 literal
-     * @return Constraint
-     */
-    public static Constraint xor(IntegerVariable lit1, IntegerVariable lit2) {
+	/**
+	 * A reified constraint for logical exclusive disjunctive
+	 * lit1 XOR lit2
+	 * @param lit1 literal
+	 * @param lit2 literal
+	 * @return Constraint
+	 */
+	public static Constraint xor(IntegerVariable lit1, IntegerVariable lit2) {
 		IntegerVariable[] lits = new IntegerVariable[]{lit1, lit2};
-        for(IntegerVariable var : lits){
-            if(!var.isBoolean())throw new ModelException("xor constraint must be used with boolean variables");
-        }
-        return new ComponentConstraint(ConstraintType.XOR, null, lits);
+		for(IntegerVariable var : lits){
+			if(!var.isBoolean())throw new ModelException("xor constraint must be used with boolean variables");
+		}
+		return new ComponentConstraint(ConstraintType.XOR, null, lits);
 	}
 
-    /**
-     * A reified constraint for logical exclusive disjunction between boolean variables
-     * binVar = lit1 XOR lit2
-     * @param binVar reified variable
-     * @param lit1 literal
-     * @param lit2 literal
-     * @return Constraint
-     */
-    public static Constraint reifiedXor(IntegerVariable binVar, IntegerVariable lit1, IntegerVariable lit2){
-        IntegerVariable[] vars = new IntegerVariable[]{binVar, lit1, lit2};
-        for(IntegerVariable var : vars){
-            if(!var.isBoolean())throw new ModelException("reifiedXor constraint must be used with boolean variables");
-        }
-        return new ComponentConstraint(ConstraintType.REIFIEDXOR, null, vars);
-    }
+	/**
+	 * A reified constraint for logical exclusive disjunction between boolean variables
+	 * binVar = lit1 XOR lit2
+	 * @param binVar reified variable
+	 * @param lit1 literal
+	 * @param lit2 literal
+	 * @return Constraint
+	 */
+	public static Constraint reifiedXor(IntegerVariable binVar, IntegerVariable lit1, IntegerVariable lit2){
+		IntegerVariable[] vars = new IntegerVariable[]{binVar, lit1, lit2};
+		for(IntegerVariable var : vars){
+			if(!var.isBoolean())throw new ModelException("reifiedXor constraint must be used with boolean variables");
+		}
+		return new ComponentConstraint(ConstraintType.REIFIEDXOR, null, vars);
+	}
 
-    /**
-     * A reified constraint for logical equality
-     * lit1 XNOR lit2
-     * @param lit1 literal
-     * @param lit2 literal
-     * @return Constraint
-     */
-    public static Constraint xnor(IntegerVariable lit1, IntegerVariable lit2) {
+	/**
+	 * A reified constraint for logical equality
+	 * lit1 XNOR lit2
+	 * @param lit1 literal
+	 * @param lit2 literal
+	 * @return Constraint
+	 */
+	public static Constraint xnor(IntegerVariable lit1, IntegerVariable lit2) {
 		IntegerVariable[] lits = new IntegerVariable[]{lit1, lit2};
-        for(IntegerVariable var : lits){
-            if(!var.isBoolean())throw new ModelException("xnor constraint must be used with boolean variables");
-        }
-        return new ComponentConstraint(ConstraintType.XNOR, null, lits);
+		for(IntegerVariable var : lits){
+			if(!var.isBoolean())throw new ModelException("xnor constraint must be used with boolean variables");
+		}
+		return new ComponentConstraint(ConstraintType.XNOR, null, lits);
 	}
 
-    /**
-     * A reified constraint for logical equality
-     * binVar = lit1 XNOR lit2
-     * @param binVar reified variable
-     * @param lit1 literal
-     * @param lit2 literal
-     * @return Constraint
-     */
-    public static Constraint reifiedXnor(IntegerVariable binVar, IntegerVariable lit1, IntegerVariable lit2){
-        IntegerVariable[] vars = new IntegerVariable[]{binVar, lit1, lit2};
-        for(IntegerVariable var : vars){
-            if(!var.isBoolean())throw new ModelException("reifiedXnor constraint must be used with boolean variables");
-        }
-        return new ComponentConstraint(ConstraintType.REIFIEDXNOR, null, vars);
-    }
+	/**
+	 * A reified constraint for logical equality
+	 * binVar = lit1 XNOR lit2
+	 * @param binVar reified variable
+	 * @param lit1 literal
+	 * @param lit2 literal
+	 * @return Constraint
+	 */
+	public static Constraint reifiedXnor(IntegerVariable binVar, IntegerVariable lit1, IntegerVariable lit2){
+		IntegerVariable[] vars = new IntegerVariable[]{binVar, lit1, lit2};
+		for(IntegerVariable var : vars){
+			if(!var.isBoolean())throw new ModelException("reifiedXnor constraint must be used with boolean variables");
+		}
+		return new ComponentConstraint(ConstraintType.REIFIEDXNOR, null, vars);
+	}
 
-    /**
-     * A reified constraint for reverse implication
-     * binVar = lit1 implies lit2
-     * @param binVar reified variable
-     * @param lit1 literal
-     * @param lit2 literal
-     * @return Constraint
-     */
-    public static Constraint reifiedLeftImp(IntegerVariable binVar, IntegerVariable lit1, IntegerVariable lit2){
-        IntegerVariable[] vars = new IntegerVariable[]{binVar, lit2, lit1};
-        for(IntegerVariable var : vars){
-            if(!var.isBoolean())throw new ModelException("reifiedLeftImpl constraint must be used with boolean variables");
-        }
-        return new ComponentConstraint(ConstraintType.REIFIEDIMPLICATION, null, vars);
-    }
+	/**
+	 * A reified constraint for reverse implication
+	 * binVar = lit1 implies lit2
+	 * @param binVar reified variable
+	 * @param lit1 literal
+	 * @param lit2 literal
+	 * @return Constraint
+	 */
+	public static Constraint reifiedLeftImp(IntegerVariable binVar, IntegerVariable lit1, IntegerVariable lit2){
+		IntegerVariable[] vars = new IntegerVariable[]{binVar, lit2, lit1};
+		for(IntegerVariable var : vars){
+			if(!var.isBoolean())throw new ModelException("reifiedLeftImpl constraint must be used with boolean variables");
+		}
+		return new ComponentConstraint(ConstraintType.REIFIEDIMPLICATION, null, vars);
+	}
 
-    /**
-     * A reified constraint for forward implication
-     * binVar = lit2 implies lit1
-     * @param binVar reified variable
-     * @param lit1 literal
-     * @param lit2 literal
-     * @return Constraint
-     */
-    public static Constraint reifiedRightImp(IntegerVariable binVar, IntegerVariable lit1, IntegerVariable lit2){
-        IntegerVariable[] vars = new IntegerVariable[]{binVar, lit1, lit2};
-        for(IntegerVariable var : vars){
-            if(!var.isBoolean())throw new ModelException("reifiedRightImp constraint must be used with boolean variables");
-        }
-        return new ComponentConstraint(ConstraintType.REIFIEDIMPLICATION, null, vars);
-    }
+	/**
+	 * A reified constraint for forward implication
+	 * binVar = lit2 implies lit1
+	 * @param binVar reified variable
+	 * @param lit1 literal
+	 * @param lit2 literal
+	 * @return Constraint
+	 */
+	public static Constraint reifiedRightImp(IntegerVariable binVar, IntegerVariable lit1, IntegerVariable lit2){
+		IntegerVariable[] vars = new IntegerVariable[]{binVar, lit1, lit2};
+		for(IntegerVariable var : vars){
+			if(!var.isBoolean())throw new ModelException("reifiedRightImp constraint must be used with boolean variables");
+		}
+		return new ComponentConstraint(ConstraintType.REIFIEDIMPLICATION, null, vars);
+	}
 
 	// ############################################################################################################
 	// ######                                       EXPRESSIONS                                                 ###
@@ -4558,7 +4497,7 @@ public class Choco {
 		return new RealExpressionVariable(null, Operator.MULT, constant(a), x);
 	}
 
-    public static RealExpressionVariable mult(RealExpressionVariable x, double a) {
+	public static RealExpressionVariable mult(RealExpressionVariable x, double a) {
 		return new RealExpressionVariable(null, Operator.MULT, constant(a), x);
 	}
 
@@ -4657,7 +4596,7 @@ public class Choco {
 		return new MetaConstraint<Constraint>(ConstraintType.IMPLIES, n1, n2);
 	}
 
-    public static Constraint nand(Constraint... n) {
+	public static Constraint nand(Constraint... n) {
 		return new MetaConstraint<Constraint>(ConstraintType.NAND, n);
 	}
 
@@ -4665,7 +4604,7 @@ public class Choco {
 		return new MetaConstraint<Constraint>(ConstraintType.NOT, n);
 	}
 
-    public static Constraint nor(Constraint... n) {
+	public static Constraint nor(Constraint... n) {
 		return new MetaConstraint<Constraint>(ConstraintType.NOR, n);
 	}
 
@@ -4679,8 +4618,10 @@ public class Choco {
 	//*****************************************************************//
 	//*******************  Time Windows  ********************************//
 	//***************************************************************//
+	
 	protected static Constraint timeWindow(final IntegerVariable var, final int min, final int max) {
-		return eq(var,makeIntVar("internal-tw-"+ IndexFactory.getId(), min, max, "cp:bound","cp:no_decision"));
+		//FIXME do not create variable. use MetaConstraint ?
+		return eq(var,makeIntVar(StringUtils.randomName()+"-TW", min, max, Options.V_BOUND, Options.V_NO_DECISION));
 	}
 
 	/**
@@ -4704,7 +4645,28 @@ public class Choco {
 	public static Constraint startsBetween(final TaskVariable t, final int min, final int max) 	{
 		return timeWindow(t.start(), min, max);
 	}
+	
+	/**
+	 * 	This task ends at time.
+	 * @param t the task
+	 * @param max the ending time
+	 * @return Constraint
+	 */
+	public static Constraint endsAt(final TaskVariable t, final int time) 	{
+		return eq(t.end(), time);
+	}
+	
+	/**
+	 * 	This task starts at time.
+	 * @param t the task
+	 * @param max the starting time
+	 * @return Constraint
+	 */
+	public static Constraint startsAt(final TaskVariable t, final int time) 	{
+		return eq(t.start(), time);
+	}
 
+	
 	/**
 	 * 	This task ends before max
 	 * @param t the task
@@ -4714,6 +4676,8 @@ public class Choco {
 	public static Constraint endsBefore(final TaskVariable t, final int max) 	{
 		return leq(t.end(),max);
 	}
+	
+	
 
 	/**
 	 * 	This task starts before max
@@ -4819,7 +4783,7 @@ public class Choco {
 	 * @param t1 the ending task
 	 * @param t2 the starting task
 	 * @param delta the setup between t1 and t2
-     * @return Constraint
+	 * @return Constraint
 	 */
 	public static Constraint endsBeforeBegin(final TaskVariable t1, final TaskVariable t2, final int delta) 	{
 		//return startsAfterEnd(t2, t1, delta);
@@ -4871,7 +4835,7 @@ public class Choco {
 	}
 
 	/**
-	 *  This task ends after the start of the task 2
+	 * This task ends after the start of the task 2
 	 * @param t1 the first task
 	 * @param t2 the second task
 	 * @return Constraint
@@ -4922,7 +4886,6 @@ public class Choco {
 	public static Constraint endsAfterEnd(final TaskVariable t1, final TaskVariable t2) 	{
 		return endsAfterEnd(t1,t2,0);
 	}
-
 
 }
 

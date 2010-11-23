@@ -256,6 +256,8 @@ public interface Solver extends IMeasures, IPretty {
 
 	public DisposableIterator<RealVar> getRealVarIterator();
 
+	public DisposableIterator<TaskVar> getTaskVarIterator();
+
 	/**
 	 * Returns the propagation engine associated to the model
 	 */

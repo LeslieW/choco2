@@ -31,13 +31,13 @@ import choco.kernel.solver.search.integer.VarValPairSelector;
 
 public final class CompositePrecValSelector implements VarValPairSelector {
 
-	private final IPrecedenceRatio[] precRatios;
+	private final ITemporalRatio[] precRatios;
 
 	private IntVarRatioSelector varSel;
 	
 	private OrderingValSelector valSel;
 
-	public CompositePrecValSelector(IPrecedenceRatio[] precRatios, IntVarRatioSelector varSel, OrderingValSelector valSel) {
+	public CompositePrecValSelector(ITemporalRatio[] precRatios, IntVarRatioSelector varSel, OrderingValSelector valSel) {
 		this.precRatios = precRatios;
 		this.varSel = varSel;
 		this.valSel = valSel;
@@ -46,6 +46,6 @@ public final class CompositePrecValSelector implements VarValPairSelector {
 	@Override
 	public IntVarValPair selectVarValPair() throws ContradictionException {
 		final int idx = varSel.selectIntRatioIndex();
-		return idx >= 0 ?new IntVarValPair(precRatios[idx].getIntVar(), valSel.getBestVal(precRatios[idx].getPrecedence())) : null;
+		return idx >= 0 ?new IntVarValPair(precRatios[idx].getIntVar(), valSel.getBestVal(precRatios[idx].getTemporalRelation())) : null;
 	}
 }

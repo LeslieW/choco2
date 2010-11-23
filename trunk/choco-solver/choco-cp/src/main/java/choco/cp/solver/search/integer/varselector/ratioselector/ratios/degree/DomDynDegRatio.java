@@ -35,7 +35,7 @@ public final class DomDynDegRatio extends DomDegRatio {
 	}
 
 	@Override
-	public int getDivisor() {
+	public int initializeDivisor() {
 		int ddeg = 0;
 		DisposableIntIterator it = var.getIndexVector().getIndexIterator();
 		while (it.hasNext()) {

@@ -18,6 +18,8 @@ import java.util.Properties;
  * @version 2.0.3</br>
  */
 public class MetaTaskConstraint extends ComponentConstraint {
+	
+	private static final long serialVersionUID = 5309541509214967423L;
 
 	protected Constraint constraint;
 

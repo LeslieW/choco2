@@ -23,7 +23,6 @@
 package choco.cp.model.managers.constraints.global;
 
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.SettingType;
 import choco.cp.solver.constraints.global.tree.TreeSConstraint;
 import choco.cp.solver.constraints.global.tree.structure.inputStructure.Node;
 import choco.cp.solver.constraints.global.tree.structure.inputStructure.TreeParameters;
@@ -88,10 +87,10 @@ public final class TreeManager extends ConstraintManager<Variable> {
         return getACFavoriteIntDomains();
     }
 
-
-    public static void readSetting(Set<String> source, Set<SettingType> dest, SettingType setting) {
-		if(source.contains(setting.getOptionName()) ) {dest.add(setting);}
-	}
+//
+//    public static void readSetting(Set<String> source, Set<SettingType> dest, SettingType setting) {
+//		if(source.contains(setting.getOptionName()) ) {dest.add(setting);}
+//	}
 
     /**
      * Build arithm node from a IntegerExpressionVariable

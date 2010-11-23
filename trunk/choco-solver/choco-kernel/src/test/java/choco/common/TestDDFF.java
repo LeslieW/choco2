@@ -24,7 +24,7 @@ package choco.common;
 
 import choco.kernel.common.opres.pack.*;
 import choco.kernel.common.util.tools.MathUtils;
-import static choco.kernel.common.opres.pack.AbstractHeurisic1BP.*;
+import static choco.kernel.common.opres.pack.AbstractHeuristic1BP.*;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
@@ -60,7 +60,7 @@ public class TestDDFF {
 	private final TIntArrayList items = new TIntArrayList();
 
 
-	private void testHeuristics(AbstractHeurisic1BP h, int[] res) {
+	private void testHeuristics(AbstractHeuristic1BP h, int[] res) {
 		for (int i = 0; i < SIZES.length; i++) {
 			items.resetQuick();
 			items.add(SIZES[i]);

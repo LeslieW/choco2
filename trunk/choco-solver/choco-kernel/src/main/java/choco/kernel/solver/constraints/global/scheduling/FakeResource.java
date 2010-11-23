@@ -10,10 +10,9 @@ import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.ITask;
 
 public class FakeResource<E extends ITask> implements IResource<E> {
+	private static final long serialVersionUID = -6700792497144348896L;
 
-	protected final E[] tasks;
-	
-	
+	private final E[] tasks;
 	
 	public FakeResource(E[] tasks) {
 		super();

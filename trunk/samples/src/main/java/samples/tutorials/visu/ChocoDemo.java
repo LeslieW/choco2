@@ -6,7 +6,7 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.constraints.pack.PackModeler;
+import choco.kernel.model.constraints.pack.PackModel;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.visu.components.chart.ChocoChartFactory;
@@ -45,8 +45,8 @@ public final class ChocoDemo {
 
 	public static void packDemo2() {
 		CPModel m =new CPModel();
-		PackModeler m1 = new PackModeler(BinPackingExample.N1C1W1_N,BinPackingExample.OPT_N+2,BinPackingExample.CAPACITY_N);
-		PackModeler m2 = new PackModeler(BinPackingExample.N2C2W1_H,BinPackingExample.OPT_H+4,BinPackingExample.CAPACITY);
+		PackModel m1 = new PackModel(BinPackingExample.N1C1W1_N,BinPackingExample.OPT_N+2,BinPackingExample.CAPACITY_N);
+		PackModel m2 = new PackModel(BinPackingExample.N2C2W1_H,BinPackingExample.OPT_H+4,BinPackingExample.CAPACITY);
 		m.addConstraints( Choco.pack(m1), Choco.pack(m2));
 		//m.addConstraints( Choco.pack(m1));
 		CPSolver s =new CPSolver();

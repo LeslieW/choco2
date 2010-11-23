@@ -35,7 +35,7 @@ import java.util.List;
  * @since 23 janv. 2009 version 2.0.1</br>
  * @version 2.0.3</br>
  */
-public interface IResource<T extends ITask> extends IResourceData {
+public interface IResource<T extends ITask> extends IResourceParameters {
 	
 	/**
 	 * get the task with the given index
