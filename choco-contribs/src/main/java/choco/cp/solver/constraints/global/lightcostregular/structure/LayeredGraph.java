@@ -8,6 +8,7 @@ import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.model.Model;
+import choco.kernel.model.constraints.automaton.FA.IAutomaton;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
@@ -29,7 +30,7 @@ public class LayeredGraph {
     IStateInt[] sp;
     IntDomainVar[] vars;
     IntDomainVar z;
-    FiniteAutomaton pi;
+    IAutomaton pi;
     double[][][] costs;
     Node source;
     Node tink;
@@ -49,7 +50,7 @@ public class LayeredGraph {
 
 
 
-    public LayeredGraph(IntDomainVar[] vars, IntDomainVar z, FiniteAutomaton pi, double[][][] costs, IEnvironment environment)
+    public LayeredGraph(IntDomainVar[] vars, IntDomainVar z, IAutomaton pi, double[][][] costs, IEnvironment environment)
     {
         this.env = environment;
         this.vars = vars;
@@ -112,7 +113,7 @@ public class LayeredGraph {
                     int succ = 0;
                     try {
                         succ = pi.delta(k,j);
-                    } catch (FiniteAutomaton.NonDeterministicOperationException e) {
+                    } catch (IAutomaton.NonDeterministicOperationException e) {
                         System.err.println("You must use a deterministic automaton with this constraint");
                         throw new RuntimeException();
                     }
@@ -213,7 +214,7 @@ public class LayeredGraph {
                     int fol = 0;
                     try {
                         fol = pi.delta(n.state,j);
-                    } catch (FiniteAutomaton.NonDeterministicOperationException e) {
+                    } catch (IAutomaton.NonDeterministicOperationException e) {
                         System.err.println("You must use a deterministic automaton with this constraint");
                         throw new RuntimeException();
                     }
@@ -622,7 +623,7 @@ public class LayeredGraph {
         s.read(m);
         IntDomainVar[] vars = s.getVar(vs);
         IntDomainVar z = s.getVar(z0);
-        FiniteAutomaton pi = new FiniteAutomaton("222|000|111|012");
+        IAutomaton pi = new FiniteAutomaton("222|000|111|012");
         double[][][] csts= new double[vs.length][3][pi.getNbStates()];
 
         for (int i = 0 ; i < csts.length ;i++)

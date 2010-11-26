@@ -1,5 +1,6 @@
 package choco.cp.solver.constraints.global.automata.fast_costregular;
 
+import choco.kernel.model.constraints.automaton.FA.IAutomaton;
 import gnu.trove.TIntHashSet;
 import gnu.trove.TIntIterator;
 
@@ -10,7 +11,6 @@ import java.util.HashSet;
 import org.jgrapht.graph.DirectedMultigraph;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.Arc;
@@ -24,7 +24,8 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Date: Feb 8, 2010
  * Time: 6:55:03 PM
  */
-public final class FastCostKnapSack extends FastCostRegular{
+public final class CostKnapSack extends CostRegular
+{
 
     IntDomainVar bVar;
     int[] cost;
@@ -41,9 +42,9 @@ private static IntDomainVar[] merge(IntDomainVar[] vars, IntDomainVar bound, Int
 
 
 
-    public FastCostKnapSack(IntDomainVar[] vars, IntDomainVar bVar, IntDomainVar cVar, int[] cost, int[] gain, Solver solver)
+    public CostKnapSack(IntDomainVar[] vars, IntDomainVar bVar, IntDomainVar cVar, int[] cost, int[] gain, Solver solver)
     {
-        super(merge(vars,bVar,cVar), (FiniteAutomaton) null,null, solver);
+        super(merge(vars,bVar,cVar), (IAutomaton) null,(int[][])null, solver);
         this.bVar = bVar;
         this.cost = cost;
         this.gain = gain;

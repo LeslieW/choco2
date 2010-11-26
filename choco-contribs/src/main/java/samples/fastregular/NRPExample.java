@@ -27,6 +27,7 @@ import choco.cp.solver.CPSolver;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.Model;
+import choco.kernel.model.constraints.automaton.FA.IAutomaton;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;

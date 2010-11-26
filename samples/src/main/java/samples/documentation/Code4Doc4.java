@@ -27,7 +27,10 @@ import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.Model;
+import choco.kernel.model.constraints.automaton.FA.CostAutomaton;
+import choco.kernel.model.constraints.automaton.FA.IAutomaton;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
+import choco.kernel.model.constraints.automaton.FA.ICostAutomaton;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
@@ -180,7 +183,7 @@ public class Code4Doc4 {
         IntegerVariable[] x = makeIntVarArray("x", nTime, 0, nAct - 1, Options.V_ENUM);
 
         IntegerVariable[] z = new IntegerVariable[4];
-        z[0] = makeIntVar("z", 30, 80, Options.V_BOUND); // 30 <= cost <= 80
+        z[0] = makeIntVar("z", 30, 800, Options.V_BOUND); // 30 <= cost <= 80
         z[1] = makeIntVar("D", 0, 7, Options.V_BOUND); // 0 <= #DAY <= 7
         z[2] = makeIntVar("N", 3, 7, Options.V_BOUND); // 3 <= #NIGHT <= 7
         z[3] = makeIntVar("W", 7, 9, Options.V_BOUND); // 7 <= #WORK <= 9
@@ -199,17 +202,30 @@ public class Code4Doc4 {
 
         int[][][][] c = new int[nTime][nAct][nCounters][auto.getNbStates()];
         for (int i = 0; i < c.length; i++) {
-            c[i][DAY][0] = new int[]{3, 1, 0, 1};   // costs of transition (0,D,1)
-            c[i][NIGHT][0] = new int[]{8, 0, 1, 1}; // costs of transition (0,N,2)
-            c[i][DAY][1] = new int[]{5, 1, 0, 1};   // costs of transition (1,D,2)
-            c[i][NIGHT][1] = new int[]{9, 0, 1, 1}; // costs of transition (1,N,2)
-            c[i][REST][2] = new int[]{2, 0, 0, 0};  // costs of transition (2,R,0)
+            c[i][DAY][0] = new int[]{3, 5, 0};
+            c[i][DAY][1] = new int[]{1, 1, 0};
+            c[i][DAY][3] = new int[]{1, 1, 0};
+
+            c[i][NIGHT][0] = new int[]{8, 9, 0};
+            c[i][NIGHT][2] = new int[]{1, 1, 0};
+            c[i][NIGHT][3] = new int[]{1, 1, 0};
+
+            c[i][REST][0] = new int[]{0, 0, 2};
+
+
+
+           
         }
 
-        m.addConstraint(multiCostRegular(z, x, auto, c));
+        ICostAutomaton cauto = CostAutomaton.makeMultiResources(auto,c,z);
+
+        m.addConstraint(multiCostRegular(z, x, cauto));
         Solver s = new CPSolver();
         s.read(m);
-        s.solve();
+        System.out.println(s.minimize(s.getVar(z[0]),false));
+          //  s.solve();
+            System.out.println(s.getVar(z[0]).pretty());
+            System.out.println(s.runtimeStatistics());
         //totex
     }
     
@@ -348,4 +364,11 @@ public class Code4Doc4 {
         s.solve();
         //totex
     }
+
+
+
+public static void main(String[] args)
+{
+    new Code4Doc4().cmulticostregular();
+}
 }

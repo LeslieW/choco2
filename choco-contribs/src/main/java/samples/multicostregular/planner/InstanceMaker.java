@@ -24,6 +24,7 @@ package samples.multicostregular.planner;
 
 
 import choco.kernel.model.constraints.automaton.DFA;
+import choco.kernel.model.constraints.automaton.FA.IAutomaton;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.constraints.automaton.Transition;
 
@@ -69,7 +70,7 @@ public class InstanceMaker {
 
 
 
-    public FiniteAutomaton makeAutomaton(int nbAct)
+    public IAutomaton makeAutomaton(int nbAct)
     {
         FiniteAutomaton auto = new FiniteAutomaton();
         int start = auto.addState();

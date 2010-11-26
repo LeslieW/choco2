@@ -30,8 +30,9 @@ import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.*;
 import choco.kernel.model.constraints.automaton.DFA;
-import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
-import choco.kernel.model.constraints.automaton.penalty.PenaltyFunction;
+import choco.kernel.model.constraints.automaton.FA.IAutomaton;
+import choco.kernel.model.constraints.automaton.FA.ICostAutomaton;
+import choco.kernel.model.constraints.automaton.penalty.IPenaltyFunction;
 import choco.kernel.model.constraints.geost.GeostOptions;
 import choco.kernel.model.constraints.geost.externalConstraints.DistGeqModel;
 import choco.kernel.model.constraints.geost.externalConstraints.DistLeqModel;
@@ -3608,7 +3609,7 @@ public class Choco {
 	 * @param auto the DFA
 	 * @return the new constraint
 	 */
-	public static Constraint regular(IntegerVariable[] vars, FiniteAutomaton auto) {
+	public static Constraint regular(IntegerVariable[] vars, IAutomaton auto) {
 		return new ComponentConstraint(ConstraintType.FASTREGULAR,
 				auto, vars);
 	}
@@ -3673,7 +3674,7 @@ public class Choco {
 	 * @deprecated reorder parameters
 	 */
 	@Deprecated
-	public static Constraint regular(FiniteAutomaton auto, IntegerVariable[] vars) {
+	public static Constraint regular(IAutomaton auto, IntegerVariable[] vars) {
 		return new ComponentConstraint(ConstraintType.FASTREGULAR,
 				auto, vars);
 	}
@@ -3734,99 +3735,99 @@ public class Choco {
 				new Object[]{tuples, min, max}, vars);
 	}
 
-	/**
-	 * costRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
-	 * and that the sum of the costs associated to each assignment is bounded by the cost variable.
-	 * @param costVar the cost variable
-	 * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
-	 * @param auto  the automaton defining the regular language
-	 * @param costs the assignment costs: costs[i][j] is the cost associated to the assignment of variable i to value j
-	 * @return an instance of the costRegular constraint
-	 */
-	public static Constraint costRegular(IntegerVariable costVar, IntegerVariable[] vars, FiniteAutomaton auto, int[][] costs){
+    /**
+     * costRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
+     * and that the sum of the costs associated to each assignment is bounded by the cost variable.
+     * @param costVar the cost variable
+     * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
+     * @param auto  the automaton defining the regular language
+     * @param costs the assignment costs: costs[i][j] is the cost associated to the assignment of variable i to value j
+     * @return an instance of the costRegular constraint
+     */
+    public static Constraint costRegular(IntegerVariable costVar, IntegerVariable[] vars, IAutomaton auto, int[][] costs){
 		return new ComponentConstraint(ConstraintType.COSTREGULAR, new Object[]{auto, costs},
 				ArrayUtils.append(vars, new IntegerVariable[]{costVar}));
 	}
 
-	/**
-	 * costRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
-	 * and that the sum of the costs associated to each assignment is bounded by the cost variable.
-	 * This version allows to specify different costs according to the automaton state at which the assignment occurs (i.e. the transition starts)
-	 * @param costVar the cost variable
-	 * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
-	 * @param auto  the automaton defining the regular language
-	 * @param costs the assignment costs: costs[i][j][s] is the cost associated to the assignment of variable i to value j at state s
-	 * @return an instance of the costRegular constraint
-	 */
-	public static Constraint costRegular(IntegerVariable costVar, IntegerVariable[] vars, FiniteAutomaton auto, int[][][] costs){
-		return new ComponentConstraint(ConstraintType.FASTCOSTREGULAR, new Object[]{auto, costs},
+    /**
+     * costRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
+     * and that the sum of the costs associated to each assignment is bounded by the cost variable.
+     * This version allows to specify different costs according to the automaton state at which the assignment occurs (i.e. the transition starts)
+     * @param costVar the cost variable
+     * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
+     * @param auto  the automaton defining the regular language
+     * @param costs the assignment costs: costs[i][j][s] is the cost associated to the assignment of variable i to value j at state s
+     * @return an instance of the costRegular constraint
+     */
+	public static Constraint costRegular(IntegerVariable costVar, IntegerVariable[] vars, IAutomaton auto, int[][][] costs){
+		return new ComponentConstraint(ConstraintType.COSTREGULAR, new Object[]{auto, costs},
 				ArrayUtils.append(vars, new IntegerVariable[]{costVar}));
 	}
 
-	/**
-	 * costRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
-	 * and that the sum of the costs associated to each assignment is bounded by the cost variable.
-	 * In this version, the specified DFA is already unfolded as a layered multi-graph so as it recognizes only words of fixed length vars.length
-	 * @param costVar the cost variable
-	 * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
-	 * @param graph  a layered directed multigraph
-	 * @param source the source node of the graph
-	 * @return an instance of the costRegular constraint
-	 */
+
+    /**
+     * costRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
+     * and that the sum of the costs associated to each assignment is bounded by the cost variable.
+     * This version allows to specify different costs according to the automaton state at which the assignment occurs (i.e. the transition starts)
+     * @param costVar the cost variable
+     * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
+     * @param auto  the cost-automaton defining the regular language and the costs
+     * @return an instance of the costRegular constraint
+     */
+	public static Constraint costRegular(IntegerVariable costVar, IntegerVariable[] vars, ICostAutomaton auto){
+		return new ComponentConstraint(ConstraintType.COSTREGULAR, auto,
+				ArrayUtils.append(vars, new IntegerVariable[]{costVar}));
+	}
+
+    /**
+     * costRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
+     * and that the sum of the costs associated to each assignment is bounded by the cost variable.
+     * In this version, the specified DFA is already unfolded as a layered multi-graph so as it recognizes only words of fixed length vars.length
+     * @param costVar the cost variable
+     * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
+     * @param graph  a layered directed multigraph
+     * @param source the source node of the graph
+     * @return an instance of the costRegular constraint
+     */
 	public static Constraint costRegular(IntegerVariable costVar, IntegerVariable[] vars, DirectedMultigraph<Node, Arc> graph, Node source){
-		return new ComponentConstraint(ConstraintType.FASTCOSTREGULAR, new Object[]{graph, source},
+		return new ComponentConstraint(ConstraintType.COSTREGULAR, new Object[]{graph, source},
 				ArrayUtils.append(vars, new IntegerVariable[]{costVar}));
 	}
 
-	/**
-	 * costRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
-	 * and that the sum of the costs associated to each assignment is bounded by the cost variable.
-	 * @param costVar the cost variable
-	 * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
-	 * @param auto  the automaton defining the regular language
-	 * @param costs the assignment costs: costs[i][j] is the cost associated to the assignment of variable i to value j
-	 * @return an instance of the costRegular constraint
-	 * @deprecated reorder parameters
-	 */
-	@Deprecated
-	public static Constraint costRegular(IntegerVariable[] vars, IntegerVariable costVar, FiniteAutomaton auto, int[][] costs){
-		return new ComponentConstraint(ConstraintType.COSTREGULAR, new Object[]{auto, costs},
-				ArrayUtils.append(vars, new IntegerVariable[]{costVar}));
-	}
 
-	/**
-	 * costRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
-	 * and that the sum of the costs associated to each assignment is bounded by the cost variable.
-	 * This version allows to specify different costs according to the automaton state at which the assignment occurs (i.e. the transition starts)
-	 * @param costVar the cost variable
-	 * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
-	 * @param auto  the automaton defining the regular language
-	 * @param costs the assignment costs: costs[i][j][s] is the cost associated to the assignment of variable i to value j at state s
-	 * @return an instance of the costRegular constraint
-	 * @deprecated reorder parameters
-	 */
-	@Deprecated
-	public static Constraint costRegular(IntegerVariable[] vars, IntegerVariable costVar, FiniteAutomaton auto, int[][][] costs){
-		return new ComponentConstraint(ConstraintType.FASTCOSTREGULAR, new Object[]{auto, costs},
-				ArrayUtils.append(vars, new IntegerVariable[]{costVar}));
-	}
+    /**
+     * costRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
+     * and that the sum of the costs associated to each assignment is bounded by the cost variable.
+     * This version allows to specify different costs according to the automaton state at which the assignment occurs (i.e. the transition starts)
+     * @param costVar the cost variable
+     * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
+     * @param auto  the automaton defining the regular language
+     * @param costs the assignment costs: costs[i][j][s] is the cost associated to the assignment of variable i to value j at state s
+     * @return an instance of the costRegular constraint
+     * @deprecated reorder parameters
+     */
+    @Deprecated
+    public static Constraint costRegular(IntegerVariable[] vars, IntegerVariable costVar, IAutomaton auto, int[][][] costs){
+        return new ComponentConstraint(ConstraintType.COSTREGULAR, new Object[]{auto, costs},
+                ArrayUtils.append(vars, new IntegerVariable[]{costVar}));
+    }
 
-	/**
-	 * costRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
-	 * and that the sum of the costs associated to each assignment is bounded by the cost variable.
-	 * In this version, the specified DFA is already unfolded as a layered multi-graph so as it recognizes only words of fixed length vars.length
-	 * @param costVar the cost variable
-	 * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
-	 * @param graph  a layered directed multigraph
-	 * @param source the source node of the graph
-	 * @return an instance of the costRegular constraint
-	 * @deprecated reorder parameters
-	 */
-	@Deprecated
-	public static Constraint costRegular(IntegerVariable[] vars, IntegerVariable costVar, DirectedMultigraph<Node, Arc> graph, Node source){
-		return new ComponentConstraint(ConstraintType.FASTCOSTREGULAR, new Object[]{graph, source},
-				ArrayUtils.append(vars, new IntegerVariable[]{costVar}));
-	}
+    /**
+     * costRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
+     * and that the sum of the costs associated to each assignment is bounded by the cost variable.
+     * In this version, the specified DFA is already unfolded as a layered multi-graph so as it recognizes only words of fixed length vars.length
+     * @param costVar the cost variable
+     * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
+     * @param graph  a layered directed multigraph
+     * @param source the source node of the graph
+     * @return an instance of the costRegular constraint
+     * @deprecated reorder parameters
+     */
+    @Deprecated
+    public static Constraint costRegular(IntegerVariable[] vars, IntegerVariable costVar, DirectedMultigraph<Node, Arc> graph, Node source){
+        return new ComponentConstraint(ConstraintType.COSTREGULAR, new Object[]{graph, source},
+                ArrayUtils.append(vars, new IntegerVariable[]{costVar}));
+    }
 
 	/**
 	 * The knapsack problem constraint ensures that costVar is the sum of the vars weighted by the costs and that weightVar is the sum of vars weighted by the weights
@@ -3872,33 +3873,47 @@ public class Choco {
 	 * @param costs the assignment cost vectors: costs[i][j][k] is the k-th element of the cost vector associated to the assignment of variable i to value j
 	 * @return an instance of the multiCostRegular constraint
 	 */
-	public static Constraint multiCostRegular(IntegerVariable[] costVars, IntegerVariable[] vars, FiniteAutomaton auto, int[][][] costs){
+	public static Constraint multiCostRegular(IntegerVariable[] costVars, IntegerVariable[] vars, IAutomaton auto, int[][][] costs){
 		return new ComponentConstraint(ConstraintType.MULTICOSTREGULAR, new Object[]{vars.length,auto,costs},
 				ArrayUtils.append(vars, costVars));
 	}
-	/**
-	 * multiCostRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
-	 * and that the sum of the cost vectors associated to each assignment is bounded by the cost variable vector.
-	 * This version allows to specify different costs according to the automaton state at which the assignment occurs (i.e. the transition starts)
-	 * @param costVars the cost variable vector
-	 * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
-	 * @param auto  the automaton defining the regular language
-	 * @param costs the assignment cost vectors: costs[i][j][k][s] is the k-th element of the cost vector associated to the assignment of variable i to value j at state s of the DFA
-	 * @return an instance of the multiCostRegular constraint
-	 */
-	public static Constraint multiCostRegular(IntegerVariable[] costVars, IntegerVariable[] vars, FiniteAutomaton auto, int[][][][] costs){
-		int[][][][] copy = ArrayUtils.swallowCopy(costs);
+    /**
+     * multiCostRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
+     * and that the sum of the cost vectors associated to each assignment is bounded by the cost variable vector.
+     * This version allows to specify different costs according to the automaton state at which the assignment occurs (i.e. the transition starts)
+     * @param costVars the cost variable vector
+     * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
+     * @param auto  the automaton defining the regular language
+     * @param costs the assignment cost vectors: costs[i][j][k][s] is the k-th element of the cost vector associated to the assignment of variable i to value j at state s of the DFA
+     * @return an instance of the multiCostRegular constraint
+     */
+	public static Constraint multiCostRegular(IntegerVariable[] costVars, IntegerVariable[] vars, IAutomaton auto, int[][][][] costs){
+                int[][][][] copy = ArrayUtils.swallowCopy(costs);
 		return new ComponentConstraint(ConstraintType.MULTICOSTREGULAR, new Object[]{vars.length,auto,copy},
 				ArrayUtils.append(vars, costVars));
 	}
 
-	public static Constraint softMultiCostRegular(IntegerVariable[] vars, IntegerVariable[] counters, IntegerVariable[] penaltyVars, IntegerVariable globalPenalty, PenaltyFunction[] pfunction ,FiniteAutomaton auto, int[][][][] costs){
-		int[][][][] copy = ArrayUtils.swallowCopy(costs);
+    /**
+     * multiCostRegular constraint ensures that the assignment of a sequence of variables is recognized by a DFA
+     * and that the sum of the cost vectors associated to each assignment is bounded by the cost variable vector.
+     * This version allows to specify different costs according to the automaton state at which the assignment occurs (i.e. the transition starts)
+     * @param costVars the cost variable vector
+     * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
+     * @param auto  the automaton defining the regular language
+     * @return an instance of the multiCostRegular constraint
+     */
+	public static Constraint multiCostRegular(IntegerVariable[] costVars, IntegerVariable[] vars, ICostAutomaton auto){
+		return new ComponentConstraint(ConstraintType.MULTICOSTREGULAR, new Object[]{vars.length,auto},
+				ArrayUtils.append(vars, costVars));
+	}
+
+	public static Constraint softMultiCostRegular(IntegerVariable[] vars, IntegerVariable[] counters, IntegerVariable[] penaltyVars, IntegerVariable globalPenalty, IPenaltyFunction[] pfunction , IAutomaton auto, int[][][][] costs){
+                int[][][][] copy = ArrayUtils.swallowCopy(costs);
 		return new ComponentConstraint(ConstraintType.SOFTMULTICOSTREGULAR, new Object[]{vars.length,counters.length,pfunction,auto,copy}, ArrayUtils.append(vars,counters,penaltyVars,new IntegerVariable[]{globalPenalty}));
 	}
 
-	public static Constraint softMultiCostRegular(IntegerVariable[] vars, IntegerVariable[] counters, IntegerVariable[] penaltyVars, IntegerVariable globalPenalty, PenaltyFunction[] pfunction ,FiniteAutomaton auto, int[][][][] costs,int... sumDimension){
-		int[][][][] copy = ArrayUtils.swallowCopy(costs);
+        public static Constraint softMultiCostRegular(IntegerVariable[] vars, IntegerVariable[] counters, IntegerVariable[] penaltyVars, IntegerVariable globalPenalty, IPenaltyFunction[] pfunction , IAutomaton auto, int[][][][] costs,int... sumDimension){
+                int[][][][] copy = ArrayUtils.swallowCopy(costs);
 		return new ComponentConstraint(ConstraintType.SOFTMULTICOSTREGULAR, new Object[]{vars.length,counters.length,sumDimension,pfunction,auto,copy}, ArrayUtils.append(vars,counters,penaltyVars,new IntegerVariable[]{globalPenalty}));
 	}
 
@@ -4649,7 +4664,6 @@ public class Choco {
 	/**
 	 * 	This task ends at time.
 	 * @param t the task
-	 * @param max the ending time
 	 * @return Constraint
 	 */
 	public static Constraint endsAt(final TaskVariable t, final int time) 	{
@@ -4659,7 +4673,6 @@ public class Choco {
 	/**
 	 * 	This task starts at time.
 	 * @param t the task
-	 * @param max the starting time
 	 * @return Constraint
 	 */
 	public static Constraint startsAt(final TaskVariable t, final int time) 	{

@@ -8,13 +8,13 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Date: Apr 27, 2010
  * Time: 11:30:01 AM
  */
-public interface PenaltyFunction
+public interface IPenaltyFunction
 {
 
-public int getPenalty(int value);
+public int penalty(int value);
 
-public double getMinGHat(double lambda, IntDomainVar var);
-public double getMaxGHat(double lambda, IntDomainVar var);
+public double minGHat(double lambda, IntDomainVar var);
+public double maxGHat(double lambda, IntDomainVar var);
 
 
 

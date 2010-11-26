@@ -27,6 +27,7 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.constraints.automaton.FA.IAutomaton;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
@@ -104,7 +105,7 @@ public class JunkerMinSet {
         {
             dk.brics.automaton.Automaton tmp = autos.remove(autos.size()-1);
             in.add(tmp);
-            FiniteAutomaton a = makeAutomaton(in);
+            IAutomaton a = makeAutomaton(in);
             System.out.println(a);
             b = solve(a);
 
@@ -112,7 +113,7 @@ public class JunkerMinSet {
         cset.add(in.remove(in.size()-1));
         b = true;
 
-        FiniteAutomaton a = makeAutomaton(cset);
+        IAutomaton a = makeAutomaton(cset);
         if(solve(a))
         {
             autos.clear();
@@ -129,7 +130,7 @@ public class JunkerMinSet {
 
     }
 
-    private boolean solve(FiniteAutomaton a)
+    private boolean solve(IAutomaton a)
     {
         m.removeConstraint(in);
         in = regular(vars, a);
@@ -146,7 +147,7 @@ public class JunkerMinSet {
 
     }
 
-    private FiniteAutomaton makeAutomaton(ArrayList<dk.brics.automaton.Automaton> in)
+    private IAutomaton makeAutomaton(ArrayList<dk.brics.automaton.Automaton> in)
     {
         dk.brics.automaton.Automaton temp = in.get(0);
 

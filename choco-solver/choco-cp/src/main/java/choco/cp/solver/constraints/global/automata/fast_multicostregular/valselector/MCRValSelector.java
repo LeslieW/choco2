@@ -24,7 +24,7 @@ package choco.cp.solver.constraints.global.automata.fast_multicostregular.valsel
 
 
 
-import choco.cp.solver.constraints.global.automata.fast_multicostregular.FastMultiCostRegular;
+import choco.cp.solver.constraints.global.automata.fast_multicostregular.MultiCostRegular;
 import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -35,10 +35,10 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Time: 6:03:16 PM
  */
 public class MCRValSelector implements ValSelector<IntDomainVar> {
-    FastMultiCostRegular[] cons;
+    MultiCostRegular[] cons;
     boolean max;
 
-    public MCRValSelector(FastMultiCostRegular[] cons, boolean max)
+    public MCRValSelector(MultiCostRegular[] cons, boolean max)
     {
         this.cons = cons;
         this.max = max;
@@ -47,7 +47,7 @@ public class MCRValSelector implements ValSelector<IntDomainVar> {
 
     public int getBestVal(IntDomainVar x)
     {
-        for (FastMultiCostRegular con : cons) {
+        for (MultiCostRegular con : cons) {
             int tmp = con.map.get(x);
             if (con.map.containsKey(x))
             {

@@ -24,6 +24,7 @@ package choco.kernel.solver.constraints.global.automata.fast_multicostregular.st
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
+import choco.kernel.model.constraints.automaton.FA.ICostAutomaton;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.global.automata.common.StoredIndexedBipartiteSetWithOffset;
 import choco.kernel.solver.constraints.global.automata.fast_multicostregular.algo.FastPathFinder;
@@ -150,9 +151,9 @@ public Arcs GArcs;
 
 
 
-public StoredDirectedMultiGraph(IEnvironment environment, AbstractIntSConstraint constraint, DirectedMultigraph<Node, Arc> graph, int[][] layers, int[] starts, int[] offsets, int supportLength,int[][][][] costs,IntDomainVar[] z)
+public StoredDirectedMultiGraph(IEnvironment environment, AbstractIntSConstraint constraint, DirectedMultigraph<Node, Arc> graph, int[][] layers, int[] starts, int[] offsets, int supportLength, ICostAutomaton pi,IntDomainVar[] z)
 {
-        this.nbR = costs[0][0].length;
+        this.nbR = pi.getNbResources();
         this.z = z;
         this.constraint = constraint;
         this.starts = starts;
@@ -194,7 +195,7 @@ public StoredDirectedMultiGraph(IEnvironment environment, AbstractIntSConstraint
                 int layer = a.orig.layer;
                 for (int r = 0 ; r < nbR ; r++)
                 {
-                        GArcs.originalCost[a.id][r] = layer < layers.length -2 ?costs[layer][a.value][r][state]:0.0;
+                        GArcs.originalCost[a.id][r] = layer < layers.length -2 ?pi.getCostByResourceAndState(layer,a.value,r,state):0.0;
                 }
 
 

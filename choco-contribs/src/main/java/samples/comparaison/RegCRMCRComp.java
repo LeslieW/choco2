@@ -28,6 +28,7 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.common.util.tools.StringUtils;
+import choco.kernel.model.constraints.automaton.FA.IAutomaton;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -51,7 +52,7 @@ public class RegCRMCRComp
     public final static int MCR = 2;
 
 
-    FiniteAutomaton automaton;
+    IAutomaton automaton;
     IntegerVariable[] vars;
     IntegerVariable objectif;
     int[][] costs;
@@ -85,7 +86,7 @@ public class RegCRMCRComp
     }
 
 
-    FiniteAutomaton makeAutomaton()
+    IAutomaton makeAutomaton()
     {
         dk.brics.automaton.Automaton auto;
         // On commence toujours par du travail :)

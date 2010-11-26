@@ -1,7 +1,7 @@
 package choco.cp.model.managers.constraints.global;
 
 import choco.cp.model.managers.IntConstraintManager;
-import choco.cp.solver.constraints.global.automata.fast_costregular.FastCostKnapSack;
+import choco.cp.solver.constraints.global.automata.fast_costregular.CostKnapSack;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -33,8 +33,7 @@ public final class KnapsackProblemManager extends IntConstraintManager {
                 int[] p1 = (int[]) param[0];
                 int[] p2 = (int[]) param[1];
 
-                return new FastCostKnapSack(solver.getVar(vars),solver.getVar(bVar),solver.getVar(cVar),p1,p2, solver);
-                //return CostKnapsack.make(solver.getVar(vars),solver.getVar(bVar),solver.getVar(cVar),p1,p2);
+                return new CostKnapSack(solver.getVar(vars),solver.getVar(bVar),solver.getVar(cVar),p1,p2, solver);
             }
         }
 

@@ -18,7 +18,8 @@ import java.util.logging.Logger;
  * Date: Mar 15, 2010
  * Time: 12:53:23 PM
  */
-public class FiniteAutomaton {
+public class FiniteAutomaton implements IAutomaton
+{
 
 
 protected static TIntIntHashMap charFromIntMap = new TIntIntHashMap();
@@ -184,7 +185,7 @@ public void fill(Automaton a, TIntHashSet alphabet) {
         }
 }
 
-public int size() {
+public int getNbStates() {
         return nbStates;
 }
 
@@ -231,20 +232,16 @@ public void removeSymbolFromAutomaton(int symbol) {
 public void addTransition(int source, int destination, int... symbols) {
         for (int symbol : symbols)
         {
-                addTransition(source,destination,symbol);
+                try {
+                        checkState(source,destination);
+                } catch (StateNotInAutomatonException e) {
+                        LOGGER.severe("Unable to addTransition : "+e);
+                }
+                alphabet.add(symbol);
+                State s = states.get(source);
+                State d = states.get(destination);
+                s.addTransition(new Transition(getCharFromInt(symbol),d));
         }
-}
-
-public void addTransition(int source, int destination, int symbol) {
-        try {
-                checkState(source,destination);
-        } catch (StateNotInAutomatonException e) {
-                LOGGER.severe("Unable to addTransition : "+e);
-        }
-        alphabet.add(symbol);
-        State s = states.get(source);
-        State d = states.get(destination);
-        s.addTransition(new Transition(getCharFromInt(symbol),d));
 }
 
 public void deleteTransition(int source, int destination, int symbol) {
@@ -438,15 +435,15 @@ public Automaton makeBricsAutomaton() {
         return representedBy.clone();
 }
 
-public FiniteAutomaton repeat() {
+public IAutomaton repeat() {
         return new FiniteAutomaton(this.representedBy.repeat(),alphabet);
 }
 
-public FiniteAutomaton repeat(int min) {
+public IAutomaton repeat(int min) {
         return new FiniteAutomaton(this.representedBy.repeat(min),alphabet);
 }
 
-public FiniteAutomaton repeat(int min, int max) {
+public IAutomaton repeat(int min, int max) {
         return new FiniteAutomaton(this.representedBy.repeat(min,max),alphabet);
 }
 
@@ -485,14 +482,19 @@ public void removeDeadTransitions() {
         syncStates();
 }
 
-public FiniteAutomaton union(FiniteAutomaton other) {
+public FiniteAutomaton union(FiniteAutomaton otherI)
+{
+        FiniteAutomaton other = (FiniteAutomaton) otherI;
         Automaton union = this.representedBy.union(other.representedBy);
         TIntHashSet alphabet = new TIntHashSet(this.alphabet.toArray());
         alphabet.addAll(other.alphabet.toArray());
         return  new FiniteAutomaton(union,alphabet);
+
 }
 
-public FiniteAutomaton intersection(FiniteAutomaton other) {
+public FiniteAutomaton intersection(IAutomaton otherI)
+{
+        FiniteAutomaton other = (FiniteAutomaton) otherI;
         Automaton inter = this.representedBy.intersection(other.representedBy);
         TIntHashSet alphabet = new TIntHashSet();
         for (int a : this.alphabet.toArray())
@@ -503,25 +505,29 @@ public FiniteAutomaton intersection(FiniteAutomaton other) {
         return new FiniteAutomaton(inter,alphabet);
 }
 
-public FiniteAutomaton complement(TIntHashSet alphabet) {
+public FiniteAutomaton complement(TIntHashSet alphabet)
+{
         Automaton comp = this.representedBy.complement();
         return new FiniteAutomaton(comp,alphabet);
 }
 
-public FiniteAutomaton complement() {
+public FiniteAutomaton complement()
+{
         return complement(alphabet);
 }
 
 
-public FiniteAutomaton concatenate(FiniteAutomaton other) {
-        Automaton conc = this.representedBy.concatenate(other.representedBy);
-        TIntHashSet alphabet = new TIntHashSet(this.alphabet.toArray());
-        alphabet.addAll(other.alphabet.toArray());
-        return new FiniteAutomaton(conc,alphabet);
-
+public FiniteAutomaton concatenate(FiniteAutomaton otherI)
+{
+                FiniteAutomaton other = (FiniteAutomaton) otherI;
+                Automaton conc = this.representedBy.concatenate(other.representedBy);
+                TIntHashSet alphabet = new TIntHashSet(this.alphabet.toArray());
+                alphabet.addAll(other.alphabet.toArray());
+                return new FiniteAutomaton(conc,alphabet);
 }
 
-public void addEpsilon(int source, int destination) {
+public void addEpsilon(int source, int destination)
+{
         try {
                 checkState(source,destination);
         } catch (StateNotInAutomatonException e) {
@@ -560,11 +566,9 @@ public TIntHashSet getFinalStates()
 
 
 
-public int getNbStates() {
-        return size();
-}
 
-public void toDotty(String f) {
+public void toDotty(String f)
+{
         String s = this.toDot();
         try {
                 BufferedWriter bw = new BufferedWriter(new FileWriter(new File(f)));
@@ -573,7 +577,6 @@ public void toDotty(String f) {
         } catch (IOException e) {
                 System.err.println("Unable to write dotty file "+f);
         }
-
 }
 
 public String toDot()
@@ -601,7 +604,8 @@ public String toDot()
         return b.append("}\n").toString();
 }
 
-private void appendDot(Transition t,StringBuilder b) {
+private void appendDot(Transition t,StringBuilder b)
+{
         int destIdx = stateToIndex.get(t.getDest());
 
         b.append(" -> ").append(destIdx).append(" [label=\"");
@@ -618,7 +622,8 @@ private void appendDot(Transition t,StringBuilder b) {
         b.append("\"]\n");
 }
 
-public TIntHashSet getAlphabet() {
+public TIntHashSet getAlphabet()
+{
         return alphabet;
 }
 
@@ -682,7 +687,7 @@ public ArrayList<int[]> _removeSymbolFromAutomaton(int alpha)
 
         }
         alphabet.remove(alpha);
-       // this.removeDeadTransitions();
+        // this.removeDeadTransitions();
         ArrayList<int[]> couple = new ArrayList<int[]>();
         for (int i  = 0 ; i < states.size() ; i++)
         {
@@ -736,34 +741,5 @@ public FiniteAutomaton clone() throws CloneNotSupportedException
         return auto;
 }
 
-
-public static class StateNotInAutomatonException extends Exception
-{
-        public StateNotInAutomatonException(int state)
-        {
-                super("State "+state+ " is not in the automaton, please add it using addState");
-        }
-}
-public static class NonDeterministicOperationException extends Exception
-{
-        public NonDeterministicOperationException()
-        {
-                super("This operation can oly be called on a determinitic automaton, please use determinize()");
-        }
-}
-
-private static class Triple
-{
-        int a;
-        int b;
-        int c;
-
-        public Triple(int a, int b, int c)
-        {
-                this.a=a;
-                this.b=b;
-                this.c=c;
-        }
-}
 
 }

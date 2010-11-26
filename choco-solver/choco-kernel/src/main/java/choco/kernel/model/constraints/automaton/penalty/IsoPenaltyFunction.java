@@ -22,7 +22,7 @@ public IsoPenaltyFunction(int factor)
 }
 
 @Override
-public final int getPenalty(int value)
+public final int penalty(int value)
 {
        /* if (value >=1 && value <= 2)
                 return 0;

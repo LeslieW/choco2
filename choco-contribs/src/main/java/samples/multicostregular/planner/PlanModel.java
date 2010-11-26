@@ -25,9 +25,9 @@ package samples.multicostregular.planner;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.global.automata.fast_costregular.FCostRegularValSelector;
-import choco.cp.solver.constraints.global.automata.fast_costregular.FastCostRegular;
-import choco.cp.solver.constraints.global.automata.fast_multicostregular.FastMultiCostRegular;
+import choco.cp.solver.constraints.global.automata.fast_costregular.CostRegularValSelector;
+import choco.cp.solver.constraints.global.automata.fast_costregular.CostRegular;
+import choco.cp.solver.constraints.global.automata.fast_multicostregular.MultiCostRegular;
 import choco.cp.solver.constraints.global.automata.fast_multicostregular.valselector.MCRValSelector;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
@@ -35,7 +35,7 @@ import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
+import choco.kernel.model.constraints.automaton.FA.IAutomaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
@@ -60,7 +60,7 @@ public class PlanModel {
     IntegerVariable[] shifts;
     IntegerVariable[] count;
     IntegerVariable z;
-    FiniteAutomaton auto;
+    IAutomaton auto;
     InstanceMaker imaker;
     String modelType;
     long seed;
@@ -332,12 +332,12 @@ main = costRegular(z, shifts, auto,make3dim(csts,auto.getNbStates()));
         //CPSolver.setVerbosity(CPSolver.SOLUTION);
         if (type == MCR && valheur)
         {
-             s.setValIntSelector(new MCRValSelector(new FastMultiCostRegular[]{(FastMultiCostRegular)s.getCstr(main)},false));
+             s.setValIntSelector(new MCRValSelector(new MultiCostRegular[]{(MultiCostRegular)s.getCstr(main)},false));
         }
         if (type == COSTREG && valheur)
         {
             s.setVarIntSelector(new MinDomain(s,s.getVar(shifts)));
-             s.setValIntSelector(new FCostRegularValSelector((FastCostRegular)s.getCstr(main),false));
+             s.setValIntSelector(new CostRegularValSelector((CostRegular)s.getCstr(main),false));
         }
       //    CPSolver.setVerbosity(CPSolver.SEARCH);
       //  s.setLoggingMaxDepth(100);

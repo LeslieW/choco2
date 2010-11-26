@@ -5,7 +5,7 @@ import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
-import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
+import choco.kernel.model.constraints.automaton.FA.IAutomaton;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.global.automata.fast_regular.structure.Arc;
 import choco.kernel.solver.constraints.global.automata.fast_regular.structure.Node;
@@ -41,7 +41,7 @@ public class FastRegular extends AbstractLargeIntSConstraint {
      * @param vars Variables that must form a word accepted by auto
      * @param auto An automaton forming a regular languauge
      */
-    public FastRegular(IEnvironment environment, IntDomainVar[] vars, FiniteAutomaton auto) {
+    public FastRegular(IEnvironment environment, IntDomainVar[] vars, IAutomaton auto) {
         super(vars);
 
         int aid = 0;
@@ -143,10 +143,10 @@ public class FastRegular extends AbstractLargeIntSConstraint {
 
 
         //backward pass, removing arcs that does not lead to an accepting state
-        int nbNodes = auto.size();
+        int nbNodes = auto.getNbStates();
         BitSet mark = new BitSet(nbNodes);
 
-        Node[] in = new Node[auto.size()*(n+1)];
+        Node[] in = new Node[auto.getNbStates()*(n+1)];
 
         for (i = n -1 ; i >=0 ; i--)
         {
@@ -173,19 +173,19 @@ public class FastRegular extends AbstractLargeIntSConstraint {
                             {
 
                                 added = true;
-                                Node a = in[i*auto.size()+k];
+                                Node a = in[i*auto.getNbStates()+k];
                                 if (a == null)
                                 {
                                     a = new Node(k,i,nid++);
-                                    in[i*auto.size()+k] = a;
+                                    in[i*auto.getNbStates()+k] = a;
                                     graph.addVertex(a);
                                 }
 
-                                Node b = in[(i+1)*auto.size()+qn];
+                                Node b = in[(i+1)*auto.getNbStates()+qn];
                                 if (b == null)
                                 {
                                     b = new Node(qn,i+1,nid++);
-                                    in[(i+1)*auto.size()+qn] = b;
+                                    in[(i+1)*auto.getNbStates()+qn] = b;
                                     graph.addVertex(b);
                                 }
 

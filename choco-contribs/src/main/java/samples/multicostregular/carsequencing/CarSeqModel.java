@@ -26,6 +26,7 @@ import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.constraints.automaton.FA.IAutomaton;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import gnu.trove.TIntHashSet;
