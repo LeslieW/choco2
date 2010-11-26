@@ -4,8 +4,8 @@ import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.automata.fast_multicostregular.SoftMultiCostRegular;
 import choco.kernel.common.util.tools.ArrayUtils;
-import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
-import choco.kernel.model.constraints.automaton.penalty.PenaltyFunction;
+import choco.kernel.model.constraints.automaton.FA.IAutomaton;
+import choco.kernel.model.constraints.automaton.penalty.IPenaltyFunction;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -53,8 +53,8 @@ public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Ob
                 offset = 1;
         }
 
-        PenaltyFunction[] penalty  = (PenaltyFunction[]) param[offset+2];
-        FiniteAutomaton pi = (FiniteAutomaton) param[offset+3];
+        IPenaltyFunction[] penalty  = (IPenaltyFunction[]) param[offset+2];
+        IAutomaton pi = (IAutomaton) param[offset+3];
 
 
         int[][][][] costs = (int[][][][]) param[offset+4];

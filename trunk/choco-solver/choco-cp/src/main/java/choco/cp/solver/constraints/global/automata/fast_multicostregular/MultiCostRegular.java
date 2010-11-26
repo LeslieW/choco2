@@ -28,7 +28,11 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
-import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
+import choco.kernel.model.constraints.automaton.FA.CostAutomaton;
+import choco.kernel.model.constraints.automaton.FA.IAutomaton;
+import choco.kernel.model.constraints.automaton.FA.ICostAutomaton;
+import choco.kernel.model.constraints.automaton.FA.utils.Bounds;
+import choco.kernel.model.constraints.automaton.FA.utils.ICounter;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.global.automata.fast_multicostregular.algo.FastPathFinder;
@@ -46,6 +50,7 @@ import org.jgrapht.graph.DirectedMultigraph;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashSet;
+import java.util.List;
 
 
 /**
@@ -67,7 +72,7 @@ import java.util.HashSet;
  * The propagation is based on a Lagrangian Relaxation approach of the underlying
  * Resource constrained  shortest/longest path problems
  */
-public final class FastMultiCostRegular extends AbstractLargeIntSConstraint
+public final class MultiCostRegular extends AbstractLargeIntSConstraint
 {
 
 
@@ -126,12 +131,12 @@ public final IntDomainVar[] z;
 /**
  * Integral costs : c[i][j][k][s] is the cost over dimension k of x_i = j on state s
  */
-protected final int[][][][] costs;
+//protected final int[][][][] costs;
 
 /**
  * The finite automaton which defines the regular language the variable sequence must belong
  */
-protected final FiniteAutomaton pi;
+protected ICostAutomaton pi;
 
 /**
  * Layered graph of the unfolded automaton
@@ -193,66 +198,17 @@ public int lastNbOfRestarts = -1;
 private TIntHashSet boundUpdate;
 private boolean computed;
 
-/**
- * Constructs a multi-cost-regular constraint propagator
- * @param vars  decision variables
- * @param CR    cost variables
- * @param auto  finite automaton
- * @param costs assignment cost arrays
- * @param solver solver
- */
-public FastMultiCostRegular(final IntDomainVar[] vars, final IntDomainVar[] CR, final FiniteAutomaton auto, final int[][][] costs, Solver solver) {
-        this(vars,CR,auto,make4dim(costs,auto),solver);
-}
 
-private static int[][][][] make4dim(int[][][] costs, FiniteAutomaton auto) {
-        int nbStates = auto.getNbStates();
-        int[][][][] out = new int[costs.length][][][];
-        for (int i = 0 ; i < costs.length ; i++)
-        {
-                out[i] = new int[costs[i].length][][];
-                for (int j = 0 ; j < out[i].length ; j++)
-                {
-                        out[i][j] = new int[costs[i][j].length][nbStates];
-                        for (int k = 0 ; k < out[i][j].length ; k++)
-                        {
-                                for (int s = 0 ; s < nbStates ; s++)
-                                {
-                                        out[i][j][k][s] = costs[i][j][k];
-                                }
-                        }
-                }
-
-        }
-        return out;
-
-}
-
-
-/**
- * Constructs a multi-cost-regular constraint propagator
- * @param vars  decision variables
- * @param CR    cost variables
- * @param auto  finite automaton
- * @param costs assignment cost arrays
- * @param solver solver
- */
-public FastMultiCostRegular(final IntDomainVar[] vars, final IntDomainVar[] CR, final FiniteAutomaton auto, final int[][][][] costs, Solver solver)
+private MultiCostRegular(final IntDomainVar[] vars, final IntDomainVar[] counterVars, final Solver solver)
 {
-        super(ArrayUtils.<IntDomainVar>append(vars,CR));
+        super(ArrayUtils.<IntDomainVar>append(vars,counterVars));
         this.environment = solver.getEnvironment();
         this.solver= solver;
         this.vs = vars;
-        this.costs = costs;
-        this.z= CR;
+        this.z= counterVars;
         this.nbR = this.z.length-1;
-        this.pi = auto;
         this.modifiedBound = new boolean[]{true,true};
-        /*  this.newCosts = new double[costs.length+1][];
-    for (int i = 0; i < costs.length; i++) {
-        this.newCosts[i] = new double[costs[i].length];
-    }
-    this.newCosts[costs.length] = new double[1]; */
+
         this.uUb = new double[2*nbR];
         this.uLb = new double[2*nbR];
 
@@ -271,15 +227,43 @@ public FastMultiCostRegular(final IntDomainVar[] vars, final IntDomainVar[] CR, 
                 this.toUpdateRight[i] = new TIntStack();
         }
         this.boundUpdate = new TIntHashSet();
-
-
-        LOGGER.finest("NB STATES : "+auto.getNbStates());
-        LOGGER.finest("NB ARCS : "+auto.getTransitions().size());
+}
 
 
 
+/**
+ * Constructs a multi-cost-regular constraint propagator
+ * @param vars  decision variables
+ * @param CR    cost variables
+ * @param auto  finite automaton
+ * @param costs assignment cost arrays
+ * @param solver solver
+ */
+public MultiCostRegular(final IntDomainVar[] vars, final IntDomainVar[] CR, final IAutomaton auto, final int[][][] costs, Solver solver)
+{
+        this(vars,CR,solver);
+        this.pi = CostAutomaton.makeMultiResources(auto,costs,CR);
+}
 
 
+/**
+ * Constructs a multi-cost-regular constraint propagator
+ * @param vars  decision variables
+ * @param CR    cost variables
+ * @param auto  finite automaton
+ * @param costs assignment cost arrays
+ * @param solver solver
+ */
+public MultiCostRegular(final IntDomainVar[] vars, final IntDomainVar[] CR, final IAutomaton auto, final int[][][][] costs, final Solver solver)
+{
+        this(vars,CR,solver);
+        this.pi = CostAutomaton.makeMultiResources(auto,costs,CR);
+}
+
+public MultiCostRegular(final IntDomainVar[] vars, final IntDomainVar[] CR, final ICostAutomaton pi, final Solver solver)
+{
+        this(vars,CR,solver);
+        this.pi = pi;
 }
 
 public void initGraph()
@@ -381,10 +365,10 @@ public void initGraph()
 
 
         //backward pass, removing arcs that does not lead to an accepting state
-        int nbNodes = pi.size();
+        int nbNodes = pi.getNbStates();
         BitSet mark = new BitSet(nbNodes);
 
-        Node[] in = new Node[pi.size()*(n+1)];
+        Node[] in = new Node[pi.getNbStates()*(n+1)];
         Node tink = new Node(pi.getNbStates()+1,n+1,nid++);
         graph.addVertex(tink);
 
@@ -415,19 +399,19 @@ public void initGraph()
                                                 if (layer.get(i+1).contains(qn))
                                                 {
                                                         added = true;
-                                                        Node a = in[i*pi.size()+k];
+                                                        Node a = in[i*pi.getNbStates()+k];
                                                         if (a == null)
                                                         {
                                                                 a = new Node(k,i,nid++);
-                                                                in[i*pi.size()+k] = a;
+                                                                in[i*pi.getNbStates()+k] = a;
                                                                 graph.addVertex(a);
                                                         }
 
-                                                        Node b = in[(i+1)*pi.size()+qn];
+                                                        Node b = in[(i+1)*pi.getNbStates()+qn];
                                                         if (b == null)
                                                         {
                                                                 b = new Node(qn,i+1,nid++);
-                                                                in[(i+1)*pi.size()+qn] = b;
+                                                                in[(i+1)*pi.getNbStates()+qn] = b;
                                                                 graph.addVertex(b);
                                                         }
 
@@ -457,7 +441,7 @@ public void initGraph()
         int[][] intLayer = new int[n+2][];
         for (k = 0 ; k < pi.getNbStates() ; k++)
         {
-                Node o = in[n*pi.size()+k];
+                Node o = in[n*pi.getNbStates()+k];
                 {
                         if (o != null)
                         {
@@ -473,7 +457,7 @@ public void initGraph()
                 th.clear();
                 for (k = 0 ; k < pi.getNbStates() ; k++)
                 {
-                        Node o = in[i*pi.size()+k];
+                        Node o = in[i*pi.getNbStates()+k];
                         if (o != null)
                         {
                                 th.add(o.id);
@@ -485,7 +469,7 @@ public void initGraph()
 
         if (intLayer[0].length > 0)
         {
-                this.graph = new StoredDirectedMultiGraph(environment, this,graph,intLayer,starts,offsets,totalSizes,costs,z);
+                this.graph = new StoredDirectedMultiGraph(environment, this,graph,intLayer,starts,offsets,totalSizes,pi,z);
                 this.graph.makePathFinder();
         }
 }
@@ -917,6 +901,7 @@ public void boundChange(final int idx)
 public void awake() throws ContradictionException
 {
 
+        checkBounds();
         initGraph();
         if (this.graph == null)
                 this.fail();
@@ -938,6 +923,20 @@ public void awake() throws ContradictionException
         this.slp.computeShortestAndLongestPath(toRemove,z);
         propagate();
 
+}
+
+private void checkBounds() throws ContradictionException
+{
+        List<ICounter> counters = pi.getCounters();
+        int nbCounters = pi.getNbResources();
+        for (int i = 0 ; i <nbCounters ;i++)
+        {
+                IntDomainVar z = this.z[i];
+                Bounds bounds = counters.get(i).bounds();
+                z.updateInf(bounds.min.value,this,false);
+                z.updateSup(bounds.max.value,this,false);
+
+        }
 }
 
 public void propagate() throws ContradictionException
@@ -1030,10 +1029,11 @@ public final int getRegret(int layer, int value, int... resources)
         return this.graph.getRegret(layer,value,resources);
 }
 
+/*
 public int[][][][] getCosts()
 {
         return costs;
-}
+}   */
 
 public boolean isSatisfied()
 {
@@ -1134,7 +1134,7 @@ public double[] getInstantiatedLayerCosts(int layer) { return this.graph.getInst
 
 public void forcePathRecomputation() throws ContradictionException
 {
-   lastWorld = Integer.MAX_VALUE;
+        lastWorld = Integer.MAX_VALUE;
         checkWorld();
 }
 }

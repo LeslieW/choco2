@@ -6,6 +6,7 @@ import choco.cp.model.CPModel;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.automaton.DFA;
+import choco.kernel.model.constraints.automaton.FA.IAutomaton;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.constraints.automaton.Transition;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -32,7 +33,7 @@ public class NSPModel extends CPModel {
     NSPInstance instance;
     IntegerVariable[][] shifts;
     IntegerVariable globalCost;
-    FiniteAutomaton auto;
+    IAutomaton auto;
 
     public NSPModel(String file)
     {

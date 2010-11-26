@@ -52,7 +52,6 @@ public enum ConstraintType {
     EXACTLY("exactly", "constraint.exactly", false),
     EXPRESSION("expression"),
     FALSE("false", "constraint.false", false),
-    FASTCOSTREGULAR("fastcostregular", "constraint.fastcostregular", false),
     FASTREGULAR("fastregular", "constraint.fastregular", false),
     FORBIDDEN_INTERVALS("forbidden intervals", "constraint.forbiddenIntervals", false),
     GEOST("geost", "constraint.geost", false),

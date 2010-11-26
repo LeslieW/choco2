@@ -24,6 +24,7 @@ package samples.multicostregular.asap.hci.control;
 
 
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
+import choco.kernel.model.constraints.automaton.FA.IAutomaton;
 import dk.brics.automaton.Automaton;
 import dk.brics.automaton.RegExp;
 import gnu.trove.TIntHashSet;

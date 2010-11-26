@@ -10,11 +10,11 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Time: 9:22:14 AM
  */
 
-public class FCostRegularValSelector implements ValSelector<IntDomainVar> {
+public class CostRegularValSelector implements ValSelector<IntDomainVar> {
 
     boolean max;
-    FastCostRegular cr;
-    public FCostRegularValSelector(FastCostRegular cr,boolean max)
+    CostRegular cr;
+    public CostRegularValSelector(CostRegular cr,boolean max)
     {
         this.cr = cr;
         this.max = max;

@@ -7,9 +7,9 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
+import choco.kernel.model.constraints.automaton.penalty.IPenaltyFunction;
 import choco.kernel.model.constraints.automaton.penalty.IsoPenaltyFunction;
 import choco.kernel.model.constraints.automaton.penalty.LinearPenaltyFunction;
-import choco.kernel.model.constraints.automaton.penalty.PenaltyFunction;
 import choco.kernel.model.variables.integer.IntegerVariable;
 
 import java.util.logging.Level;
@@ -109,7 +109,7 @@ public static void main1(String[] args)
 
         IntegerVariable Z = makeIntVar("Z",0,390,"cp:bound");
 
-        PenaltyFunction[] f = new PenaltyFunction[z.length];
+        IPenaltyFunction[] f = new IPenaltyFunction[z.length];
         f[0] = new LinearPenaltyFunction(0,2,10,n,2,10);
         f[1] = new LinearPenaltyFunction(0,2,10,n,2,10);
         f[2] = new IsoPenaltyFunction(5);

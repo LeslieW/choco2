@@ -23,6 +23,7 @@
 package samples.multicostregular.carsequencing.parser;
 
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
+import choco.kernel.model.constraints.automaton.FA.IAutomaton;
 import dk.brics.automaton.Automaton;
 import dk.brics.automaton.State;
 import dk.brics.automaton.Transition;

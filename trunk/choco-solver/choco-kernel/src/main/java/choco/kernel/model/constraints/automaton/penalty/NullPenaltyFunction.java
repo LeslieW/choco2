@@ -11,20 +11,20 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 public class NullPenaltyFunction extends AbstractPenaltyFunction
 {
 @Override
-public int getPenalty(int value)
+public int penalty(int value)
 {
         return 0;
 }
 
 @Override
-public double getMinGHat(double lambda, IntDomainVar var)
+public double minGHat(double lambda, IntDomainVar var)
 {
         double ghat = -lambda *  ((lambda > 0) ? var.getSup() : var.getInf());
         return ghat;
 }
 
 @Override
-public double getMaxGHat(double lambda, IntDomainVar var)
+public double maxGHat(double lambda, IntDomainVar var)
 {
         double ghat = -lambda *  ((lambda < 0) ? var.getSup() : var.getInf());
         return ghat;

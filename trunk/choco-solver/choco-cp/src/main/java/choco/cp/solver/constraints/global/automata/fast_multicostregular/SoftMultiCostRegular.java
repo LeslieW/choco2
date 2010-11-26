@@ -6,9 +6,9 @@ import choco.kernel.common.Constant;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
-import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
+import choco.kernel.model.constraints.automaton.FA.IAutomaton;
+import choco.kernel.model.constraints.automaton.penalty.IPenaltyFunction;
 import choco.kernel.model.constraints.automaton.penalty.IsoPenaltyFunction;
-import choco.kernel.model.constraints.automaton.penalty.PenaltyFunction;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.global.automata.fast_multicostregular.algo.SoftPathFinder;
 import choco.kernel.solver.constraints.global.automata.fast_multicostregular.structure.Arc;
@@ -50,10 +50,10 @@ IntDomainVar[] z;
 IntDomainVar Z;
 
 /** The penalty functions linking y and z */
-PenaltyFunction[] f;
+IPenaltyFunction[] f;
 
 /** Automaton describing the authorized words */
-FiniteAutomaton pi;
+IAutomaton pi;
 
 /** Cost Function */
 int[][][][] costs;
@@ -114,7 +114,7 @@ private boolean computed;
 private static final double PRECISION = Math.pow(10,Constant.MCR_PRECISION);
 
 
-public SoftMultiCostRegular(IntDomainVar[] x, IntDomainVar[] y, IntDomainVar[] z, IntDomainVar Z, int[] indexes, PenaltyFunction[] f, FiniteAutomaton pi, int[][][][] costs, CPSolver solver)
+public SoftMultiCostRegular(IntDomainVar[] x, IntDomainVar[] y, IntDomainVar[] z, IntDomainVar Z, int[] indexes, IPenaltyFunction[] f, IAutomaton pi, int[][][][] costs, CPSolver solver)
 {
         super(ArrayUtils.append(x,y,z,new IntDomainVar[]{Z}));
         this.x  = x;
@@ -253,10 +253,10 @@ public void initGraph()
 
 
         //backward pass, removing arcs that does not lead to an accepting state
-        int nbNodes = pi.size();
+        int nbNodes = pi.getNbStates();
         BitSet mark = new BitSet(nbNodes);
 
-        Node[] in = new Node[pi.size()*(n+1)];
+        Node[] in = new Node[pi.getNbStates()*(n+1)];
         Node tink = new Node(pi.getNbStates()+1,n+1,nid++);
         graph.addVertex(tink);
 
@@ -287,19 +287,19 @@ public void initGraph()
                                                 if (layer.get(i+1).contains(qn))
                                                 {
                                                         added = true;
-                                                        Node a = in[i*pi.size()+k];
+                                                        Node a = in[i*pi.getNbStates()+k];
                                                         if (a == null)
                                                         {
                                                                 a = new Node(k,i,nid++);
-                                                                in[i*pi.size()+k] = a;
+                                                                in[i*pi.getNbStates()+k] = a;
                                                                 graph.addVertex(a);
                                                         }
 
-                                                        Node b = in[(i+1)*pi.size()+qn];
+                                                        Node b = in[(i+1)*pi.getNbStates()+qn];
                                                         if (b == null)
                                                         {
                                                                 b = new Node(qn,i+1,nid++);
-                                                                in[(i+1)*pi.size()+qn] = b;
+                                                                in[(i+1)*pi.getNbStates()+qn] = b;
                                                                 graph.addVertex(b);
                                                         }
 
@@ -329,7 +329,7 @@ public void initGraph()
         int[][] intLayer = new int[n+2][];
         for (k = 0 ; k < pi.getNbStates() ; k++)
         {
-                Node o = in[n*pi.size()+k];
+                Node o = in[n*pi.getNbStates()+k];
                 {
                         if (o != null)
                         {
@@ -345,7 +345,7 @@ public void initGraph()
                 th.clear();
                 for (k = 0 ; k < pi.getNbStates() ; k++)
                 {
-                        Node o = in[i*pi.size()+k];
+                        Node o = in[i*pi.getNbStates()+k];
                         if (o != null)
                         {
                                 th.add(o.id);
@@ -432,12 +432,15 @@ private double ghatSP(double[] lambda)
         for (int r = 0 ; r < R ; r++)
         {
                 if (indexes.contains(r))
-                        ghat+= f[r].getMinGHat(lambda[r],y[r]);
+                        ghat+= f[r].minGHat(lambda[r],y[r]);
                 else
                         ghat+= -lambda[r] *  ((lambda[r] > 0) ? y[r].getSup() : y[r].getInf());
         }
         return ghat;
 }
+
+
+
 
 public boolean updateViolationUB() throws ContradictionException
 {
@@ -502,7 +505,7 @@ private double ghatLP(double[] lambda)
         for (int r = 0 ; r < R ; r++)
         {
                 if (indexes.contains(r))
-                        ghat+= f[r].getMaxGHat(lambda[r],y[r]);
+                        ghat+= f[r].maxGHat(lambda[r],y[r]);
                 else
                         ghat+= -lambda[r] *  ((lambda[r] < 0) ? y[r].getSup() : y[r].getInf());
         }
@@ -523,7 +526,7 @@ public void makeTableConstraints() throws ContradictionException
                         while (it.hasNext())
                         {
                                 int val = it.next();
-                                int other = f[i].getPenalty(val);
+                                int other = f[i].penalty(val);
                                 if (z[i].canBeInstantiatedTo(other))
                                         tuples.add(new int[]{val,other});
                         }
@@ -853,9 +856,9 @@ public boolean check(int[] word)
                         LOGGER.severe("counter: "+gcost[i]+" != y:"+y[i].getVal());
                         return false;
                 }
-                else if (z[i].getVal() != f[i].getPenalty(gcost[i]))
+                else if (z[i].getVal() != f[i].penalty(gcost[i]))
                 {
-                        LOGGER.severe("penalty_"+i+": "+f[i].getPenalty(gcost[i])+" != z:"+z[i].getVal());
+                        LOGGER.severe("penalty_"+i+": "+f[i].penalty(gcost[i])+" != z:"+z[i].getVal());
                         return false;
                 }
 

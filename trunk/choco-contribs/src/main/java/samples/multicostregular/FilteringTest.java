@@ -30,6 +30,7 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.constraints.automaton.FA.IAutomaton;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
@@ -49,7 +50,7 @@ import java.util.Random;
  */
 public class FilteringTest {
 
-    private static FiniteAutomaton generateRandomAutomaton(int nbVar, int[] val, Random r)
+    private static IAutomaton generateRandomAutomaton(int nbVar, int[] val, Random r)
     {
         StringBuffer regexp = new StringBuffer();
         for (int i = 0 ; i  < nbVar ; i++)
@@ -125,7 +126,7 @@ public class FilteringTest {
             m.addVariables(vars);
             int[] val = new int[d+1];
             for (int i  = 0 ; i <= d ; i++) val[i] =i;
-            FiniteAutomaton a = generateRandomAutomaton(n,val,rand);
+            IAutomaton a = generateRandomAutomaton(n,val,rand);
             int[][][] csts = generateRandomCosts(n,d,r,max,rand);
 
 
@@ -327,7 +328,7 @@ public class FilteringTest {
                 m.addVariables(vars);
                 int[] val = new int[d+1];
                 for (int i  = 0 ; i <= d ; i++) val[i] =i;
-                FiniteAutomaton a = generateRandomAutomaton(n,val,rand);
+                IAutomaton a = generateRandomAutomaton(n,val,rand);
 
 
 

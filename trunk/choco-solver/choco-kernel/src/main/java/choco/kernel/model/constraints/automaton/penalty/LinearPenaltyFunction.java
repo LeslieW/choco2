@@ -41,7 +41,7 @@ public LinearPenaltyFunction(int min, int minPref, int minPenalty, int max, int 
 
 
 @Override
-public int getPenalty(int value)
+public int penalty(int value)
 {
         if (value < minPref)
         {

@@ -5,7 +5,10 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBool;
 import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
-import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
+import choco.kernel.model.constraints.automaton.FA.CostAutomaton;
+import choco.kernel.model.constraints.automaton.FA.IAutomaton;
+import choco.kernel.model.constraints.automaton.FA.ICostAutomaton;
+import choco.kernel.model.constraints.automaton.FA.utils.Bounds;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.Arc;
@@ -27,7 +30,7 @@ import java.util.*;
  * Date: Feb 4, 2010
  * Time: 1:03:04 PM
  */
-public class FastCostRegular extends AbstractLargeIntSConstraint{
+public class CostRegular extends AbstractLargeIntSConstraint{
 
 
     IntDomainVar[] vs;
@@ -41,25 +44,13 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
     protected final IEnvironment environment;
 
 
-    int[][][] costs;
+    //int[][][] costs;
     Solver solver;
-    FiniteAutomaton pi;
+    ICostAutomaton pi;
     DirectedMultigraph<Node, Arc> originalGraph;
     Node source;
 
-    public FastCostRegular(IntDomainVar[] vars, FiniteAutomaton pi, int[][][] costs, Solver s) {
-        super(vars);
-        this.environment = s.getEnvironment();
-        this.solver = s;
-        this.vs = new IntDomainVar[vars.length-1];
-        System.arraycopy(vars, 0, vs, 0, vs.length);
-        this.z = vars[vars.length-1];
-        this.toRemove = new TIntStack();
-        this.boundChange = environment.makeBool(false);
-        this.costs = costs;
-        this.pi = pi;
-    }
-    public FastCostRegular(IntDomainVar[] vars, DirectedMultigraph<Node, Arc> graph, Node source, Solver s)
+    private CostRegular(IntDomainVar[] vars,Solver s)
     {
         super(vars);
         this.environment = s.getEnvironment();
@@ -69,6 +60,31 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
         this.z = vars[vars.length-1];
         this.toRemove = new TIntStack();
         this.boundChange = environment.makeBool(false);
+    }
+
+    public CostRegular(IntDomainVar[] vars, IAutomaton pi, int[][][] costs, Solver s)
+    {
+        this(vars,s);
+        this.pi = CostAutomaton.makeSingleResource(pi,costs,this.z.getInf(),this.z.getSup());
+    }
+
+    public CostRegular(IntDomainVar[] vars, IAutomaton pi, int[][] costs, Solver s)
+    {
+        this(vars,s);
+        this.pi = CostAutomaton.makeSingleResource(pi,costs,this.z.getInf(),this.z.getSup());
+    }
+
+    public CostRegular(IntDomainVar[] vars, ICostAutomaton pi, Solver s)
+    {
+        this(vars,s);
+        this.pi = pi;
+    }
+
+
+
+    public CostRegular(IntDomainVar[] vars, DirectedMultigraph<Node, Arc> graph, Node source, Solver s)
+    {
+        this(vars,s);
 
         this.originalGraph =graph;
         this.source = source;
@@ -132,7 +148,7 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
     }
 
 
-    public void initGraph(int[][][] costs, FiniteAutomaton pi) throws ContradictionException {
+    public void initGraph(ICostAutomaton pi) throws ContradictionException {
         int aid = 0;
         int nid = 0;
 
@@ -230,10 +246,10 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
 
 
         //backward pass, removing arcs that does not lead to an accepting state
-        int nbNodes = pi.size();
+        int nbNodes = pi.getNbStates();
         BitSet mark = new BitSet(nbNodes);
 
-        Node[] in = new Node[pi.size()*(n+1)];
+        Node[] in = new Node[pi.getNbStates()*(n+1)];
         Node tink = new Node(pi.getNbStates()+1,n+1,nid++);
         graph.addVertex(tink);
 
@@ -262,26 +278,26 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
                             if (layer.get(i+1).contains(qn))
                             {
                                 added = true;
-                                Node a = in[i*pi.size()+k];
+                                Node a = in[i*pi.getNbStates()+k];
                                 if (a == null)
                                 {
                                     a = new Node(k,i,nid++);
-                                    in[i*pi.size()+k] = a;
+                                    in[i*pi.getNbStates()+k] = a;
                                     graph.addVertex(a);
                                 }
 
 
 
-                                Node b = in[(i+1)*pi.size()+qn];
+                                Node b = in[(i+1)*pi.getNbStates()+qn];
                                 if (b == null)
                                 {
                                     b = new Node(qn,i+1,nid++);
-                                    in[(i+1)*pi.size()+qn] = b;
+                                    in[(i+1)*pi.getNbStates()+qn] = b;
                                     graph.addVertex(b);
                                 }
 
 
-                                Arc arc = new Arc(a,b,j,aid++,costs[i][j][a.state]);
+                                Arc arc = new Arc(a,b,j,aid++,pi.getCostByState(i,j,a.state));
                                 graph.addEdge(a,b,arc);
                                 tmp.get(idx).add(arc);
 
@@ -309,7 +325,7 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
         int[][] intLayer = new int[n+2][];
         for (k = 0 ; k < pi.getNbStates() ; k++)
         {
-            Node o = in[n*pi.size()+k];
+            Node o = in[n*pi.getNbStates()+k];
             {
                 if (o != null)
                 {
@@ -325,7 +341,7 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
             th.clear();
             for (k = 0 ; k < pi.getNbStates() ; k++)
             {
-                Node o = in[i*pi.size()+k];
+                Node o = in[i*pi.getNbStates()+k];
                 if (o != null)
                 {
                     th.add(o.id);
@@ -346,8 +362,9 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
 
     public void awake() throws ContradictionException
     {
+        checkBounds();
         if (pi !=null)
-            initGraph(costs,pi);
+            initGraph(pi);
         else if (originalGraph != null)
             initGraph(originalGraph,source);
         this.prefilter();
@@ -356,7 +373,16 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
         this.source = null;
 
     }
-    public void prefilter() throws ContradictionException {
+
+private void checkBounds() throws ContradictionException
+{
+        Bounds bounds = this.pi.getCounters().get(0).bounds();
+        z.updateInf(bounds.min.value,this,false);
+        z.updateSup(bounds.max.value,this,false);
+}
+
+
+public void prefilter() throws ContradictionException {
         double zinf = this.graph.GNodes.spft.get(this.graph.sourceIndex);
         double zsup = this.graph.GNodes.lpfs.get(this.graph.tinkIndex);
 

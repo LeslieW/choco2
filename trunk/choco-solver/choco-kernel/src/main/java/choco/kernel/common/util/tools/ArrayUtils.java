@@ -213,6 +213,20 @@ public final class ArrayUtils {
 
     }
 
+    public static  int[][] transpose(int[][] matrix) {
+        int[][] ret = (int[][]) java.lang.reflect.Array.newInstance(matrix.getClass().getComponentType(), matrix[0].length);
+        for (int i = 0; i < ret.length; i++) {
+            ret[i] = (int[]) java.lang.reflect.Array.newInstance(matrix[0].getClass().getComponentType(), matrix.length);
+        }
+
+        for (int i = 0; i < matrix.length; i++)
+            for (int j = 0; j < matrix[i].length; j++)
+                ret[j][i] = matrix[i][j];
+
+        return ret;
+
+    }
+
     public static <T> T[] flatten(T[][] matrix) {
         int sz = 0;
         for (T[] t : matrix) sz += t.length;
