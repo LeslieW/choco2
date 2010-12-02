@@ -207,18 +207,19 @@
                 <properties>
                     <owner>Ecole des Mines de Nantes</owner>
                     <year>2010</year>
+                    <email>choco@emn.fr</email>
                 </properties>
                 <strictCheck>true</strictCheck>
                 <includes>
                     <include>**/*.java</include>
                 </includes>
                 <excludes>
-                    <exclude>**/choco-ecp/**</exclude>
                     <exclude>**/site/**</exclude>
                     <exclude>**/target/**</exclude>
                 </excludes>
                 <headerDefinitions>
                     <headerDefinition>src/etc/old.xml</headerDefinition>
+                    <headerDefinition>src/etc/old2.xml</headerDefinition>
                 </headerDefinitions>
             </configuration>
         </plugin>
