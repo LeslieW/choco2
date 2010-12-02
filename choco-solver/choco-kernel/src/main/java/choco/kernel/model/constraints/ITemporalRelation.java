@@ -12,11 +12,11 @@ public interface ITemporalRelation<T extends ITaskVariable<V>, V> { //extends ID
 	
 	boolean IsFixed();
 
-	boolean isBackward();
+	boolean canBeBackward();
 
 	int backwardSetup();
 	
-	boolean isForward();
+	boolean canBeForward();
 	
 	int forwardSetup();
 

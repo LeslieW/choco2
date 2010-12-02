@@ -477,9 +477,8 @@ public class Options {
 		categories.put(V_OBJECTIVE, 1);
 
 		categories.put(V_NO_DECISION, 2);
-		categories.put(V_NO_DECISION, 2);
 
-		categories.put(V_MAKESPAN, 0);
+		categories.put(V_MAKESPAN, 3);
 
 		// EXPRESSIONS
 		categories.put(E_DECOMP, 0);
@@ -571,4 +570,5 @@ public class Options {
 		}
 	}
 	
+		
 }

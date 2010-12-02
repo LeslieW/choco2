@@ -1,34 +1,22 @@
 package common;
 
 import static org.junit.Assert.assertEquals;
-import junit.framework.Assert;
 
 import org.junit.Test;
 
-import samples.tutorials.scheduling.CumulativeWebEx;
-import samples.tutorials.scheduling.DisjunctiveWebEx;
+import samples.tutorials.scheduling.CumulativeScheduling;
 
 public class TestResource {
 
 
 	@Test
-	public void testExampleDisjunctiveWebSite() {
-		//ChocoLogging.setVerbosity(Verbosity.SEARCH);
-		final DisjunctiveWebEx cwe = new DisjunctiveWebEx();
+	public void testCumulativeScheduling() {
+		final CumulativeScheduling cwe = new CumulativeScheduling();
 		cwe.execute(Boolean.FALSE);
-		final Number obj = cwe.solver.getObjectiveValue();
+		final Number obj = cwe.solver.getOptimumValue();
 		cwe.execute(Boolean.TRUE);
-		Assert.assertEquals("Disjunctive Website Example",obj, cwe.solver.getObjectiveValue());
+		assertEquals("Cumulative Website Example",obj, cwe.solver.getOptimumValue());
 	}
 
-
-	@Test
-	public void testExampleCumulativeWebSite() {
-		final CumulativeWebEx cwe = new CumulativeWebEx();
-		cwe.execute(Boolean.FALSE);
-		final Number obj = cwe.solver.getObjectiveValue();
-		cwe.execute(Boolean.TRUE);
-		assertEquals("Cumulative Website Example",obj, cwe.solver.getObjectiveValue());
-	}
 
 }

@@ -227,15 +227,11 @@ public final class VariableUtils {
     //***************************************************************//
 
 
-    public static IntegerVariable createDirectionVar(TaskVariable t1, TaskVariable t2, String... boolOptions) {
+    public static IntegerVariable createDirVariable(TaskVariable t1, TaskVariable t2, String... boolOptions) {
         return makeBooleanVar("dir-" + t1.getName() + '-' + t2.getName(), boolOptions);
     }
 
-    public static IntDomainVar createDirectionVar(Solver solver, TaskVar t1, TaskVar t2) {
-    	return solver.createBooleanVar(StringUtils.dirRandomName(t1.getName(), t2.getName()));
-    }
-
-    public static IntegerVariable[] getStartVars(TaskVariable... tasks) {
+    public static IntegerVariable[] getStartVariables(TaskVariable... tasks) {
         final IntegerVariable[] vars = new IntegerVariable[tasks.length];
         for (int i = 0; i < tasks.length; i++) {
             vars[i] = tasks[i].start();
@@ -243,7 +239,7 @@ public final class VariableUtils {
         return vars;
     }
 
-    public static IntegerVariable[] getDurationVars(TaskVariable... tasks) {
+    public static IntegerVariable[] getDurationVariables(TaskVariable... tasks) {
         final IntegerVariable[] vars = new IntegerVariable[tasks.length];
         for (int i = 0; i < tasks.length; i++) {
             vars[i] = tasks[i].duration();
@@ -251,7 +247,7 @@ public final class VariableUtils {
         return vars;
     }
 
-    public static IntegerVariable[] getEndVars(TaskVariable... tasks) {
+    public static IntegerVariable[] getEndVariables(TaskVariable... tasks) {
         final IntegerVariable[] vars = new IntegerVariable[tasks.length];
         for (int i = 0; i < tasks.length; i++) {
             vars[i] = tasks[i].end();
@@ -259,7 +255,7 @@ public final class VariableUtils {
         return vars;
     }
 
-    public static IntegerVariable[] getStartVars(List<TaskVariable> tasks) {
+    public static IntegerVariable[] getStartVariables(List<TaskVariable> tasks) {
         final IntegerVariable[] vars = new IntegerVariable[tasks.size()];
         ListIterator<TaskVariable> iter = tasks.listIterator();
         while (iter.hasNext()) {
@@ -268,7 +264,7 @@ public final class VariableUtils {
         return vars;
     }
 
-    public static IntegerVariable[] getDurationVars(List<TaskVariable> tasks) {
+    public static IntegerVariable[] getDurationVariables(List<TaskVariable> tasks) {
         final IntegerVariable[] vars = new IntegerVariable[tasks.size()];
         ListIterator<TaskVariable> iter = tasks.listIterator();
         while (iter.hasNext()) {
@@ -277,7 +273,7 @@ public final class VariableUtils {
         return vars;
     }
 
-    public static IntegerVariable[] getEndVars(List<TaskVariable> tasks) {
+    public static IntegerVariable[] getEndVariables(List<TaskVariable> tasks) {
         final IntegerVariable[] vars = new IntegerVariable[tasks.size()];
         ListIterator<TaskVariable> iter = tasks.listIterator();
         while (iter.hasNext()) {
@@ -291,6 +287,9 @@ public final class VariableUtils {
     //*******************  TaskVar  ********************************//
     //***************************************************************//
 
+    public static IntDomainVar createDirVar(Solver solver, TaskVar t1, TaskVar t2) {
+    	return solver.createBooleanVar(StringUtils.dirRandomName(t1.getName(), t2.getName()));
+    }
 
     public static IntDomainVar[] getStartVars(TaskVar... tasks) {
         final IntDomainVar[] vars = new IntDomainVar[tasks.length];
@@ -346,6 +345,7 @@ public final class VariableUtils {
     //*****************************************************************//
     //*******************  Branching Utils ***************************//
     //***************************************************************//
+   
     public static IntDomainVar[] getIntVars(Solver solver) {
         final int n = solver.getNbIntVars();
         final IntDomainVar[] vars = new IntDomainVar[n];
@@ -412,7 +412,7 @@ public final class VariableUtils {
     
 
     public static boolean checkConstant(IntegerVariable v, int value) {
-        return v.isConstant() && v.getLowB() == value;
+        return v.isConstant() && v.canBeEqualTo(value);
     }
 
 }

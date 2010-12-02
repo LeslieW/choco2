@@ -20,7 +20,7 @@
  *     Copyright (C) F. Laburthe,                 *
  *                   N. Jussien    1999-2010      *
  **************************************************/
-package samples.tutorials.packing;
+package samples.tutorials.packing.parser;
 
 import org.jfree.chart.JFreeChart;
 

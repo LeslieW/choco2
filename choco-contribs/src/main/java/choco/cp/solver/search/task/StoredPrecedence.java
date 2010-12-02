@@ -52,7 +52,7 @@ public final class StoredPrecedence implements IPretty, ITemporalRelation<TaskVa
 
 
 	@Override
-	public boolean isBackward() {
+	public boolean canBeBackward() {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -64,7 +64,7 @@ public final class StoredPrecedence implements IPretty, ITemporalRelation<TaskVa
 	}
 
 	@Override
-	public boolean isForward() {
+	public boolean canBeForward() {
 		// TODO Auto-generated method stub
 		return false;
 	}

@@ -55,7 +55,12 @@ public class FakeResource<E extends ITask> implements IResource<E> {
 	public Iterator<E> getTaskIterator() {
 		return IteratorUtils.iterator(tasks);
 	}
-
+	
+	@Override
+	public Iterator<IRTask> getRTaskIterator() {
+		return asRTaskList().iterator();
+	}
+	
 	@Override
 	public int getNbOptionalTasks() {
 		return 0;

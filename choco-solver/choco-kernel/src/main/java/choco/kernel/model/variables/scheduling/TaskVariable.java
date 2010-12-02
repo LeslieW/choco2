@@ -117,7 +117,7 @@ public class TaskVariable extends MultipleVariables implements ITaskVariable<Int
 		b.append("|{").append(start().getLowB());
 		b.append("|").append(StringUtils.format(duration()));
 		b.append("|").append(end().getUppB());
-		b.append("}}];");
+		b.append("}}\"];");
 		return b.toString();
 	}
 

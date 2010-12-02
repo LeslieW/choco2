@@ -42,13 +42,13 @@ public final class ProfileSelector implements VarValPairSelector {
 
 	private final OrderingValSelector precSelector;
 
-	private final IPrecedenceStore precStore;
+	private final ITemporalStore precStore;
 
 	private final ProbabilisticProfile profiles;
 
 	public final IResource<?>[] rscL;
 
-	public ProfileSelector(Solver solver, IResource<?>[] resources, IPrecedenceStore precStore, OrderingValSelector precSelector) {
+	public ProfileSelector(Solver solver, IResource<?>[] resources, ITemporalStore precStore, OrderingValSelector precSelector) {
 		super();
 		this.precStore = precStore;
 		this.precSelector = precSelector;
@@ -57,7 +57,7 @@ public final class ProfileSelector implements VarValPairSelector {
 		rscL = resources;
 	}
 	
-	public ProfileSelector(Solver solver, IPrecedenceStore precStore, OrderingValSelector precSelector) {
+	public ProfileSelector(Solver solver, ITemporalStore precStore, OrderingValSelector precSelector) {
 		super();
 		this.precStore = precStore;
 		this.precSelector = precSelector;
@@ -96,7 +96,7 @@ public final class ProfileSelector implements VarValPairSelector {
 				}
 			}
 			if(st1 != null) {
-				final ITemporalSRelation prec = precStore.getStoredPrecedence(st1, st2);
+				final ITemporalSRelation prec = precStore.getTemporalRelation(st1, st2);
 				return new IntVarValPair(prec.getDirection(), precSelector.getBestVal(prec));
 			}
 		}

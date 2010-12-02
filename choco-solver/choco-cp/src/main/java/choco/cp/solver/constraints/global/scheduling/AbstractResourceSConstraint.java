@@ -310,6 +310,11 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 	public final Iterator<TaskVar> getTaskIterator() {
 		return IteratorUtils.iterator(taskvars);
 	}
+	
+	@Override
+	public final Iterator<IRTask> getRTaskIterator() {
+		return IteratorUtils.iterator(rtasks);
+	}
 
 	private final class RMakespan implements IRMakespan {
 

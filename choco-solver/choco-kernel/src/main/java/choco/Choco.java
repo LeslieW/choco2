@@ -756,11 +756,29 @@ public class Choco {
 			throw new ModelException("starts and durations are required and should have equal lengths.");
 		}
 	}
+	
 	/**
 	 * Create an array of task variables.
 	 * @param name name of the variable
-	 * @param binf release times (earliest starting time)
-	 * @param bsup due dates (latest completion time)
+	 * @param binf release times (earliest starting times)
+	 * @param bsup due dates (latest completion times)
+	 * @param durations duration variables
+	 * @param options options are also added to the start and end variables.
+	 * @return a task variable
+	 */
+	public static TaskVariable[] makeTaskVarArray(final String name, final int binf[],final int bsup[],final IntegerVariable[] durations, String... options) {
+		final int n = durations.length;
+		TaskVariable[] vars = new TaskVariable[n];
+		for (int i = 0; i < n; i++) {
+			vars[i] = makeTaskVar(name+"_"+i, binf[i], bsup[i], durations[i], options);
+		}
+		return vars;
+	}
+	/**
+	 * Create an array of task variables.
+	 * @param name name of the variable
+	 * @param binf common release time (earliest starting time)
+	 * @param bsup common due date (latest completion time)
 	 * @param durations duration variables
 	 * @param options options are also added to the start and end variables.
 	 * @return a task variable
@@ -2909,7 +2927,7 @@ public class Choco {
 		int idx = 0;
 		for (TaskVariable t1 : tasks1) {
 			for (TaskVariable t2 : tasks2) {
-				decomp[idx++] = precedenceDisjoint(t1, t2, VariableUtils.createDirectionVar(t1, t2));
+				decomp[idx++] = precedenceDisjoint(t1, t2, VariableUtils.createDirVariable(t1, t2));
 			}	
 		}
 		return decomp;		

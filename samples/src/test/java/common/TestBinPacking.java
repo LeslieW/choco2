@@ -4,7 +4,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import samples.tutorials.packing.BinPackingCmd;
+import samples.tutorials.packing.parser.BinPackingCmd;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.tools.ArrayUtils;

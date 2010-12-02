@@ -13,7 +13,7 @@ public final class DisjointModelDetector extends AbstractTemporalDetector {
 
 	@Override
 	protected void apply(TemporalConstraint ct) {
-		if( ! ct.isDirConstant() ) {
+		if( ! ct.IsFixed() ) {
 			final AddEdgeStatus status = disjMod.safeAddEdge(ct);
 			if(status.deleteC) delete(ct);
 			if(status.repV != null) replaceBy(ct.getDirection(), status.repV);

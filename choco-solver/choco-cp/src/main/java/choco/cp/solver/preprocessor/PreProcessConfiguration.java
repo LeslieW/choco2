@@ -23,6 +23,7 @@
 package choco.cp.solver.preprocessor;
 
 import choco.kernel.solver.Configuration;
+import choco.kernel.solver.Solver;
 
 /**
  * User : cprudhom<br/>
@@ -130,7 +131,15 @@ public class PreProcessConfiguration extends Configuration {
 		return new String(b);
 	}
 
-	public static void cancelPreProcess(Configuration conf) {
+	public static void cancelPreProcess(Solver solver) {
+		cancelPreProcess(solver.getConfiguration());
+	}
+	
+	public static void keepSchedulingPreProcess(Solver solver) {
+		keepSchedulingPreProcess(solver.getConfiguration());
+	}	
+	
+	public static void keepSchedulingPreProcess(Configuration conf) {
 		conf.putFalse(RESTART_MODE);
 		conf.putFalse(INT_EQUALITY_DETECTION);
 		conf.putFalse(TASK_EQUALITY_DETECTION);
@@ -138,6 +147,10 @@ public class PreProcessConfiguration extends Configuration {
 		conf.putFalse(EXPRESSION_DETECTION);
 		conf.putFalse(CLIQUES_DETECTION);
 		conf.putFalse(SYMETRIE_BREAKING_DETECTION);
+	}
+	
+	public static void cancelPreProcess(Configuration conf) {
+		keepSchedulingPreProcess(conf);
 		conf.putFalse(DISJUNCTIVE_MODEL_DETECTION);
 		conf.putFalse(DMD_USE_TIME_WINDOWS);
 		conf.putFalse(DMD_REMOVE_DISJUNCTIVE);

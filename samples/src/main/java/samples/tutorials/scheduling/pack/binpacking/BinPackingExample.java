@@ -87,23 +87,6 @@ public class BinPackingExample {
 
 
 
-	protected static CPpack run(final int[] s,final int c,final int opt,final int tl) {
-		CPpack example=new CPpack();
-        example.setUp(new Object[]{s,c,opt});
-		example.setTimelimit(tl);
-		example.cpPack();
-		return example;
-	}
-
-	public static void main(String[] args) {
-		final int tl=args.length>0 ? Integer.parseInt(args[0]) : -1 ;
-		run(N1C2W1_C,CAPACITY,OPT_C,tl);
-		run(N1C1W1_N,CAPACITY_N,OPT_N,tl);
-		run(N2C2W1_H,CAPACITY,OPT_H,tl);
-		run(N2C2W2_0,CAPACITY,OPT_0,tl);
-		run(N2C2W1_S,CAPACITY,OPT_S,tl);
-	}
-
 
 }
 

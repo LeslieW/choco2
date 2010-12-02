@@ -23,16 +23,24 @@ import choco.kernel.model.ModelException;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.Configuration;
 import choco.kernel.solver.search.limit.Limit;
+import choco.visu.components.chart.ChocoChartFactory;
+import choco.visu.components.chart.renderer.MyXYBarRenderer.ResourceRenderer;
 
 public class OpenShopScheduling extends PatternExample {
 
+	public final static int[][] GP03_01 = {
+		{661, 168, 171},
+		{6, 489, 505},
+		{333, 343, 324}
+	};
+
 	private int[][] durations;
-	
+
 	/**
 	 * range from 0 to 3
 	 */
 	public int branching = 3;
-	
+
 
 	public final void setBranching(int branching) {
 		this.branching = branching;
@@ -82,7 +90,11 @@ public class OpenShopScheduling extends PatternExample {
 
 	@Override
 	public void prettyOut() {
-		LOGGER.log(Level.INFO, "makespan: {0}", solver.getObjectiveValue());
+		if(LOGGER.isLoggable(Level.INFO) && solver.existsSolution()) {
+				LOGGER.log(Level.INFO, "makespan: {0}", solver.getObjectiveValue());
+				final String title = "Disjunctive Constraints Visualization";
+				ChocoChartFactory.createAndShowGUI(title, ChocoChartFactory.createUnaryHChart(title, solver));
+		}
 	}
 
 	@Override
@@ -91,15 +103,16 @@ public class OpenShopScheduling extends PatternExample {
 		solver.launch();
 	}
 
+	@Override
+	public void execute() {
+		this.execute(GP03_01);
+	}
+
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		new OpenShopScheduling().execute( new int[][]{
-			{661, 168, 171},
-			{6, 489, 505},
-			{333, 343, 324}
-		});
+		new OpenShopScheduling().execute();
 
 	}
 

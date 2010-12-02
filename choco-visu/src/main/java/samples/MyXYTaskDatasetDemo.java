@@ -33,7 +33,7 @@ import choco.visu.components.chart.dataset.MyXYTaskDataset;
  * of tasks.  This is similar to the CategoryPlot-based Gantt chart, but will
  * permit combining the plot with a time series chart.
  */
-public class MyXYTaskDatasetDemo extends ApplicationFrame {
+public final class MyXYTaskDatasetDemo extends ApplicationFrame {
 
 	private static final long serialVersionUID = 1L;
 

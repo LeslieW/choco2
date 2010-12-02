@@ -441,7 +441,7 @@ public class CPSolver implements Solver {
 		return mapvariables.containsKey(v.getIndex());
 	}
 
-	public String getSummary() {
+	public String summaryToString() {
 		StringBuilder buffer = new StringBuilder(40);
 		buffer.append("Pb[");
 		buffer.append(getNbIntVars() + getNbRealVars() + getNbSetVars())
@@ -456,7 +456,7 @@ public class CPSolver implements Solver {
 	}
 
 	public String pretty() {
-		StringBuffer buf = new StringBuffer(getSummary());
+		StringBuffer buf = new StringBuffer(summaryToString());
 		buf.append('\n');
 		buf.append(this.varsToString());
 		buf.append(this.constraintsToString());
@@ -497,6 +497,11 @@ public class CPSolver implements Solver {
 		}
 		it.dispose();
 		return new String(buf);
+	}
+	
+	@Override
+	public String toString() {
+	return summaryToString();
 	}
 
 	public void read(Model m) {
@@ -3235,7 +3240,7 @@ public class CPSolver implements Solver {
 
 	public SConstraint preceding(IntDomainVar direction, TaskVar t1, int k1, TaskVar t2, int k2) {
 		if( direction == null) {
-			direction = VariableUtils.createDirectionVar(this, t1, t2);
+			direction = VariableUtils.createDirVar(this, t1, t2);
 		}else if( ! direction.hasBooleanDomain()) {
 			throw new SolverException("The direction variable "+direction.pretty()+"is not a boolean variable for the precedence ("+t1+ ',' +t2+ ')');
 		}

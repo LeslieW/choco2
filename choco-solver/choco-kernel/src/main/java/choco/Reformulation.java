@@ -112,7 +112,7 @@ public class Reformulation {
 		int idx = 0;
 		for (int i = 0; i < n; i++) {
 			for (int j = i+1; j < n; j++) {
-				cstr[idx++] = Choco.precedenceDisjoint(clique[i], clique[j], VariableUtils.createDirectionVar(clique[i], clique[j], boolvarOptions));
+				cstr[idx++] = Choco.precedenceDisjoint(clique[i], clique[j], VariableUtils.createDirVariable(clique[i], clique[j], boolvarOptions));
 			}
 		}
 		return cstr;

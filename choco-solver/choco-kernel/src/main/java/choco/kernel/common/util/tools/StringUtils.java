@@ -341,17 +341,6 @@ public class StringUtils {
 		return new String(b);
 	}
 	
-	public static String toDotty(Iterator<MultipleVariables> iter) {
-		StringBuilder b = new StringBuilder();
-		while(iter.hasNext()) {
-			final MultipleVariables mv = iter.next();
-			if (mv instanceof TaskVariable) {
-				TaskVariable tv = (TaskVariable) mv;
-				b.append(tv.toDotty()).append("\n");
-			}
-		}
-		return b.toString();
-	}
 	/**
 	 * convert a task into .dot format.
 	 * @param label  information appended to the default label
@@ -392,19 +381,7 @@ public class StringUtils {
 	}
 
 
-	private static String getDotBase(ITask t1, ITask t2) {
-		return t1.getID()+" -> "+t2.getID();
-	}
 
-
-	public static String getDotArc(ITask t1, ITask t2) {
-		return getDotBase(t1, t2)+ ';';
-	}
-
-
-	public static String getDotEdge(ITask t1, ITask t2) {
-		return getDotBase(t1, t2) + "[arrowhead=none, style=dotted];";
-	}
 	
 	public static String dirRandomName(String n1, String n2){
 		return randomName()+"-dir-" + n1 + "-" + n2 ;
