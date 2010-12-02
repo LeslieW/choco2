@@ -1,29 +1,50 @@
 package choco.visu.components.chart;
 
-import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.global.pack.PackSConstraint;
-import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.constraints.ConstraintType;
-import choco.kernel.model.constraints.pack.PackModel;
-import choco.kernel.solver.Solver;
-import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.constraints.global.scheduling.ICumulativeResource;
-import choco.kernel.solver.search.limit.Limit;
-import choco.kernel.solver.variables.scheduling.TaskVar;
-import static choco.visu.components.chart.ChocoDatasetFactory.*;
-import choco.visu.components.chart.axis.Log2Axis;
-import choco.visu.components.chart.dataset.MyXYTaskDataset;
-import choco.visu.components.chart.labels.CumulTaskToolTipGenerator;
-import choco.visu.components.chart.labels.TaskLabelGenerator;
-import choco.visu.components.chart.labels.TaskToolTipGenerator;
-import choco.visu.components.chart.renderer.MyXYBarRenderer;
-import choco.visu.components.chart.renderer.MyXYBarRenderer.ResourceRenderer;
+import static choco.visu.components.chart.ChocoDatasetFactory.createPackDataset;
+import static choco.visu.components.chart.ChocoDatasetFactory.createSolutionCategoryDataset;
+import static choco.visu.components.chart.ChocoDatasetFactory.createTaskCollection;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.LayoutManager;
+import java.text.DateFormat;
+import java.text.FieldPosition;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Iterator;
+
+import javax.swing.JFrame;
+import javax.swing.UIManager;
+
 import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.StandardChartTheme;
-import org.jfree.chart.axis.*;
-import org.jfree.chart.labels.*;
-import org.jfree.chart.plot.*;
+import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.CategoryLabelPositions;
+import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.axis.LogAxis;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.SymbolAxis;
+import org.jfree.chart.labels.ItemLabelAnchor;
+import org.jfree.chart.labels.ItemLabelPosition;
+import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
+import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
+import org.jfree.chart.labels.StandardXYItemLabelGenerator;
+import org.jfree.chart.labels.StandardXYToolTipGenerator;
+import org.jfree.chart.labels.XYToolTipGenerator;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.CombinedDomainCategoryPlot;
+import org.jfree.chart.plot.CombinedRangeCategoryPlot;
+import org.jfree.chart.plot.Marker;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.ValueMarker;
+import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.StackedBarRenderer3D;
 import org.jfree.chart.renderer.xy.DeviationRenderer;
@@ -34,24 +55,42 @@ import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.gantt.TaskSeriesCollection;
 import org.jfree.data.xy.TableXYDataset;
 import org.jfree.data.xy.YIntervalSeriesCollection;
+import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.Layer;
 import org.jfree.ui.LengthAdjustmentType;
 import org.jfree.ui.RectangleInsets;
+import org.jfree.ui.RefineryUtilities;
 import org.jfree.ui.TextAnchor;
 
-import java.awt.*;
-import java.text.DateFormat;
-import java.text.FieldPosition;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Iterator;
+import choco.cp.solver.CPSolver;
+import choco.cp.solver.constraints.global.pack.IPackSConstraint;
+import choco.cp.solver.constraints.global.pack.PackSConstraint;
+import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.constraints.ConstraintType;
+import choco.kernel.model.constraints.pack.PackModel;
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.constraints.global.scheduling.ICumulativeResource;
+import choco.kernel.solver.constraints.global.scheduling.IResource;
+import choco.kernel.solver.search.limit.Limit;
+import choco.kernel.solver.variables.scheduling.TaskVar;
+import choco.visu.components.chart.axis.Log2Axis;
+import choco.visu.components.chart.dataset.MyXYTaskDataset;
+import choco.visu.components.chart.labels.CumulTaskToolTipGenerator;
+import choco.visu.components.chart.labels.TaskLabelGenerator;
+import choco.visu.components.chart.labels.TaskToolTipGenerator;
+import choco.visu.components.chart.renderer.MyXYBarRenderer;
+import choco.visu.components.chart.renderer.MyXYBarRenderer.ResourceRenderer;
+import choco.visu.components.chart.ui.ChocoChartPanel;
 
 public final class ChocoChartFactory {
 
 
 	public final static StandardChartTheme CHOCO_THEME= new StandardChartTheme("Choco");
-	
+
+	/** Optionally set the look and feel. */
+	public static boolean useSystemLookAndFeel = true;
+
 	static {
 		CHOCO_THEME.setPlotBackgroundPaint(Color.white);
 		CHOCO_THEME.setDomainGridlinePaint(Color.black);
@@ -63,7 +102,7 @@ public final class ChocoChartFactory {
 		setColorTerminal();
 		//setMonochromeTerminal();
 		//setJFreeColorTerminal();
-		
+
 	}
 
 	public final static DateFormat INTEGER_DATE_FORMAT = new IntegerDateFormat();
@@ -77,7 +116,7 @@ public final class ChocoChartFactory {
 	public static void setColorTerminal() {
 		CHOCO_THEME.setDrawingSupplier( ChocoColor.createDefaultDrawingSupplier());
 	}
-	
+
 	public static void setJFreeColorTerminal() {
 		CHOCO_THEME.setDrawingSupplier( ChocoColor.createJFreeDrawingSupplier());
 	}
@@ -100,6 +139,10 @@ public final class ChocoChartFactory {
 		return lbMarker;
 	}
 
+
+	public final static void run() {
+
+	}
 	//*****************************************************************//
 	//*******************  Pack Visualization  ***********************//
 	//***************************************************************//
@@ -142,10 +185,9 @@ public final class ChocoChartFactory {
 		return createPackChart(title, datasets, null, false);
 	}
 
-	public static JFreeChart createPackChart(String title, PackSConstraint pack) {
+	public static JFreeChart createPackChart(String title, IPackSConstraint pack) {
 		return createPackChart(title, createPackDataset(pack.getNbBins(), pack.getBins(), pack.getSizes()), -1, false);
 	}
-
 
 
 	public static JFreeChart createPackChart(String title, CategoryDataset dataset, int capacity, boolean legend) {
@@ -255,22 +297,38 @@ public final class ChocoChartFactory {
 		return rangeAxis;		
 	}
 
-	public static JFreeChart createUnaryChart(String title, Solver scheduler, ResourceRenderer type) {
-		final TaskSeriesCollection coll = createUnaryTaskCollection(scheduler);
+
+	public static JFreeChart createUnaryHChart(String title, IResource<TaskVar> rsc) {
+		return createUnaryHChart(title, createTaskCollection(rsc), ResourceRenderer.COLUMN);
+	}
+	
+	public static JFreeChart createUnaryHChart(String title, Solver scheduler) {
+		return createUnaryHChart(title, createTaskCollection(scheduler, scheduler.getModel().getConstraintByType(ConstraintType.DISJUNCTIVE)), ResourceRenderer.COORD);
+	}
+
+	public static JFreeChart createUnaryHChart(String title, Solver scheduler, Constraint... resources) {
+		return createUnaryHChart(title, createTaskCollection(scheduler, Arrays.asList(resources).iterator()), ResourceRenderer.COLUMN);
+	}
+
+	public static JFreeChart createUnaryVChart(String title, Solver scheduler) {
+		return createUnaryVChart(title, createTaskCollection(scheduler, scheduler.getModel().getConstraintByType(ConstraintType.DISJUNCTIVE)), ResourceRenderer.COORD);
+	}
+
+
+	public static JFreeChart createUnaryHChart(String title, TaskSeriesCollection coll, ResourceRenderer renderer) {
 		final MyXYTaskDataset dataset = new MyXYTaskDataset(coll);
 		dataset.setTransposed(true);
 		dataset.setInverted(false);
-		return createUnaryChart(title, dataset, false, type, null);
-
+		return createUnaryChart(title, dataset, false, renderer, null);
 	}
 
-	public static JFreeChart createShopChart(String title, Solver scheduler, Constraint[] resources) {
-		final TaskSeriesCollection coll = createTaskCollection(scheduler, resources);
+	public static JFreeChart createUnaryVChart(String title, TaskSeriesCollection coll, ResourceRenderer renderer) {
 		final MyXYTaskDataset dataset = new MyXYTaskDataset(coll);
-		dataset.setTransposed(true);
+		dataset.setTransposed(false);
 		dataset.setInverted(false);
-		return createUnaryChart(title, dataset, false, ResourceRenderer.COLUMN , null);
+		return createUnaryChart(title, dataset, false, renderer, null);
 	}
+
 
 
 	public static JFreeChart createUnaryChart(String title,MyXYTaskDataset dataset,boolean legend, ResourceRenderer type, String[] rscAxisLabels) {
@@ -451,8 +509,57 @@ public final class ChocoChartFactory {
 		return chart;
 	}
 
-}
+	
+	//*****************************************************************//
+	//*******************  Util **************************************//
+	//***************************************************************//
 
+	private final static int DEFAULT_WIDTH = 800;
+	
+	private final static int DEFAULT_HEIGHT = 600;
+	
+	public static void createAndShowGUI(final String title,final int width,final int height, final LayoutManager layout, final Component... components) {
+		//Schedule a job for the event dispatch thread:
+		//creating and showing this application's GUI.
+		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				if (useSystemLookAndFeel) {
+					try {
+						UIManager.setLookAndFeel(
+								UIManager.getSystemLookAndFeelClassName());
+					} catch (Exception e) {}
+				}
+				final ApplicationFrame frame = new ApplicationFrame(title);
+				if(layout!=null) {frame.setLayout(layout);}
+				final Dimension dim = new   Dimension(width, height);
+				for (Component c : components) {
+					c.setPreferredSize(dim);
+					frame.add(c);
+				}
+				frame.pack();
+				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				RefineryUtilities.centerFrameOnScreen(frame);
+				frame.setVisible(true);
+			}});
+	}
+
+	public static void createAndShowGUI(String title,int width,int height, LayoutManager layout, JFreeChart...   charts) {
+		Component[] components = new Component[charts.length];
+		for (int i = 0; i < charts.length; i++) {
+			components[i] = new ChartPanel(charts[i]);
+		}
+		createAndShowGUI(title, width, height, layout, components);
+	}
+
+	
+	public static void createAndShowGUI(String title, JFreeChart jfreechart) {
+		createAndShowGUI(title, DEFAULT_WIDTH, DEFAULT_HEIGHT, null, jfreechart);
+	}
+	
+	public static void createAndShowGUI(String title, Solver solver) {
+		createAndShowGUI(title, DEFAULT_WIDTH, DEFAULT_HEIGHT, null, new ChocoChartPanel(solver));
+	}
+}
 
 final class IntegerDateFormat extends SimpleDateFormat {
 

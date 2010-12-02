@@ -1,4 +1,4 @@
-package samples.tutorials.packing;
+package samples.tutorials.packing.parser;
 
 import gnu.trove.TIntArrayList;
 import parser.instance.AbstractHeuristics;

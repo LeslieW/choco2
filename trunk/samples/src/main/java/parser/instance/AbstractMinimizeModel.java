@@ -8,12 +8,8 @@ import java.io.IOException;
 import java.util.logging.Level;
 
 import org.apache.commons.io.FilenameUtils;
-import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.ui.ApplicationFrame;
-import org.jfree.ui.RefineryUtilities;
 
-import parser.instance.IHeuristicAlgorithm;
 import parser.instances.AbstractInstanceModel;
 import parser.instances.BasicSettings;
 import parser.instances.InstanceFileParser;
@@ -22,6 +18,7 @@ import choco.cp.solver.CPSolver;
 import choco.kernel.solver.Configuration;
 import choco.kernel.solver.ResolutionPolicy;
 import choco.kernel.solver.Solver;
+import choco.visu.components.chart.ChocoChartFactory;
 import choco.visu.components.chart.PdfExport;
 
 /**
@@ -168,15 +165,7 @@ public abstract class AbstractMinimizeModel extends AbstractInstanceModel {
 						}
 					}
 				} else {
-					//visualize chart
-					// mettre dans un autre thread ?
-					final ApplicationFrame visu = new ApplicationFrame(getClass().getSimpleName());
-					final ChartPanel chartPanel = new ChartPanel(chart);
-					chartPanel.setPreferredSize(new java.awt.Dimension(800, 500));
-					visu.setContentPane(chartPanel);
-					visu.pack();
-					RefineryUtilities.centerFrameOnScreen(visu);
-					visu.setVisible(true);
+					ChocoChartFactory.createAndShowGUI(getClass().getSimpleName(), chart);
 					LOGGER.config("chart...[visu][OK]");
 				}
 			}	

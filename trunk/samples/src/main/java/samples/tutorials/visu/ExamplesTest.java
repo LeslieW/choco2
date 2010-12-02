@@ -45,11 +45,11 @@ import static samples.tutorials.seminar.ExDonaldGeraldRobert.*;
  * @author Charles Prud'homme
  * @since 8 nov. 2010
  */
-public class ExamplesTest {
+public final class ExamplesTest {
 
     protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
-    public void donaldGeraldRobert() {
+    public static void donaldGeraldRobert() {
         Model m = modelIt2();
         Solver s = new CPSolver();
         s.read(m);
@@ -73,7 +73,7 @@ public class ExamplesTest {
         v.kill();
     }
 
-    public void testPicross() {
+    public static void testPicross() {
         Solver s = new CPSolver();
 
         int[][] cols = new int[][]{
@@ -141,8 +141,8 @@ public class ExamplesTest {
     }
 
     public static void main(String[] args) {
-        new ExamplesTest().donaldGeraldRobert();
-        new ExamplesTest().testPicross();
+        donaldGeraldRobert();
+        testPicross();
     }
 
 }

@@ -1,5 +1,5 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * 
- *          _       _                            *
+s *          _       _                            *
  *         |  °(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
  *                                               *
@@ -29,12 +29,11 @@ import java.util.HashSet;
 
 import choco.cp.solver.constraints.global.scheduling.precedence.ITemporalSRelation;
 import choco.kernel.common.util.tools.StringUtils;
-import choco.kernel.model.constraints.ITemporalRelation;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.ITask;
 
-public class PrecedenceStore implements IPrecedenceStore {
+public class PrecedenceStore implements ITemporalStore {
 
 	private final static ReifiedChecker CHECK = new ReifiedChecker();
 
@@ -54,7 +53,7 @@ public class PrecedenceStore implements IPrecedenceStore {
 	}
 
 	@Override
-	public ITemporalSRelation getStoredPrecedence(ITask t1, ITask t2) {
+	public ITemporalSRelation getTemporalRelation(ITask t1, ITask t2) {
 		return precMap.get(getTaskPairKey(t1, t2));
 	}
 
@@ -72,7 +71,7 @@ public class PrecedenceStore implements IPrecedenceStore {
 	
 	@Override
 	public boolean isReified(ITask t1, ITask t2) {
-		final ITemporalSRelation prec = getStoredPrecedence(t1, t2);
+		final ITemporalSRelation prec = getTemporalRelation(t1, t2);
 		if(prec == null) {return false;}
 		return ! prec.getDirection().isInstantiated();
 	}
@@ -136,22 +135,22 @@ public class PrecedenceStore implements IPrecedenceStore {
 		}
 		
 		private void writeNode(ITask t) {
-			dotGraph.append(t.toDotty()).append("\n");
+			//dotGraph.append(t.toDotty()).append("\n");
 		}
 
 		private void writeArc(ITask t1, ITask t2) {
-			dotGraph.append(StringUtils.getDotArc(t2, t1));
+			//dotGraph.append(StringUtils.getDotArc(t2, t1));
 		}
 		
 		
 		@Override
 		public boolean execute(ITemporalSRelation arg0) {
-			if( nodeM.add(arg0.getOrigin()) ) writeNode(arg0.getOrigin());
-			if( nodeM.add(arg0.getDestination()) ) writeNode(arg0.getDestination());
-			if(arg0.getDirection().isInstantiatedTo(0)) writeArc(arg0.getOrigin(), arg0.getDestination());
-			else if(arg0.getDirection().isInstantiatedTo(1)) writeArc(arg0.getDestination(), arg0.getOrigin());
-			else dotGraph.append(StringUtils.getDotEdge(arg0.getOrigin(), arg0.getDestination()));
-			dotGraph.append('\n');
+//			if( nodeM.add(arg0.getOrigin()) ) writeNode(arg0.getOrigin());
+//			if( nodeM.add(arg0.getDestination()) ) writeNode(arg0.getDestination());
+//			if(arg0.getDirection().isInstantiatedTo(0)) writeArc(arg0.getOrigin(), arg0.getDestination());
+//			else if(arg0.getDirection().isInstantiatedTo(1)) writeArc(arg0.getDestination(), arg0.getOrigin());
+//			else dotGraph.append(StringUtils.getDotEdge(arg0.getOrigin(), arg0.getDestination()));
+//			dotGraph.append('\n');
 			return true;
 		}
 

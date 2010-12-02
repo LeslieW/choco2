@@ -216,7 +216,7 @@ implements ITemporalRelation<TaskVar<?>, IntDomainVar> {
 
 	
 	@Override
-	public final boolean isBackward() {
+	public final boolean canBeBackward() {
 		return vars[BIDX].isInstantiatedTo(0);
 	}
 
@@ -226,7 +226,7 @@ implements ITemporalRelation<TaskVar<?>, IntDomainVar> {
 	}
 
 	@Override
-	public final boolean isForward() {
+	public final boolean canBeForward() {
 		return vars[BIDX].isInstantiatedTo(1);
 	}
 

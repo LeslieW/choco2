@@ -58,9 +58,8 @@ public interface IResource<T extends ITask> extends IResourceParameters {
 	 */
 	List<T> asTaskList();
 
-	/**
-	 * A view of the resource as an immutable list.
-	 */
+	Iterator<IRTask> getRTaskIterator();
+	
 	List<IRTask> asRTaskList();
 
 }

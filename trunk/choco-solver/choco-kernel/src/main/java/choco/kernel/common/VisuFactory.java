@@ -23,45 +23,49 @@
 package choco.kernel.common;
 
 
-import choco.kernel.common.logging.ChocoLogging;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import choco.kernel.common.logging.ChocoLogging;
 
-public final class VizFactory {
+
+public final class VisuFactory {
 
 	protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
 	/**
 	 * empty constructor
 	 */
-	private VizFactory() {}
-
-	//****************************************************************//
-	//********* Dotty *******************************************//
-	//****************************************************************//
-
-	private final static String DOT_HEADER="digraph g {\n\n";
+	private VisuFactory() {}
+	
+	//*****************************************************************//
+	//*******************  Dotty  ************************************//
+	//***************************************************************//
 
 	public static File toDotty(final String source) {
-		return toDotty(new DotString(source));
+		return toDotty(new IDotty() {
+			@Override
+			public String toDotty() {
+				return source;
+			}
+		}
+		);
 	}
 
 	public static File toDotty(final IDotty... sources) {
 		final File f = createTempFile("dotty", ".dot");
-		return toDotty(f,sources) ? f : null;
+		toDotty(f,sources);
+		return f;
 	}
 
-	public static boolean toDotty(File f,final IDotty... sources) {
-		if(sources!=null && sources.length>0) {
+	public static void toDotty(final File f, final IDotty... sources) {
+		if(f != null && sources!=null && sources.length>0) {
 			try {
 				final FileWriter fw=new FileWriter(f);
-				fw.write(DOT_HEADER);
+				fw.write("digraph g {\n\n");
 				for (IDotty s : sources) {
 					fw.write(s.toDotty());
 					fw.write('\n');
@@ -69,60 +73,54 @@ public final class VizFactory {
 				fw.write("\n}");
 				fw.close();
 				LOGGER.log(Level.CONFIG, "dotty...[dotExport:{0}][OK]",f);
-				return true;
-			} catch (IOException e) {
-				
-			}
+				return;
+			} catch (IOException e) {}
 		}
-		LOGGER.log(Level.CONFIG, "dotty...[dotExport:{0}][FAIL]",f);
-		return false;
+		LOGGER.log(Level.WARNING, "dotty...[dotExport:{0}][FAIL]",f);
 	}
-
-
-	//****************************************************************//
-	//********* Gnuplot display*******************************************//
-	//****************************************************************//
-
-	private static final String GPL_CMD="gnuplot -persist";
-
-	protected static File createFile(String prefix, String suffix, String contents) {
-		final File f=createTempFile(prefix,suffix);
-		try {
-			final FileWriter fw=new FileWriter(f);
-			fw.write(contents);
-			fw.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+	
+	public static void createAndShowGUI( final IDotty... sources) {
+		createAndShowDottyGUI( toDotty(sources));
+	}
+	public static void createAndShowDottyGUI(File f) {
+		launchCommand("dotty "+f.getAbsolutePath(), false); 
+	}
+	
+	
+	
+	//*****************************************************************//
+	//*******************  Gnuplot ***********************************//
+	//***************************************************************//
+	
+	private static void writeGnuplot(final File f, final String content) {
+		if(f != null && content!=null && ! content.isEmpty()) {
+			try {
+				final FileWriter fw=new FileWriter(f);
+				fw.write(content);
+				fw.close();
+				LOGGER.log(Level.CONFIG, "gnuplot...[gplExport:{0}][OK]",f);
+				return;
+			} catch (IOException e) {}
 		}
-		LOGGER.log(Level.INFO,"creation {0} [ok]", f);
-		return f;
+		LOGGER.log(Level.WARNING, "gnuplot...[gplExport:{0}][FAIL]",f);
 	}
-	/**
-	 * gnuplot should be in the PATH variable
-	 * @param curve
-	 */
-	public static void displayGnuplot(final String curve) {
-		displayGnuplot(createTempFile("gnuplot", ".gpl"));
+	
+	public static void createAndShowGnuplotGUI(final String curve) {
+		final File dat=createTempFile("gnuplot", ".dat");
+		writeGnuplot(dat, curve);
+		final File script= new File(dat.getAbsolutePath()+".gpl");
+		writeGnuplot(script, "plot "+dat.getAbsolutePath()+" with lines");
+		createAndShowGnuplotGUI(script);
 	}
-
-	/**
-	 * gnuplot should be in the PATH variable
-	 * @param curve
-	 */
-	public static void displayGnuplot(final File curve) {
-		final File script=createFile("gnuplot",".gpl","plot \'"+curve.getAbsolutePath()+"\' with lines");
-		execGnuplot(script);
+	
+	
+	public static void createAndShowGnuplotGUI(File script) {
+		launchCommand("gnuplot --persist "+script.getAbsolutePath(), false); 
 	}
-
-	public static void execGnuplot(final File script) {
-		exec(GPL_CMD, true, script);
-	}
-
+	
 	//****************************************************************//
-	//********* Utils *******************************************//
+	//********* Utils*******************************************//
 	//****************************************************************//
-
-
 
 
 
@@ -131,8 +129,7 @@ public final class VizFactory {
 		try {
 			f= File.createTempFile(name+"_",suffix);
 		} catch (IOException e) {
-			LOGGER.severe("can't create temporary file");
-			e.printStackTrace();
+			LOGGER.log(Level.WARNING,"tempFile...[create][FAIL]",e);
 		}
 		return f;
 	}
@@ -170,30 +167,12 @@ public final class VizFactory {
 				p.waitFor();//si l'application doit attendre a ce que ce process fini
 			}
 		}catch(Exception e) {
-			LOGGER.warning(MessageFormat.format("erreur d''execution {0}{1}", cmd, e.toString()));
+			LOGGER.log(Level.SEVERE, "exec...["+cmd+"][FAIL]", e);
 		}
 	}
 
-	public static void exec(final String cmd, final boolean waitFor,final File data) {
-		launchCommand(cmd+" "+data.getAbsolutePath(), waitFor);
-	}
 }
 
-class DotString implements IDotty {
 
-	public final String contents;
-
-	public DotString(String contents) {
-		super();
-		this.contents = contents;
-	}
-
-	@Override
-	public String toDotty() {
-		return contents;
-	}
-
-
-}
 
 

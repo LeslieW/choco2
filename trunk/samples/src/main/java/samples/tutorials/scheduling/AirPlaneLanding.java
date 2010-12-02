@@ -22,19 +22,33 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.tutorials.scheduling;
 
-import choco.Choco;
-import choco.Options;
+import static choco.Choco.constantArray;
+import static choco.Choco.disjunctive;
+import static choco.Choco.eq;
+import static choco.Choco.makeIntVar;
+import static choco.Choco.makeIntVarArray;
+import static choco.Choco.makeTaskVarArray;
+import static choco.Choco.minus;
+import static choco.Choco.scalar;
+import static choco.Options.V_BOUND;
+import static choco.Options.V_NO_DECISION;
+import static choco.Options.V_OBJECTIVE;
+
+import java.util.Arrays;
+import java.util.logging.Level;
+
+import samples.tutorials.PatternExample;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.search.BranchingFactory;
+import choco.cp.solver.preprocessor.PreProcessCPSolver;
+import choco.cp.solver.preprocessor.PreProcessConfiguration;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
+import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
-
-import java.util.Random;
-import java.util.logging.Logger;
-
-import static choco.Choco.*;
+import choco.visu.components.chart.ChocoChartFactory;
+import choco.visu.components.chart.renderer.MyXYBarRenderer.ResourceRenderer;
 
 /**
  *
@@ -47,120 +61,146 @@ import static choco.Choco.*;
  * @author Arnaud Malapert
  *
  */
-public class AirPlaneLanding {
+public class AirPlaneLanding extends PatternExample {
 
-    protected final static Logger LOGGER = ChocoLogging.getMainLogger();
+	//20 Tasks ; Horizon 12 hours : 12 x 4 = 48 (15mn)
+	private final static int[][] APL = {
+		{
+			0, 0, 2, 4, 8,
+			8, 12, 12, 12, 12, 
+			16, 18, 22, 24, 28,
+			32, 32, 35, 35, 40
+		},
+		{
+			16, 18, 14, 18, 21,
+			25, 26, 27, 29, 32,
+			34, 35, 35, 37, 38,
+			40, 40, 43, 46,
+			48, 46, 46, 48, 48
+		},
+		{ 
+			2, 3, 2, 1, 3, 
+			3, 2, 1, 3, 2,
+			1, 3, 2, 4, 2,
+			3, 2, 2, 1, 2
+		},
+		{
+			200, 400, 250, 125, 450,
+			500, 250, 150, 500, 220,
+			125, 400, 200, 800, 175,
+			400, 250, 175, 80, 250			
+		}
+	};
 
-	public final static Random RND=new Random(1);
+	//DATA
 
+	/** Each plane has an arrival time. */
+	private int[] arrivalTimes;
+
+	/** Each plane has a landing deadline.*/
+	private int[] deadlines;
+
+	/** Each plane has a landing duration*/
+	private int[] landingDurations;
+
+	/** Each plane has a number of passengers.*/
+	private int[] numberOfPassengers;
+
+	private int maxTardiness;
+	//vARIABLES
 
 	/**
 	 * Each plane is represented as a task. its starting time is its landing time and its duration its landing time.
-	 * the landing strip is represented as an unary resource (capacity 1)
 	 */
 	protected TaskVariable[] planes;
 
-	/** Each plane has a tardiness*/
+	/** Each plane has a tardiness (starting time - arrival time)*/
 	protected IntegerVariable[] tardiness;
 
 	/** the objective to minimize*/
-	protected IntegerVariable objective;
+	protected IntegerVariable weightedSumOfCompletionTimes;
 
-	/**
-	 * It represent the arrival time of each plane.
-	 */
-	protected final IntegerVariable[] arrivalTimes;
+	private boolean useDisjMod = true;
 
-	/** Each plane has a landing duration*/
-	protected final IntegerVariable[] landingTimes;
-
-	/** Each plane has a number of passengers.*/
-	protected final int[] numberOfPassengers;
-
-	/** The scheduling horizon. */
-	protected int horizon = 2000;
-
-	public CPModel model;
-
-	public CPSolver solver;
-
-	public AirPlaneLanding(int[] arrivalTimes,int[] landingTimes,int[] numberOfPassengers) {
-		super();
-		this.arrivalTimes= constantArray(arrivalTimes);
-		this.landingTimes= constantArray(landingTimes);
-		this.numberOfPassengers=numberOfPassengers;
-	}
-
-
-	public static int[] generateRandomBoundedArray(int n,int lb,int ub) {
-		final int[] tmp = new int[n];
-		final int m = ub-lb;
-		for (int i = 0; i < tmp.length; i++) {
-			tmp[i]=lb + RND.nextInt(m);
+	@Override
+	public void setUp(Object parameters) {
+		super.setUp(parameters);
+		if (parameters instanceof int[][]) {
+			int[][] params = (int[][]) parameters;
+			this.arrivalTimes= params[0];
+			this.deadlines = params[1];
+			this.landingDurations= params[2];
+			this.numberOfPassengers=params[3];
+			this.maxTardiness = 0;
+			for (int i = 0; i < arrivalTimes.length; i++) {
+				maxTardiness = Math.max( maxTardiness, deadlines[i] - landingDurations[i] - arrivalTimes[i]);
+			}
 		}
-		return tmp;
-	}
-	public static AirPlaneLanding generateInstance(int n,int maxArrivalTime, int minDuration, int maxDuration, int minPassengers, int maxPassengers) {
-		return new AirPlaneLanding(generateRandomBoundedArray(n, 0, maxArrivalTime),
-				generateRandomBoundedArray(n, minDuration, maxDuration),
-				generateRandomBoundedArray(n, minPassengers, maxPassengers));
 	}
 
-	public static AirPlaneLanding generateInstanceSmall(int n) {
-		return generateInstance(n, 200, 5, 20, 5, 20);
-	}
 
-	public static AirPlaneLanding generateInstanceMedium(int n) {
-		return generateInstance(n, 1000, 5, 100, 20, 80);
-	}
-
-	public static AirPlaneLanding generateInstanceLarge(int n) {
-		return generateInstance(n, 5000, 10, 200, 50, 250);
-	}
-
-	public  void createModel() {
-		model= new CPModel();
+	@Override
+	public  void buildModel() {
+		model = new CPModel();
 		//create Tasks
-		planes = Choco.makeTaskVarArray("plane", 0, horizon, landingTimes);
-		//create resource
-		model.addConstraint( Choco.disjunctive("landingStrip", planes));
-		//create Tardiness
-		tardiness = makeIntVarArray("tardiness", planes.length, 0, horizon, Options.V_BOUND, Options.V_NO_DECISION);
-		//create objective
+		planes = makeTaskVarArray("plane", arrivalTimes, deadlines, constantArray(landingDurations));
+		/* the landing strip is represented as an unary resource (capacity 1) */
+		model.addConstraint( disjunctive("LandS", planes));
+		// tardiness = start - arrivalTime;
+		tardiness = makeIntVarArray("tardiness", planes.length, 0, maxTardiness, V_BOUND, V_NO_DECISION);
 		for (int i = 0; i < planes.length; i++) {
-			// tardiness[i] = start[i] - arrival[i]
-			model.addConstraint(eq(tardiness[i], minus(planes[i].start(),arrivalTimes[i])));
-			//arrival time constraint
-			model.addConstraint(geq(planes[i].start(),arrivalTimes[i]));
-			planes[i].end().addOption(Options.V_NO_DECISION);
+			model.addConstraint( eq(tardiness[i], minus(planes[i].start(),arrivalTimes[i])));
 		}
-		objective = makeIntVar("objective",0, planes.length*horizon, Options.V_BOUND, Options.V_OBJECTIVE, Options.V_NO_DECISION);
-		model.addConstraint(eq(objective,scalar(numberOfPassengers, tardiness)));
-		//model.addConstraint(Scheduling.pert());
+		//create objective
+		weightedSumOfCompletionTimes = makeIntVar("objective",0, planes.length* maxTardiness * MathUtils.max(numberOfPassengers), V_BOUND, V_OBJECTIVE, V_NO_DECISION);
+		model.addConstraint(eq(weightedSumOfCompletionTimes,scalar(numberOfPassengers, tardiness)));
+	}
+
+
+	@Override
+	public void buildSolver() {
+		if(useDisjMod) {
+			solver = new PreProcessCPSolver();
+			PreProcessConfiguration.keepSchedulingPreProcess(solver);
 			
-	}
-
-
-
-	public  void createSolver() {
-		solver = new CPSolver();
-		solver.setHorizon(horizon);
+		} else {
+			solver = new CPSolver();
+		}
 		solver.read(model);
-		//LOGGER.info(model.pretty());
-		//LOGGER.info(solver.pretty());
-		//TODO add (find !) a good search strategy
-		solver.attachGoal(BranchingFactory.setTimes(solver));
-		solver.minimize(false);
-		solver.printRuntimeStatistics();
-        LOGGER.info(solver.pretty());
-
+		solver.setTimeLimit(2000);
+		
+		//solver.clearGoals();
 	}
-	public static void main(String[] args) {
-		int n = 5;
-		AirPlaneLanding apl = generateInstanceSmall(n);
-		apl.createModel();
-		apl.createSolver();
 
+
+	@Override
+	public void solve() {
+		LOGGER.info(solver.pretty());
+		ChocoLogging.setVerbosity(Verbosity.VERBOSE);
+		solver.minimize(false);
+	}
+
+	
+	@Override
+	public void execute() {
+		super.execute(APL);
+	}
+
+	@Override
+	public void prettyOut() {
+		if(LOGGER.isLoggable(Level.INFO)) {
+			LOGGER.info( (useDisjMod? "Disjunctive" : "Simple")+" Model: ");
+			if(solver.existsSolution()) {
+				LOGGER.info("cost: "+solver.getObjectiveValue()+"\n"+Arrays.toString(solver.getVar(planes)));
+				final String title = "Landing Strip Visualization";
+				ChocoChartFactory.createAndShowGUI(title, ChocoChartFactory.createUnaryVChart(title, solver));
+			}
+		}
+	}
+
+
+	public static void main(String[] args) {
+		(new AirPlaneLanding()).execute();
 	}
 }
 

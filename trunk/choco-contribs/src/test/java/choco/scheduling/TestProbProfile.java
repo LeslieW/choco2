@@ -14,7 +14,7 @@ import java.util.List;
 import org.junit.Test;
 
 import choco.cp.solver.search.task.ProbabilisticProfile;
-import choco.kernel.common.VizFactory;
+import choco.kernel.common.VisuFactory;
 import choco.kernel.solver.constraints.global.scheduling.FakeResource;
 import choco.kernel.solver.constraints.global.scheduling.ICumulativeResource;
 import choco.kernel.solver.constraints.global.scheduling.IResource;
@@ -136,7 +136,7 @@ public class TestProbProfile {
 
 	private void display() {
 		if(DISPLAY) {
-			VizFactory.displayGnuplot(new String(profile.draw()));
+			VisuFactory.createAndShowGnuplotGUI(new String(profile.draw()));
 		}
 	}
 
@@ -410,6 +410,11 @@ class SimpleResource implements ICumulativeResource<SimpleTask> {
 		return Collections.unmodifiableList(tasksL);
 	}
 
+	@Override
+	public Iterator<IRTask> getRTaskIterator() {
+		return asRTaskList().iterator();
+	}
+	
 	@Override
 	public IntDomainVar getCapacity() {
 		return null;

@@ -22,6 +22,16 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.pack;
 
+import static choco.Options.C_PACK_AR;
+import static choco.Options.C_PACK_DLB;
+import static choco.Options.C_PACK_FB;
+import static choco.Options.C_PACK_LBE;
+import gnu.trove.TIntArrayList;
+import gnu.trove.TIntProcedure;
+
+import java.util.Arrays;
+import java.util.List;
+
 import choco.kernel.common.opres.nosum.NoSumList;
 import choco.kernel.common.opres.pack.LowerBoundFactory;
 import choco.kernel.common.util.bitmask.BitMask;
@@ -35,13 +45,8 @@ import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.set.AbstractLargeSetIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetVar;
-import gnu.trove.TIntArrayList;
-import gnu.trove.TIntProcedure;
 
-import java.util.Arrays;
-import java.util.List;
-
-import static choco.Options.*;
+import com.sun.xml.internal.bind.v2.runtime.reflect.Lister.Pack;
 
 /**
  * <b>{@link Pack} which maintains a primal-dual packing model.</b><br>

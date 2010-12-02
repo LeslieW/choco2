@@ -12,7 +12,7 @@ public final class PrecFromDisjointModelDetector extends AbstractTemporalDetecto
 
 	@Override
 	protected void apply(TemporalConstraint ct) {
-		if(ct.isDirConstant()
+		if(ct.IsFixed()
 				&& disjMod.safeAddArc(ct) ) delete(ct);
 	}
 

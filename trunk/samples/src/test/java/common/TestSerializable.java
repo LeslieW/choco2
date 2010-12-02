@@ -22,17 +22,17 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package common;
 
-import choco.cp.model.CPModel;
-import choco.kernel.common.logging.ChocoLogging;
-import org.junit.Assert;
-import org.junit.Test;
-import samples.tutorials.continuous.CycloHexan;
-import samples.tutorials.scheduling.DisjunctiveWebEx;
-import samples.tutorials.trunk.Queen;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import samples.tutorials.continuous.CycloHexan;
+import samples.tutorials.trunk.Queen;
+import choco.cp.model.CPModel;
+import choco.kernel.common.logging.ChocoLogging;
 
 /**
  * User : cprudhom<br/>
@@ -75,33 +75,6 @@ public class TestSerializable {
         Assert.assertEquals(92, pb.solver.getSolutionCount());
     }
 
-
-    @Test
-    public void testDisjunctiveWebEx() throws IOException {
-        final DisjunctiveWebEx pb = new DisjunctiveWebEx();
-        pb.buildModel();
-        File file = null;
-        try {
-            file = CPModel.writeInFile((CPModel)pb.model);
-        } catch (IOException e) {
-            LOGGER.severe(e.getMessage());
-            Assert.fail("IOException");
-        }
-        pb.model = null;
-        Assert.assertNull(pb.model);
-        try {
-            pb.model = CPModel.readFromFile(file);
-        } catch (IOException e) {
-            LOGGER.severe(e.getMessage());
-            Assert.fail("IOException");
-        } catch (ClassNotFoundException e) {
-            LOGGER.severe(e.getMessage());
-            Assert.fail("ClassNotFoundException");
-        }
-        pb.buildSolver();
-        pb.solve();
-        Assert.assertEquals(9, pb.solver.getSolutionCount());
-    }
 
     @Test
     public void testCycloHexan() throws IOException {

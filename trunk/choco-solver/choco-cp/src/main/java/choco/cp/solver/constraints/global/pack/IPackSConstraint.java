@@ -25,6 +25,7 @@ package choco.cp.solver.constraints.global.pack;
 import choco.kernel.common.opres.nosum.NoSumList;
 import choco.kernel.memory.IStateIntVector;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**

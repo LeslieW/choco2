@@ -19,12 +19,15 @@ import org.jfree.data.xy.XYSeries;
 
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.pack.PackSConstraint;
+import choco.kernel.common.util.tools.ArrayUtils;
+import choco.kernel.common.util.tools.IteratorUtils;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintType;
 import choco.kernel.model.constraints.pack.PackModel;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.global.scheduling.ICumulativeResource;
 import choco.kernel.solver.constraints.global.scheduling.IResource;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
@@ -62,16 +65,15 @@ public final class ChocoDatasetFactory {
 	}
 
 	public static TaskSeries createTaskSeries(IResource<TaskVar> rsc) {
-		//FIXME handle alternative resource
-		TaskSeries s = new TaskSeries(rsc.getRscName());
+		final TaskSeries s = new TaskSeries(rsc.getRscName());
 		for (int i = 0; i < rsc.getNbTasks(); i++) {
-			//if( rsc.getRTask(i).isRegular()) {
+			if( rsc.getRTask(i).isRegular()) {
 				s.add(createTask(rsc.getTask(i)));
-			//}
+			}
 		}
 		return s;
 	}
-	
+
 	public static TaskSeriesCollection createTaskCollection(IResource<TaskVar>... resources) {
 		TaskSeriesCollection c = new TaskSeriesCollection();
 		for (IResource<TaskVar> rsc : resources) {
@@ -80,32 +82,23 @@ public final class ChocoDatasetFactory {
 		return c;
 	}
 
-	@SuppressWarnings("unchecked")
-	public static TaskSeriesCollection createTaskCollection(Solver s, Constraint[] resources) {
-		TaskSeriesCollection c = new TaskSeriesCollection();
-		for (Constraint rsc : resources) {
-			c.add(createTaskSeries((IResource<TaskVar>) s.getCstr(rsc)));
-		}
-		return c;
-	}
 
-	@SuppressWarnings("unchecked")
-	public static TaskSeriesCollection createUnaryTaskCollection(Solver s) {
+	public static TaskSeriesCollection createTaskCollection(Solver s, final Iterator<Constraint> iter) {
 		final TaskSeriesCollection coll = new TaskSeriesCollection();
-		final Iterator<Constraint> iter = s.getModel().getConstraintByType(ConstraintType.DISJUNCTIVE);
 		while(iter.hasNext()) {
-			coll.add(createTaskSeries((IResource<TaskVar>) s.getCstr(iter.next())));
+			final SConstraint<?> c = s.getCstr(iter.next());
+			if (c instanceof IResource<?>) {
+				coll.add(createTaskSeries((IResource<TaskVar>) c));
+			}
 		}
 		return coll;
 	}
-
-
 
 	protected static Integer[] createDates(ICumulativeResource<TaskVar> rsc) {
 		final Set<Integer> dateSet = new HashSet<Integer>();
 		Iterator<TaskVar> iter = rsc.getTaskIterator();
 		while(iter.hasNext()) {
-			TaskVar t = iter.next();
+			TaskVar<?> t = iter.next();
 			dateSet.add(t.start().getVal());
 			dateSet.add(t.end().getVal());
 		}
@@ -115,8 +108,6 @@ public final class ChocoDatasetFactory {
 	}
 
 	public static TimeTableXYDataset createCumulativeDataset(ICumulativeResource<TaskVar> rsc) {
-		//FIXME handle alternative resource
-		//create dates and time periods
 		Integer[] dates = createDates(rsc);
 		TimePeriod[] periods = new TimePeriod[dates.length-1];
 		for (int i = 0; i < periods.length; i++) {
@@ -124,12 +115,14 @@ public final class ChocoDatasetFactory {
 		}
 		final TimeTableXYDataset dataset = new TimeTableXYDataset();
 		for (int i = 0; i < rsc.getNbTasks(); i++) {
-			TaskVar t = rsc.getTask(i);
-			int b = Arrays.binarySearch(dates, t.start().getVal());
-			int e = Arrays.binarySearch(dates, t.end().getVal());
-			int h = rsc.getHeight(i).getVal();
-			for (int j = b; j < e; j++) {
-				dataset.add(periods[j], h, t.getName());
+			if(rsc.getRTask(i).isRegular()) {
+				TaskVar<?> t = rsc.getTask(i);
+				int b = Arrays.binarySearch(dates, t.start().getVal());
+				int e = Arrays.binarySearch(dates, t.end().getVal());
+				int h = rsc.getHeight(i).getVal();
+				for (int j = b; j < e; j++) {
+					dataset.add(periods[j], h, t.getName());
+				}
 			}
 		}
 		return dataset;

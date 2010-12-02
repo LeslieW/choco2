@@ -56,6 +56,8 @@ public class PreProcessCPSolver extends CPSolver {
 	 * Search component
 	 */
 	private final PPSearch ppsearch;
+	
+	private DisjunctiveModel disjMod;
 
 	/**
 	 * initial propagation time (to decide whether to perform or not
@@ -79,6 +81,9 @@ public class PreProcessCPSolver extends CPSolver {
 		//optionsSet.addAll(Arrays.asList(options));
 	}
 
+	public final DisjunctiveModel getDisjMod() {
+		return disjMod;
+	}
 
 	public PPModelToCPSolver getMod2Sol() {
 		return (PPModelToCPSolver) mod2sol;
@@ -134,7 +139,7 @@ public class PreProcessCPSolver extends CPSolver {
 		}
 
 		if (configuration.readBoolean(PreProcessConfiguration.DISJUNCTIVE_MODEL_DETECTION) ) {
-			DisjunctiveModel disjMod = new DisjunctiveModel(model);
+			disjMod = new DisjunctiveModel(model);
 			if (configuration.readBoolean(PreProcessConfiguration.DMD_USE_TIME_WINDOWS) ) {
 				ModelDetectorFactory.precFromTimeWindowDetector(model, disjMod).applyThenCommit();
 			}

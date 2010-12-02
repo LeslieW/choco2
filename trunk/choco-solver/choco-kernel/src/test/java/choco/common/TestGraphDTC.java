@@ -35,7 +35,7 @@ import java.util.Arrays;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import choco.kernel.common.VizFactory;
+import choco.kernel.common.VisuFactory;
 import choco.kernel.common.opres.graph.DagDTC;
 
 
@@ -128,7 +128,7 @@ public class TestGraphDTC {
 			step++;
 			}
 		}
-		VizFactory.toDotty(graph);
+		VisuFactory.toDotty(graph);
 		//remove
 		assertFalse("rm", graph.remove(0,3));
 		for (int i = states.length-1; i >=0; i--) {

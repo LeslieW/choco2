@@ -89,23 +89,10 @@ public class TemporalConstraint extends ComponentConstraint implements ITemporal
 	public final IntegerVariable getDirection() {
 		return (IntegerVariable) getVariable(4);
 	}
-
-	@Deprecated
-	public final boolean isDirConstant() {
-		return getDirection().isConstant();
-	}
 	
-	@Deprecated
-	public final int getDirVal() {
-		return getDirection().getLowB();
-	}
-
 	
-	/**
-	 * check before that isFixed() = true
-	 */
 	@Override
-	public final boolean isBackward() {
+	public final boolean canBeBackward() {
 		return getDirection().canBeEqualTo(0);
 	}
 
@@ -114,11 +101,8 @@ public class TemporalConstraint extends ComponentConstraint implements ITemporal
 		return getDirection().isConstant();
 	}
 
-	/**
-	 * check before that isFixed() = true
-	 */
 	@Override
-	public final boolean isForward() {
+	public final boolean canBeForward() {
 		return getDirection().canBeEqualTo(1);
 	}
 

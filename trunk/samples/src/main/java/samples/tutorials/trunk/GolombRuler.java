@@ -44,7 +44,7 @@ public class GolombRuler extends PatternExample {
     IntegerVariable[] ticks, diff;
 	public int m;
 	public int length;
-    private boolean alldiff = false;
+    private boolean useAllDiff = false;
     
     @Override
     public void setUp(Object paramaters) {
@@ -53,7 +53,7 @@ public class GolombRuler extends PatternExample {
             Object[] params = (Object[])paramaters;
             m = (Integer)params[0];
             length = (Integer)params[1];
-            alldiff = (Boolean)params[2];
+            useAllDiff = (Boolean)params[2];
         }
     }
 
@@ -64,7 +64,7 @@ public class GolombRuler extends PatternExample {
 		diff = makeIntVarArray("d", ((m)*(m-1))/2, 0,length);
 		breakSymmetries();
 		setAuxVarConstraints();
-		if(alldiff) {
+		if(useAllDiff) {
 			model.addConstraint(allDifferent(diff));
 		}else {
 			// d_ij != d_kl
@@ -123,12 +123,7 @@ public class GolombRuler extends PatternExample {
 	}
 
 	public static void main(String[] args) {
-//		final GolombRuler ruler = new GolombRuler();
-//		for (int i = 0; i < OPTIMAL_RULER.length - 2; i++) {
-//			ruler.execute(new Object[]{OPTIMAL_RULER[i][0], OPTIMAL_RULER[i][1], true});
-//		}
 		new GolombRuler().execute();
-		//new GolombRuler().execute(new Object[]{OPTIMAL_RULER[5][0], OPTIMAL_RULER[5][1], true});
 	}
 
 }

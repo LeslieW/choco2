@@ -58,7 +58,7 @@ public final class ProbabilisticProfile  {
 
 	private final MaximumDataStruct max = new MaximumDataStruct();
 
-	public IPrecedenceStore precStore;
+	public ITemporalStore precStore;
 
 	public int minimalSize = 1;
 

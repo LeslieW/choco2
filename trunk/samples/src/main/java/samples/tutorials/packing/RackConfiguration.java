@@ -23,27 +23,35 @@
 
 package samples.tutorials.packing;
 
-import static choco.Choco.constant;
+import static choco.Choco.constantArray;
+import static choco.Choco.eq;
+import static choco.Choco.geq;
 import static choco.Choco.leq;
 import static choco.Choco.leqCard;
+import static choco.Choco.makeIntVar;
 import static choco.Choco.makeIntVarArray;
 import static choco.Choco.makeSetVarArray;
 import static choco.Choco.nth;
 import static choco.Choco.pack;
+import static choco.Choco.sum;
+import static choco.Options.C_PACK_AR;
+import static choco.Options.V_BOUND;
+import static choco.Options.V_ENUM;
+import static choco.Options.V_NO_DECISION;
+import static choco.Options.V_OBJECTIVE;
+import static choco.visu.components.chart.ChocoChartFactory.createAndShowGUI;
+import static choco.visu.components.chart.ChocoChartFactory.createPackChart;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.logging.Logger;
+import java.util.logging.Level;
 
-import choco.Options;
+import samples.tutorials.PatternExample;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.model.constraints.pack.PackModel;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
-import choco.kernel.solver.Solver;
 
 
 /**
@@ -52,161 +60,136 @@ import choco.kernel.solver.Solver;
  * @since 3 déc. 2008 <b>version</b> 2.0.1</br>
  * @version 2.0.1</br>
  */
-public class RackConfiguration {
-    protected final static Logger LOGGER = ChocoLogging.getMainLogger();
+public class RackConfiguration extends PatternExample {
+	//DATA
+	private int nbRacks, nbCards, nbRackModels, nbCardTypes;
 
-	public final RackConfigurationData data;
+	private int[] rackMPower, rackMConnector, rackMPrice, cardMDemand;
 
+	//MODEL
+	private SetVariable[] racks;
 
+	private IntegerVariable[] cardRacks;
 
-	//MODEL DATA
-	public CPModel model;
+	private IntegerConstantVariable[] cardMPower, cardPower;
 
-	ArrayList<IntegerVariable[]> cardTypeMap;
+	private IntegerVariable[] rackLoads, rackTypes, rackMaxLoads, rackMaxConnectors, rackCosts;
 
-	protected SetVariable[] plugged;
-
-	protected IntegerVariable[] loads;
-
-	protected IntegerVariable[] cardRacks;
-
-	protected IntegerConstantVariable[] cardPower;
-
-	protected IntegerVariable[] rackTypes;
-
-	protected IntegerVariable[] rackMaxLoad;
-
-	protected IntegerVariable[] rackMaxConnector;
-
-	protected IntegerVariable[] rackCosts;
-
-	protected Solver solver;
+	private IntegerVariable objective;
 	
-	//trier les racks par prix decroissant et les cards par power decroissant
-	public RackConfiguration(RackConfigurationData data) {
+	private PackModel packMod;
+	
+	public RackConfiguration() {
 		super();
-		this.data = data;
 	}
 
+	@Override
+	public void setUp(Object parameters) {
+		super.setUp(parameters);
+		if (parameters instanceof int[][]) {
+			int[][] params = (int[][]) parameters;
+			nbRacks = params[0][0];
+			rackMPower = params[1];
+			rackMConnector = params[2];
+			rackMPrice = params[3];
+			cardMPower = constantArray(params[4]); 
+			cardMDemand = params[5];
+			nbCardTypes=cardMDemand.length;
+			nbRackModels=rackMPrice.length;
+			nbCards = MathUtils.sum(cardMDemand);
+		}
+	}
 
-
-	public void createVariables() {
-		cardRacks = new IntegerVariable[data.nbCards];
-		cardPower= new IntegerConstantVariable[data.nbCards];
-		cardTypeMap = new ArrayList<IntegerVariable[]>();
+	@Override
+	public void buildModel() {
+		model =new CPModel();
+		//VARIABLES
+		cardRacks = new IntegerVariable[nbCards];
+		cardPower= new IntegerConstantVariable[nbCards];
 		int offset =0;
-		for (int i = 0; i < data.nbCardTypes; i++) {
-			IntegerVariable[] tmp = makeIntVarArray("cardRack_"+i, data.cardDemand[i], 0,data.nbRacks-1, Options.V_ENUM);
-			IntegerVariable[] tmps = new IntegerVariable[data.cardDemand[i]];
-			Arrays.fill(tmps, constant(data.cardPower[i]));
-			System.arraycopy(tmp, 0, cardRacks, offset, data.cardDemand[i]);
-			System.arraycopy(tmps, 0, cardPower, offset, data.cardDemand[i]);
-			offset += data.cardDemand[i];
-			cardTypeMap.add(tmp);
+		for (int i = 0; i < nbCardTypes; i++) {
+			for (int j = offset; j < offset + cardMDemand[i]; j++) {
+				cardRacks[j] = makeIntVar("cardRack_"+i+"_"+(j-offset), 0,nbRacks-1, V_ENUM);
+				cardPower[j] = cardMPower[i];
+			}
+			offset += cardMDemand[i];
 		}
-		int maxPower =0;
-		for (int i = 0; i < data.nbRackModels; i++) {
-			maxPower = Math.max(maxPower, data.rackPower[i]);
-		}
-		plugged = makeSetVarArray("plugged", data.nbRacks, 0, data.nbCards-1);
-		loads = makeIntVarArray("rackType", data.nbRacks, 0,maxPower, Options.V_ENUM);
-		rackTypes = makeIntVarArray("rackType", data.nbRacks, 0,data.nbRackModels-1, Options.V_ENUM);
-		rackCosts = makeIntVarArray("rackCost", data.nbRacks,data.rackPrice);
-		rackMaxLoad = makeIntVarArray("rackMaxLoad", data.nbRacks, data.rackPower);
-		rackMaxConnector = makeIntVarArray("rackMaxConnector", data.nbRacks, data.rackConnector);
-	}
-
-	public void createConstraints() {
-		model.addConstraints(pack(new PackModel(cardRacks,cardPower, loads, plugged)));
-		//add connector,power and price constraints
-		for (int i = 0; i < data.nbRacks; i++) {
+		racks = makeSetVarArray("rack", nbRacks, 0, nbCards-1, V_NO_DECISION);
+		rackLoads = makeIntVarArray("rackLoad", nbRacks, 0, MathUtils.max(rackMPower), V_BOUND, V_NO_DECISION);
+		rackTypes = makeIntVarArray("rackType", nbRacks, 0,nbRackModels-1, V_ENUM);
+		rackCosts = makeIntVarArray("rackCost", nbRacks,rackMPrice, V_ENUM);
+		rackMaxLoads = makeIntVarArray("rackMaxLoad", nbRacks, rackMPower,V_ENUM, V_NO_DECISION);
+		rackMaxConnectors = makeIntVarArray("rackMaxConnector", nbRacks, rackMConnector,V_NO_DECISION);
+		objective = makeIntVar("obj", 0, nbRacks * MathUtils.max(rackMPrice), V_OBJECTIVE, V_NO_DECISION);
+		
+		//CONSTRAINTS
+		//post packing constraints 
+		packMod = new PackModel(cardRacks,cardPower, rackLoads, racks);
+		model.addConstraints(pack(packMod, C_PACK_AR));
+		//post connector,power and price constraints
+		for (int i = 0; i < nbRacks; i++) {
 			model.addConstraints(
-					leqCard(plugged[i], rackMaxConnector[i]),
-					leq(loads[i],rackMaxLoad[i]),
-					nth(rackTypes[i], data.rackPower, rackMaxLoad[i]),
-					nth(rackTypes[i], data.rackPrice, rackCosts[i]),
-					nth(rackTypes[i], data.rackConnector, rackMaxConnector[i])
+					leqCard(racks[i], rackMaxConnectors[i]),
+					leq(rackLoads[i],rackMaxLoads[i]),
+					nth(rackTypes[i], rackMPower, rackMaxLoads[i]),
+					nth(rackTypes[i], rackMPrice, rackCosts[i]),
+					nth(rackTypes[i], rackMConnector, rackMaxConnectors[i])
 			);
 		}
-		int idx=0;
-		for (int i = 0; i < data.nbCardTypes; i++) {
-			idx++;
-			for (int j = 1; j < data.cardDemand[i]; j++) {
-				model.addConstraint(leq(cardRacks[idx-1],cardRacks[idx]));
-				idx++;
-			}
+		//post objective
+		model.addConstraint(eq(objective, sum(rackCosts)));
+		//post symmetry breaking constraints
+		model.addConstraints(packMod.orderEqualSizedItems(0));
+		for (int i = 1; i < nbRacks; i++) {
+			model.addConstraint( geq(rackTypes[i-1], rackTypes[i]));
 		}
+
 	}
 
-	public void createModel() {
-		model =new CPModel();
-		createVariables();
-		createConstraints();
-	}
 
-	public void solve() {
+	@Override
+	public void buildSolver() {
 		solver = new CPSolver();
 		solver.read(model);
-		solver.solve();
 	}
 
-	public void print() {
-		for (int i = 0; i < data.nbRacks; i++) {
-			LOGGER.info(solver.getVar(rackTypes[i]).pretty()+" --> "+solver.getVar(plugged[i]).pretty());
+
+	@Override
+	public void solve() {
+		solver.minimize(false);
+	}
+
+
+	@Override
+	public void prettyOut() {
+		if(LOGGER.isLoggable(Level.INFO) && solver.existsSolution()) {
+			final StringBuilder b = new StringBuilder();
+			for (int i = 0; i < nbRacks; i++) {
+				b.append(solver.getVar(rackTypes[i]));
+				b.append(" --> ").append(solver.getVar(racks[i]));
+				b.append('\n');
+			}
+			b.append("total cost: ").append(solver.getObjectiveValue());
+			LOGGER.info(b.toString());
+			createAndShowGUI("Rack Configuration", createPackChart(null, solver,packMod));
 		}
 	}
+
+
+	@Override
+	public void execute() {
+		execute(
+				new int[][]{ {10}, //nbRacks
+						{0, 50, 150, 200}, {0, 2, 5, 9}, {0, 35, 140, 200}, //Racks 
+						{75, 50, 40, 20},{3, 4, 6, 8} //Cards
+				} 
+		);
+	}
+
+
 
 	public static void main(String[] args) {
-		RackConfigurationData data= new RackConfigurationData(3,new int[]{200,150}, new int[]{16,8},new int[]{200,150},
-				new int[]{75,50,40,20},new int[]{1,2,4,10});
-		RackConfiguration pb = new RackConfiguration(data);
-		pb.createModel();
-		LOGGER.info(pb.model.pretty());
-		pb.solve();
-		pb.print();
-	}
-
-
-}
-
-
-class RackConfigurationData {
-
-	public final int nbRacks;
-
-	public final int nbCards;
-
-	public final int nbRackModels;
-
-	public final int nbCardTypes;
-
-	public final int[] rackPower;
-
-	public final int[] rackPrice;
-
-	public final int[] rackConnector;
-
-	public final int[] cardPower;
-
-	public final int[] cardDemand;
-
-	public RackConfigurationData(int nbRacks, int[] rackPower,
-			int[] rackConnector, int[] rackPrice, int[] cardPower,
-			int[] cardDemand) {
-		super();
-		this.nbRacks = nbRacks;
-		this.rackPower = rackPower;
-		this.rackConnector = rackConnector;
-		this.rackPrice = rackPrice;
-		this.cardPower = cardPower;
-		this.cardDemand = cardDemand;
-		this.nbCardTypes=cardDemand.length;
-		this.nbRackModels=rackPrice.length;
-		int cpt = 0;
-		for (int i = 0; i < cardDemand.length; i++) {
-			cpt+=cardDemand[i];
-		}
-		this.nbCards=cpt;
+		(new RackConfiguration()).execute();
 	}
 
 

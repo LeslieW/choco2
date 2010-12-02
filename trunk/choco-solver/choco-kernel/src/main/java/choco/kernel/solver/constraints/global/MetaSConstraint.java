@@ -186,6 +186,11 @@ public class MetaSConstraint implements SConstraint, IResource<TaskVar> {
 	}
 
 	@Override
+	public Iterator<IRTask> getRTaskIterator() {
+		return asRTaskList().iterator();
+	}
+	
+	@Override
 	public Iterator<TaskVar> getTaskIterator() {
 		return IteratorUtils.iterator(tasks);
 	}

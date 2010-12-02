@@ -27,9 +27,9 @@ import choco.kernel.common.IDotty;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.ITask;
 
-public interface IPrecedenceStore extends IDotty {
+public interface ITemporalStore extends IDotty {
 
-	ITemporalSRelation getStoredPrecedence(ITask t1, ITask t2);
+	ITemporalSRelation getTemporalRelation(ITask t1, ITask t2);
 	
 	void addPrecedence(ITask t1, ITask t2, IntDomainVar direction);
 

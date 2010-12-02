@@ -23,6 +23,19 @@
 package samples.tutorials.seminar.binpacking;
 
 
+import static choco.Choco.cumulativeMax;
+import static choco.Choco.eq;
+import static choco.Choco.geq;
+import static choco.Choco.leq;
+import static choco.Choco.makeIntVar;
+import static choco.Choco.makeTaskVarArray;
+import static choco.Choco.scalar;
+import static choco.Choco.sum;
+import static java.text.MessageFormat.format;
+
+import java.util.Random;
+import java.util.logging.Logger;
+
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -33,13 +46,6 @@ import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.Solver;
-import samples.tutorials.scheduling.pack.binpacking.CPpack;
-
-import java.util.Random;
-import java.util.logging.Logger;
-
-import static choco.Choco.*;
-import static java.text.MessageFormat.format;
 
 /**
  * Created by IntelliJ IDEA.
@@ -199,10 +205,11 @@ public class ExBinPacking {
     }
 
     public void binPacking3(int n, int capaBin, int seed) {
-        int[] instance = getRandomPackingPb(n, capaBin, seed);
-        CPpack pack = new CPpack();
-        pack.setUp(new Object[]{instance, capaBin, -1});
-        pack.cpPack();
+    	LOGGER.severe("not implemented");
+//        int[] instance = getRandomPackingPb(n, capaBin, seed);
+//        CPpack pack = new CPpack();
+//        pack.setUp(new Object[]{instance, capaBin, -1});
+//        pack.cpPack();
         
     }
     

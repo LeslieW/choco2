@@ -27,8 +27,8 @@ import choco.cp.solver.constraints.global.scheduling.trees.DisjTreeTL;
 import choco.cp.solver.constraints.global.scheduling.trees.IThetaLambdaTree;
 import choco.cp.solver.constraints.global.scheduling.trees.IThetaTree;
 import choco.cp.solver.constraints.global.scheduling.trees.IVilimTree.TreeMode;
-import choco.kernel.common.VizFactory;
-import static choco.kernel.common.VizFactory.toDotty;
+import choco.kernel.common.VisuFactory;
+import static choco.kernel.common.VisuFactory.toDotty;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.opres.graph.IBinaryNode;
 import choco.kernel.common.opres.graph.INodeLabel;
@@ -220,7 +220,7 @@ public class TestTrees {
 	public void testFailInsertLambda() {
 		DisjTreeTL tree=new DisjTreeTL(tasksL);
 		tree.setMode(TreeMode.ECT);
-		VizFactory.toDotty(tree);
+		//VizFactory.toDotty(tree);
 		assertTrue(tree.removeFromThetaAndInsertInLambda(tasksL.get(0)));
 		assertFalse(tree.removeFromThetaAndInsertInLambda(tasksL.get(0)));
 	}

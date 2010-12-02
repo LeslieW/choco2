@@ -69,7 +69,7 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.BoundAllDiff;
 import choco.cp.solver.constraints.global.matching.AllDifferent;
 import choco.cp.solver.preprocessor.PreProcessCPSolver;
-import choco.kernel.common.VizFactory;
+import choco.kernel.common.VisuFactory;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.model.constraints.ConstraintType;
@@ -474,7 +474,7 @@ public class DetectorsTest {
 		System.out.println(model.pretty());
 		System.out.println(disjMod.toString());
 		System.out.println(disjMod.setupTimesToString());
-		VizFactory.toDotty(disjMod);
+		VisuFactory.toDotty(disjMod);
 	}
 	
 	@Test

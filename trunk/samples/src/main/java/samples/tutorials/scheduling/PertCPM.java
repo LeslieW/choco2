@@ -30,8 +30,12 @@ import java.util.logging.Level;
 
 import samples.tutorials.PatternExample;
 import choco.Options;
+import choco.cp.common.util.preprocessor.detector.scheduling.DisjunctiveSModel;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.preprocessor.PreProcessCPSolver;
+import choco.cp.solver.preprocessor.PreProcessConfiguration;
+import choco.kernel.common.VisuFactory;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
@@ -69,11 +73,6 @@ public class PertCPM extends PatternExample {
 	}
 
 
-
-	protected IntegerVariable[] buildDurations() {
-		return constantArray(new int[]{7, 3, 8, 3, 1, 2, 1, 2, 1, 1});
-	}
-
 	@Override
 	public void buildModel() {
 		model = new CPModel();
@@ -110,9 +109,11 @@ public class PertCPM extends PatternExample {
 
 	@Override
 	public void buildSolver() {
-		solver = new CPSolver();
+		solver = new PreProcessCPSolver();
+		PreProcessConfiguration.keepSchedulingPreProcess(solver);
 		((CPSolver) solver).createMakespan();
 		solver.read(model);
+		VisuFactory.createAndShowGUI(((PreProcessCPSolver) solver).getDisjMod());
 	}
 
 	@Override
@@ -130,6 +131,7 @@ public class PertCPM extends PatternExample {
 		} catch (ContradictionException e) {
 			LOGGER.log(Level.SEVERE, "CPM should not lead to a contradiction", e);
 		}
+		//VizFactory.toDotty( new DisjunctiveSModel((PreProcessCPSolver) solver));
 	}
 
 
