@@ -7,37 +7,37 @@
 
     <fileSets>
         <fileSet>
-            <directory>choco-solver/choco-kernel/src/main/java</directory>
-            <outputDirectory>choco-solver/choco-kernel</outputDirectory>
+            <directory>choco-kernel/src/main/java</directory>
+            <outputDirectory>.</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>choco-solver/choco-cp/src/main/java</directory>
-            <outputDirectory>choco-solver/choco-cp</outputDirectory>
+            <directory>choco-cp/src/main/java</directory>
+            <outputDirectory>.</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>choco-tools/choco-cli/src/main/java</directory>
-            <outputDirectory>choco-tools/choco-cli</outputDirectory>
+            <directory>choco-cli/src/main/java</directory>
+            <outputDirectory>.</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>choco-tools/choco-db/src/main/java</directory>
-            <outputDirectory>choco-tools/choco-db</outputDirectory>
+            <directory>choco-db/src/main/java</directory>
+            <outputDirectory>.choco-db</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>choco-tools/choco-parsers/src/main/java</directory>
-            <outputDirectory>choco-tools/choco-parsers</outputDirectory>
+            <directory>choco-parsers/src/main/java</directory>
+            <outputDirectory>.</outputDirectory>
         </fileSet>
         <fileSet>
             <directory>choco-visu/src/main/java</directory>
-            <outputDirectory>choco-visu</outputDirectory>
+            <outputDirectory>.</outputDirectory>
         </fileSet>
         <fileSet>
             <directory>choco-contribs/src/main/java</directory>
-            <outputDirectory>choco-contribs</outputDirectory>
+            <outputDirectory>.</outputDirectory>
         </fileSet>
-        <!--<fileSet>
+        <fileSet>
             <directory>samples/src/main/java</directory>
             <outputDirectory>samples</outputDirectory>
-        </fileSet>-->
+        </fileSet>
     </fileSets>
 
 </assembly>
