@@ -1,0 +1,18 @@
+<assembly>
+    <id></id>
+  <formats>
+    <format>jar</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+<dependencySets>
+        <dependencySet>
+            <outputFileNameMapping></outputFileNameMapping>
+            <unpack>true</unpack>
+            <excludes>
+                <exclude>choco:choco-kernel:jar:sources</exclude>
+                <exclude>choco:choco-cp:jar:sources</exclude>
+            </excludes>
+        </dependencySet>
+    </dependencySets>     
+
+</assembly>

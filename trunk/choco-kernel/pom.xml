@@ -2,19 +2,20 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>choco</groupId>
-        <artifactId>choco-solver</artifactId>
+        <artifactId>choco</artifactId>
         <version>2.1.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>choco-cp</artifactId>
+    <artifactId>choco-kernel</artifactId>
     <packaging>jar</packaging>
-    <name>CHOCO Constraint Programming</name>
-    <url>http://www.emn.fr/z-info/choco-solver/choco-cp</url>
+    <name>CHOCO Kernel</name>
+    <url>http://www.emn.fr/z-info/choco-solver/choco-kernel</url>
     <dependencies>
         <dependency>
-            <groupId>choco</groupId>
-            <artifactId>choco-kernel</artifactId>
-            <version>${project.version}</version>
+            <groupId>dk.brics</groupId>
+            <artifactId>automaton</artifactId>
+            <version>1.11-2</version>
+            <scope>compile</scope>
         </dependency>
 		<dependency>
 	    	<groupId>jgrapht</groupId>
@@ -40,9 +41,16 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.5</version>
                 <configuration>
-                    <!--<minmemory>128m</minmemory>
-                    <maxmemory>512m</maxmemory>-->
+                    <!--<aggregate>true</aggregate>
+                    <linksource>true</linksource>
+                    <doclet>org.jboss.apiviz.APIviz</doclet>
+                    <docletArtifact>
+                        <groupId>org.jboss.apiviz</groupId>
+                        <artifactId>apiviz</artifactId>
+                        <version>1.2.5.GA</version>
+                    </docletArtifact>-->
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
@@ -74,8 +82,8 @@
     </reporting>
     <distributionManagement>
         <site>
-            <id>cp-repo</id>
-            <url>${choco-dir}/choco-cp</url>
+            <id>kernel-repo</id>
+            <url>${choco-dir}/choco-kernel</url>
         </site>
     </distributionManagement>
 </project>
