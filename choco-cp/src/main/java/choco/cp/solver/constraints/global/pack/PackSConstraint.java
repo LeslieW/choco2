@@ -51,8 +51,6 @@ import choco.kernel.solver.constraints.set.AbstractLargeSetIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetVar;
 
-import com.sun.xml.internal.bind.v2.runtime.reflect.Lister.Pack;
-
 /**
  * <b>{@link Pack} which maintains a primal-dual packing model.</b><br>
  * The primal model consists of {@link bins} variables. {@link bins}[item] = bin means that item is packed into bin.<br>
