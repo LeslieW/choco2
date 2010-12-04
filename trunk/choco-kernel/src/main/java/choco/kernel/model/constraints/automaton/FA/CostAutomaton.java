@@ -113,7 +113,8 @@ public static ICostAutomaton makeSingleResource(IAutomaton pi, int[][][] costs, 
         ICounter c = new CounterState(costs,inf,sup);
         ArrayList<ICounter> tmp = new ArrayList<ICounter>();
         tmp.add(c);
-        return new CostAutomaton(pi,tmp);
+        return (pi == null) ?  null :
+        new CostAutomaton(pi,tmp);
 }
 
 public static ICostAutomaton makeSingleResource(IAutomaton pi, int[][] costs, int inf, int sup)
@@ -121,8 +122,8 @@ public static ICostAutomaton makeSingleResource(IAutomaton pi, int[][] costs, in
         ICounter c = new Counter(costs,inf,sup);
         ArrayList<ICounter> tmp = new ArrayList<ICounter>();
         tmp.add(c);
-        return new CostAutomaton(pi,tmp);
-}
+        return (pi == null) ?  null :
+        new CostAutomaton(pi,tmp);}
 
 public static ICostAutomaton makeMultiResources(IAutomaton pi, int[][][] layer_value_resource, int[] infs, int[] sups)
 {
@@ -140,7 +141,8 @@ public static ICostAutomaton makeMultiResources(IAutomaton pi, int[][][] layer_v
                 }
                 tmp.add(new Counter(ordered[k],infs[k],sups[k]));
         }
-        return new CostAutomaton(pi,tmp);
+        return (pi == null) ?  null :
+        new CostAutomaton(pi,tmp);
 }
 
 public static ICostAutomaton makeMultiResources(IAutomaton pi, int[][][][] layer_value_resource_state, int[] infs, int[] sups)
@@ -169,7 +171,8 @@ public static ICostAutomaton makeMultiResources(IAutomaton pi, int[][][][] layer
                 else
                         tmp.add(new Counter(ordered[k],infs[k],sups[k]));                
         }
-        return new CostAutomaton(pi,tmp);
+        return (pi == null) ?  null :
+        new CostAutomaton(pi,tmp);
 }
 
 public static ICostAutomaton makeMultiResources(IAutomaton auto, int[][][][] c, IntegerVariable[] z)
