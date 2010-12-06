@@ -122,6 +122,7 @@ public class CycloHexan extends PatternExample {
 
         @Override
         public void solve() {
+            solver.getConfiguration().putBoolean(Configuration.STOP_AT_FIRST_SOLUTION, false);
             solver.generateSearchStrategy();
             solver.addGoal(new AssignInterval(new CyclicRealVarSelector(solver), new RealIncreasingDomain()));
             solver.launch();
