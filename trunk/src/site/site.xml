@@ -25,6 +25,7 @@
         <menu name="About CHOCO">
             <!--<item name="Welcome" href="index.html"/>-->
             <item name="Welcome" href="index.html"/>
+            <item name="News" href="choco-news.html"/>
         </menu>
 
         <menu name="Get CHOCO">

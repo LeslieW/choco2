@@ -49,8 +49,8 @@
                 <a href="http://www.kth.se/?l=en_UK" target="_blank">
                     <img src="images/logos/kth.jpeg"/>
                 </a>
-                <a href="http://www.lirmm.fr/xml/fr/lirmm.html" target="_blank">
-                    <img src="images/logos/lirmm.jpeg"/>
+                <a href="http://www.univ-montp2.fr/" target="_blank">
+                    <img src="images/logos/univ-montpellier.jpeg"/>
                 </a>
             </div>
             <div style="vertical-align: bottom; text-align: center;">
@@ -69,17 +69,13 @@
                 <a href="http://www.ucc.ie/en/" target="_blank">
                     <img src="images/logos/ucc.jpeg"/>
                 </a>
-                <a href="http://www.univ-montp2.fr/" target="_blank">
-                    <img src="images/logos/univ-montpellier.jpeg"/>
-                </a>
+
                 <a href="http://www.univ-nantes.fr/index_flash.jsp" target="_blank">
                     <img src="images/logos/univ-nantes.jpeg"/>
                 </a>
                 <a href="http://www.upmc.fr/" target="_blank">
                     <img src="images/logos/upmc.gif"/>
                 </a>
-            </div>
-            <div style="vertical-align: bottom; text-align: center;">
                 <a href="www.tugraz.at/" target="_blank">
                     <img src="images/logos/TU_Graz.png"/>
                 </a>
@@ -108,7 +104,7 @@
                     <img src="images/logos/hakank.gif"/>
                 </a>
                 <a href="http://www.fernuni-hagen.de/" target="_blank">
-                        <img src="images/logos/fernuni-hagen.gif"/>
+                    <img src="images/logos/fernuni-hagen.gif"/>
                 </a>
             </div>
         </section>
@@ -135,7 +131,7 @@
         </section>
         <section name="Contributors">
             <p>
-                They contribute to the development of <tt>choco</tt>:
+                They contribute to the development of<tt>choco</tt>:
             </p>
             <div style="vertical-align: bottom; text-align: center;">
                 <a href="http://www.bouygues.com/" target="_blank">

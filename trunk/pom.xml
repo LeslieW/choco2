@@ -46,7 +46,7 @@
         <url>http://frontal.info.emn.fr:8080/hudson/view/Choco/</url>
     </ciManagement>
 
-    
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -61,7 +61,7 @@
             <scope>compile</scope>
         </dependency>
     </dependencies>
-    
+
     <modules>
         <module>choco-kernel</module>
         <module>choco-cp</module>
@@ -157,11 +157,6 @@
                         <descriptor>src/main/assembly/full.xml</descriptor>
                         <descriptor>src/main/assembly/full-src.xml</descriptor>
                     </descriptors>
-                    <archive>
-                        <manifest>
-                            <mainClass>parser.chocogen.XmlModel</mainClass>
-                        </manifest>
-                    </archive>
                 </configuration>
             </plugin>
             <plugin>
@@ -177,55 +172,56 @@
                 <version>2.6</version>
             </plugin>
             <plugin>
-            <groupId>com.mycila.maven-license-plugin</groupId>
-            <artifactId>maven-license-plugin</artifactId>
-            <configuration>
-                <header>src/etc/header.txt</header>
-                <failIfMissing>false</failIfMissing>
-                <aggregate>true</aggregate>
-                <properties>
-                    <owner>Ecole des Mines de Nantes</owner>
-                    <year>2010</year>
-                    <email>choco@emn.fr</email>
-                </properties>
-                <strictCheck>true</strictCheck>
-                <includes>
-                    <include>**/*.java</include>
-                </includes>
-                <excludes>
-                    <exclude>**/site/**</exclude>
-                    <exclude>**/target/**</exclude>
-                </excludes>
-                <headerDefinitions>
-                    <headerDefinition>src/etc/old.xml</headerDefinition>
-                    <headerDefinition>src/etc/old2.xml</headerDefinition>
-                </headerDefinitions>
-            </configuration>
-        </plugin>
+                <groupId>com.mycila.maven-license-plugin</groupId>
+                <artifactId>maven-license-plugin</artifactId>
+                <configuration>
+                    <header>src/etc/header.txt</header>
+                    <failIfMissing>false</failIfMissing>
+                    <aggregate>true</aggregate>
+                    <properties>
+                        <owner>Ecole des Mines de Nantes</owner>
+                        <year>2010</year>
+                        <email>choco@emn.fr</email>
+                    </properties>
+                    <strictCheck>true</strictCheck>
+                    <includes>
+                        <include>**/*.java</include>
+                    </includes>
+                    <excludes>
+                        <exclude>**/site/**</exclude>
+                        <exclude>**/target/**</exclude>
+                    </excludes>
+                    <headerDefinitions>
+                        <headerDefinition>src/etc/old.xml</headerDefinition>
+                        <headerDefinition>src/etc/old2.xml</headerDefinition>
+                    </headerDefinitions>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-changes-plugin</artifactId>
-        <version>2.3</version>
-        <configuration>
-          <issueLinkTemplatePerSystem>
-          <default>
-          https://sourceforge.net/tracker/index.php?func=detail&amp;aid=%ISSUE%&amp;group_id=96738&amp;atid=615736
-          </default>
-          </issueLinkTemplatePerSystem>
-        </configuration>
-        <reportSets>
-          <reportSet>
-            <reports>
-              <report>changes-report</report>
-            </reports>
-          </reportSet>
-        </reportSets>
-      </plugin>    </plugins>
-  </reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-changes-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <issueLinkTemplatePerSystem>
+                        <default>
+                            https://sourceforge.net/tracker/index.php?func=detail&amp;aid=%ISSUE%&amp;group_id=96738&amp;atid=615736
+                        </default>
+                    </issueLinkTemplatePerSystem>
+                </configuration>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>changes-report</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
     <developers>
         <developer>
             <name>Francois Laburthe</name>
