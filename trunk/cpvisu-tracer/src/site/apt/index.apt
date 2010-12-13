@@ -1,0 +1,11 @@
+ ------
+ DADCOP-tracer
+ ------
+ CHOCO development team
+ ------
+ ------
+
+Welcome to DADCOP-tracer module
+
+ DADCOP tracer is a AOP (Aspect-Oriented Programming) module to add Dynamic Analysis and Debugging of Constraint Programs tracer within CHOCO 
+ (see Link to {{{http://pauillac.inria.fr/~contraintes/OADymPPaC/index_en.html}OADymPPAC home page}} for more information).
