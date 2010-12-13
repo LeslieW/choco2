@@ -72,7 +72,7 @@
         <module>choco-visu</module>
         <module>samples</module>
         <module>choco-contribs</module>
-        <module>dadcop-tracer</module>
+        <module>cpvisu-tracer</module>
     </modules>
     <distributionManagement>
         <site>
