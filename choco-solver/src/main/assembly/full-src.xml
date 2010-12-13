@@ -6,7 +6,6 @@
     <includeBaseDirectory>false</includeBaseDirectory>
     <dependencySets>
         <dependencySet>
-            <outputFileNameMapping></outputFileNameMapping>
             <unpack>true</unpack>
             <includes>
                 <include>choco:*:*:sources</include>
