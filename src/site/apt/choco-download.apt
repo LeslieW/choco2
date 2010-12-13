@@ -48,7 +48,7 @@ Download CHOCO
 
     * A single <jar> that contains the whole project and dependencies (every modules) : <choco-X.x.x> .
      This archive should be used if you want to integrate <<<choco>>> as a library and use graphical tools, parser tools, test beta
-     developments and use DADCOP tracer.
+     developments and use CPVisu log generator.
 
     * A single <jar> for each module of <<<choco>>> :
 
@@ -68,7 +68,7 @@ Download CHOCO
 
         * <samples-X.x.x>,
 
-        * and <dadcop-tracer-X.x.x>.
+        * and <cpvisu-tracer-X.x.x>.
 
    These archives should be used if you want to integrate your own class-path.
 
@@ -103,7 +103,7 @@ choco
 |----samples
 |	|-- pom.xml
 |	`-- src
-`----dadcop-tracer
+`----cpvisu-tracer
 	|-- pom.xml
 	`-- src
 ---
