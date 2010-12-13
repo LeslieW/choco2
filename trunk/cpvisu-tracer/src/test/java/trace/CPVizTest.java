@@ -26,14 +26,13 @@
  */
 package trace;
 
+import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import org.junit.Test;
-import trace.Display;
-import trace.Visualization;
 import trace.visualizers.Vector;
 
 import static choco.Choco.*;
