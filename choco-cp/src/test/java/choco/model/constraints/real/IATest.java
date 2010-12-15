@@ -26,23 +26,20 @@
  */
 
 package choco.model.constraints.real;
-import static junit.framework.Assert.assertTrue;
-
-import java.util.Random;
-import java.util.logging.Logger;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.variables.real.RealInterval;
 import choco.kernel.solver.variables.real.RealIntervalConstant;
 import choco.kernel.solver.variables.real.RealMath;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.Random;
+import java.util.logging.Logger;
+
+import static junit.framework.Assert.assertTrue;
 
 /**
- * J-CHOCO
- * Copyright (C) F. Laburthe, 1999-2003
  * <p/>
  * An open-source Constraint Programming Kernel
  * for Research and Education

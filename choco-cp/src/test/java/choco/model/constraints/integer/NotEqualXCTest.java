@@ -27,8 +27,6 @@
 
 package choco.model.constraints.integer;
 
-import static choco.Choco.makeIntVar;
-import static choco.Choco.neq;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -37,18 +35,15 @@ import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import org.junit.After;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.logging.Logger;
-// **************************************************
-// *                   J-CHOCO                      *
-// *   Copyright (C) F. Laburthe, 1999-2003         *
-// **************************************************
-// *  an open-source Constraint Programming Kernel  *
-// *     for Research and Education                 *
-// **************************************************
+
+import static choco.Choco.makeIntVar;
+import static choco.Choco.neq;
+import static org.junit.Assert.*;
+
 
 /* File choco.currentElement.search.NotEqualXCTest.java, last modified by Francois 14 sept. 2003 16:00:54 */
 

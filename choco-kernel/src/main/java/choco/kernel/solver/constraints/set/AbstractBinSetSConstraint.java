@@ -29,13 +29,6 @@ package choco.kernel.solver.constraints.set;
 
 import choco.kernel.solver.variables.set.SetVar;
 
-// **************************************************
-// *                   J-CHOCO                      *
-// *   Copyright (C) F. Laburthe, 1999-2003         *
-// **************************************************
-// *  an open-source Constraint Programming Kernel  *
-// *     for Research and Education                 *
-// **************************************************
 
 public abstract class AbstractBinSetSConstraint extends AbstractLargeSetSConstraint {
 

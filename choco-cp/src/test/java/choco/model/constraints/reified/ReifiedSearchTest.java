@@ -28,7 +28,6 @@
 package choco.model.constraints.reified;
 
 import choco.Choco;
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -46,15 +45,15 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.integer.extension.LargeRelation;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.junit.*;
-import static org.junit.Assert.assertEquals;
 
-import static java.text.MessageFormat.format;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static choco.Choco.*;
+import static java.text.MessageFormat.format;
+import static org.junit.Assert.assertEquals;
+
 /**
- * J-CHOCO
- * Copyright (C) F. Laburthe, 1999-2003
  * <p/>
  * An open-source Constraint Programming Kernel
  * for Research and Education

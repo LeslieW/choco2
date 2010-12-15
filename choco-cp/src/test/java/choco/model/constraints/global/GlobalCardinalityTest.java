@@ -1230,4 +1230,22 @@ public class GlobalCardinalityTest {
         }
     }
 
+    @Test
+    public void testJSR331_31() {
+        IntegerVariable[] X = Choco.makeIntVarArray("X", 3, 0, 4);
+        int[] values = new int[]{1, 2, 3};
+        int[] low = new int[]{0, 1, 0};
+        int[] up = new int[]{1, 2, 1};
+
+        Model m = new CPModel();
+        m.addConstraint(Choco.globalCardinality(X, values, low, up));
+
+        Solver solver = new CPSolver();
+        solver.read(m);
+
+        solver.solveAll();
+        Assert.assertEquals(54, solver.getSolutionCount());
+        Assert.assertEquals(69, solver.getNodeCount());
+    }
+
 }

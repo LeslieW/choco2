@@ -35,8 +35,6 @@ import choco.kernel.solver.search.IObjectiveManager;
 import choco.kernel.solver.variables.real.RealVar;
 
 /**
- * J-CHOCO
- * Copyright (C) F. Laburthe, 1999-2003
  * <p/>
  * An open-source Constraint Programming Kernel
  * for Research and Education

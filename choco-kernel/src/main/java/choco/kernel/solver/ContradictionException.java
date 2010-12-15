@@ -25,13 +25,6 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-//*  CHOCO: an open-source Constraint Programming  *
-//*     System for Research and Education          *
-//*                                                *
-//*    contributors listed in choco.Entity.java    *
-//*           Copyright (C) F. Laburthe, 1999-2006 *
-//**************************************************
-
 package choco.kernel.solver;
 
 import choco.kernel.solver.constraints.SConstraint;

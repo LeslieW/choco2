@@ -25,18 +25,7 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-//*  CHOCO: an open-source Constraint Programming  *
-//*     System for Research and Education          *
-//*                                                *
-//*    contributors listed in choco.Entity.java    *
-//*           Copyright (C) F. Laburthe, 1999-2006 *
-//**************************************************
 package choco.kernel.solver.search;
-
-import static choco.kernel.common.util.tools.StringUtils.pretty;
-import static choco.kernel.common.util.tools.StringUtils.prettyOnePerLine;
-
-import java.util.logging.Level;
 
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.Configuration;
@@ -49,6 +38,11 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.ShavingTools;
 import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.measure.ISearchMeasures;
+
+import java.util.logging.Level;
+
+import static choco.kernel.common.util.tools.StringUtils.pretty;
+import static choco.kernel.common.util.tools.StringUtils.prettyOnePerLine;
 
 /**
  * An abstract class for controlling tree search in various ways

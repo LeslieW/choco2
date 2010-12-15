@@ -24,23 +24,48 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package trace;
+package trace.visualizers;
+
+import choco.kernel.solver.variables.Var;
 
 /**
+ * A specialized visualizer for a waterfall vector of domain variables.
  * <br/>
  *
  * @author Charles Prud'homme
- * @since 9 déc. 2010
+ * @since 13/12/10
  */
-public enum Type {
-    LAYOUT, DISTRIBUTION, TREEMAP;
+public final class VectorWaterfall extends Vector {
 
-    public static Type preset() {
-        return LAYOUT;
+
+    private static final String type = "vector_waterfall";
+
+    /**
+     * Build a visualizer for a waterfall vector of domain variables
+     *
+     * @param vars    domain variables
+     * @param display "expanded" or "compact"
+     * @param width   width of the visualizer
+     * @param height  height of the visualizer
+     */
+    public VectorWaterfall(Var[] vars, String display, int width, int height) {
+        super(vars, type, display, width, height);
     }
 
-    @Override
-    public String toString() {
-        return super.toString().toLowerCase();
+    /**
+     * Build a visualizer for a waterfall vector of domain variables
+     *
+     * @param vars    domain variables
+     * @param display "expanded" or "compact"
+     * @param x       coordinate of the visualizer in the x-axis (horizontal)
+     * @param y       coordinate of the visualizer in the y-axis (vertical)
+     * @param width   width of the visualizer
+     * @param height  height of the visualizer
+     * @param group   group name (to group multiple constraints)
+     * @param min     expected minimal value of any of the domains
+     * @param max     expected maximal value of any of the domains
+     */
+    public VectorWaterfall(Var[] vars, String display, int x, int y, int width, int height, String group, int min, int max) {
+        super(vars, type, display, x, y, width, height, group, min, max);
     }
 }

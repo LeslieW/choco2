@@ -34,13 +34,6 @@ import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.search.set.AbstractSetBranchingStrategy;
 import choco.kernel.solver.variables.set.SetVar;
 
-// **************************************************
-// *                   J-CHOCO                      *
-// *   Copyright (C) F. Laburthe, 1999-2003         *
-// **************************************************
-// *  an open-source Constraint Programming Kernel  *
-// *     for Research and Education                 *
-// **************************************************
 
 public class AssignSetVar extends AbstractSetBranchingStrategy {
 

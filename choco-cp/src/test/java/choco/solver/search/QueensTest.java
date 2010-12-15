@@ -43,8 +43,6 @@ import java.util.logging.Logger;
 import static choco.Choco.*;
 import static org.junit.Assert.assertEquals;
 
-/* File choco.currentElement.search.QueensTest.java, last modified by flaburthe 12 janv. 2004 18:03:29 */
-
 /**
  * A currentElement placing n-queens on a chessboard, so that no two attack each other
  */

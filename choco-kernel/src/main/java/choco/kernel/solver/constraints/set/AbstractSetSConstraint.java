@@ -36,14 +36,6 @@ import choco.kernel.solver.propagation.listener.SetPropagator;
 import choco.kernel.solver.variables.set.SetVar;
 
 
-// **************************************************
-// *                   J-CHOCO                      *
-// *   Copyright (C) F. Laburthe, 1999-2003         *
-// **************************************************
-// *  an open-source Constraint Programming Kernel  *
-// *     for Research and Education                 *
-// **************************************************
-
 public abstract class AbstractSetSConstraint extends AbstractSConstraint<SetVar> implements SetPropagator {
 
     /**

@@ -24,41 +24,17 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-/* ************************************************
-*           _      _                             *
-*          |  (..)  |                            *
-*          |_ J||L _|         CHOCO solver       *
-*                                                *
-*     Choco is a java library for constraint     *
-*     satisfaction problems (CSP), constraint    *
-*     programming (CP) and explanation-based     *
-*     constraint solving (e-CP). It is built     *
-*     on a event-based propagation mechanism     *
-*     with backtrackable structures.             *
-*                                                *
-*     Choco is an open-source software,          *
-*     distributed under a BSD licence            *
-*     and hosted by sourceforge.net              *
-*                                                *
-*     + website : http://choco.emn.fr            *
-*     + support : choco@emn.fr                   *
-*                                                *
-*     Copyright (C) F. Laburthe,                 *
-*                   N. Jussien    1999-2010      *
-**************************************************/
 package samples.tutorials.packing.parser;
 
-import java.io.File;
-import java.util.Random;
-
+import cli.AbstractBenchmarkCmd;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.Option;
-
 import parser.instances.AbstractInstanceModel;
 import parser.instances.BasicSettings;
 import parser.instances.checker.SCheckFactory;
-import cli.AbstractBenchmarkCmd;
+
+import java.io.File;
+import java.util.Random;
 
 /**
  * An extension of <code>AbstractBenchmarkCmd</code> abstract class to load and solve BinPacking problems.

@@ -24,14 +24,6 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-// **************************************************
-// *  CHOCO: an open-source Constraint Programming  *
-// *     System for Research and Education          *
-// *                                                *
-// *    contributors listed in dev.i_want_to_use_this_old_version_of_choco.Entity.java    *
-// *           Copyright (C) F. Laburthe, 1999-2006 *
-// **************************************************
 package choco.kernel.common.util.objects;
 
 import choco.kernel.solver.propagation.Propagator;

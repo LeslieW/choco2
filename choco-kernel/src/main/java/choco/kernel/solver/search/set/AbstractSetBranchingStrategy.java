@@ -31,14 +31,6 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.branch.AbstractBinIntBranchingStrategy;
 import choco.kernel.solver.search.IntBranchingDecision;
 
-//**************************************************
-//*                   J-CHOCO                      *
-//*   Copyright (C) F. Laburthe, 1999-2003         *
-//**************************************************
-//*  an open-source Constraint Programming Kernel  *
-//*     for Research and Education                 *
-//**************************************************
-
 
 public abstract class AbstractSetBranchingStrategy extends AbstractBinIntBranchingStrategy {
 

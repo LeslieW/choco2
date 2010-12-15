@@ -27,14 +27,6 @@
 
 package choco.model.constraints.real;
 
-import static junit.framework.Assert.*;
-import static choco.Choco.makeIntVar;
-import static choco.Choco.makeRealVar;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.real.MixedEqXY;
@@ -42,10 +34,16 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.real.RealVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.real.RealIntervalConstant;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import static choco.Choco.makeIntVar;
+import static choco.Choco.makeRealVar;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
 /**
- * J-CHOCO
- * Copyright (C) F. Laburthe, 1999-2003
  * <p/>
  * An open-source Constraint Programming Kernel
  * for Research and Education

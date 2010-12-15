@@ -31,13 +31,6 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.set.AbstractSetVarSelector;
 import choco.kernel.solver.variables.set.SetVar;
 
-// **************************************************
-// *                   J-CHOCO                      *
-// *   Copyright (C) F. Laburthe, 1999-2003         *
-// **************************************************
-// *  an open-source Constraint Programming Kernel  *
-// *     for Research and Education                 *
-// **************************************************
 
 public class MaxDomSet extends AbstractSetVarSelector {
 

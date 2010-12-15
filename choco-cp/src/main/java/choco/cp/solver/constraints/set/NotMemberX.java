@@ -32,14 +32,6 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.set.AbstractUnSetSConstraint;
 import choco.kernel.solver.variables.set.SetVar;
 
-// **************************************************
-// *                   J-CHOCO                      *
-// *   Copyright (C) F. Laburthe, 1999-2003         *
-// **************************************************
-// *  an open-source Constraint Programming Kernel  *
-// *     for Research and Education                 *
-// **************************************************
-
 /**
  * Ensure that a value will not belong to a setVar
  */

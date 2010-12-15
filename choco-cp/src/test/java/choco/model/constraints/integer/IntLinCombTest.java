@@ -25,17 +25,10 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// *                   J-CHOCO                      *
-// *   Copyright (C) F. Laburthe, 1999-2003         *
-// **************************************************
-// *  an open-source Constraint Programming Kernel  *
-// *     for Research and Education                 *
-// **************************************************
 
 /* File choco.currentElement.search.IntLinCombTest.java, last modified by Francois 27 sept. 2003 12:08:59 */
 package choco.model.constraints.integer;
 
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -48,12 +41,14 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.junit.After;
 import org.junit.Assert;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
+import static org.junit.Assert.*;
 
 public class IntLinCombTest {
     protected final static Logger LOGGER = ChocoLogging.getTestLogger();

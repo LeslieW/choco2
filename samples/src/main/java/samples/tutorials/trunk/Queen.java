@@ -24,13 +24,6 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-// *  CHOCO: an open-source Constraint Programming  *
-// *     System for Research and Education          *
-// *                                                *
-// *    contributors listed in choco.Entity.java    *
-// *           Copyright (C) F. Laburthe, 1999-2006 *
-// **************************************************
 package samples.tutorials.trunk;
 
 

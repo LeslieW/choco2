@@ -25,18 +25,11 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// *                   J-CHOCO                      *
-// *   Copyright (C) F. Laburthe, 1999-2003         *
-// **************************************************
-// *  an open-source Constraint Programming Kernel  *
-// *     for Research and Education                 *
-// **************************************************
 
 /* File choco.currentElement.search.BitSetIntDomainTest.java, last modified by Francois 21 sept. 2003 10:59:44 */
 
 package choco.model.constraints.integer;
 
-import static choco.Choco.makeIntVar;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -47,13 +40,15 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomain;
 import org.junit.After;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Logger;
+
+import static choco.Choco.makeIntVar;
+import static org.junit.Assert.*;
 
 /**
  * a class implementing tests for backtrackable search

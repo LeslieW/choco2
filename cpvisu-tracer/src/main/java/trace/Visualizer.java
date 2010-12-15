@@ -28,12 +28,13 @@ package trace;
 
 import choco.kernel.solver.search.IntBranchingDecision;
 import org.slf4j.Logger;
+import trace.visualizers.Writer;
 
 /**
  * An abstract class to define a visulaizer.
  * <code>this</code> defines a constraint and variable visualizer, and its states are logged in the visualization
  * xml file.
- *
+ * <p/>
  * <br/>
  *
  * @author Charles Prud'homme
@@ -41,9 +42,11 @@ import org.slf4j.Logger;
  */
 public abstract class Visualizer {
 
+    protected static Writer writer = new Writer();
+
     protected int id;
     protected final String type;
-    protected final Display display;
+    protected final String display;
     protected int x = -1, y = -1;
     protected final int width, height;
     protected String group;
@@ -52,12 +55,13 @@ public abstract class Visualizer {
 
     /**
      * Build a visualizer
-     * @param type type of visualizer, must be supported in both sizes
-     * @param display how to diplay the visualizer
-     * @param width width of the visualizer
-     * @param height height of the visualizer
+     *
+     * @param type    type of visualizer, must be supported in both sizes
+     * @param display "expanded" or "compact"
+     * @param width   width of the visualizer
+     * @param height  height of the visualizer
      */
-    protected Visualizer(String type, Display display, int width, int height) {
+    protected Visualizer(String type, String display, int width, int height) {
         this.type = type;
         this.display = display;
         this.width = width;
@@ -66,17 +70,18 @@ public abstract class Visualizer {
 
     /**
      * Build a visualizer
-     * @param type  type of visualizer, must be supported in both sizes
-     * @param display how to diplay the visualizer
-     * @param x coordinate of the visualizer in the x-axis (horizontal)
-     * @param y coordinate of the visualizer in the y-axis (vertical)
-     * @param width width of the visualizer
-     * @param height height of the visualizer
-     * @param group group name (to group multiple constraints)
-     * @param min expected minimal value of any of the domains
-     * @param max expected maximal value of any of the domains
+     *
+     * @param type    type of visualizer, must be supported in both sizes
+     * @param display "expanded" or "compact"
+     * @param x       coordinate of the visualizer in the x-axis (horizontal)
+     * @param y       coordinate of the visualizer in the y-axis (vertical)
+     * @param width   width of the visualizer
+     * @param height  height of the visualizer
+     * @param group   group name (to group multiple constraints)
+     * @param min     expected minimal value of any of the domains
+     * @param max     expected maximal value of any of the domains
      */
-    protected Visualizer(String type, Display display, int x, int y, int width, int height, String group, int min, int max) {
+    protected Visualizer(String type, String display, int x, int y, int width, int height, String group, int min, int max) {
         this.type = type;
         this.display = display;
         this.x = x;
@@ -90,6 +95,7 @@ public abstract class Visualizer {
 
     /**
      * Set the identifier of <code>this</code>
+     *
      * @param id identifier
      */
     public void setId(int id) {
@@ -101,6 +107,7 @@ public abstract class Visualizer {
 
     /**
      * Returns the identifier of <code>this</code>
+     *
      * @return the identifier
      */
     public int getId() {
@@ -109,6 +116,7 @@ public abstract class Visualizer {
 
     /**
      * Set the coordinates of <code>this</code> in the visualizers window (default is [0,0])
+     *
      * @param x coordinate on the x-axis (horizontal)
      * @param y coordinate on the y-axis (vertical)
      */
@@ -119,6 +127,7 @@ public abstract class Visualizer {
 
     /**
      * Set a group name for <code>this</code>
+     *
      * @param group name of the group
      */
     public void setGroup(String group) {
@@ -127,6 +136,7 @@ public abstract class Visualizer {
 
     /**
      * Return the group name of <code>this</code>
+     *
      * @return group name
      */
     public String getGroup() {
@@ -136,6 +146,7 @@ public abstract class Visualizer {
 
     /**
      * Return the type of <code>this</code>
+     *
      * @return type
      */
     public String getType() {
@@ -144,14 +155,16 @@ public abstract class Visualizer {
 
     /**
      * Return the display policy
+     *
      * @return diplay ploicy
      */
-    public Display getDisplay() {
+    public String getDisplay() {
         return display;
     }
 
     /**
      * Return the width of <code>this</code> in the visualisers window (default is 500)
+     *
      * @return the width
      */
     public int getWidth() {
@@ -160,6 +173,7 @@ public abstract class Visualizer {
 
     /**
      * Return the height of <code>this</code> in the visualizers window (default is 500)
+     *
      * @return the height
      */
     public int getHeight() {
@@ -168,6 +182,7 @@ public abstract class Visualizer {
 
     /**
      * Set the expected minimal (resp. maximal) value of any of the domains
+     *
      * @param min minimal value
      * @param max maximal value
      */
@@ -190,5 +205,6 @@ public abstract class Visualizer {
         return st.toString();
     }
 
-    protected abstract int print(Logger logger, IntBranchingDecision decision);
+    protected abstract void print(Logger logger, boolean focus, IntBranchingDecision decision);
+
 }
