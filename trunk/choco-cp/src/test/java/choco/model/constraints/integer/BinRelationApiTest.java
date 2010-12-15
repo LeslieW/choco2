@@ -27,7 +27,6 @@
 
 package choco.model.constraints.integer;
 
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -40,20 +39,15 @@ import choco.kernel.solver.constraints.integer.extension.ConsistencyRelation;
 import choco.kernel.solver.constraints.integer.extension.CouplesTest;
 import choco.kernel.solver.constraints.integer.extension.CspBinSConstraint;
 import org.junit.After;
-import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-// **************************************************
-// *                   J-CHOCO                      *
-// *   Copyright (C) F. Laburthe, 1999-2003         *
-// **************************************************
-// *  an open-source Constraint Programming Kernel  *
-// *     for Research and Education                 *
-// **************************************************
+import static choco.Choco.*;
+import static org.junit.Assert.assertEquals;
+
 
 public class BinRelationApiTest {
 

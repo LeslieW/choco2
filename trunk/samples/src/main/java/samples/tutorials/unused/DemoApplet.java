@@ -32,12 +32,6 @@ import choco.kernel.common.logging.ChocoLogging;
 import javax.swing.*;
 import java.util.logging.Logger;
 
-// *********************************************
-// *                   J-CHOCO                 *
-// *   Copyright (c) F. Laburthe, 1999-2003    *
-// *********************************************
-// * Event-base contraint programming Engine   *
-// *********************************************
 
 public class DemoApplet extends JApplet {
     protected final static Logger LOGGER = ChocoLogging.getMainLogger();

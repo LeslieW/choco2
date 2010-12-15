@@ -27,24 +27,17 @@
 
 package choco.model.constraints.integer;
 
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.integer.IntegerVariable;
-import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-// **************************************************
-// *                   J-CHOCO                      *
-// *   Copyright (C) F. Laburthe, 1999-2003         *
-// **************************************************
-// *  an open-source Constraint Programming Kernel  *
-// *     for Research and Education                 *
-// **************************************************
+import static choco.Choco.*;
+import static org.junit.Assert.assertEquals;
 
 public class BinRelationSearchTest {
 

@@ -38,6 +38,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static trace.CPVizConstant.*;
+
 /**
  * A class to produce log files of a problem resolution.
  * <br/>
@@ -117,29 +119,29 @@ public class Visualization {
         this.solver = solver;
         this.parent_id = this.solver.getEnvironment().makeLong();
         if (configuration.isInfoEnabled()) {
-            configuration.info(CPVizConstant.C_CONF_TAG_IN, dir);
+            configuration.info(C_CONF_TAG_IN, dir);
         }
     }
 
     /**
-     * Declare the tree search visualization, with default construction parameters.<br/>
+     * Declare the tree search visualization.<br/>
      * Append to the configuration xml file
      *
-     * @param type    layout, distribution or treemap
-     * @param display compact or expanded
-     * @param repeat  all, final, i or -i
+     * @param type    "layout", "graph" or "values"
+     * @param display "compact" or "expanded"
+     * @param repeat  "all", "final", "i" or "-i"
      * @param width   width of SVG canvas in screen pixels
      * @param height  height of SVG canvas in screen pixels
      */
-    public void createTree(Type type, Display display, Repeat repeat, int width, int height) {
+    public void createTree(String type, String display, String repeat, int width, int height) {
         if (configuration.isInfoEnabled()) {
             if ((trace_tools & Show.TREE.mask) == 0) {
                 trace_tools += Show.TREE.mask;
                 if (tree.isInfoEnabled()) {
-                    configuration.info(CPVizConstant.C_TOOL_TAG,
+                    configuration.info(C_TOOL_TAG,
                             new Object[]{Show.TREE, type, display, repeat, Integer.toString(width), Integer.toString(height), "tree-" + pbid});
-                    tree.info(CPVizConstant.HEADER);
-                    tree.info(CPVizConstant.T_TREE_TAG_IN);
+                    tree.info(HEADER);
+                    tree.info(T_TREE_TAG_IN);
                 } else {
                     tree.error("TREE : info level is disable!");
                 }
@@ -152,33 +154,38 @@ public class Visualization {
     }
 
     /**
-     * Declare the tree search visualization.<br/>
+     * Declare the tree search visualization, with default construction parameters.<br/>
+     * - type : "layout" <br/>
+     * - display : "compact" <br/>
+     * - repeat: "all" <br/>
+     * - width : 500 <br/>
+     * - height : 500 <br/>
      * Append to the configuration xml file.
      */
     public void createTree() {
-        createTree(Type.preset(), Display.preset(), Repeat.preset(), 500, 500);
+        createTree(LAYOUT, COMPACT, ALL, 500, 500);
     }
 
     /**
      * Declare the constraint and variable visualizers container.<br/>
      * Append to the configuration xml file
      *
-     * @param type    layout, distribution or treemap
-     * @param display compact or expanded
-     * @param repeat  all, final, i or -i
+     * @param type    "layout"
+     * @param display "compact" or "expanded"
+     * @param repeat  "all", "final", "i" or "-i"
      * @param width   width of SVG canvas in screen pixels
      * @param height  height of SVG canvas in screen pixels
      */
-    public void createViz(Type type, Display display, Repeat repeat, int width, int height) {
+    public void createViz(String type, String display, String repeat, int width, int height) {
         visualizers = new ArrayList<Visualizer>(8);
         if (configuration.isInfoEnabled()) {
             if ((trace_tools & Show.VIZ.mask) == 0) {
                 trace_tools += Show.VIZ.mask;
                 if (visualization.isInfoEnabled()) {
-                    configuration.info(CPVizConstant.C_TOOL_TAG,
+                    configuration.info(C_TOOL_TAG,
                             new Object[]{Show.VIZ, type, display, repeat, Integer.toString(width), Integer.toString(height), "visualization-" + pbid});
-                    visualization.info(CPVizConstant.HEADER);
-                    visualization.info(CPVizConstant.V_VISUALIZATION_TAG_IN);
+                    visualization.info(HEADER);
+                    visualization.info(V_VISUALIZATION_TAG_IN);
                 } else {
                     visualization.error("VISUALIZATION : info level is disable!");
                 }
@@ -191,10 +198,15 @@ public class Visualization {
 
     /**
      * Declare the constraint and variable visualizers container, with default construction parameters.<br/>
+     * - type : "layout" <br/>
+     * - display : "compact" <br/>
+     * - repeat: "all" <br/>
+     * - width : 500 <br/>
+     * - height : 500 <br/>
      * Append to the configuration xml file
      */
     public void createViz() {
-        createViz(Type.preset(), Display.preset(), Repeat.preset(), 500, 500);
+        createViz(LAYOUT, COMPACT, ALL, 500, 500);
     }
 
     /**
@@ -206,7 +218,7 @@ public class Visualization {
         visualizers.add(visualizer);
         visualizer.setId(visualizers.size());
         if (visualization.isInfoEnabled()) {
-            visualization.info(CPVizConstant.V_VISUALIZER_TAG,
+            visualization.info(V_VISUALIZER_TAG,
                     new Object[]{visualizer.getId(), visualizer.getType(), visualizer.getDisplay(),
                             visualizer.getWidth(), visualizer.getHeight(),
                             visualizer.options()});
@@ -218,13 +230,13 @@ public class Visualization {
      */
     public void close() {
         if (configuration.isInfoEnabled()) {
-            configuration.info(CPVizConstant.C_CONF_TAG_OUT);
+            configuration.info(C_CONF_TAG_OUT);
         }
         if (tree.isInfoEnabled()) {
-            tree.info(CPVizConstant.T_TREE_TAG_OUT);
+            tree.info(T_TREE_TAG_OUT);
         }
         if (visualization.isInfoEnabled()) {
-            visualization.info(CPVizConstant.V_VISUALIZATION_TAG_OUT);
+            visualization.info(V_VISUALIZATION_TAG_OUT);
         }
     }
 
@@ -240,17 +252,17 @@ public class Visualization {
 
     void beforeInitialPropagation() {
         if (tree.isInfoEnabled()) {
-            tree.info(CPVizConstant.T_ROOT_TAG);
+            tree.info(T_ROOT_TAG);
         }
         if (visualization.isInfoEnabled()) {
-            printVisualizerStat(state_id, -1, null);
+            printVisualizerStat(state_id, -1, false);
         }
         state_id++;
     }
 
     void afterInitialPropagation() {
         if (visualization.isInfoEnabled()) {
-            printVisualizerStat(state_id, 0, null);
+            printVisualizerStat(state_id, 0, false);
         }
         state_id++;
     }
@@ -274,7 +286,7 @@ public class Visualization {
                 name = svar.getName();
                 dsize = Integer.toString(svar.getEnveloppeDomainSize());
             }
-            tree.info(CPVizConstant.T_TRY_TAG, new Object[]{node_id, parent_id.get(), name, dsize,
+            tree.info(T_TRY_TAG, new Object[]{node_id, parent_id.get(), name, dsize,
                     currentDecision.getBranchingValue()});
         }
         if (visualization.isInfoEnabled()) {
@@ -305,7 +317,7 @@ public class Visualization {
                     name = svar.getName();
                     dsize = Integer.toString(svar.getEnveloppeDomainSize());
                 }
-                tree.info(CPVizConstant.T_FAIL_TAG, new Object[]{node_id, parent_id.get(), name, dsize,
+                tree.info(T_FAIL_TAG, new Object[]{node_id, parent_id.get(), name, dsize,
                         currentDecision.getBranchingValue()});
             }
             if (visualization.isInfoEnabled()) {
@@ -316,26 +328,19 @@ public class Visualization {
     }
 
     private void printVisualizerStat(long s_id, long n_id, Boolean focus) {
-        visualization.info(CPVizConstant.V_STATE_TAG_IN, s_id, n_id);
+        visualization.info(V_STATE_TAG_IN, s_id, n_id);
         for (int i = 0; i < visualizers.size(); i++) {
             Visualizer vv = visualizers.get(i);
-            visualization.info(CPVizConstant.V_VISUALIZER_STATE_TAG_IN, vv.getId());
-            int decIdx = vv.print(visualization, currentDecision);
-            if (decIdx > 0) {
-                if (focus) {
-                    visualization.info("\t\t\t" + CPVizConstant.V_FOCUS_TAG, new Object[]{decIdx, vv.getGroup(), vv.getType()});
-                } else {
-                    visualization.info("\t\t\t" + CPVizConstant.V_FAILED_TAG, new Object[]{decIdx, vv.getGroup(), currentDecision.getBranchingValue()});
-                }
-            }
-            visualization.info(CPVizConstant.V_VISUALIZER_STATE_TAG_OUT);
+            visualization.info(V_VISUALIZER_STATE_TAG_IN, vv.getId());
+            vv.print(visualization, focus, currentDecision);
+            visualization.info(V_VISUALIZER_STATE_TAG_OUT);
         }
-        visualization.info(CPVizConstant.V_STATE_TAG_OUT);
+        visualization.info(V_STATE_TAG_OUT);
     }
 
     void succNode() {
         if (tree.isInfoEnabled()) {
-            tree.info(CPVizConstant.T_SUCC_TAG, node_id);
+            tree.info(T_SUCC_TAG, node_id);
         }
     }
 

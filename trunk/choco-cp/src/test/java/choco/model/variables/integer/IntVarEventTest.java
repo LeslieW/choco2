@@ -24,15 +24,6 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-// *                   J-CHOCO                      *
-// *   Copyright (C) F. Laburthe, 1999-2003         *
-// **************************************************
-// *  an open-source Constraint Programming Kernel  *
-// *     for Research and Education                 *
-// **************************************************
-
-/* File choco.currentElement.integer.IntVarEventTest.java, last modified by FLABURTHE 2 janv. 2004 */
 package choco.model.variables.integer;
 
 import choco.cp.solver.CPSolver;
@@ -51,12 +42,13 @@ import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
 import choco.kernel.solver.propagation.event.PropagationEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.junit.After;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashSet;
 import java.util.logging.Logger;
+
+import static org.junit.Assert.*;
 
 public class IntVarEventTest  {
 	private final static Logger LOGGER = ChocoLogging.getTestLogger();

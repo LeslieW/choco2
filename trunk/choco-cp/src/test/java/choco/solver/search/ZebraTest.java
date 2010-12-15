@@ -27,7 +27,6 @@
 
 package choco.solver.search;
 
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
@@ -35,21 +34,15 @@ import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import org.junit.After;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.logging.Logger;
-// **************************************************
-// *                   J-CHOCO                      *
-// *   Copyright (C) F. Laburthe, 1999-2003         *
-// **************************************************
-// *  an open-source Constraint Programming Kernel  *
-// *     for Research and Education                 *
-// **************************************************
 
-/* File choco.currentElement.search.ZebraTest.java, last modified by flaburthe 16 janv. 2004 14:57:02 */
+import static choco.Choco.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 
 public class ZebraTest {
 	private final static Logger LOGGER = ChocoLogging.getTestLogger();

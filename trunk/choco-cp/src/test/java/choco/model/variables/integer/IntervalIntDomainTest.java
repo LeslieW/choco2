@@ -27,7 +27,6 @@
 
 package choco.model.variables.integer;
 
-import static choco.Choco.makeIntVar;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -38,17 +37,13 @@ import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import org.junit.After;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.logging.Logger;
-// *********************************************
-// *                   J-CHOCO                 *
-// *   Copyright (c) F. Laburthe, 1999-2003    *
-// *********************************************
-// * Event-base contraint programming Engine   *
-// *********************************************
+
+import static choco.Choco.makeIntVar;
+import static org.junit.Assert.*;
 
 // CVS Information
 // File:               $RCSfile: IntervalIntDomainTest.java,v $

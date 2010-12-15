@@ -26,75 +26,46 @@
  */
 package trace.visualizers;
 
-import choco.cp.solver.variables.set.SetVarImpl;
-import choco.kernel.solver.search.IntBranchingDecision;
-import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.solver.variables.set.SetVar;
-import org.slf4j.Logger;
-import trace.Display;
-import trace.Visualizer;
 
 /**
+ * A specialized visualizer for the allDifferent constraint.
  * <br/>
  *
  * @author Charles Prud'homme
  * @since 13/12/10
  */
-public class AllDifferent extends Visualizer {
+public final class AllDifferent extends Vector {
 
 
-    public static final String alldifferent = "alldifferent";
-
-    public static final String PREFIX = "\t\t\t";
-
-    final Var[] variables;
+    private static final String type = "alldifferent";
 
     /**
-     * Build a AllDifferent constraint visualizer
-     * @param vars domain variables
-     * @param display how to diplay the visualizer
-     * @param width width of the visualizer
-     * @param height height of the visualizer
+     * Build a visualizer for the allDifferent constraint
+     *
+     * @param vars    domain variables
+     * @param display "expanded" or "compact"
+     * @param width   width of the visualizer
+     * @param height  height of the visualizer
      */
-    public AllDifferent(Var[] vars, Display display, int width, int height) {
-        super(alldifferent, display, width, height);
-        this.variables = vars;
+    public AllDifferent(IntDomainVar[] vars, String display, int width, int height) {
+        super(vars, type, display, width, height);
     }
 
     /**
-     * Build a AllDifferent constraint visualizer
-     * @param vars domain variables
-     * @param display how to diplay the visualizer
-     * @param x coordinate of the visualizer in the x-axis (horizontal)
-     * @param y coordinate of the visualizer in the y-axis (vertical)
-     * @param width width of the visualizer
-     * @param height height of the visualizer
-     * @param group group name (to group multiple constraints)
-     * @param min expected minimal value of any of the domains
-     * @param max expected maximal value of any of the domains
+     * Build a visualizer for the allDifferent constraint
+     *
+     * @param vars    domain variables
+     * @param display "expanded" or "compact"
+     * @param x       coordinate of the visualizer in the x-axis (horizontal)
+     * @param y       coordinate of the visualizer in the y-axis (vertical)
+     * @param width   width of the visualizer
+     * @param height  height of the visualizer
+     * @param group   group name (to group multiple constraints)
+     * @param min     expected minimal value of any of the domains
+     * @param max     expected maximal value of any of the domains
      */
-    public AllDifferent(Var[] vars, Display display, int x, int y, int width, int height, String group, int min, int max) {
-        super(alldifferent, display, x, y, width, height, group, min, max);
-        this.variables = vars;
-    }
-
-    @Override
-    protected int print(Logger logger, IntBranchingDecision decision) {
-        int f = 0;
-        for (int i = 0; i < variables.length; i++) {
-            Var var = variables[i];
-            if (var instanceof IntDomainVar) {
-                IntDomainVar ivar = (IntDomainVar) var;
-                XMLHelper.dvar(ivar, i + 1, logger, PREFIX);
-            } else if (var instanceof SetVarImpl) {
-                SetVar svar = (SetVar) var;
-                XMLHelper.svar(svar, i + 1, logger, PREFIX);
-            }
-            if (decision != null && decision.getBranchingObject() == var) {
-                f = i + 1;
-            }
-        }
-        return f;
+    public AllDifferent(IntDomainVar[] vars, String display, int x, int y, int width, int height, String group, int min, int max) {
+        super(vars, type, display, x, y, width, height, group, min, max);
     }
 }

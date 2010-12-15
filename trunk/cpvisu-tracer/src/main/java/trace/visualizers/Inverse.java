@@ -24,24 +24,41 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package trace;
+package trace.visualizers;
+
+import choco.kernel.solver.search.IntBranchingDecision;
+import choco.kernel.solver.variables.integer.IntDomainVar;
+import org.slf4j.Logger;
+import trace.Visualizer;
 
 /**
- * Describe how to display a visualizer
  * <br/>
- *               
+ *
  * @author Charles Prud'homme
- * @since 9 déc. 2010
+ * @since 14/12/10
  */
-public enum Display {
-    COMPACT, EXPANDED;
+public class Inverse extends Visualizer {
 
-    public static Display preset() {
-        return COMPACT;
+    private static final String type = "inverse";
+
+    final IntDomainVar[] X, Y;
+
+    public Inverse(IntDomainVar[] X, IntDomainVar[] Y, String display, int width, int height) {
+        super(type, display, width, height);
+        this.X = X;
+        this.Y = Y;
+    }
+
+    public Inverse(IntDomainVar[] X, IntDomainVar[] Y, String display, int x, int y, int width, int height, String group, int min, int max) {
+        super(type, display, x, y, width, height, group, min, max);
+        this.X = X;
+        this.Y = Y;
     }
 
     @Override
-    public String toString() {
-        return super.toString().toLowerCase();
+    protected void print(Logger logger, boolean focus, IntBranchingDecision decision) {
+        writer.argumentIn("1", 3).arrayDvar(X, 4).argumentOut(3);
+        writer.argumentIn("2", 3).arrayDvar(X, 4).argumentOut(3);
+        // CPVis#inverse do not deal with focus & fail
     }
 }

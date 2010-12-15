@@ -36,13 +36,6 @@ import choco.kernel.solver.propagation.listener.IntPropagator;
 import choco.kernel.solver.propagation.listener.SetPropagator;
 import choco.kernel.solver.variables.Var;
 
-//**************************************************
-//*                   J-CHOCO                      *
-//*   Copyright (C) F. Laburthe, 1999-2003         *
-//**************************************************
-//*  an open-source Constraint Programming Kernel  *
-//*     for Research and Education                 *
-//**************************************************
 
 /**
  * A class for mixed set and int constraint. It refers to both interface

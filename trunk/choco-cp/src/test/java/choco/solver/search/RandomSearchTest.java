@@ -27,28 +27,21 @@
 
 package choco.solver.search;
 
-import static choco.Choco.minus;
-import static choco.Choco.neq;
-import static choco.Choco.plus;
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-
 import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Configuration;
 import choco.kernel.solver.Solver;
+import org.junit.Test;
+
+import static choco.Choco.*;
+import static org.junit.Assert.assertEquals;
 
 /**
- * J-CHOCO
- * Copyright (C) F. Laburthe, 1999-2003
  * <p/>
  * An open-source Constraint Programming Kernel
  * for Research and Education

@@ -120,15 +120,15 @@ public final class GlobalCardinalityManager extends IntConstraintManager {
                         }
 
                         if (options.contains(Options.C_GCC_AC)) {
-                            return new GlobalCardinality(vars, min, _low.length, _low, _up, solver.getEnvironment());
+                            return new GlobalCardinality(vars, min, max, _low, _up, solver.getEnvironment());
                         }
                         if (options.contains(Options.C_GCC_BC)) {
-                            return new BoundGcc(vars, min, _low.length, _low, _up, solver.getEnvironment());
+                            return new BoundGcc(vars, min, max, _low, _up, solver.getEnvironment());
                         }
                         if ((vars[0]).hasEnumeratedDomain()) {
-                            return new GlobalCardinality(vars, min, _low.length, _low, _up, solver.getEnvironment());
+                            return new GlobalCardinality(vars, min, max, _low, _up, solver.getEnvironment());
                         } else {
-                            return new BoundGcc(vars, min, _low.length, _low, _up, solver.getEnvironment());
+                            return new BoundGcc(vars, min, max, _low, _up, solver.getEnvironment());
                         }
                     case GLOBALCARDINALITYVAR:
                         min = (Integer) params[1];
