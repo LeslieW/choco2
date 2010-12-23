@@ -567,7 +567,7 @@ And that's it!!
 
 \subsection{Example of an empty constraint}\label{advanced:anexempleofemptyconstraint}\hypertarget{advanced:anexempleofemptyconstraint}{}
 
-See the complete code: \href{media/zip/constraintpattern.zip}{ConstraintPattern.zip}
+%See the complete code: \href{media/zip/constraintpattern.zip}{ConstraintPattern.zip}
 
 \begin{lstlisting}
   public class ConstraintPattern extends AbstractLargeIntSConstraint {
@@ -670,9 +670,144 @@ To do that, you can use \texttt{constAwake(false)} that tells the solver that yo
 \section{Define your own operator}\label{advanced:defineyourownoperator}\hypertarget{advanced:defineyourownoperator}{}
 \todo{to complete}
 
+%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%
+
+There are 2 types of operators: \textbf{boolean} and \textbf{arithmetic}. These operators are based on integer variable and/or integer constants. 
+Let's take 2 examples \textit{plus} and \textit{eq}.
+
+The operator \textit{plus} is an arithmetic one (see  \mylst{PlusNode.java} class for details) that computes the sum of two variables (and/or constants). It extends  \mylst{INode} (it can be part of an expression object) and implements  \mylst{ArithmNode} (it can be evaluated). So, required services are:
+
+\begin{itemize}
+\item a constructor. The type of operator should be defined using \mylst{CUSTOM}.
+\begin{lstlisting}
+public PlusNode(INode[] subt) {
+	super(subt, NodeType.CUSTOM);
+}
+\end{lstlisting}
+\item  \mylst{pretty()} : a pretty print of the operator
+\begin{lstlisting}
+public String pretty() {
+        return "("+subtrees[0].pretty()+" + "+subtrees[1].pretty()+")";
+    }
+\end{lstlisting}
+
+\item  \mylst{eval(int[] tuple)} : evaluation of the operator with the given tuple. An arithmetic evaluation of the subtrees is done (based on the given tuple) to compute the sub expression before evaluating the current operator \textit{plus}. This allows tree-like representation of an expression.
+\begin{lstlisting}
+public int eval(int[] tuple) {
+		return ((ArithmNode) subtrees[0]).eval(tuple) + ((ArithmNode) subtrees[1]).eval(tuple);
+}
+\end{lstlisting}
+\end{itemize}
+
+
+The operator \textit{eq} is a boolean one (see  \mylst{EqNode.java} class for more details) that checks if two variables (and/or constants) are equal. It extends  \mylst{AbstractBooleanNode} (that can be checked). So required services are:
+\begin{itemize}
+\item a constructor
+\begin{lstlisting}
+public EqNode(INode[] subt) {
+        super(subt, NodeType.CUSTOM);
+    }
+\end{lstlisting}
+\item  \mylst{pretty()} : a pretty print of the operator
+\begin{lstlisting}
+public String pretty() {
+        return "("+subtrees[0].pretty()+"="+subtrees[1].pretty()+")";
+}
+\end{lstlisting} 
+
+\item  \mylst{eval(int[] tuple)}: an expression checker, based on the given tuple. An arithmetic evaluation of the subtrees is done (based on the given tuple) in order to check the operator \textit{eq}.
+\begin{lstlisting}
+public boolean checkTuple(int[] tuple) {
+		return ((ArithmNode) subtrees[0]).eval(tuple)
+		        ==  ((ArithmNode) subtrees[1]).eval(tuple);
+	}
+\end{lstlisting}
+
+\item  \mylst{extractConstraint(Solver s)} : extracts the corresponding constraint in intension constraint without reification.
+\begin{lstlisting}
+public SConstraint extractConstraint(Solver s) {
+        IntDomainVar v1 = subtrees[0].extractResult(s);
+		IntDomainVar v2 = subtrees[1].extractResult(s);
+		return s.eq(v1,v2);
+    }
+\end{lstlisting}
+\end{itemize}
+Now let's see how to use this operator in a Model.
+
+To do that, create your own manager implementing \mylst{ExpressionManager}, which makes the link between the model and the solver.
+
+Then to use your operator in your model, you can define a static method to simplify the calls.
+
+Let's sum up in a short example based on the \textit{plus} operator. 
+
+The manager would be:
+\begin{lstlisting}
+public class PlusManager implements ExpressionManager {
+    @Override
+    public INode makeNode(Solver solver, Constraint[] cstrs, Variable[] vars) {
+        if(solver instanceof CPSolver){
+            CPSolver s = (CPSolver)solver;
+            if(vars.length == 1){
+                INode[] nodes = new INode[vars.length];
+                for(int v = 0; v < vars.length; v++){
+                    nodes[v] = vars[v].getExpressionManager().makeNode(s, vars[v].getConstraints(), vars[v].getVariables());
+                }
+                return new PlusNode(nodes);
+            }
+        }
+        throw new ModelException("Could not found a node manager in " + this.getClass() + " !");
+    }
+}
+\end{lstlisting}
+
+
+A main class would be:
+\begin{lstlisting}
+public class Sandbox {
+
+    public static void main(String[] args) {
+        model1();
+    }
+
+    public static IntegerExpressionVariable plus(IntegerVariable x){
+        return new IntegerExpressionVariable(null, "package.of.PlusManager", x);
+    }
+
+    private static void model1() {
+        Model m = new CPModel();
+        IntegerVariable x = Choco.makeIntVar("x", 0, 5);
+        IntegerVariable y = Choco.makeIntVar("y", 4, 8);
+        IntegerVariable z = Choco.makeIntVar("z", 0, 10);
+	
+        // declare an expression using my operator
+        IntegerExpressionVariable xx = plus(x,y);
+
+        // and use it in common constraint
+        m.addConstraint(Choco.eq(z, xx));
+
+        Solver s = new CPSolver();
+        s.read(m);
+
+        ChocoLogging.toSolution();
+        s.solveAll();
+    }
+}
+\end{lstlisting}
+
+Keep in mind that you can not define operators for set and real. 
+
+%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%
+
 \section{Define your own variable}\label{advanced:defineyourownvariable}\hypertarget{advanced:defineyourownvariable}{}
 \todo{to complete}
-
 \section{Backtrackable structures}\label{advanced:backtrackablestructures}\hypertarget{advanced:backtrackablestructures}{}
 \todo{to complete}
 

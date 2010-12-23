@@ -15,14 +15,30 @@
             <groupId>choco</groupId>
             <artifactId>choco-kernel</artifactId>
             <version>${project.version}</version>
+            <scope>compile</scope>
         </dependency>
-                
+        <dependency>
+            <groupId>choco</groupId>
+            <artifactId>choco-kernel</artifactId>
+            <version>${project.version}</version>
+            <classifier>sources</classifier>
+            <scope>runtime</scope>
+        </dependency>
+
         <dependency>
             <groupId>choco</groupId>
             <artifactId>choco-cp</artifactId>
             <version>${project.version}</version>
+            <scope>compile</scope>
         </dependency>
-        
+        <dependency>
+            <groupId>choco</groupId>
+            <artifactId>choco-cp</artifactId>
+            <version>${project.version}</version>
+            <classifier>sources</classifier>
+            <scope>runtime</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjrt</artifactId>
@@ -84,6 +100,26 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <finalName>choco-solver-cpviz-${project.version}</finalName>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <descriptors>
+                        <descriptor>src/main/assembly/full.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
     <reporting>

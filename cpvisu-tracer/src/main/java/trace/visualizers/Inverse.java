@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import trace.Visualizer;
 
 /**
+ * A sepcialized visualizer for the Inverse constraint.
  * <br/>
  *
  * @author Charles Prud'homme
@@ -43,12 +44,33 @@ public class Inverse extends Visualizer {
 
     final IntDomainVar[] X, Y;
 
+    /**
+     * Build a sepcialized visualizer for the Inverse constraint.
+     * @param X domain variables
+     * @param Y domain variables
+     * @param display "expanded" or "compact"
+     * @param width   width of the visualizer
+     * @param height  height of the visualizer
+     */
     public Inverse(IntDomainVar[] X, IntDomainVar[] Y, String display, int width, int height) {
         super(type, display, width, height);
         this.X = X;
         this.Y = Y;
     }
 
+    /**
+     * Build a sepcialized visualizer for the Inverse constraint.
+     * @param X domain variables
+     * @param Y domain variables
+     * @param display "expanded" or "compact"
+     * @param x       coordinate of the visualizer in the x-axis (horizontal)
+     * @param y       coordinate of the visualizer in the y-axis (vertical)
+     * @param width   width of the visualizer
+     * @param height  height of the visualizer
+     * @param group   group name (to group multiple constraints)
+     * @param min     expected minimal value of any of the domains
+     * @param max     expected maximal value of any of the domains
+     */
     public Inverse(IntDomainVar[] X, IntDomainVar[] Y, String display, int x, int y, int width, int height, String group, int min, int max) {
         super(type, display, x, y, width, height, group, min, max);
         this.X = X;

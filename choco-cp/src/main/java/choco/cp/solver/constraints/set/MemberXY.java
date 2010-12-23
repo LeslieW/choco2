@@ -31,7 +31,10 @@ import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.cp.solver.variables.set.SetVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.set.AbstractBinSetIntSConstraint;
+import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetVar;
 
@@ -159,4 +162,9 @@ public final class MemberXY extends AbstractBinSetIntSConstraint {
         }
         return null;
 	}
+
+    @Override
+    public AbstractSConstraint<Var> opposite(Solver solver) {
+		return new NotMemberXY(v1, v0);
+    }
 }

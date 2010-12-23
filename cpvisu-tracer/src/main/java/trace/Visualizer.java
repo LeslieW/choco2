@@ -98,7 +98,7 @@ public abstract class Visualizer {
      *
      * @param id identifier
      */
-    public void setId(int id) {
+    protected void setId(int id) {
         this.id = id;
         if (group == null) {
             group = Integer.toString(id);

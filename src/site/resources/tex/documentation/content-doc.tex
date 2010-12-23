@@ -28,10 +28,6 @@ This section describes the three kinds of \hyperlink{model:variables}{variables}
 This section lists and details the \hyperlink{model:expressionvariables}{operators} that can be used within a Choco Model to combine variables in expressions.
 \input{chapters/operators/Oabs.tex}
 \input{chapters/operators/Ocos.tex}
-\input{chapters/operators/Odisteq.tex}
-\input{chapters/operators/Odistgt.tex}
-\input{chapters/operators/Odistlt.tex}
-\input{chapters/operators/Odistneq.tex}
 \input{chapters/operators/Odiv.tex}
 \input{chapters/operators/Oifthenelse.tex}
 \input{chapters/operators/Omax.tex}
@@ -223,6 +219,28 @@ This section lists and details the \hyperlink{solver:valueselector}{value select
 \input{chapters/strategies/vsminval}
 \input{chapters/strategies/vsrandomsetvalselector}
 
+\chapter{Visualizer (Visualization)}\label{ch:visualizer}\hypertarget{ch:visualizer}{}
+\section{Variable-oriented Visualizers}\label{vov:visualizers}\hypertarget{vov:visualizers}{}
+This section lists and details the \hyperlink{chocoandcpviz:visualizers}{variable-oriented visualizers} currently available in Choco.
+\input{chapters/visualizers/VbinaryMatrix.tex}
+\input{chapters/visualizers/VbinaryVector.tex}
+\input{chapters/visualizers/VdomainMatrix.tex}
+\input{chapters/visualizers/Vvector.tex}
+\input{chapters/visualizers/Vvectorsize.tex}
+\input{chapters/visualizers/VvectorWaterfall.tex}
+
+\section{Constraint-oriented Visualizers}\label{cov:visualizers}\hypertarget{cov:visualizers}{}
+This section lists and details the \hyperlink{chocoandcpviz:visualizers}{constraint-oriented visualizers} currently available in Choco.
+\input{chapters/visualizers/Valldifferent}
+\input{chapters/visualizers/Valldifferentmatrix}
+\input{chapters/visualizers/Vbooleanchanneling}
+\input{chapters/visualizers/Vcumulative}
+\input{chapters/visualizers/Velement}
+\input{chapters/visualizers/Vgcc}
+\input{chapters/visualizers/Vinverse}
+\input{chapters/visualizers/Vlexle}
+\input{chapters/visualizers/Vlexlt}
+
 \part{Extras}\label{ch:extra}\hypertarget{ch:extra}{}
-\input{chapters/Choco_and_visu.tex}
+%\input{chapters/Choco_and_visu.tex}
 \input{chapters/sudoku_and_cp.tex}

@@ -27,7 +27,7 @@
 
 package choco.model.constraints.integer;
 
-import static choco.Choco.*;
+import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.bool.sat.ClauseStore;
@@ -37,14 +37,20 @@ import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.memory.trailing.EnvironmentTrailing;
 import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.constraints.cnf.ALogicTree;
+import choco.kernel.model.constraints.cnf.Literal;
+import choco.kernel.model.constraints.cnf.Node;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Random;
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /*
 * User : charles
@@ -283,4 +289,89 @@ public class ClausesTest {
         s.solveAll();
         return s.getNbSolutions();
     }
+
+    @Test
+    public void test4() {
+        CPModel mod = new CPModel();
+        CPSolver s = new CPSolver();
+        IntegerVariable[] v = makeBooleanVarArray("b", 4);
+
+        Literal a = Literal.pos(v[0]);
+        Literal na = Literal.neg(a.flattenBoolVar()[0]);
+        Literal b = Literal.pos(v[1]);
+        Literal c = Literal.pos(v[2]);
+        Literal d = Literal.pos(v[3]);
+
+        ALogicTree root = Node.and(a, b, na, c, d);
+        mod.addConstraints(clauses(root));
+
+        s.read(mod);
+        s.solveAll();
+        assertEquals(s.getNbSolutions(), 0);
+    }
+
+    @Test
+    public void test5() {
+        int nSol = 1;
+        for (int n = 1; n < 12; n++) {
+            for (int i = 0; i <= n; i++) {
+
+                CPModel mod = new CPModel();
+                CPSolver s = new CPSolver();
+                IntegerVariable[] bs = new IntegerVariable[n];
+                Literal[] lits = new Literal[n];
+                for (int j = 0; j < n; j++) {
+                    bs[j] = Choco.makeBooleanVar("b" + j);
+                    if (j < i) {
+                        lits[j] = Literal.pos(bs[j]);
+                    } else {
+                        lits[j] = Literal.neg(bs[j]);
+                    }
+                }
+                ALogicTree or = Node.or(lits);
+                mod.addConstraints(clauses(or));
+                s.read(mod);
+                s.solveAll();
+
+                long sol = s.getSolutionCount();
+                Assert.assertEquals(sol, nSol);
+            }
+            nSol = nSol * 2 + 1;
+        }
+    }
+
+    @Test
+    public void testBothAnd() {
+        CPModel mod = new CPModel();
+        CPSolver s = new CPSolver();
+        IntegerVariable[] bs = new IntegerVariable[1];
+        bs[0] = Choco.makeBooleanVar("to be");
+
+        ALogicTree and = Node.and(Literal.pos(bs[0]), Literal.neg(bs[0]));
+
+        mod.addConstraints(clauses(and));
+        s.read(mod);
+        s.solveAll();
+
+        long sol = s.getSolutionCount();
+        Assert.assertEquals(sol, 0);
+    }
+
+    @Test
+    public void testBothOr() {
+        CPModel mod = new CPModel();
+        CPSolver s = new CPSolver();
+        IntegerVariable b = Choco.makeBooleanVar("to be");
+        mod.addVariable(b);
+
+        ALogicTree or = Node.or(Literal.pos(b), Literal.neg(b));
+
+        mod.addConstraints(clauses(or));
+        s.read(mod);
+        s.solveAll();
+
+        long sol = s.getSolutionCount();
+        Assert.assertEquals(2, sol);
+    }
+
 }

@@ -41,11 +41,11 @@
 \contentsline {subsection}{\numberline {2.2.7}Reified constraints}{23}{subsection.2.2.7}
 \contentsline {subsubsection}{Handling complex expressions.}{23}{section*.9}
 \contentsline {subsubsection}{When and how should I use expressions ?}{24}{section*.10}
-\contentsline {subsection}{\numberline {2.2.8}Global constraints}{24}{subsection.2.2.8}
+\contentsline {subsection}{\numberline {2.2.8}Global constraints}{25}{subsection.2.2.8}
 \contentsline {subsubsection}{Value constraints}{25}{section*.11}
 \contentsline {subsubsection}{Boolean constraints}{25}{section*.12}
 \contentsline {subsubsection}{Channeling constraints}{25}{section*.13}
-\contentsline {subsubsection}{Optimization constraints}{25}{section*.14}
+\contentsline {subsubsection}{Optimization constraints}{26}{section*.14}
 \contentsline {subsubsection}{Packing constraints (capacitated resources)}{26}{section*.15}
 \contentsline {subsubsection}{Scheduling constraints (time assignment)}{26}{section*.16}
 \contentsline {chapter}{\numberline {3}The solver}{27}{chapter.3}
@@ -93,249 +93,260 @@
 \contentsline {subsection}{\numberline {4.4.2}Example: implement and add the \texttt {IsOdd} constraint}{50}{subsection.4.4.2}
 \contentsline {subsection}{\numberline {4.4.3}Example of an empty constraint}{52}{subsection.4.4.3}
 \contentsline {section}{\numberline {4.5}Define your own operator}{53}{section.4.5}
-\contentsline {section}{\numberline {4.6}Define your own variable}{53}{section.4.6}
-\contentsline {section}{\numberline {4.7}Backtrackable structures}{54}{section.4.7}
-\contentsline {section}{\numberline {4.8}Logging System}{54}{section.4.8}
-\contentsline {subsubsection}{Verbosity and messages.}{54}{section*.31}
-\contentsline {subsubsection}{How to write logging statements ?}{56}{section*.32}
-\contentsline {subsubsection}{Handlers.}{56}{section*.33}
-\contentsline {subsubsection}{Define your own logger.}{56}{section*.34}
-\contentsline {part}{II\hspace {1em}Elements of Choco}{57}{part.2}
-\contentsline {chapter}{\numberline {5}Variables (Model)}{59}{chapter.5}
-\contentsline {section}{\numberline {5.1}Integer variables}{59}{section.5.1}
-\contentsline {subsubsection}{constructors:}{59}{section*.35}
-\contentsline {subsubsection}{options:}{59}{section*.36}
-\contentsline {subsubsection}{methods:}{60}{section*.37}
-\contentsline {subsubsection}{Example:}{60}{section*.38}
-\contentsline {section}{\numberline {5.2}Real variables}{60}{section.5.2}
-\contentsline {subsubsection}{constructor:}{60}{section*.39}
-\contentsline {subsubsection}{options:}{60}{section*.40}
-\contentsline {subsubsection}{Example:}{60}{section*.41}
-\contentsline {section}{\numberline {5.3}Set variables}{60}{section.5.3}
-\contentsline {subsubsection}{constructors:}{61}{section*.42}
-\contentsline {subsubsection}{options:}{61}{section*.43}
-\contentsline {subsubsection}{Example:}{61}{section*.44}
-\contentsline {section}{\numberline {5.4}Task variables}{61}{section.5.4}
-\contentsline {subsubsection}{constructors:}{62}{section*.45}
-\contentsline {subsubsection}{options:}{62}{section*.46}
-\contentsline {subsubsection}{Example:}{62}{section*.47}
-\contentsline {chapter}{\numberline {6}Operators (Model)}{63}{chapter.6}
-\contentsline {section}{\numberline {6.1}abs (operator)}{63}{section.6.1}
-\contentsline {section}{\numberline {6.2}cos (operator)}{63}{section.6.2}
-\contentsline {section}{\numberline {6.3}distEq (operator)}{64}{section.6.3}
-\contentsline {section}{\numberline {6.4}distGt (operator)}{64}{section.6.4}
-\contentsline {section}{\numberline {6.5}distLt (operator)}{64}{section.6.5}
-\contentsline {section}{\numberline {6.6}distNeq (operator)}{64}{section.6.6}
-\contentsline {section}{\numberline {6.7}div (operator)}{64}{section.6.7}
-\contentsline {section}{\numberline {6.8}ifThenElse (operator)}{64}{section.6.8}
-\contentsline {section}{\numberline {6.9}max (operator)}{65}{section.6.9}
-\contentsline {section}{\numberline {6.10}min (operator)}{65}{section.6.10}
-\contentsline {section}{\numberline {6.11}minus (operator)}{66}{section.6.11}
-\contentsline {section}{\numberline {6.12}mod (operator)}{66}{section.6.12}
-\contentsline {section}{\numberline {6.13}mult (operator)}{67}{section.6.13}
-\contentsline {section}{\numberline {6.14}neg (operator)}{67}{section.6.14}
-\contentsline {section}{\numberline {6.15}plus (operator)}{68}{section.6.15}
-\contentsline {section}{\numberline {6.16}power (operator)}{68}{section.6.16}
-\contentsline {section}{\numberline {6.17}scalar (operator)}{69}{section.6.17}
-\contentsline {section}{\numberline {6.18}sin (operator)}{69}{section.6.18}
-\contentsline {section}{\numberline {6.19}sum (operator)}{70}{section.6.19}
-\contentsline {chapter}{\numberline {7}Constraints (Model)}{71}{chapter.7}
-\contentsline {section}{\numberline {7.1}abs (constraint)}{71}{section.7.1}
-\contentsline {section}{\numberline {7.2}allDifferent (constraint)}{71}{section.7.2}
-\contentsline {section}{\numberline {7.3}among (constraint)}{72}{section.7.3}
-\contentsline {section}{\numberline {7.4}and (constraint)}{73}{section.7.4}
-\contentsline {section}{\numberline {7.5}atMostNValue (constraint)}{74}{section.7.5}
-\contentsline {section}{\numberline {7.6}boolChanneling (constraint)}{75}{section.7.6}
-\contentsline {section}{\numberline {7.7}clause (constraint)}{75}{section.7.7}
-\contentsline {section}{\numberline {7.8}costRegular (constraint)}{76}{section.7.8}
-\contentsline {section}{\numberline {7.9}cumulative (constraint)}{79}{section.7.9}
-\contentsline {section}{\numberline {7.10}cumulativeMax (constraint)}{80}{section.7.10}
-\contentsline {section}{\numberline {7.11}cumulativeMin (constraint)}{81}{section.7.11}
-\contentsline {section}{\numberline {7.12}disjoint (constraint)}{81}{section.7.12}
-\contentsline {section}{\numberline {7.13}disjunctive (constraint)}{82}{section.7.13}
-\contentsline {section}{\numberline {7.14}distanceEQ (constraint)}{83}{section.7.14}
-\contentsline {section}{\numberline {7.15}distanceGT (constraint)}{83}{section.7.15}
-\contentsline {section}{\numberline {7.16}distanceLT (constraint)}{84}{section.7.16}
-\contentsline {section}{\numberline {7.17}distanceNEQ (constraint)}{85}{section.7.17}
-\contentsline {section}{\numberline {7.18}domainChanneling (constraint)}{85}{section.7.18}
-\contentsline {section}{\numberline {7.19}element (constraint)}{86}{section.7.19}
-\contentsline {section}{\numberline {7.20}endsAfter (constraint)}{86}{section.7.20}
-\contentsline {section}{\numberline {7.21}endsAfterBegin (constraint)}{86}{section.7.21}
-\contentsline {section}{\numberline {7.22}endsAfterEnd (constraint)}{87}{section.7.22}
-\contentsline {section}{\numberline {7.23}endsBefore (constraint)}{87}{section.7.23}
-\contentsline {section}{\numberline {7.24}endsBeforeBegin (constraint)}{87}{section.7.24}
-\contentsline {section}{\numberline {7.25}endsBeforeEnd (constraint)}{88}{section.7.25}
-\contentsline {section}{\numberline {7.26}endsBetween (constraint)}{88}{section.7.26}
-\contentsline {section}{\numberline {7.27}eq (constraint)}{88}{section.7.27}
-\contentsline {section}{\numberline {7.28}eqCard (constraint)}{89}{section.7.28}
-\contentsline {section}{\numberline {7.29}equation (constraint)}{90}{section.7.29}
-\contentsline {section}{\numberline {7.30}exactly (constraint)}{91}{section.7.30}
-\contentsline {section}{\numberline {7.31}FALSE (constraint)}{91}{section.7.31}
-\contentsline {section}{\numberline {7.32}feasPairAC (constraint)}{91}{section.7.32}
-\contentsline {section}{\numberline {7.33}feasTupleAC (constraint)}{92}{section.7.33}
-\contentsline {section}{\numberline {7.34}feasTupleFC (constraint)}{93}{section.7.34}
-\contentsline {section}{\numberline {7.35}forbiddenInterval (constraint)}{93}{section.7.35}
-\contentsline {section}{\numberline {7.36}geost (constraint)}{94}{section.7.36}
-\contentsline {section}{\numberline {7.37}geq (constraint)}{96}{section.7.37}
-\contentsline {section}{\numberline {7.38}geqCard (constraint)}{97}{section.7.38}
-\contentsline {section}{\numberline {7.39}globalCardinality (constraint)}{97}{section.7.39}
-\contentsline {section}{\numberline {7.40}gt (constraint)}{99}{section.7.40}
-\contentsline {section}{\numberline {7.41}ifOnlyIf (constraint)}{100}{section.7.41}
-\contentsline {section}{\numberline {7.42}ifThenElse (constraint)}{100}{section.7.42}
-\contentsline {section}{\numberline {7.43}implies (constraint)}{101}{section.7.43}
-\contentsline {section}{\numberline {7.44}increasingNValue (constraint)}{101}{section.7.44}
-\contentsline {section}{\numberline {7.45}infeasPairAC (constraint)}{102}{section.7.45}
-\contentsline {section}{\numberline {7.46}infeasTupleAC (constraint)}{103}{section.7.46}
-\contentsline {section}{\numberline {7.47}infeasTupleFC (constraint)}{104}{section.7.47}
-\contentsline {section}{\numberline {7.48}intDiv (constraint)}{104}{section.7.48}
-\contentsline {section}{\numberline {7.49}inverseChanneling (constraint)}{105}{section.7.49}
-\contentsline {section}{\numberline {7.50}inverseSet (constraint)}{106}{section.7.50}
-\contentsline {section}{\numberline {7.51}isIncluded (constraint)}{106}{section.7.51}
-\contentsline {section}{\numberline {7.52}isNotIncluded (constraint)}{107}{section.7.52}
-\contentsline {section}{\numberline {7.53}knapsackProblem (constraint)}{107}{section.7.53}
-\contentsline {section}{\numberline {7.54}leq (constraint)}{108}{section.7.54}
-\contentsline {section}{\numberline {7.55}leqCard (constraint)}{109}{section.7.55}
-\contentsline {section}{\numberline {7.56}lex (constraint)}{109}{section.7.56}
-\contentsline {section}{\numberline {7.57}lexChain (constraint)}{110}{section.7.57}
-\contentsline {section}{\numberline {7.58}lexChainEq (constraint)}{111}{section.7.58}
-\contentsline {section}{\numberline {7.59}lexEq (constraint)}{111}{section.7.59}
-\contentsline {section}{\numberline {7.60}leximin (constraint)}{112}{section.7.60}
-\contentsline {section}{\numberline {7.61}lt (constraint)}{113}{section.7.61}
-\contentsline {section}{\numberline {7.62}max (constraint)}{113}{section.7.62}
-\contentsline {subsection}{\numberline {7.62.1}max of a list}{113}{subsection.7.62.1}
-\contentsline {subsection}{\numberline {7.62.2}max of a set}{114}{subsection.7.62.2}
-\contentsline {section}{\numberline {7.63}member (constraint)}{114}{section.7.63}
-\contentsline {section}{\numberline {7.64}min (constraint)}{115}{section.7.64}
-\contentsline {subsection}{\numberline {7.64.1}min of a list}{115}{subsection.7.64.1}
-\contentsline {subsection}{\numberline {7.64.2}min of a set}{116}{subsection.7.64.2}
-\contentsline {section}{\numberline {7.65}mod (constraint)}{116}{section.7.65}
-\contentsline {section}{\numberline {7.66}multiCostRegular (constraint)}{117}{section.7.66}
-\contentsline {section}{\numberline {7.67}neq (constraint)}{118}{section.7.67}
-\contentsline {section}{\numberline {7.68}neqCard (constraint)}{119}{section.7.68}
-\contentsline {section}{\numberline {7.69}not (constraint)}{120}{section.7.69}
-\contentsline {section}{\numberline {7.70}notMember (constraint)}{120}{section.7.70}
-\contentsline {section}{\numberline {7.71}nth (constraint)}{121}{section.7.71}
-\contentsline {section}{\numberline {7.72}occurrence (constraint)}{122}{section.7.72}
-\contentsline {section}{\numberline {7.73}occurrenceMax (constraint)}{123}{section.7.73}
-\contentsline {section}{\numberline {7.74}occurrenceMin (constraint)}{123}{section.7.74}
-\contentsline {section}{\numberline {7.75}oppositeSign (constraint)}{124}{section.7.75}
-\contentsline {section}{\numberline {7.76}or (constraint)}{124}{section.7.76}
-\contentsline {section}{\numberline {7.77}pack (constraint)}{125}{section.7.77}
-\contentsline {section}{\numberline {7.78}precedenceReified (constraint)}{126}{section.7.78}
-\contentsline {section}{\numberline {7.79}precedenceimplied (constraint)}{127}{section.7.79}
-\contentsline {section}{\numberline {7.80}precedence (constraint)}{127}{section.7.80}
-\contentsline {section}{\numberline {7.81}precedencedisjoint (constraint)}{127}{section.7.81}
-\contentsline {section}{\numberline {7.82}regular (constraint)}{127}{section.7.82}
-\contentsline {section}{\numberline {7.83}reifiedAnd (constraint)}{129}{section.7.83}
-\contentsline {section}{\numberline {7.84}reifiedConstraint (constraint)}{130}{section.7.84}
-\contentsline {section}{\numberline {7.85}reifiedLeftImp (constraint)}{130}{section.7.85}
-\contentsline {section}{\numberline {7.86}reifiedNot (constraint)}{130}{section.7.86}
-\contentsline {section}{\numberline {7.87}reifiedOr (constraint)}{131}{section.7.87}
-\contentsline {section}{\numberline {7.88}reifiedRightImp (constraint)}{131}{section.7.88}
-\contentsline {section}{\numberline {7.89}reifiedXnor (constraint)}{131}{section.7.89}
-\contentsline {section}{\numberline {7.90}reifiedXor (constraint)}{131}{section.7.90}
-\contentsline {section}{\numberline {7.91}relationPairAC (constraint)}{131}{section.7.91}
-\contentsline {section}{\numberline {7.92}relationTupleAC (constraint)}{132}{section.7.92}
-\contentsline {section}{\numberline {7.93}relationTupleFC (constraint)}{133}{section.7.93}
-\contentsline {section}{\numberline {7.94}sameSign (constraint)}{133}{section.7.94}
-\contentsline {section}{\numberline {7.95}setDisjoint (constraint)}{134}{section.7.95}
-\contentsline {section}{\numberline {7.96}setInter (constraint)}{134}{section.7.96}
-\contentsline {section}{\numberline {7.97}setUnion (constraint)}{135}{section.7.97}
-\contentsline {section}{\numberline {7.98}sorting (constraint)}{136}{section.7.98}
-\contentsline {section}{\numberline {7.99}startsAfter (constraint)}{136}{section.7.99}
-\contentsline {section}{\numberline {7.100}startsAfterBegin (constraint)}{137}{section.7.100}
-\contentsline {section}{\numberline {7.101}startsAfterEnd (constraint)}{137}{section.7.101}
-\contentsline {section}{\numberline {7.102}startsBefore (constraint)}{137}{section.7.102}
-\contentsline {section}{\numberline {7.103}startsBeforeBegin (constraint)}{138}{section.7.103}
-\contentsline {section}{\numberline {7.104}startsBeforeEnd (constraint)}{138}{section.7.104}
-\contentsline {section}{\numberline {7.105}startsBetween (constraint)}{138}{section.7.105}
-\contentsline {section}{\numberline {7.106}stretchPath (constraint)}{139}{section.7.106}
-\contentsline {section}{\numberline {7.107}times (constraint)}{139}{section.7.107}
-\contentsline {section}{\numberline {7.108}tree (constraint)}{140}{section.7.108}
-\contentsline {section}{\numberline {7.109}TRUE (constraint)}{142}{section.7.109}
-\contentsline {section}{\numberline {7.110}xnor (constraint)}{143}{section.7.110}
-\contentsline {section}{\numberline {7.111}xor (constraint)}{143}{section.7.111}
-\contentsline {chapter}{\numberline {8}Options (Model)}{145}{chapter.8}
-\contentsline {section}{\numberline {8.1}Options and settings}{145}{section.8.1}
-\contentsline {subsection}{\numberline {8.1.1}Options for variables:}{145}{subsection.8.1.1}
-\contentsline {subsection}{\numberline {8.1.2}Options for expressions:}{146}{subsection.8.1.2}
-\contentsline {subsection}{\numberline {8.1.3}Options and settings for constraints:}{146}{subsection.8.1.3}
-\contentsline {subsection}{\numberline {8.1.4}Options for solvers:}{152}{subsection.8.1.4}
-\contentsline {chapter}{\numberline {9}Branching strategies (Solver)}{153}{chapter.9}
-\contentsline {section}{\numberline {9.1}AssignInterval (Branching strategy)}{153}{section.9.1}
-\contentsline {section}{\numberline {9.2}AssignOrForbidIntVarVal (Branching strategy)}{153}{section.9.2}
-\contentsline {section}{\numberline {9.3}AssignOrForbidIntVarValPair (Branching strategy)}{154}{section.9.3}
-\contentsline {section}{\numberline {9.4}AssignSetVar (Branching strategy)}{154}{section.9.4}
-\contentsline {section}{\numberline {9.5}AssignVar (Branching strategy)}{154}{section.9.5}
-\contentsline {section}{\numberline {9.6}DomOverWDegBranchingNew (Branching strategy)}{155}{section.9.6}
-\contentsline {section}{\numberline {9.7}DomOverWDegBinBranchingNew (Branching strategy)}{155}{section.9.7}
-\contentsline {section}{\numberline {9.8}ImpactBasedBranching (Branching strategy)}{156}{section.9.8}
-\contentsline {section}{\numberline {9.9}PackDynRemovals (Branching strategy)}{156}{section.9.9}
-\contentsline {section}{\numberline {9.10}SetTimes (Branching strategy)}{157}{section.9.10}
-\contentsline {section}{\numberline {9.11}TaskOverWDegBinBranching (Branching strategy)}{157}{section.9.11}
-\contentsline {chapter}{\numberline {10}Variable selectors (Solver)}{159}{chapter.10}
-\contentsline {section}{\numberline {10.1}CompositeIntVarSelector (Variable selector)}{159}{section.10.1}
-\contentsline {section}{\numberline {10.2}CyclicRealVarSelector (Variable selector)}{159}{section.10.2}
-\contentsline {section}{\numberline {10.3}LexIntVarSelector (Variable selector)}{160}{section.10.3}
-\contentsline {section}{\numberline {10.4}MaxDomain (Variable selector)}{160}{section.10.4}
-\contentsline {section}{\numberline {10.5}MaxDomSet (Variable selector)}{160}{section.10.5}
-\contentsline {section}{\numberline {10.6}MaxRegret (Variable selector)}{161}{section.10.6}
-\contentsline {section}{\numberline {10.7}MaxRegretSet (Variable selector)}{161}{section.10.7}
-\contentsline {section}{\numberline {10.8}MaxValueDomain (Variable selector)}{162}{section.10.8}
-\contentsline {section}{\numberline {10.9}MaxValueDomSet (Variable selector)}{162}{section.10.9}
-\contentsline {section}{\numberline {10.10}MinDomain (Variable selector)}{162}{section.10.10}
-\contentsline {section}{\numberline {10.11}MinDomSet (Variable selector)}{163}{section.10.11}
-\contentsline {section}{\numberline {10.12}MinValueDomain (Variable selector)}{163}{section.10.12}
-\contentsline {section}{\numberline {10.13}MinValueDomSet (Variable selector)}{163}{section.10.13}
-\contentsline {section}{\numberline {10.14}MostConstrained (Variable selector)}{164}{section.10.14}
-\contentsline {section}{\numberline {10.15}MostConstrainedSet (Variable selector)}{164}{section.10.15}
-\contentsline {section}{\numberline {10.16}RandomIntVarSelector (Variable selector)}{164}{section.10.16}
-\contentsline {section}{\numberline {10.17}RandomSetVarSelector (Variable selector)}{165}{section.10.17}
-\contentsline {section}{\numberline {10.18}StaticSetVarOrder (Variable selector)}{165}{section.10.18}
-\contentsline {section}{\numberline {10.19}StaticVarOrder (Variable selector)}{165}{section.10.19}
-\contentsline {chapter}{\numberline {11}Value iterators (Solver)}{167}{chapter.11}
-\contentsline {section}{\numberline {11.1}DecreasingDomain (Value iterator)}{167}{section.11.1}
-\contentsline {section}{\numberline {11.2}IncreasingDomain (Value iterator)}{167}{section.11.2}
-\contentsline {section}{\numberline {11.3}RealIncreasingDomain (Value iterator)}{167}{section.11.3}
-\contentsline {chapter}{\numberline {12}Value selector (Solver)}{169}{chapter.12}
-\contentsline {section}{\numberline {12.1}BestFit (Value selector)}{169}{section.12.1}
-\contentsline {section}{\numberline {12.2}CostRegularValSelector (Value selector)}{169}{section.12.2}
-\contentsline {section}{\numberline {12.3}FCostRegularValSelector (Value selector)}{170}{section.12.3}
-\contentsline {section}{\numberline {12.4}MaxVal (Value selector)}{170}{section.12.4}
-\contentsline {section}{\numberline {12.5}MidVal (Value selector)}{170}{section.12.5}
-\contentsline {section}{\numberline {12.6}MinEnv (Value selector)}{171}{section.12.6}
-\contentsline {section}{\numberline {12.7}MinVal (Value selector)}{171}{section.12.7}
-\contentsline {section}{\numberline {12.8}RandomSetValSelector (Value selector)}{171}{section.12.8}
-\contentsline {part}{III\hspace {1em}Extras}{173}{part.3}
-\contentsline {chapter}{\numberline {13}Choco and Visu}{175}{chapter.13}
-\contentsline {section}{\numberline {13.1}Why?}{175}{section.13.1}
-\contentsline {section}{\numberline {13.2}The visu package}{175}{section.13.2}
-\contentsline {section}{\numberline {13.3}Steps to use the Visu}{175}{section.13.3}
-\contentsline {subsection}{\numberline {13.3.1}Visu creation}{175}{subsection.13.3.1}
-\contentsline {subsection}{\numberline {13.3.2}Adding panel}{177}{subsection.13.3.2}
-\contentsline {subsubsection}{Existing ChocoPApplet}{177}{section*.48}
-\contentsline {subsubsection}{User ChocoPApplet}{178}{section*.49}
-\contentsline {section}{\numberline {13.4}Examples}{178}{section.13.4}
-\contentsline {chapter}{\numberline {14}Sudoku and Constraint Programming}{179}{chapter.14}
-\contentsline {section}{\numberline {14.1}Sudoku ?!?}{179}{section.14.1}
-\contentsline {subsection}{\numberline {14.1.1}Solving sudokus}{179}{subsection.14.1.1}
-\contentsline {section}{\numberline {14.2}Sudoku and Artificial Intelligence}{180}{section.14.2}
-\contentsline {subsection}{\numberline {14.2.1}Simple rules: single candidate and single position}{180}{subsection.14.2.1}
-\contentsline {subsection}{\numberline {14.2.2}Human reasoning principles}{180}{subsection.14.2.2}
-\contentsline {subsection}{\numberline {14.2.3}Towards Constraint Programming}{181}{subsection.14.2.3}
-\contentsline {section}{\numberline {14.3}See also}{182}{section.14.3}
-\contentsline {part}{Glossary}{183}{chapter*.51}
-\contentsline {part}{Bibliography}{183}{chapter*.51}
-\contentsline {chapter}{GNU Free Documentation License}{187}{section*.54}
-\contentsline {section}{1. APPLICABILITY AND DEFINITIONS}{187}{section*.55}
-\contentsline {section}{2. VERBATIM COPYING}{188}{section*.56}
-\contentsline {section}{3. COPYING IN QUANTITY}{188}{section*.57}
-\contentsline {section}{4. MODIFICATIONS}{189}{section*.58}
-\contentsline {section}{5. COMBINING DOCUMENTS}{190}{section*.59}
-\contentsline {section}{6. COLLECTIONS OF DOCUMENTS}{190}{section*.60}
-\contentsline {section}{7. AGGREGATION WITH INDEPENDENT WORKS}{190}{section*.61}
-\contentsline {section}{8. TRANSLATION}{191}{section*.62}
-\contentsline {section}{9. TERMINATION}{191}{section*.63}
-\contentsline {section}{10. FUTURE REVISIONS OF THIS LICENSE}{191}{section*.64}
-\contentsline {section}{11. RELICENSING}{192}{section*.65}
-\contentsline {section}{ADDENDUM: How to use this License for your documents}{192}{section*.66}
+\contentsline {section}{\numberline {4.6}Define your own variable}{55}{section.4.6}
+\contentsline {section}{\numberline {4.7}Backtrackable structures}{55}{section.4.7}
+\contentsline {section}{\numberline {4.8}Logging System}{56}{section.4.8}
+\contentsline {subsubsection}{Verbosity and messages.}{56}{section*.31}
+\contentsline {subsubsection}{How to write logging statements ?}{58}{section*.32}
+\contentsline {subsubsection}{Handlers.}{58}{section*.33}
+\contentsline {subsubsection}{Define your own logger.}{58}{section*.34}
+\contentsline {chapter}{\numberline {5}Choco and CP-Viz}{59}{chapter.5}
+\contentsline {section}{\numberline {5.1}2 steps tutorials}{59}{section.5.1}
+\contentsline {section}{\numberline {5.2}Visualization and Visualizers}{59}{section.5.2}
+\contentsline {subsection}{\numberline {5.2.1}Visualization}{59}{subsection.5.2.1}
+\contentsline {subsection}{\numberline {5.2.2}Visualizers}{60}{subsection.5.2.2}
+\contentsline {subsection}{\numberline {5.2.3}Code integration}{61}{subsection.5.2.3}
+\contentsline {part}{II\hspace {1em}Elements of Choco}{65}{part.2}
+\contentsline {chapter}{\numberline {6}Variables (Model)}{67}{chapter.6}
+\contentsline {section}{\numberline {6.1}Integer variables}{67}{section.6.1}
+\contentsline {subsubsection}{constructors:}{67}{section*.35}
+\contentsline {subsubsection}{options:}{67}{section*.36}
+\contentsline {subsubsection}{methods:}{68}{section*.37}
+\contentsline {subsubsection}{Example:}{68}{section*.38}
+\contentsline {section}{\numberline {6.2}Real variables}{68}{section.6.2}
+\contentsline {subsubsection}{constructor:}{68}{section*.39}
+\contentsline {subsubsection}{options:}{68}{section*.40}
+\contentsline {subsubsection}{Example:}{68}{section*.41}
+\contentsline {section}{\numberline {6.3}Set variables}{69}{section.6.3}
+\contentsline {subsubsection}{constructors:}{69}{section*.42}
+\contentsline {subsubsection}{options:}{69}{section*.43}
+\contentsline {subsubsection}{Example:}{69}{section*.44}
+\contentsline {section}{\numberline {6.4}Task variables}{69}{section.6.4}
+\contentsline {subsubsection}{constructors:}{70}{section*.45}
+\contentsline {subsubsection}{options:}{70}{section*.46}
+\contentsline {subsubsection}{Example:}{70}{section*.47}
+\contentsline {chapter}{\numberline {7}Operators (Model)}{71}{chapter.7}
+\contentsline {section}{\numberline {7.1}abs (operator)}{71}{section.7.1}
+\contentsline {section}{\numberline {7.2}cos (operator)}{71}{section.7.2}
+\contentsline {section}{\numberline {7.3}div (operator)}{72}{section.7.3}
+\contentsline {section}{\numberline {7.4}ifThenElse (operator)}{72}{section.7.4}
+\contentsline {section}{\numberline {7.5}max (operator)}{72}{section.7.5}
+\contentsline {section}{\numberline {7.6}min (operator)}{73}{section.7.6}
+\contentsline {section}{\numberline {7.7}minus (operator)}{73}{section.7.7}
+\contentsline {section}{\numberline {7.8}mod (operator)}{74}{section.7.8}
+\contentsline {section}{\numberline {7.9}mult (operator)}{74}{section.7.9}
+\contentsline {section}{\numberline {7.10}neg (operator)}{75}{section.7.10}
+\contentsline {section}{\numberline {7.11}plus (operator)}{75}{section.7.11}
+\contentsline {section}{\numberline {7.12}power (operator)}{76}{section.7.12}
+\contentsline {section}{\numberline {7.13}scalar (operator)}{77}{section.7.13}
+\contentsline {section}{\numberline {7.14}sin (operator)}{77}{section.7.14}
+\contentsline {section}{\numberline {7.15}sum (operator)}{77}{section.7.15}
+\contentsline {chapter}{\numberline {8}Constraints (Model)}{79}{chapter.8}
+\contentsline {section}{\numberline {8.1}abs (constraint)}{79}{section.8.1}
+\contentsline {section}{\numberline {8.2}allDifferent (constraint)}{79}{section.8.2}
+\contentsline {section}{\numberline {8.3}among (constraint)}{80}{section.8.3}
+\contentsline {section}{\numberline {8.4}and (constraint)}{81}{section.8.4}
+\contentsline {section}{\numberline {8.5}atMostNValue (constraint)}{82}{section.8.5}
+\contentsline {section}{\numberline {8.6}boolChanneling (constraint)}{83}{section.8.6}
+\contentsline {section}{\numberline {8.7}clause (constraint)}{83}{section.8.7}
+\contentsline {section}{\numberline {8.8}costRegular (constraint)}{84}{section.8.8}
+\contentsline {section}{\numberline {8.9}cumulative (constraint)}{87}{section.8.9}
+\contentsline {section}{\numberline {8.10}cumulativeMax (constraint)}{88}{section.8.10}
+\contentsline {section}{\numberline {8.11}cumulativeMin (constraint)}{89}{section.8.11}
+\contentsline {section}{\numberline {8.12}disjoint (constraint)}{89}{section.8.12}
+\contentsline {section}{\numberline {8.13}disjunctive (constraint)}{90}{section.8.13}
+\contentsline {section}{\numberline {8.14}distanceEQ (constraint)}{91}{section.8.14}
+\contentsline {section}{\numberline {8.15}distanceGT (constraint)}{91}{section.8.15}
+\contentsline {section}{\numberline {8.16}distanceLT (constraint)}{92}{section.8.16}
+\contentsline {section}{\numberline {8.17}distanceNEQ (constraint)}{93}{section.8.17}
+\contentsline {section}{\numberline {8.18}domainChanneling (constraint)}{93}{section.8.18}
+\contentsline {section}{\numberline {8.19}element (constraint)}{94}{section.8.19}
+\contentsline {section}{\numberline {8.20}endsAfter (constraint)}{94}{section.8.20}
+\contentsline {section}{\numberline {8.21}endsAfterBegin (constraint)}{94}{section.8.21}
+\contentsline {section}{\numberline {8.22}endsAfterEnd (constraint)}{95}{section.8.22}
+\contentsline {section}{\numberline {8.23}endsBefore (constraint)}{95}{section.8.23}
+\contentsline {section}{\numberline {8.24}endsBeforeBegin (constraint)}{95}{section.8.24}
+\contentsline {section}{\numberline {8.25}endsBeforeEnd (constraint)}{96}{section.8.25}
+\contentsline {section}{\numberline {8.26}endsBetween (constraint)}{96}{section.8.26}
+\contentsline {section}{\numberline {8.27}eq (constraint)}{96}{section.8.27}
+\contentsline {section}{\numberline {8.28}eqCard (constraint)}{97}{section.8.28}
+\contentsline {section}{\numberline {8.29}equation (constraint)}{98}{section.8.29}
+\contentsline {section}{\numberline {8.30}exactly (constraint)}{99}{section.8.30}
+\contentsline {section}{\numberline {8.31}FALSE (constraint)}{99}{section.8.31}
+\contentsline {section}{\numberline {8.32}feasPairAC (constraint)}{99}{section.8.32}
+\contentsline {section}{\numberline {8.33}feasTupleAC (constraint)}{100}{section.8.33}
+\contentsline {section}{\numberline {8.34}feasTupleFC (constraint)}{101}{section.8.34}
+\contentsline {section}{\numberline {8.35}forbiddenInterval (constraint)}{101}{section.8.35}
+\contentsline {section}{\numberline {8.36}geost (constraint)}{102}{section.8.36}
+\contentsline {section}{\numberline {8.37}geq (constraint)}{104}{section.8.37}
+\contentsline {section}{\numberline {8.38}geqCard (constraint)}{105}{section.8.38}
+\contentsline {section}{\numberline {8.39}globalCardinality (constraint)}{105}{section.8.39}
+\contentsline {section}{\numberline {8.40}gt (constraint)}{107}{section.8.40}
+\contentsline {section}{\numberline {8.41}ifOnlyIf (constraint)}{108}{section.8.41}
+\contentsline {section}{\numberline {8.42}ifThenElse (constraint)}{108}{section.8.42}
+\contentsline {section}{\numberline {8.43}implies (constraint)}{109}{section.8.43}
+\contentsline {section}{\numberline {8.44}increasingNValue (constraint)}{109}{section.8.44}
+\contentsline {section}{\numberline {8.45}infeasPairAC (constraint)}{110}{section.8.45}
+\contentsline {section}{\numberline {8.46}infeasTupleAC (constraint)}{111}{section.8.46}
+\contentsline {section}{\numberline {8.47}infeasTupleFC (constraint)}{112}{section.8.47}
+\contentsline {section}{\numberline {8.48}intDiv (constraint)}{112}{section.8.48}
+\contentsline {section}{\numberline {8.49}inverseChanneling (constraint)}{113}{section.8.49}
+\contentsline {section}{\numberline {8.50}inverseSet (constraint)}{114}{section.8.50}
+\contentsline {section}{\numberline {8.51}isIncluded (constraint)}{114}{section.8.51}
+\contentsline {section}{\numberline {8.52}isNotIncluded (constraint)}{115}{section.8.52}
+\contentsline {section}{\numberline {8.53}knapsackProblem (constraint)}{115}{section.8.53}
+\contentsline {section}{\numberline {8.54}leq (constraint)}{116}{section.8.54}
+\contentsline {section}{\numberline {8.55}leqCard (constraint)}{117}{section.8.55}
+\contentsline {section}{\numberline {8.56}lex (constraint)}{117}{section.8.56}
+\contentsline {section}{\numberline {8.57}lexChain (constraint)}{118}{section.8.57}
+\contentsline {section}{\numberline {8.58}lexChainEq (constraint)}{119}{section.8.58}
+\contentsline {section}{\numberline {8.59}lexEq (constraint)}{119}{section.8.59}
+\contentsline {section}{\numberline {8.60}leximin (constraint)}{120}{section.8.60}
+\contentsline {section}{\numberline {8.61}lt (constraint)}{121}{section.8.61}
+\contentsline {section}{\numberline {8.62}max (constraint)}{121}{section.8.62}
+\contentsline {subsection}{\numberline {8.62.1}max of a list}{121}{subsection.8.62.1}
+\contentsline {subsection}{\numberline {8.62.2}max of a set}{122}{subsection.8.62.2}
+\contentsline {section}{\numberline {8.63}member (constraint)}{122}{section.8.63}
+\contentsline {section}{\numberline {8.64}min (constraint)}{123}{section.8.64}
+\contentsline {subsection}{\numberline {8.64.1}min of a list}{123}{subsection.8.64.1}
+\contentsline {subsection}{\numberline {8.64.2}min of a set}{124}{subsection.8.64.2}
+\contentsline {section}{\numberline {8.65}mod (constraint)}{124}{section.8.65}
+\contentsline {section}{\numberline {8.66}multiCostRegular (constraint)}{125}{section.8.66}
+\contentsline {section}{\numberline {8.67}neq (constraint)}{126}{section.8.67}
+\contentsline {section}{\numberline {8.68}neqCard (constraint)}{127}{section.8.68}
+\contentsline {section}{\numberline {8.69}not (constraint)}{128}{section.8.69}
+\contentsline {section}{\numberline {8.70}notMember (constraint)}{128}{section.8.70}
+\contentsline {section}{\numberline {8.71}nth (constraint)}{129}{section.8.71}
+\contentsline {section}{\numberline {8.72}occurrence (constraint)}{130}{section.8.72}
+\contentsline {section}{\numberline {8.73}occurrenceMax (constraint)}{131}{section.8.73}
+\contentsline {section}{\numberline {8.74}occurrenceMin (constraint)}{131}{section.8.74}
+\contentsline {section}{\numberline {8.75}oppositeSign (constraint)}{132}{section.8.75}
+\contentsline {section}{\numberline {8.76}or (constraint)}{132}{section.8.76}
+\contentsline {section}{\numberline {8.77}pack (constraint)}{133}{section.8.77}
+\contentsline {section}{\numberline {8.78}precedenceReified (constraint)}{134}{section.8.78}
+\contentsline {section}{\numberline {8.79}precedenceimplied (constraint)}{135}{section.8.79}
+\contentsline {section}{\numberline {8.80}precedence (constraint)}{135}{section.8.80}
+\contentsline {section}{\numberline {8.81}precedencedisjoint (constraint)}{135}{section.8.81}
+\contentsline {section}{\numberline {8.82}regular (constraint)}{135}{section.8.82}
+\contentsline {section}{\numberline {8.83}reifiedAnd (constraint)}{137}{section.8.83}
+\contentsline {section}{\numberline {8.84}reifiedConstraint (constraint)}{138}{section.8.84}
+\contentsline {section}{\numberline {8.85}reifiedLeftImp (constraint)}{138}{section.8.85}
+\contentsline {section}{\numberline {8.86}reifiedNot (constraint)}{138}{section.8.86}
+\contentsline {section}{\numberline {8.87}reifiedOr (constraint)}{139}{section.8.87}
+\contentsline {section}{\numberline {8.88}reifiedRightImp (constraint)}{139}{section.8.88}
+\contentsline {section}{\numberline {8.89}reifiedXnor (constraint)}{139}{section.8.89}
+\contentsline {section}{\numberline {8.90}reifiedXor (constraint)}{139}{section.8.90}
+\contentsline {section}{\numberline {8.91}relationPairAC (constraint)}{139}{section.8.91}
+\contentsline {section}{\numberline {8.92}relationTupleAC (constraint)}{140}{section.8.92}
+\contentsline {section}{\numberline {8.93}relationTupleFC (constraint)}{141}{section.8.93}
+\contentsline {section}{\numberline {8.94}sameSign (constraint)}{141}{section.8.94}
+\contentsline {section}{\numberline {8.95}setDisjoint (constraint)}{142}{section.8.95}
+\contentsline {section}{\numberline {8.96}setInter (constraint)}{142}{section.8.96}
+\contentsline {section}{\numberline {8.97}setUnion (constraint)}{143}{section.8.97}
+\contentsline {section}{\numberline {8.98}sorting (constraint)}{144}{section.8.98}
+\contentsline {section}{\numberline {8.99}startsAfter (constraint)}{144}{section.8.99}
+\contentsline {section}{\numberline {8.100}startsAfterBegin (constraint)}{145}{section.8.100}
+\contentsline {section}{\numberline {8.101}startsAfterEnd (constraint)}{145}{section.8.101}
+\contentsline {section}{\numberline {8.102}startsBefore (constraint)}{145}{section.8.102}
+\contentsline {section}{\numberline {8.103}startsBeforeBegin (constraint)}{146}{section.8.103}
+\contentsline {section}{\numberline {8.104}startsBeforeEnd (constraint)}{146}{section.8.104}
+\contentsline {section}{\numberline {8.105}startsBetween (constraint)}{146}{section.8.105}
+\contentsline {section}{\numberline {8.106}stretchPath (constraint)}{147}{section.8.106}
+\contentsline {section}{\numberline {8.107}times (constraint)}{147}{section.8.107}
+\contentsline {section}{\numberline {8.108}tree (constraint)}{148}{section.8.108}
+\contentsline {section}{\numberline {8.109}TRUE (constraint)}{150}{section.8.109}
+\contentsline {section}{\numberline {8.110}xnor (constraint)}{151}{section.8.110}
+\contentsline {section}{\numberline {8.111}xor (constraint)}{151}{section.8.111}
+\contentsline {chapter}{\numberline {9}Options (Model)}{153}{chapter.9}
+\contentsline {section}{\numberline {9.1}Options and settings}{153}{section.9.1}
+\contentsline {subsection}{\numberline {9.1.1}Options for variables:}{153}{subsection.9.1.1}
+\contentsline {subsection}{\numberline {9.1.2}Options for expressions:}{154}{subsection.9.1.2}
+\contentsline {subsection}{\numberline {9.1.3}Options and settings for constraints:}{154}{subsection.9.1.3}
+\contentsline {subsection}{\numberline {9.1.4}Options for solvers:}{160}{subsection.9.1.4}
+\contentsline {chapter}{\numberline {10}Branching strategies (Solver)}{161}{chapter.10}
+\contentsline {section}{\numberline {10.1}AssignInterval (Branching strategy)}{161}{section.10.1}
+\contentsline {section}{\numberline {10.2}AssignOrForbidIntVarVal (Branching strategy)}{161}{section.10.2}
+\contentsline {section}{\numberline {10.3}AssignOrForbidIntVarValPair (Branching strategy)}{162}{section.10.3}
+\contentsline {section}{\numberline {10.4}AssignSetVar (Branching strategy)}{162}{section.10.4}
+\contentsline {section}{\numberline {10.5}AssignVar (Branching strategy)}{162}{section.10.5}
+\contentsline {section}{\numberline {10.6}DomOverWDegBranchingNew (Branching strategy)}{163}{section.10.6}
+\contentsline {section}{\numberline {10.7}DomOverWDegBinBranchingNew (Branching strategy)}{163}{section.10.7}
+\contentsline {section}{\numberline {10.8}ImpactBasedBranching (Branching strategy)}{164}{section.10.8}
+\contentsline {section}{\numberline {10.9}PackDynRemovals (Branching strategy)}{164}{section.10.9}
+\contentsline {section}{\numberline {10.10}SetTimes (Branching strategy)}{165}{section.10.10}
+\contentsline {section}{\numberline {10.11}TaskOverWDegBinBranching (Branching strategy)}{165}{section.10.11}
+\contentsline {chapter}{\numberline {11}Variable selectors (Solver)}{167}{chapter.11}
+\contentsline {section}{\numberline {11.1}CompositeIntVarSelector (Variable selector)}{167}{section.11.1}
+\contentsline {section}{\numberline {11.2}CyclicRealVarSelector (Variable selector)}{167}{section.11.2}
+\contentsline {section}{\numberline {11.3}LexIntVarSelector (Variable selector)}{168}{section.11.3}
+\contentsline {section}{\numberline {11.4}MaxDomain (Variable selector)}{168}{section.11.4}
+\contentsline {section}{\numberline {11.5}MaxDomSet (Variable selector)}{168}{section.11.5}
+\contentsline {section}{\numberline {11.6}MaxRegret (Variable selector)}{169}{section.11.6}
+\contentsline {section}{\numberline {11.7}MaxRegretSet (Variable selector)}{169}{section.11.7}
+\contentsline {section}{\numberline {11.8}MaxValueDomain (Variable selector)}{170}{section.11.8}
+\contentsline {section}{\numberline {11.9}MaxValueDomSet (Variable selector)}{170}{section.11.9}
+\contentsline {section}{\numberline {11.10}MinDomain (Variable selector)}{170}{section.11.10}
+\contentsline {section}{\numberline {11.11}MinDomSet (Variable selector)}{171}{section.11.11}
+\contentsline {section}{\numberline {11.12}MinValueDomain (Variable selector)}{171}{section.11.12}
+\contentsline {section}{\numberline {11.13}MinValueDomSet (Variable selector)}{171}{section.11.13}
+\contentsline {section}{\numberline {11.14}MostConstrained (Variable selector)}{172}{section.11.14}
+\contentsline {section}{\numberline {11.15}MostConstrainedSet (Variable selector)}{172}{section.11.15}
+\contentsline {section}{\numberline {11.16}RandomIntVarSelector (Variable selector)}{172}{section.11.16}
+\contentsline {section}{\numberline {11.17}RandomSetVarSelector (Variable selector)}{173}{section.11.17}
+\contentsline {section}{\numberline {11.18}StaticSetVarOrder (Variable selector)}{173}{section.11.18}
+\contentsline {section}{\numberline {11.19}StaticVarOrder (Variable selector)}{173}{section.11.19}
+\contentsline {chapter}{\numberline {12}Value iterators (Solver)}{175}{chapter.12}
+\contentsline {section}{\numberline {12.1}DecreasingDomain (Value iterator)}{175}{section.12.1}
+\contentsline {section}{\numberline {12.2}IncreasingDomain (Value iterator)}{175}{section.12.2}
+\contentsline {section}{\numberline {12.3}RealIncreasingDomain (Value iterator)}{175}{section.12.3}
+\contentsline {chapter}{\numberline {13}Value selector (Solver)}{177}{chapter.13}
+\contentsline {section}{\numberline {13.1}BestFit (Value selector)}{177}{section.13.1}
+\contentsline {section}{\numberline {13.2}CostRegularValSelector (Value selector)}{177}{section.13.2}
+\contentsline {section}{\numberline {13.3}FCostRegularValSelector (Value selector)}{178}{section.13.3}
+\contentsline {section}{\numberline {13.4}MaxVal (Value selector)}{178}{section.13.4}
+\contentsline {section}{\numberline {13.5}MidVal (Value selector)}{178}{section.13.5}
+\contentsline {section}{\numberline {13.6}MinEnv (Value selector)}{179}{section.13.6}
+\contentsline {section}{\numberline {13.7}MinVal (Value selector)}{179}{section.13.7}
+\contentsline {section}{\numberline {13.8}RandomSetValSelector (Value selector)}{179}{section.13.8}
+\contentsline {chapter}{\numberline {14}Visualizer (Visualization)}{181}{chapter.14}
+\contentsline {section}{\numberline {14.1}Variable-oriented Visualizers}{181}{section.14.1}
+\contentsline {subsection}{\numberline {14.1.1}BinaryMatrix (visualizer)}{181}{subsection.14.1.1}
+\contentsline {subsection}{\numberline {14.1.2}BinaryVector (visualizer)}{181}{subsection.14.1.2}
+\contentsline {subsection}{\numberline {14.1.3}DomainMatrix (visualizer)}{181}{subsection.14.1.3}
+\contentsline {subsection}{\numberline {14.1.4}Vector (visualizer)}{182}{subsection.14.1.4}
+\contentsline {subsection}{\numberline {14.1.5}VectorSize (visualizer)}{182}{subsection.14.1.5}
+\contentsline {subsection}{\numberline {14.1.6}VectorWaterfall (visualizer)}{182}{subsection.14.1.6}
+\contentsline {section}{\numberline {14.2}Constraint-oriented Visualizers}{182}{section.14.2}
+\contentsline {subsection}{\numberline {14.2.1}AllDifferent (visualizer)}{183}{subsection.14.2.1}
+\contentsline {subsection}{\numberline {14.2.2}AllDifferentMatrix (visualizer)}{183}{subsection.14.2.2}
+\contentsline {subsection}{\numberline {14.2.3}BooleanChanneling (visualizer)}{183}{subsection.14.2.3}
+\contentsline {subsection}{\numberline {14.2.4}Cumulative (visualizer)}{183}{subsection.14.2.4}
+\contentsline {subsection}{\numberline {14.2.5}Element (visualizer)}{184}{subsection.14.2.5}
+\contentsline {subsection}{\numberline {14.2.6}Gcc (visualizer)}{184}{subsection.14.2.6}
+\contentsline {section}{\numberline {14.3}Inverse (visualizer)}{184}{section.14.3}
+\contentsline {subsection}{\numberline {14.3.1}LexLe (visualizer)}{185}{subsection.14.3.1}
+\contentsline {subsection}{\numberline {14.3.2}LexLt (visualizer)}{185}{subsection.14.3.2}
+\contentsline {part}{III\hspace {1em}Extras}{187}{part.3}
+\contentsline {chapter}{\numberline {15}Sudoku and Constraint Programming}{189}{chapter.15}
+\contentsline {section}{\numberline {15.1}Sudoku ?!?}{189}{section.15.1}
+\contentsline {subsection}{\numberline {15.1.1}Solving sudokus}{189}{subsection.15.1.1}
+\contentsline {section}{\numberline {15.2}Sudoku and Artificial Intelligence}{190}{section.15.2}
+\contentsline {subsection}{\numberline {15.2.1}Simple rules: single candidate and single position}{190}{subsection.15.2.1}
+\contentsline {subsection}{\numberline {15.2.2}Human reasoning principles}{190}{subsection.15.2.2}
+\contentsline {subsection}{\numberline {15.2.3}Towards Constraint Programming}{191}{subsection.15.2.3}
+\contentsline {section}{\numberline {15.3}See also}{192}{section.15.3}
+\contentsline {part}{Glossary}{193}{chapter*.49}
+\contentsline {part}{Bibliography}{193}{chapter*.49}
+\contentsline {chapter}{GNU Free Documentation License}{197}{section*.52}
+\contentsline {section}{1. APPLICABILITY AND DEFINITIONS}{197}{section*.53}
+\contentsline {section}{2. VERBATIM COPYING}{198}{section*.54}
+\contentsline {section}{3. COPYING IN QUANTITY}{198}{section*.55}
+\contentsline {section}{4. MODIFICATIONS}{199}{section*.56}
+\contentsline {section}{5. COMBINING DOCUMENTS}{200}{section*.57}
+\contentsline {section}{6. COLLECTIONS OF DOCUMENTS}{200}{section*.58}
+\contentsline {section}{7. AGGREGATION WITH INDEPENDENT WORKS}{200}{section*.59}
+\contentsline {section}{8. TRANSLATION}{201}{section*.60}
+\contentsline {section}{9. TERMINATION}{201}{section*.61}
+\contentsline {section}{10. FUTURE REVISIONS OF THIS LICENSE}{201}{section*.62}
+\contentsline {section}{11. RELICENSING}{202}{section*.63}
+\contentsline {section}{ADDENDUM: How to use this License for your documents}{202}{section*.64}

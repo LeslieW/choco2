@@ -1,5 +1,5 @@
 \section{Set variables}\label{setvariable}\hypertarget{setvariable}{}
-\texttt{SetVariable} is high level modeling tool. It allows to represent variable whose values are sets. A SetVariable on integer values between $[1,n]$ has $2*n$ values (every possible subsets of $\{1..n\}$). This makes an exponential number of values and the domain is represented with two bounds corresponding to the intersection of all possible sets (called the kernel) and the union of all possible sets (called the envelope) which are the possible candidate values for the variable. The consistency achieved on SetVariables is therefore a kind of bound consistency.
+\texttt{SetVariable} is high level modeling tool. It allows to represent variable whose values are sets. A SetVariable on integer values between $[1,n]$ has $2^{n}$ values (every possible subsets of $\{1..n\}$). This makes an exponential number of values and the domain is represented with two bounds corresponding to the intersection of all possible sets (called the kernel) and the union of all possible sets (called the envelope) which are the possible candidate values for the variable. The consistency achieved on SetVariables is therefore a kind of bound consistency.
 
 \subsubsection{constructors:}
       \noindent\begin{tabular}{p{.8\linewidth}p{.15\linewidth}}

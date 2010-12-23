@@ -6,11 +6,7 @@
 <dependencySets>
         <dependencySet>
             <unpack>true</unpack>
-            <excludes>
-                <exclude>choco:choco-kernel:jar:sources</exclude>
-                <exclude>choco:choco-cp:jar:sources</exclude>
-            </excludes>
+            <scope>compile</scope>
         </dependencySet>
     </dependencySets>
-
 </assembly>
