@@ -51,7 +51,7 @@ public class Gcc extends Visualizer {
      * @param vars    domain variables
      * @param values  collection of values
      * @param low     minimum number of occurrences of values
-     * @param high    maximum numnber of occurrences
+     * @param high    maximum number of occurrences
      * @param display "expanded" or "compact"
      * @param width   width of the visualizer
      * @param height  height of the visualizer
@@ -70,7 +70,7 @@ public class Gcc extends Visualizer {
      * @param vars    domain variables
      * @param values  collection of values
      * @param low     minimum number of occurrences of values
-     * @param high    maximum numnber of occurrences
+     * @param high    maximum number of occurrences
      * @param display "expanded" or "compact"
      * @param x       coordinate of the visualizer in the x-axis (horizontal)
      * @param y       coordinate of the visualizer in the y-axis (vertical)

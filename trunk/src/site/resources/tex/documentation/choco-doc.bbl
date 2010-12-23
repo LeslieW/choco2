@@ -147,6 +147,13 @@ Shaw, P. (2004).
   Constraint Programming (CP'04)}, volume 3258 of {\em LNCS}, pages 648--662.
   Springer-Verlag.
 
+\bibitem[Simonis et~al., 2010]{Simonis10}
+Simonis, H., Davern, P., Feldman, J., Mehta, D., Quesada, L., and Carlsson, M.
+  (2010).
+\newblock A generic visualization platform for cp.
+\newblock In {\em Principles and Practice of Constraint Programming -- CP
+  2010)}, LNCS, pages 460--474. Cohen, David.
+
 \bibitem[Trick, 2003]{TrickAOR03}
 Trick, M.~A. (2003).
 \newblock A dynamic programming approach for consistency and propagation for

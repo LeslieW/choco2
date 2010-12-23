@@ -24,102 +24,102 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package choco.kernel.model.constraints.cnf;
 
-package maif.entities;
-
-import java.util.*;
+import choco.kernel.model.variables.integer.IntegerVariable;
 
 /**
- * Created by IntelliJ IDEA.
- * User: julien
- * Mail: julien.menana{at}emn.fr
- * Date: Jul 20, 2009
- * Time: 6:06:44 PM
+ * <br/>
+ *
+ * @author Charles Prud'homme
+ * @since 21/12/10
  */
-public class Preferences implements Iterable<Preference>,Set<Preference> {
+public class Singleton extends ALogicTree {
 
+    public static final Singleton TRUE = new Singleton(Type.POSITIVE);
+    public static final Singleton FALSE = new Singleton(Type.NEGATIVE);
 
-    HashSet<Preference> preferences;
-
-
-
-    public Preferences(){
-        this.preferences = new HashSet<Preference>();
-    }
-
-    void addPreference(Date d, int shift)
-    {
-        this.preferences.add(new Preference(d,shift));
-    }
-
-    void addPreference(Preference p)
-    {
-        this.preferences.add(p);
-    }
-
-
-    @Override
-    public int size() {
-        return preferences.size();
+    protected Singleton(Type type) {
+        super(type);
     }
 
     @Override
-    public boolean isEmpty() {
-        return preferences.isEmpty();
+    public boolean is(Operator op) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean contains(Object o) {
-        return preferences.contains(o);
+    boolean isNot() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public Iterator<Preference> iterator() {
-        return this.preferences.iterator();
+    boolean isLit() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public Object[] toArray() {
-        return preferences.toArray();
+    int getNbChildren() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public <T> T[] toArray(T[] ts) {
-        return preferences.toArray(ts);
+    boolean hasOrChild() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean add(Preference preference) {
-        return preferences.add(preference);
+    boolean hasAndChild() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean remove(Object o) {
-        return preferences.remove(o);
+    void addChild(ALogicTree child) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean containsAll(Collection<?> objects) {
-        return preferences.containsAll(objects);
+    void removeChild(ALogicTree child) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean addAll(Collection<? extends Preference> preferences) {
-        return this.preferences.addAll(preferences);
+    public ALogicTree[] getChildren() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean retainAll(Collection<?> objects) {
-        return preferences.retainAll(objects);
+    ALogicTree getAndChild() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean removeAll(Collection<?> objects) {
-        return preferences.removeAll(objects);
+    ALogicTree getChildBut(ALogicTree child) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void clear() {
-        preferences.clear();
+    void flip() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    void deny() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public IntegerVariable[] flattenBoolVar() {
+        return new IntegerVariable[0];
+    }
+
+    @Override
+    public String toString() {
+        return Type.POSITIVE.equals(type) ? Boolean.TRUE.toString() : Boolean.FALSE.toString();
+    }
+
+    @Override
+    public int getNbPositiveLiterals() {
+        return 0;
     }
 }

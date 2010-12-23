@@ -31,7 +31,10 @@ import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.cp.solver.variables.set.SetVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.set.AbstractBinSetIntSConstraint;
+import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetVar;
 
@@ -40,26 +43,26 @@ import choco.kernel.solver.variables.set.SetVar;
  */
 public final class NotMemberXY extends AbstractBinSetIntSConstraint {
 
-	public NotMemberXY(final SetVar set, final IntDomainVar iv) {
-		super(iv, set);
-	}
+    public NotMemberXY(final SetVar set, final IntDomainVar iv) {
+        super(iv, set);
+    }
 
     @Override
     public int getFilteredEventMask(int idx) {
-        if(idx == 0){
+        if (idx == 0) {
             return IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK + IntVarEvent.REMVAL_MASK;
         }
         return SetVarEvent.ADDKER_MASK + SetVarEvent.REMENV_MASK + SetVarEvent.INSTSET_MASK;
     }
 
     /**
-	 * if only one value out of the kernel, then this value can be removed from the enveloppe
-	 *
-	 * @throws ContradictionException
-	 */
-	public void filter() throws ContradictionException {
+     * if only one value out of the kernel, then this value can be removed from the enveloppe
+     *
+     * @throws ContradictionException
+     */
+    public void filter() throws ContradictionException {
         final DisposableIntIterator it = v0.getDomain().getIterator();
-            try{
+        try {
             int count = 0, val = Integer.MAX_VALUE;
             while (it.hasNext()) {
                 val = it.next();
@@ -74,104 +77,109 @@ public final class NotMemberXY extends AbstractBinSetIntSConstraint {
                 v0.instantiate(val, this, false);
                 v1.remFromEnveloppe(val, this, false);
             }
-        }finally {
+        } finally {
             it.dispose();
         }
-	}
+    }
 
-	public void awakeOnInf(final int idx) throws ContradictionException {
-		filter();
-	}
+    public void awakeOnInf(final int idx) throws ContradictionException {
+        filter();
+    }
 
-	public void awakeOnSup(final int idx) throws ContradictionException {
-		filter();
-	}
+    public void awakeOnSup(final int idx) throws ContradictionException {
+        filter();
+    }
 
-	public void awakeOnRem(final int idx, final int x) throws ContradictionException {
-		filter();
-	}
+    public void awakeOnRem(final int idx, final int x) throws ContradictionException {
+        filter();
+    }
 
-	public void awakeOnKer(final int varIdx, final int x) throws ContradictionException {
-		v0.removeVal(x, this, false);
-		filter();
-	}
+    public void awakeOnKer(final int varIdx, final int x) throws ContradictionException {
+        v0.removeVal(x, this, false);
+        filter();
+    }
 
-	public void awakeOnEnv(final int varIdx, final int x) throws ContradictionException {
-		filter();
-	}
+    public void awakeOnEnv(final int varIdx, final int x) throws ContradictionException {
+        filter();
+    }
 
-	public void awakeOnInst(final int varIdx) throws ContradictionException {
-		if (varIdx == 0)
-			v1.remFromEnveloppe(v0.getVal(), this, false);
-		else {
-			final DisposableIntIterator it = v1.getDomain().getKernelIterator();
-			try{
+    public void awakeOnInst(final int varIdx) throws ContradictionException {
+        if (varIdx == 0)
+            v1.remFromEnveloppe(v0.getVal(), this, false);
+        else {
+            final DisposableIntIterator it = v1.getDomain().getKernelIterator();
+            try {
                 while (it.hasNext()) {
                     v0.removeVal(it.next(), this, false);
                 }
-            }finally {
+            } finally {
                 it.dispose();
             }
-			filter();
-		}
-	}
+            filter();
+        }
+    }
 
 
-	public void propagate() throws ContradictionException {
-		final DisposableIntIterator it = v1.getDomain().getKernelIterator();
-		try{
+    public void propagate() throws ContradictionException {
+        final DisposableIntIterator it = v1.getDomain().getKernelIterator();
+        try {
             while (it.hasNext()) {
                 v0.removeVal(it.next(), this, false);
             }
-        }finally {
+        } finally {
             it.dispose();
         }
-		filter();
-	}
+        filter();
+    }
 
-	public boolean isSatisfied() {
-		return !v1.isInDomainKernel(v0.getVal());
-	}
+    public boolean isSatisfied() {
+        return !v1.isInDomainKernel(v0.getVal());
+    }
 
-	public boolean isConsistent() {
-		final DisposableIntIterator it = v0.getDomain().getIterator();
-		while (it.hasNext()) {
-			if (v1.isInDomainKernel(it.next())) {
+    public boolean isConsistent() {
+        final DisposableIntIterator it = v0.getDomain().getIterator();
+        while (it.hasNext()) {
+            if (v1.isInDomainKernel(it.next())) {
                 it.dispose();
                 return false;
             }
-		}
+        }
         it.dispose();
-		return true;
-	}
+        return true;
+    }
 
-	public String toString() {
-		return v0 + " is not in " + v1;
-	}
+    public String toString() {
+        return v0 + " is not in " + v1;
+    }
 
-	public String pretty() {
-		return v0.pretty() + " is not in " + v1.pretty();
-	}
+    public String pretty() {
+        return v0.pretty() + " is not in " + v1.pretty();
+    }
 
-	public Boolean isEntailed() {
-		boolean allInKernel = true;
+    public Boolean isEntailed() {
+        boolean allInKernel = true;
         boolean allOutEnv = true;
         final DisposableIntIterator it = v0.getDomain().getIterator();
-        while(it.hasNext()){
+        while (it.hasNext()) {
             final int val = it.next();
-            if(!v1.isInDomainKernel(val)){
+            if (!v1.isInDomainKernel(val)) {
                 allInKernel = false;
             }
-            if(v1.isInDomainEnveloppe(val)){
+            if (v1.isInDomainEnveloppe(val)) {
                 allOutEnv = false;
             }
         }
         it.dispose();
-        if(allInKernel){
+        if (allInKernel) {
             return Boolean.FALSE;
-        }else if(allOutEnv){
+        } else if (allOutEnv) {
             return Boolean.TRUE;
         }
         return null;
-	}
+    }
+
+    @Override
+    public AbstractSConstraint<Var> opposite(Solver solver) {
+        return new MemberXY(v1, v0);
+    }
 }

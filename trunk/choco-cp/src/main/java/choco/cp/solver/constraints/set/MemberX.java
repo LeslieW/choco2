@@ -29,6 +29,8 @@ package choco.cp.solver.constraints.set;
 
 import choco.cp.solver.variables.set.SetVarEvent;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.set.AbstractUnSetSConstraint;
 import choco.kernel.solver.variables.set.SetVar;
 
@@ -103,4 +105,8 @@ public final class MemberX extends AbstractUnSetSConstraint {
 			return null;
 	}
 
+    @Override
+    public AbstractSConstraint<SetVar> opposite(Solver solver) {
+        return new NotMemberX(v0, cste);
+    }
 }

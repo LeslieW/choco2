@@ -66,13 +66,13 @@
         <module>choco-kernel</module>
         <module>choco-cp</module>
         <module>choco-solver</module>
+        <module>cpvisu-tracer</module>
         <module>choco-db</module>
         <module>choco-parsers</module>
         <module>choco-cli</module>
         <module>choco-visu</module>
         <module>samples</module>
         <module>choco-contribs</module>
-        <module>cpvisu-tracer</module>
     </modules>
     <distributionManagement>
         <site>
@@ -131,6 +131,7 @@
                 <inherited>true</inherited>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
+                <version>2.1.2</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -150,12 +151,20 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.7</version>
+                <configuration>
+                    <additionalJOption>-J-Xmx256m</additionalJOption>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <!--<version>2.2</version>-->
                 <configuration>
                     <descriptors>
-                        <descriptor>src/main/assembly/full.xml</descriptor>
-                        <descriptor>src/main/assembly/full-src.xml</descriptor>
+                        <!--<descriptor>src/main/assembly/full.xml</descriptor>-->
+                        <descriptor>src/main/assembly/release.xml</descriptor>
                     </descriptors>
                 </configuration>
             </plugin>
@@ -165,11 +174,6 @@
                 <configuration>
                     <locales>en<!--,fr--></locales>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.6</version>
             </plugin>
             <plugin>
                 <groupId>com.mycila.maven-license-plugin</groupId>
@@ -200,27 +204,28 @@
         </plugins>
     </build>
     <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-changes-plugin</artifactId>
-        <version>2.3</version>
-        <configuration>
-          <issueLinkTemplatePerSystem>
-          <default>
-          https://sourceforge.net/tracker/index.php?func=detail&amp;aid=%ISSUE%&amp;group_id=96738&amp;atid=615736
-          </default>
-          </issueLinkTemplatePerSystem>
-        </configuration>
-        <reportSets>
-          <reportSet>
-            <reports>
-              <report>changes-report</report>
-            </reports>
-          </reportSet>
-        </reportSets>
-      </plugin>    </plugins>
-  </reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-changes-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <issueLinkTemplatePerSystem>
+                        <default>
+                            https://sourceforge.net/tracker/index.php?func=detail&amp;aid=%ISSUE%&amp;group_id=96738&amp;atid=615736
+                        </default>
+                    </issueLinkTemplatePerSystem>
+                </configuration>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>changes-report</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
     <developers>
         <developer>
             <name>Francois Laburthe</name>

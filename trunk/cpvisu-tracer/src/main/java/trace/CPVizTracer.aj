@@ -24,17 +24,10 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import choco.kernel.solver.search.AbstractSearchStrategy;
-import choco.kernel.solver.ContradictionException;
+package trace;
 
-import choco.cp.solver.CPSolver;
-import choco.kernel.solver.Solver;
-import choco.kernel.solver.search.AbstractSearchLoop;
-import choco.kernel.solver.branch.IntBranching;
+import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.search.IntBranchingDecision;
-import trace.Visualization;
-import trace.VisuWrapper;
 
 public aspect CPVizTracer{
 
@@ -81,8 +74,8 @@ public aspect CPVizTracer{
 	/** 											**/
 	/*************************************************/
 
-    after(Visualization visu): visualization(visu){
-        this.visu = visu;
+    after(Visualization aVisu): visualization(aVisu){
+        this.visu = aVisu;
     }
 
     // start of the tree search

@@ -31,12 +31,13 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.memory.IStateIntVector;
 import choco.kernel.memory.trailing.EnvironmentTrailing;
 import org.junit.After;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.logging.Logger;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class StoredIntVectorTest {
 
@@ -206,6 +207,37 @@ public class StoredIntVectorTest {
 		assertEquals(vector.get(0), 2);
 		assertEquals(vector.get(1), 2);
 		assertEquals(vector.get(2), 3);
+
+		env.worldPop();
+		env.worldPop();
+		assertEquals(vector.size(), 2);
+		assertEquals(vector.get(0), 1);
+		assertEquals(vector.get(1), 2);
+
+		env.worldPop();
+		assertEquals(vector.size(), 0);
+	}
+
+	@Test
+	public void test4() {
+		LOGGER.finer("test4");
+		env.worldPush();
+		vector.add(1);
+		vector.add(2);
+		env.worldPush();
+		vector.set(0, 2);
+		vector.add(3);
+		env.worldPush();
+		assertEquals(vector.size(), 3);
+		assertEquals(vector.get(0), 2);
+		assertEquals(vector.get(1), 2);
+		assertEquals(vector.get(2), 3);
+
+        env.worldPush();
+        vector.remove(1);
+        assertEquals(vector.size(), 2);
+		assertEquals(vector.get(0), 2);
+		assertEquals(vector.get(1), 3);
 
 		env.worldPop();
 		env.worldPop();

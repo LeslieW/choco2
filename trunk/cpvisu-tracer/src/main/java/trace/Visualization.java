@@ -328,14 +328,16 @@ public class Visualization {
     }
 
     private void printVisualizerStat(long s_id, long n_id, Boolean focus) {
-        visualization.info(V_STATE_TAG_IN, s_id, n_id);
-        for (int i = 0; i < visualizers.size(); i++) {
-            Visualizer vv = visualizers.get(i);
-            visualization.info(V_VISUALIZER_STATE_TAG_IN, vv.getId());
-            vv.print(visualization, focus, currentDecision);
-            visualization.info(V_VISUALIZER_STATE_TAG_OUT);
+        if (visualization.isInfoEnabled() && visualizers != null) {
+            visualization.info(V_STATE_TAG_IN, s_id, n_id);
+            for (int i = 0; i < visualizers.size(); i++) {
+                Visualizer vv = visualizers.get(i);
+                visualization.info(V_VISUALIZER_STATE_TAG_IN, vv.getId());
+                vv.print(visualization, focus, currentDecision);
+                visualization.info(V_VISUALIZER_STATE_TAG_OUT);
+            }
+            visualization.info(V_STATE_TAG_OUT);
         }
-        visualization.info(V_STATE_TAG_OUT);
     }
 
     void succNode() {

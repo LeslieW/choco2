@@ -35,7 +35,7 @@ import trace.Visualizer;
 import static trace.visualizers.Writer.*;
 
 /**
- * A specialized visualizer for a vector the boolean channeling constraint.
+ * A specialized visualizer for the boolean channeling constraint.
  * (in Choco: domainChanneling)
  * <br/>
  *

@@ -1,5 +1,5 @@
 <assembly>
-    <id>sources</id>
+    <id>with-sources</id>
     <formats>
         <format>jar</format>
     </formats>
@@ -7,9 +7,6 @@
     <dependencySets>
         <dependencySet>
             <unpack>true</unpack>
-            <includes>
-                <include>choco:*:*:sources</include>
-            </includes>            
         </dependencySet>
     </dependencySets>
 </assembly>

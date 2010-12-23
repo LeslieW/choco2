@@ -78,7 +78,10 @@ One can define a buffered expression variable to make a constraint easy to read,
 
 To construct expressions of variables, simple operators can be used. Each returns a \texttt{ExpressionVariable} object:
 \begin{notedef}\tt
-\hyperlink{abs:absoperator}{abs}, \hyperlink{cos:cosoperator}{cos}, \hyperlink{disteq:disteqoperator}{distEq}, \hyperlink{distgt:distgtoperator}{distGt}, \hyperlink{distlt:distltoperator}{distLt}, \hyperlink{distneq:distneqoperator}{distNeq}, \hyperlink{div:divoperator}{div}, \hyperlink{ifthenelse:ifthenelseoperator}{ifThenElse}, \hyperlink{max:maxoperator}{max}, \hyperlink{min:minoperator}{min}, \hyperlink{minus:minusoperator}{minus}, \hyperlink{mod:modoperator}{mod}, \hyperlink{mult:multoperator}{mult}, \hyperlink{neg:negoperator}{neg}, \hyperlink{plus:plusoperator}{plus}, \hyperlink{power:poweroperator}{power}, \hyperlink{scalar:scalaroperator}{scalar}, \hyperlink{sin:sinoperator}{sin}, \hyperlink{sum:sumoperator}{sum}.
+\begin{itemize}
+\item Integer : \hyperlink{abs:absoperator}{abs}, \hyperlink{div:divoperator}{div}, \hyperlink{ifthenelse:ifthenelseoperator}{ifThenElse}, \hyperlink{max:maxoperator}{max}, \hyperlink{min:minoperator}{min}, \hyperlink{minus:minusoperator}{minus}, \hyperlink{mod:modoperator}{mod}, \hyperlink{mult:multoperator}{mult}, \hyperlink{neg:negoperator}{neg}, \hyperlink{plus:plusoperator}{plus}, \hyperlink{power:poweroperator}{power}, \hyperlink{scalar:scalaroperator}{scalar}, \hyperlink{sum:sumoperator}{sum},
+\item Real : \hyperlink{cos:cosoperator}{cos}, \hyperlink{minus:minusoperator}{minus}, \hyperlink{mult:multoperator}{mult}, \hyperlink{plus:plusoperator}{plus}, \hyperlink{power:poweroperator}{power}, \hyperlink{sin:sinoperator}{sin}
+\end{itemize}
 \end{notedef}
 Note that these operators are not considered as constraints: they do not return a \texttt{Constraint} objet but a \texttt{Variable} object.
 

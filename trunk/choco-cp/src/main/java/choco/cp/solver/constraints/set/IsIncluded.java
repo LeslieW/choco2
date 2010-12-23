@@ -30,6 +30,8 @@ package choco.cp.solver.constraints.set;
 import choco.cp.solver.variables.set.SetVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.set.AbstractBinSetSConstraint;
 import choco.kernel.solver.variables.set.SetVar;
 
@@ -133,5 +135,10 @@ public final class IsIncluded extends AbstractBinSetSConstraint {
 	public String pretty() {
 		return v0.pretty() + " disjoint " + v1.pretty();
 	}
+
+    @Override
+    public AbstractSConstraint<SetVar> opposite(Solver solver) {
+        return new IsNotIncluded(v0, v1);
+    }
 }
 
