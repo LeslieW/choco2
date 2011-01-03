@@ -64,12 +64,12 @@
     > choco-cli: Command-Line Interpreter facilities for choco-solver, choco-db and choco-parsers
     > choco-visu: "alive" visualization toolbox
  > sampes: a list of runnable classes of problems modeled and solved with choco-solver
- > javadoc JAR file
+ > apidocs: javadoc repository
  > documentation PDF file
 
 -------------------------
  choco-${project.version}.zip
- |-- choco-${project.version}-javadoc.jar    	        // javadoc JAR file
+ |-- apidocs-${project.version}             	        // javadoc files
  |-- choco-doc-${project.version}.pdf			        // Documentation
  |-- choco-solver-${project.version}.jar		        // CHOCO solver
  |-- choco-solver-${project.version}-with-sources.jar   // Sources of CHOCO solver
