@@ -2,9 +2,16 @@
     <formats>
         <format>zip</format>
         <format>tar.gz</format>
-        <format>dir</format>
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <outputDirectory>/apidocs</outputDirectory>
+            <directory>
+                ${project.build.directory}/site/apidocs
+            </directory>
+        </fileSet>
+    </fileSets>
     <files>
         <file>
             <source>src/main/resources/README.txt</source>
@@ -21,10 +28,6 @@
         </file>
         <file>
             <source>cpvisu-tracer/target/choco-solver-cpviz-${project.version}.jar</source>
-            <outputDirectory>/</outputDirectory>
-        </file>
-        <file>
-            <source>target/choco-${project.version}-javadoc.jar</source>
             <outputDirectory>/</outputDirectory>
         </file>
         <file>
