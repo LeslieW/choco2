@@ -8,21 +8,15 @@
 
         <section name="Information">
             <p>
-                If you are using
-                <tt>choco</tt>
-                and want to appear on the website, contact us at
-                <a href="mailto:choco@emn.fr?subject=[USER]">users of
-                    <tt>choco</tt>
-                </a>
+                If you are using CHOCO and want to appear on the website, contact us at
+                <a href="mailto:choco@emn.fr?subject=[USER]">users of CHOCO</a>
                 .
             </p>
         </section>
 
         <section name="Education">
             <p>
-                They use
-                <tt>choco</tt>
-                as education material :
+                They use CHOCO as education material :
             </p>
             <div style="vertical-align: bottom; text-align: center;">
                 <a href="http://www.mines-nantes.fr" target="_blank">
@@ -83,9 +77,7 @@
         </section>
         <section name="Research">
             <p>
-                They use
-                <tt>choco</tt>
-                for their research :
+                They use CHOCO for their research :
             </p>
             <div style="vertical-align: bottom; text-align: center;">
                 <a href="http://www.mines-nantes.fr" target="_blank">
@@ -110,9 +102,7 @@
         </section>
         <section name="Industry">
             <p>
-                They trust
-                <tt>choco</tt>
-                for real-world application :
+                They trust CHOCO for real-world application :
             </p>
             <div style="vertical-align: bottom; text-align: center;">
                 <a href="http://www.klsoptim.com/" target="_blank">
@@ -131,7 +121,7 @@
         </section>
         <section name="Contributors">
             <p>
-                They contribute to the development of<tt>choco</tt>:
+                They contribute to the development of CHOCO:
             </p>
             <div style="vertical-align: bottom; text-align: center;">
                 <a href="http://www.bouygues.com/" target="_blank">

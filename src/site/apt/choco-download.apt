@@ -24,7 +24,7 @@ Download CHOCO
 
 * Building from the sources
 
-   You can build <<<choco>>> from sources using the repository. See {{{./choco-build.html} Build CHOCO}} page for more details.
+   You can build CHOCO from sources using the repository. See {{{./choco-build.html} Build CHOCO}} page for more details.
 
 
 * System Requirements
@@ -44,13 +44,13 @@ Download CHOCO
     There are different <jar> files available:
 
     * A single <jar> that only contains the minimum required to solve CP problems : <choco-solver-X.x.x>. This archive should be used
-    if you want to integrate <<<choco>>> as a library.
+    if you want to integrate CHOCO as a library.
 
     * A single <jar> that contains the whole project and dependencies (every modules) : <choco-X.x.x> .
-     This archive should be used if you want to integrate <<<choco>>> as a library and use graphical tools, parser tools, test beta
+     This archive should be used if you want to integrate CHOCO as a library and use graphical tools, parser tools, test beta
      developments and use CPVisu log generator.
 
-    * A single <jar> for each module of <<<choco>>> :
+    * A single <jar> for each module of CHOCO :
 
         * <choco-kernel-X.x.x>,
 

@@ -13,11 +13,11 @@
 
         <li><b></b>December 2009: <i>Report on CSC'09 and CHOCO</i>, presentation of the results of CHOCO within the
             <a href="http://www.cril.univ-artois.fr/CSC09/results/results.php?idev=30">CSC'09</a>.
-            <a href="./pdf/choco09.pdf" class="externalLink" target="_blank">PDF slides of the results of <tt>choco</tt> in CSC'09</a> </li>
+            <a href="./pdf/choco09.pdf" class="externalLink" target="_blank">PDF slides of the results of CHOCO in CSC'09</a> </li>
 
         <li><b></b>August 2008: The <i>CHOCO : an Open Source Java Constraint Constraint Programming</i> white paper presentation send to the
             <a href="http://www.cril.univ-artois.fr/CPAI08/">CSP'08 competition</a>.
-            <a href="./pdf/choco-presentation.pdf" class="externalLink" target="_blank">PDF of white paper presentation of <tt>choco</tt></a> </li>
+            <a href="./pdf/choco-presentation.pdf" class="externalLink" target="_blank">PDF of white paper presentation of CHOCO</a> </li>
 
         <li><b></b>June 2008: The <i>CHOCO constraint programming solver</i> presentation held at the
             <a href="https://projects.coin-or.org/Events/wiki/CpAiOr2008">Workshop on Open-Source Software for Integer and Constraint Programming</a>
@@ -29,8 +29,7 @@
     <p>
         Here you can find some materials at your disposal.
         If you create any, you can also send it to us at
-        <a href="mailto:choco@emn.fr?subject=[MATERIALS]" TITLE="[MAT]">materials for
-            <tt>choco</tt>
+        <a href="mailto:choco@emn.fr?subject=[MATERIALS]" TITLE="[MAT]">materials for CHOCO
         </a>
         ,
         so we can add it to the list.

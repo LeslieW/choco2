@@ -66,7 +66,8 @@ choco$ mvn eclipse:eclipse
    Build jar file with every modules:
 
 ---
-choco$ mvn package assembly:attached
+choco$ mvn package -DskipTests
+choco$ mvn assembly:assembly -DskipTests
 ---
 
 ** Only choco-solver
@@ -74,5 +75,6 @@ choco$ mvn package assembly:attached
    Build jar file with choco-solver module only (choco-kernel and choco-cp), move to <<<choco/choco-solver/>>> directory and run:
 
 ---
-choco/choco-solver$ mvn package assembly:attached
+choco/choco-solver$ mvn package -DskipTests
+choco/choco-solver$ mvn assembly:assembly -DskipTests
 ---

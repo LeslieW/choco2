@@ -46,11 +46,23 @@
             <item name="Users" href="choco-users.html"/>
             <!--<item name="Applications" href="choco-applications.html"/>-->
             <item name="Publications" href="choco-publications.html"/>
-            <item name="Developper Corner" href="choco-developper_corner.html"/>
+            <item name="Get involved" href="choco-developper_corner.html"/>
             <item name="About you" href="choco-about-you.html"/>
         </menu>
 
-        ${modules}
+        <menu name="CHOCO Solver">
+            <item name="CHOCO solver" href="choco-solver/index.html"/>
+            <item name="CHOCO solver + CP-Viz" href="cpvisu-tracer/index.html"/>
+        </menu>
+        <menu name="Extras">
+            <item name="CHOCO DB" href="choco-db/index.html"/>
+            <item name="CHOCO Parsers" href="choco-parsers/index.html"/>
+            <item name="CHOCO CLI" href="choco-cli/index.html"/>
+            <item name="CHOCO Visu" href="choco-visu/index.html"/>
+            <item name="Samples" href="samples/index.html"/>
+        </menu>
+
+        <!--${modules}-->
         <!--<menu ref="modules" />-->
         ${reports}
         <!--<menu ref="reports" />-->
