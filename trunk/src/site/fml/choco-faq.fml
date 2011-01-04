@@ -1,22 +1,22 @@
 <?xml version="1.0"?>
-<faqs title="Frequently Asked Question about Choco">
+<faqs title="Frequently Asked Question about CHOCO">
 
     <part id="faq">
         <faq id="where">
-            <question>Where can I download Choco?</question>
+            <question>Where can I download CHOCO?</question>
             <answer>
                 <p>
                     Please refer to the
                     <a href="./choco-download.html">download page</a>
-                    to get the latest version of Choco.
+                    to get the latest version of CHOCO.
                 </p>
             </answer>
         </faq>
 
         <faq id="java-version">
-            <question>What is the required Java version to run Choco?</question>
+            <question>What is the required Java version to run CHOCO?</question>
             <answer>
-                <p>Choco 2.0 or latest requires at least<a href="http://java.sun.com/javase/6/">Java 6</a>.
+                <p>CHOCO 2.0 or latest requires at least<a href="http://java.sun.com/javase/6/">Java 6</a>.
                 </p>
                 <p>
                     If you are working on Mac OS X 10.4 Tiger or if you do not have an Intel processor, you probably can
@@ -129,7 +129,7 @@
             <question>How can I use Choco to solve CSP'08 benchmark?</question>
             <answer>
                 <p>
-                    You can easily load an XML file of the CSP'08 competition and solve it with Choco.
+                    You can easily load an XML file of the CSP'08 competition and solve it with CHOCO.
                     To load the file, we use the XMLParser available
                     <a href="http://www.cril.univ-artois.fr/~lecoutre/research/tools/tools.html" target="_blank">
                         here</a>:
@@ -202,10 +202,10 @@
         </faq>
 
         <faq id="bounds">
-            <question>Are bounds with positive and negative infinity supported within Choco?</question>
+            <question>Are bounds with positive and negative infinity supported within CHOCO?</question>
             <answer>
                 <p>
-                    Integer or Double bounds are not really appreciate in CHOCO :)
+                    Integer or Double bounds are not really appreciate in CHOCO.
                     Because, during propgation, a basic test is done on bounds and the following operation can be
                     applied: “upper bound +1”.
                     Integer.MAX_VALUE+1 is equal to …Integer.MIN_VALUE, and it corrupts the propagation.
@@ -250,7 +250,7 @@
                     </code>
                     <li>To build the project for your IDE:</li>
                     <ul>
-                        <li>Intellij IDEA (choco's favourite IDE):</li>
+                        <li>Intellij IDEA (CHOCO's favourite IDE):</li>
                         <code>
                             mvn idea:idea
                         </code>

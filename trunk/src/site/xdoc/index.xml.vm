@@ -9,15 +9,13 @@
         <section name="Welcome">
 
             <p>
-                <tt>choco</tt>
-                is a java library for constraint satisfaction problems (CSP) and constraint programming (CP).
+                CHOCO is a java library for constraint satisfaction problems (CSP) and constraint programming (CP).
                 <br/>
                 It is built on a event-based propagation mechanism with backtrackable structures.
             </p>
 
             <p>
-                <tt>choco</tt>
-                can be used for:
+                CHOCO can be used for:
                 <ul>
                     <li>
                         teaching (a user-oriented constraint solver with open-source code)
@@ -27,7 +25,7 @@
                         variables)
                     </li>
                     <li>
-                        real-life applications (many application now embed <tt>choco</tt>)
+                        real-life applications (many application now embed CHOCO)
                     </li>
                 </ul>
             </p>
@@ -35,13 +33,21 @@
             <p>
                 Please visit the web site for downloading and more information.
             </p>
+            <div align="center">
+                <a href="choco-download.html" target="_self">
+                    <img src="images/logoChoco-dl.svg" width="50" height="65" align="center" title="download"/>
+                </a>
+                <a href="choco-documentation.html" target="_self">
+                    <img src="images/logoChoco-doc.svg" width="50" height="65" align="center"
+                         title="documentation"/>
+                </a>
+            </div>
 
         </section>
 
-	<section name="CHOCO's environment">
+        <section name="CHOCO's environment">
             <p>
-                <tt>choco</tt>
-                is an open-source software, distributed under a
+                CHOCO is an open-source software, distributed under a
                 <a href="license.html">BSD License</a>, hosted by
                 <a href="http://sourceforge.net/projects/choco/">sourceforge.net</a>
                 and developed with
@@ -49,20 +55,21 @@
             </p>
 
 
-            <p>
+            <div align="center">
                 <a href="http://sourceforge.net/projects/choco/" target="_blank">
                     <img src="images/Sourceforge.net_logo.png"/>
                 </a>
                 <a href="http://www.jetbrains.com/idea/features/code_analysis.html" target="_blank">
                     <img src="http://www.jetbrains.com/idea/opensource/img/banners/idea468x60_white.gif"/>
                 </a>
-            </p>
+            </div>
 
             <p>
-                <tt>choco</tt>
-                is involved in the
-                <a href="http://www.jcp.org/en/jsr/detail?id=331">Java Specification Requests 331</a>: Constraint Programming API,
-                winner of JCP Award for The Most Innovative JSR of 2010.
+                CHOCO is involved in the
+                <a href="http://www.jcp.org/en/jsr/detail?id=331">Java Specification Requests 331
+                    <img src="images/logoJava.png" height="50" align="center" title="JSR331"/>
+                </a>
+                : Constraint Programming API, winner of JCP Award for The Most Innovative JSR of 2010.
             </p>
 
         </section>
@@ -73,31 +80,26 @@
                     <a href="choco-documentation.html">
                         <div class="header">Documentation</div>
                     </a>
-                    Informations for those wanting to use <tt>choco</tt>. It introduces to Constraint Programming and
-                    <tt>choco</tt>
-                    and
-                    describes how to solve problems using <tt>choco</tt>. It also provides tutorials and examples.
+                    Informations for those wanting to use CHOCO. It introduces to Constraint Programming and
+                    CHOCO and describes how to solve problems using CHOCO. It also provides tutorials and examples.
                 </li>
                 <li>
                     <a href="choco-faq.html">
                         <div class="header">Frequently Asked Questions</div>
                     </a>
-                    A list of frequently asked questions about <tt>choco</tt>.
+                    A list of frequently asked questions about CHOCO.
                 </li>
                 <li>
                     <a href="team-list.html">
                         <div class="header">The team</div>
                     </a>
-                    List of the members involved in the development of
-                    <tt>choco</tt>
-                    with
-                    contacts.
+                    List of the members involved in the development of CHOCO with contacts.
                 </li>
                 <li>
                     <a href="choco-users.html">
                         <div class="header">Users</div>
                     </a>
-                    Non exhaustive list of <tt>choco</tt>'s users.
+                    Non exhaustive list of CHOCO's users.
                 </li>
             </ul>
         </section>

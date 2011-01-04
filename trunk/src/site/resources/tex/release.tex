@@ -77,7 +77,7 @@ Make sure the \mylst{./src/changes/changes.xml} file has been correctly updated 
 Run the following commands (and take another coffee) to produce the final ZIP and TAR.GZ files:
 \begin{lstlisting}
 $>mvn clean
-$>mvn javadoc:aggregate-jar
+$>mvn javadoc:aggregate
 $>mvn package -DskipTests=true
 $>mvn assembly:assembly -DskipTests=true
 \end{lstlisting}

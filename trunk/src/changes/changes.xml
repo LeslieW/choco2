@@ -1,39 +1,68 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
-  <properties>
-    <title>Changes Choco</title>
-    <author email="choco@emn.com">Choco team</author>
-  </properties>
-  <body>
-    <release version="2.1.1-20101108" date="2010-11-08" description="Small release (rev. 1686)">
-      <action dev="Charles Prud'homme" type="update">
-        Update website (publications page, changes report, link to sourceforge forums, licence text, etc).
-      </action>
-      <action dev="Sophie Demassey" type="update">
-        Update documentation (search strategies, variable selectors, value selectors, solver).
-      </action>
-      <action dev="Charles Prud'homme" type="update">
-        Update documentation (glossary).
-      </action>
-      <action dev="Charles Prud'homme" type="update">
-        Change class AbstractBinIntBranchingStrategy.
-      </action>
-      <action dev="Charles Prud'homme" type="update">
-        RandomIntVarSelector implements IntHeuristicIntVarSelector.
-      </action>
-      <action dev="Charles Prud'homme" type="update">
-        Change modules dependencies (requires "mvn install" command).
-      </action>
-      <action dev="Charles Prud'homme" type="remove">
-        Remove deprecated method #getBranching() from VarSelector.
-      </action>
-      <action dev="Charles Prud'homme" type="fix" issue="3092180">
-        Fix critical bug on DisposableIterator.
-      </action>
-    <action dev="Charles Prud'homme" type="fix" issue="3106016">
-        Fix critical bug on RealObjectiveManager (wrong initialisation of boundInterval).
-      </action>
-    </release>
-  </body>
+    <properties>
+        <title>Changes Choco</title>
+        <author email="choco@emn.com">Choco team</author>
+    </properties>
+    <body>
+        <release version="2.1.1-2011-01-01" date="2011-01-01" description="Strong release (rev. 1686)">
+            <action dev="Charles Prud'homme" type="update">
+                Update class file headers.
+            </action>
+            <action dev="Charles Prud'homme" type="update">
+                Update website (download page, etc) and documenation.
+            </action>
+            <action dev="Charles Prud'homme" type="add" issue="3150237">
+                Add new APIs for global cardinality constraint: add the list constrained values (JSR331).
+            </action>
+            <action dev="Charles Prud'homme" type="add" issue="3150243">
+                Add few improvments on SET constraints (masks, promotion, opposite(), etc).
+            </action>
+            <action dev="Arnaud Malapert" type="add">
+                Integration of the scheduling preprocessor.
+            </action>
+            <action dev="Julien Menana" type="add">
+                Changed names of the cost regular family constraints, add new Automaton interface, add new CostAutomaton interface, add new CostAutomaton bounds prefiltering to CR and MCR, add new Choco.costRegular and Choco.multicostregular API.
+            </action>
+            <action dev="Charles Prud'homme" type="update">
+                Flatten module dependencies (requires "mvn install" command).
+            </action>
+            <action dev="Charles Prud'homme" type="add" issue="3150247">
+                Add CP-Viz trace generator (AOP) + documentation. It replaces the old OADymPPAC module.
+            </action>
+            <action dev="Charles Prud'homme" type="add" issue="3150250">
+                Add CNF package to simply declare boolean formulas to be used with Choco.clauses() API.
+            </action>
+        </release>
+        <release version="2.1.1-20101108" date="2010-11-08" description="Small release (rev. 1686)">
+            <action dev="Charles Prud'homme" type="update">
+                Update website (publications page, changes report, link to sourceforge forums, licence text, etc).
+            </action>
+            <action dev="Sophie Demassey" type="update">
+                Update documentation (search strategies, variable selectors, value selectors, solver).
+            </action>
+            <action dev="Charles Prud'homme" type="update">
+                Update documentation (glossary).
+            </action>
+            <action dev="Charles Prud'homme" type="update">
+                Change class AbstractBinIntBranchingStrategy.
+            </action>
+            <action dev="Charles Prud'homme" type="update">
+                RandomIntVarSelector implements IntHeuristicIntVarSelector.
+            </action>
+            <action dev="Charles Prud'homme" type="update">
+                Change modules dependencies (requires "mvn install" command).
+            </action>
+            <action dev="Charles Prud'homme" type="remove">
+                Remove deprecated method #getBranching() from VarSelector.
+            </action>
+            <action dev="Charles Prud'homme" type="fix" issue="3092180">
+                Fix critical bug on DisposableIterator.
+            </action>
+            <action dev="Charles Prud'homme" type="fix" issue="3106016">
+                Fix critical bug on RealObjectiveManager (wrong initialisation of boundInterval).
+            </action>
+        </release>
+    </body>
 </document>
