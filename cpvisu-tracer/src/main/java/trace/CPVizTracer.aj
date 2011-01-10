@@ -26,99 +26,96 @@
  */
 package trace;
 
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.search.IntBranchingDecision;
-
-public aspect CPVizTracer{
+public aspect CPVizTracer {
 
 
-    Visualization visu;
+    trace.Visualization visu;
 
     /*************************************************/
-	/** 											**/
-	/** 				POINTCUTS 					**/
-	/** 											**/
-	/*************************************************/
+    /**                                             **/
+    /**                 POINTCUTS 					**/
+    /**                                             **/
+    /*************************************************/
 
     // creation of the visualization
-    pointcut visualization(Visualization visu) : execution(Visualization.new(..)) && target(visu);
+    pointcut visualization(trace.Visualization visu): execution(trace.Visualization.new(..)) && target(visu);
 
-	// start of the Tree search
-	pointcut incrementalRun() : execution(void AbstractGlobalSearchStrategy.incrementalRun());
+    // start of the Tree search
+    pointcut incrementalRun(): execution(void choco.kernel.solver.search.AbstractGlobalSearchStrategy.incrementalRun());
 
     // initial propagation
-	pointcut newTreeSearch() : execution(void AbstractGlobalSearchStrategy.newTreeSearch());
+    pointcut newTreeSearch(): execution(void choco.kernel.solver.search.AbstractGlobalSearchStrategy.newTreeSearch());
 
     // decision creation
-    pointcut storeCurrentDecision(IntBranchingDecision decision) :
-	    execution (void IntBranching+.goDownBranch(IntBranchingDecision)) && args(decision);
+    pointcut storeCurrentDecision(choco.kernel.solver.search.IntBranchingDecision decision):
+	    execution (void choco.kernel.solver.branch.IntBranching+.goDownBranch(choco.kernel.solver.search.IntBranchingDecision)) && args(decision);
 
     // initial propagation
-	pointcut intialPropagation() : execution(void Solver+.propagate()) && cflow(execution(void AbstractGlobalSearchStrategy.initialPropagation()));
+    pointcut intialPropagation(): execution(void choco.kernel.solver.Solver+.propagate()) && cflow(execution(void choco.kernel.solver.search.AbstractGlobalSearchStrategy.initialPropagation()));
 
     // decision application
-	pointcut applyDecision() : execution(void Solver+.propagate()) && cflow(execution(void AbstractSearchLoop.downBranch()));
+    pointcut applyDecision(): execution(void choco.kernel.solver.Solver+.propagate()) && cflow(execution(void choco.kernel.solver.search.AbstractSearchLoop.downBranch()));
 
     // reconsider decision
-	pointcut worldPop() : execution(void AbstractSearchLoop+.worldPop()) && cflow(execution(void AbstractSearchLoop.upBranch()));
+    pointcut worldPop(): execution(void choco.kernel.solver.search.AbstractSearchLoop+.worldPop()) && cflow(execution(void choco.kernel.solver.search.AbstractSearchLoop.upBranch()));
 
     // reconsider decision
-	pointcut reconsiderDecision() : execution(void Solver+.propagate()) && cflow(execution(void AbstractSearchLoop.upBranch()));
+    pointcut reconsiderDecision(): execution(void Solver+.propagate()) && cflow(execution(void choco.kernel.solver.search.AbstractSearchLoop.upBranch()));
 
     // Solution recording
-    pointcut recordSolution() : call(void AbstractSearchStrategy.recordSolution());
+    pointcut recordSolution(): call(void choco.kernel.solver.search.AbstractSearchStrategy.recordSolution());
 
     /*************************************************/
-	/** 											**/
-	/** 				ADVICES 					**/
-	/** 											**/
-	/*************************************************/
+    /**                                             **/
+    /**                 ADVICES 					**/
+    /**                                             **/
+    /*************************************************/
 
-    after(Visualization aVisu): visualization(aVisu){
+    after(trace.Visualization aVisu): visualization(aVisu){
         this.visu = aVisu;
     }
 
     // start of the tree search
-	before(): incrementalRun() {
-        VisuWrapper.init(visu);
-	}
+    before(): incrementalRun() {
+        trace.VisuWrapper.init(visu);
+    }
 
-    before(IntBranchingDecision decision): storeCurrentDecision(decision){
-        VisuWrapper.setBranchingDecision(visu, decision);
+    before(choco.kernel.solver.search.IntBranchingDecision decision): storeCurrentDecision(decision){
+        trace.VisuWrapper.setBranchingDecision(visu, decision);
     }
 
     // start of the tree search
     before(): intialPropagation() {
-        VisuWrapper.beforeInitialPropagation(visu);
+        trace.VisuWrapper.beforeInitialPropagation(visu);
     }
 
 
     // Try node
-	after() returning: intialPropagation() {
-		VisuWrapper.afterInitialPropagation(visu);
-	}
+    after() returning: intialPropagation() {
+        trace.VisuWrapper.afterInitialPropagation(visu);
+    }
 
-	// Try node
-	after() returning: applyDecision() {
-		VisuWrapper.tryNode(visu);
-	}
+    // Try node
+    after() returning: applyDecision() {
+        trace.VisuWrapper.tryNode(visu);
+    }
 
     // Fail node
-	after() throwing(ContradictionException c): applyDecision() {
-		VisuWrapper.hasFailed(visu);
-	}
+    after() throwing(choco.kernel.solver.ContradictionException c): applyDecision() {
+        trace.VisuWrapper.hasFailed(visu);
+    }
 
-	after(): worldPop(){
-	    VisuWrapper.failNode(visu);
-	}
+    after(): worldPop(){
+        trace.VisuWrapper.failNode(visu);
+    }
 
-	// Reconsider a decision
-	after() throwing(ContradictionException c): reconsiderDecision() {
-		VisuWrapper.hasFailed(visu);
-	}
+    // Reconsider a decision
+    after() throwing(choco.kernel.solver.ContradictionException c): reconsiderDecision() {
+        trace.VisuWrapper.hasFailed(visu);
+    }
 
     // Record a solution
-	after(): recordSolution() {
-		VisuWrapper.succNode(visu);
-	}
+    after(): recordSolution() {
+        trace.VisuWrapper.succNode(visu);
+    }
 }
