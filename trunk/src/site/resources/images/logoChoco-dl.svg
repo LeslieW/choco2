@@ -14,8 +14,8 @@
    id="svg3586"
    version="1.1"
    inkscape:version="0.48.0 r9654"
-   width="1765.7733"
-   height="2289.2939"
+   width="1576"
+   height="1576"
    sodipodi:docname="logoChoco-dl.svg">
   <metadata
      id="metadata3592">
@@ -25,7 +25,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -35,7 +35,7 @@
        id="linearGradient5862"
        osb:paint="solid">
       <stop
-         style="stop-color:#ffeeaa;stop-opacity:1;"
+         style="stop-color:#f2f2f2;stop-opacity:1;"
          offset="0"
          id="stop5864" />
     </linearGradient>
@@ -59,6 +59,16 @@
        y1="372.13739"
        x2="2049.6184"
        y2="372.13739" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5862"
+       id="linearGradient3868"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1,0,0,1.2524465,51.064398,-138.08181)"
+       x1="-538.0329"
+       y1="372.13739"
+       x2="2049.6184"
+       y2="372.13739" />
   </defs>
   <sodipodi:namedview
      pagecolor="#ffffff"
@@ -69,16 +79,16 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1920"
-     inkscape:window-height="1082"
+     inkscape:window-width="755"
+     inkscape:window-height="602"
      id="namedview3588"
      showgrid="false"
-     inkscape:zoom="0.225397"
-     inkscape:cx="2057.4713"
-     inkscape:cy="1042.7022"
+     inkscape:zoom="0.16773731"
+     inkscape:cx="788.00574"
+     inkscape:cy="934.83148"
      inkscape:window-x="1280"
      inkscape:window-y="0"
-     inkscape:window-maximized="0"
+     inkscape:window-maximized="1"
      inkscape:current-layer="svg3586"
      fit-margin-top="0"
      fit-margin-left="0"
@@ -90,27 +100,24 @@
      id="rect6037"
      width="1765.7733"
      height="2289.2939"
-     x="0"
-     y="0"
+     x="-94.88092"
+     y="-503.47845"
      rx="61.014137"
      ry="66.07399" />
-  <rect
+  <path
+     inkscape:connector-curvature="0"
+     id="path3863"
+     d="M 787.63113,2.2952412e-4 C 784.24105,0.00222952 780.8434,0.02482952 777.4437,0.07052952 342.28313,5.9116095 -5.7686426,363.42936 0.07245738,798.59045 l 0.94849002,29.3329 C 22.483298,1251.1621 374.84742,1581.6155 798.5914,1575.9276 1233.7519,1570.0865 1581.7686,1212.6038 1575.9275,777.44275 1570.1321,345.68133 1218.1715,-0.32531048 787.63113,2.2952412e-4 z"
      style="fill:#5d4014;fill-opacity:1;stroke:none"
-     id="rect5937"
-     width="1582.559"
-     height="1569.6926"
-     x="91.607162"
-     y="506.64377"
-     rx="57.641495"
-     ry="55.061657" />
+     sodipodi:nodetypes="ccccssc" />
   <path
      style="fill:#fa931d;fill-opacity:1;stroke:none"
-     d="m 882.55278,590.49326 c -3.01574,0.002 -6.03821,0.0219 -9.0625,0.0625 -387.10865,5.19611 -696.72736,323.2351 -691.53125,710.34374 l 0.84375,26.0938 c 19.09241,376.5028 332.54728,670.466 709.5,665.4062 387.10862,-5.1961 696.69612,-323.2039 691.50002,-710.3125 -5.1555,-384.08435 -318.2514,-691.88334 -701.25002,-691.59374 z m 0.0312,79.875 c 339.36602,-0.25661 616.80692,272.45325 621.37502,612.78124 4.6042,343.0077 -269.7422,624.8021 -612.74997,629.4062 -334.00882,4.4834 -611.73892,-255.9835 -628.65625,-589.5937 l -0.75,-23.125 c -4.60414,-343.00773 269.74226,-624.8021 612.75,-629.40624 2.67975,-0.036 5.35908,-0.0605 8.03125,-0.0625 z"
+     d="m 787.67186,87.01481 c -3.01574,0.002 -6.03821,0.0219 -9.0625,0.0625 C 391.50071,92.27342 81.881998,410.31241 87.078108,797.42105 l 0.84375,26.0938 C 107.01427,1200.0176 420.46914,1493.9808 797.42186,1488.921 1184.5305,1483.7249 1494.118,1165.7171 1488.9219,778.60855 1483.7664,394.5242 1170.6705,86.72521 787.67186,87.01481 z m 0.0312,79.875 C 1127.0691,166.6332 1404.51,439.34306 1409.0781,779.67105 1413.6823,1122.6787 1139.3359,1404.4731 796.32811,1409.0772 462.31929,1413.5606 184.58919,1153.0937 167.67186,819.48355 l -0.75,-23.125 c -4.60414,-343.00773 269.74226,-624.8021 612.75,-629.40624 2.67975,-0.036 5.35908,-0.0605 8.03125,-0.0625 z"
      id="path6137"
      inkscape:connector-curvature="0" />
   <g
      id="g5941"
-     transform="translate(132.88669,543.44377)">
+     transform="translate(38.005768,39.96532)">
     <path
        inkscape:transform-center-x="-1.6929135e-05"
        transform="matrix(1.7085604,0,0,1.3303776,3557.3864,2779.2458)"
@@ -140,21 +147,8 @@
        style="fill:#fa931d;fill-opacity:1;stroke:none" />
   </g>
   <path
-     style="opacity:0.10899999;fill:url(#linearGradient6144);fill-opacity:1;stroke:none"
-     d="m 838.11528,506.64951 -706.46875,2.59375 c -23.26579,7.07889 -40.03125,27.83805 -40.03125,52.46875 l 0,454.34379 c 221.85264,90.9179 503.65284,145.2812 810.0625,145.2812 289.56662,0 556.90852,-48.5058 772.50002,-130.4375 l 0,-469.18749 c 0,-30.50416 -25.7229,-55.0625 -57.6562,-55.0625 l -778.40632,0 z"
+     style="opacity:0.25;fill:url(#linearGradient3868);fill-opacity:1;stroke:none"
+     d="m 743.24408,3.1777995 -27.4375,0.0937 C 401.79178,31.8228 141.98294,244.14843 42.994078,530.67775 c 214.181032,79.9849 478.318192,127.1875 763.812502,127.1876 270.95432,0 522.43632,-42.4762 730.28132,-115.0626 C 1440.9274,248.73119 1176.6963,31.58818 859.21283,3.1777995 l -115.96875,0 z"
      id="path4418"
      inkscape:connector-curvature="0" />
-  <flowRoot
-     xml:space="preserve"
-     id="flowRoot6027"
-     style="font-size:350px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#5d4014;fill-opacity:1;stroke:#5d4014;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
-     transform="translate(-143.54938,-104.20119)"><flowRegion
-       id="flowRegion6029"><rect
-         id="rect6031"
-         width="2269.3293"
-         height="862.92188"
-         x="155.28157"
-         y="112.26418"
-         style="font-size:350px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#5d4014;fill-opacity:1;stroke:#5d4014;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans" /></flowRegion><flowPara
-       id="flowPara6035"
-       style="font-size:350px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;font-family:Sans;-inkscape-font-specification:Sans">Download</flowPara></flowRoot></svg>
+</svg>

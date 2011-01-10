@@ -35,11 +35,15 @@
             </p>
             <div align="center">
                 <a href="choco-download.html" target="_self">
-                    <img src="images/logoChoco-dl.svg" width="50" height="65" align="center" title="download"/>
+                    <img src="images/logoChoco-dl.svg" width="75" height="75" align="center" title="download"/>
                 </a>
                 <a href="choco-documentation.html" target="_self">
-                    <img src="images/logoChoco-doc.svg" width="50" height="65" align="center"
+                    <img src="images/logoChoco-doc.svg" width="75" height="75" align="center"
                          title="documentation"/>
+                </a>
+                <a href="choco-forums.html" target="_self">
+                    <img src="images/logoChoco-for.svg" width="75" height="75" align="center"
+                         title="forums"/>
                 </a>
             </div>
 

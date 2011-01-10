@@ -48,8 +48,8 @@
                     <finalName>choco-solver-${project.version}</finalName>
                     <appendAssemblyId>true</appendAssemblyId>
                     <descriptors>
-                        <descriptor>src/main/assembly/full.xml</descriptor>
-                        <descriptor>src/main/assembly/full-src.xml</descriptor>
+                        <descriptor>src/main/assembly/dependencies.xml</descriptor>
+                        <descriptor>src/main/assembly/source.xml</descriptor>
                     </descriptors>
                 </configuration>
                 <executions>

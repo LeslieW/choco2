@@ -31,8 +31,9 @@
             <outputDirectory>/</outputDirectory>
         </file>
         <file>
-            <source>samples/target/samples-${project.version}.jar</source>
+            <source>samples/target/samples-${project.version}-dep.jar</source>
             <outputDirectory>/</outputDirectory>
+            <destName>samples-${project.version}.jar</destName>
         </file>
         <file>
             <source>src/site/resources/tex/documentation/choco-doc.pdf</source>
@@ -40,20 +41,24 @@
             <destName>choco-doc-${project.version}.pdf</destName>
         </file>
         <file>
-            <source>choco-db/target/choco-db-${project.version}.jar</source>
-            <outputDirectory>/extras</outputDirectory>
+            <source>choco-db/target/choco-db-${project.version}-dep.jar</source>
+            <destName>choco-db-${project.version}.jar</destName>
+            <outputDirectory>/extra</outputDirectory>
         </file>
         <file>
-            <source>choco-parsers/target/choco-parsers-${project.version}.jar</source>
-            <outputDirectory>/extras</outputDirectory>
+            <source>choco-parsers/target/choco-parsers-${project.version}-dep.jar</source>
+            <destName>choco-parsers-${project.version}.jar</destName>
+            <outputDirectory>/extra</outputDirectory>
         </file>
         <file>
-            <source>choco-cli/target/choco-cli-${project.version}.jar</source>
-            <outputDirectory>/extras</outputDirectory>
+            <source>choco-cli/target/choco-cli-${project.version}-dep.jar</source>
+            <destName>choco-cli-${project.version}.jar</destName>
+            <outputDirectory>/extra</outputDirectory>
         </file>
         <file>
-            <source>choco-visu/target/choco-visu-${project.version}.jar</source>
-            <outputDirectory>/extras</outputDirectory>
+            <source>choco-visu/target/choco-visu-${project.version}-dep.jar</source>
+            <destName>choco-visu-${project.version}.jar</destName>
+            <outputDirectory>/extra</outputDirectory>
         </file>
     </files>
 

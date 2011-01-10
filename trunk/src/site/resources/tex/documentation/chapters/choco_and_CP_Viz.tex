@@ -22,6 +22,8 @@ Producing CP-Viz traces in your Choco's program can be done in 2 steps:
 \end{itemize}
 Now your project will produces XML files for CP-Viz.
 \medskip
+
+
 \section{Visualization and Visualizers}\label{chocoandcpviz:visualizationandvisualizers}\hypertarget{chocoandcpviz:visualizationandvisualizers}{}
 
 
@@ -96,7 +98,14 @@ Each visalizer is a specific extension of the abstract \mylst{Visualizer} class.
 \end{notedef}
 Note that constraint-oriented visualizers are not based on any \mylst{Constraint} object but just \mylst{Var} object (\mylst{Solver} objects). This gives more freedom in visualizers declaration (for example, on reformulations).
 
-\subsection{Code integration}\label{chocoandcpviz:codeintegration}\hypertarget{chocoandcpviz:codeintegration}{}
+\section{Using CP-Viz}\label{chocoandcpviz:codeintegration}\hypertarget{chocoandcpviz:codeintegration}{}
+
+The produced XML outputs can be given in parameters of CP-Viz.  Go to \mylst{your.cpviz.dir/viz/bin}, and run the following command:
+\begin{lstlisting}
+java ie.ucc.cccc.viz.Viz configuration-{pbname}.xml tree-{pbname}.xml visualization-{pbname}.xml
+\end{lstlisting}
+
+\section{Example of code integration}\label{chocoandcpviz:codeintegration}\hypertarget{chocoandcpviz:codeintegration}{}
 Let's see a visualization integration in the well-known \mylst{SendMoreMoney} problem:
 
 \begin{lstlisting}[title=SendMoreMoney problem,captionpos=b]  
