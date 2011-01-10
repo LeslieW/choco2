@@ -90,7 +90,7 @@ public final class Among extends AbstractUnIntSConstraint {
     public String pretty() {
         final StringBuilder sb = new StringBuilder("AMONG(");
         sb.append(v0.pretty()).append(",{");
-        StringUtils.pretty(values.toNativeArray());
+        sb.append(StringUtils.pretty(values.toNativeArray()));
         sb.append("})");
         return sb.toString();
     }

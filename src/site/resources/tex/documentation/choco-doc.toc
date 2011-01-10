@@ -105,7 +105,8 @@
 \contentsline {section}{\numberline {5.2}Visualization and Visualizers}{59}{section.5.2}
 \contentsline {subsection}{\numberline {5.2.1}Visualization}{59}{subsection.5.2.1}
 \contentsline {subsection}{\numberline {5.2.2}Visualizers}{60}{subsection.5.2.2}
-\contentsline {subsection}{\numberline {5.2.3}Code integration}{61}{subsection.5.2.3}
+\contentsline {section}{\numberline {5.3}Using CP-Viz}{61}{section.5.3}
+\contentsline {section}{\numberline {5.4}Example of code integration}{61}{section.5.4}
 \contentsline {part}{II\hspace {1em}Elements of Choco}{65}{part.2}
 \contentsline {chapter}{\numberline {6}Variables (Model)}{67}{chapter.6}
 \contentsline {section}{\numberline {6.1}Integer variables}{67}{section.6.1}

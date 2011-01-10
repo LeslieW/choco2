@@ -74,6 +74,14 @@ At that point, you should consider the failed tests (if exist) and fix them if n
 Make sure the \mylst{./src/changes/changes.xml} file has been correctly updated since the last release. The changes html file is created during the \mylst{mvn:site} command. 
 
 \vspace{.5cm}
+Prepare and perform release on SCM repository:
+\begin{lstlisting}
+$>mvn release:prepare -DpreparationGoals=clean
+$>mvn release:perform // TO VERIFY
+\end{lstlisting}
+At that point the source repository is up-to-date. Now the released files (ZIP and TAR.GZ) can be created on the newly tagged version.
+
+\vspace{.5cm}
 Run the following commands (and take another coffee) to produce the final ZIP and TAR.GZ files:
 \begin{lstlisting}
 $>mvn clean
@@ -83,6 +91,7 @@ $>mvn assembly:assembly -DskipTests=true
 \end{lstlisting}
 
 \textbf{TODO} prepare \mylst{choco-solver} and \mylst{choco-solver-cpviz} for \mylst{deploy} command.
+
 %\subsection{}
 
 

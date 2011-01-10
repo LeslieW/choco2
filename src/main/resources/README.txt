@@ -29,13 +29,13 @@
  -----
 
  CHOCO is a java library for constraint satisfaction problems (CSP) and constraint programming (CP).
- It is built on a event-based propagation mechanism with backtrackable structures.
+ It is built on an event-based propagation mechanism with backtrackable structures.
 
  CHOCO can be used for:
 
- > teaching (a user-oriented constraint solver with open-source code)
- > research (state-of-the-art algorithms and techniques, user-defined constraints, domains and variables)
- > real-life applications (many application now embed choco)
+ > teaching (as a user-oriented constraint solver with open-source code)
+ > research (for state-of-the-art algorithms and techniques, user-defined constraints, domains and variables)
+ > real-life applications (many applications now embed choco)
 
  Please visit the project web site (http://choco.emn.fr) for more information.
 
@@ -47,23 +47,23 @@
  DOCUMENTATION
  -------------
 
- Look for the most updated documentation on the CHOCO web site, under the Documentation menu
+ Look for the most up-to-date documentation on the CHOCO web site, under the Documentation menu
  (http://choco.emn.fr/choco-documentation.html)
 
  RELEASE
  -------
 
- The choco-${project.version}.zip file is composed by the following directories and files:
+ The choco-X.y.z-VERSION.zip file is composed of the following directories and files:
 
  > choco-solver: a JAR file providing tools for modeling and solving problems using CP (the heart of CHOCO)
  > choco-solver-cpviz: choco-solver + CP-Viz wrapper (using AOP), a JAR file providing tool for modeling and solving
     problems using CP and also producing XML files for CP-Viz (web site: http://sourceforge.net/projects/cpviz/)
- > extras: directory with extra JARs:
-    > choco-db : a database toolbox, interfacing choco-solver
-    > choco-parsers: parsers interface and implementations (CSC, FZN) for choco-solver
+ > extra: directory with extra JARs:
+    > choco-db: a database toolbox, interfacing choco-solver
+    > choco-parsers: parser interface and implementations (CSC, FZN) for choco-solver
     > choco-cli: Command-Line Interpreter facilities for choco-solver, choco-db and choco-parsers
     > choco-visu: "alive" visualization toolbox
- > sampes: a list of runnable classes of problems modeled and solved with choco-solver
+ > samples: a directory of runnable classes of problems modeled and solved with choco-solver
  > apidocs: javadoc repository
  > documentation PDF file
 
@@ -74,11 +74,11 @@
  |-- choco-solver-${project.version}.jar		        // CHOCO solver
  |-- choco-solver-${project.version}-with-sources.jar   // Sources of CHOCO solver
  |-- choco-solver-cpviz-${project.version}.jar  	    // CHOCO solver + CP Viz logs
- |-- extras
- |	|-- choco-db-${project.version}.jar 		        // Database insertion tool
- |	|-- choco-parsers-${project.version}.jar	        // Parsers interfaces + MZN + FCSP
- |	|-- choco-cli-${project.version}.jar 	            // Command Line Interpreter
- |	`-- choco-visu-${project.version}.jar 	            // Visualization tool box
+ |-- extra
+ |	|-- choco-db-${project.version}.jar 	    	    // Database insertion tool
+ |	|-- choco-parsers-${project.version}.jar    	    // Parsers interfaces + MZN + FCSP
+ |	|-- choco-cli-${project.version}.jar                // Command Line Interpreter
+ |	`-- choco-visu-${project.version}.jar               // Visualization tool box
  |-- samples-${project.version}.jar			            // Samples of CHOCO programs
  `-- README
  -------------------------

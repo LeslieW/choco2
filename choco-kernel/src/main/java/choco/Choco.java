@@ -2439,6 +2439,22 @@ public class Choco {
     }
 
     /**
+     * subscript constraint: accessing an array with a variable index
+     * The offset can be used when the index variable needs to be shifted of a given value (the offset)
+     *
+     * @param index  the index variable
+     * @param values the possible value
+     * @param offset the offset value
+     * @param val    the indexth value
+     * @return Constraint
+     */
+    public static Constraint nth(String options, IntegerVariable index, int[] values, IntegerVariable val, int offset) {
+        Constraint c = nth(index, values, val, offset);
+        c.addOption(options);
+        return c;
+    }
+
+    /**
      * subscript constraint: accessing an array of variables with a variable index
      *
      * @param index    the index variable
@@ -5226,7 +5242,7 @@ public class Choco {
      * @return Constraint
      */
     public static Constraint endsAfterBegin(final TaskVariable t1, final TaskVariable t2, final int delta) {
-        return startsBeforeEnd(t2, t1, delta);
+        return new MetaTaskConstraint(new TaskVariable[]{t1, t2}, leq(plus(t1.end(), delta), t2.start()));
     }
 
     /**
