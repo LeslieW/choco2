@@ -2,11 +2,11 @@
 
     <timestamp key="bySecond" datePattern="yyyyMMdd_HHmmss"/>
 
-    <!--<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%msg%n</pattern>
         </encoder>
-    </appender>-->
+    </appender>
 
     <appender name="CONFIGURATION" class="ch.qos.logback.classic.sift.SiftingAppender">
         <discriminator>
@@ -69,7 +69,7 @@
         <appender-ref ref="VISUALIZATION"/>
     </logger>
 
-    <root level="OFF">
+    <!--<root level="OFF">
         <appender-ref ref="STDOUT"/>
-    </root>
+    </root>-->
 </configuration>
