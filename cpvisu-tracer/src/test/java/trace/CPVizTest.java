@@ -57,6 +57,28 @@ public class CPVizTest {
     private String dir = System.getProperty("user.dir");
 
     @Test
+    public void testNoLog() {
+        int n = 4;
+
+        Model m = new CPModel();
+        IntegerVariable[] Q = Choco.makeIntVarArray("Q", n, 1, n);
+
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                int k = j - i;
+                m.addConstraint(Choco.neq(Q[i], Q[j]));
+                m.addConstraint(Choco.neq(Q[i], Choco.plus(Q[j], k)));
+                m.addConstraint(Choco.neq(Q[i], Choco.minus(Q[j], k)));
+            }
+        }
+
+        Solver s = new CPSolver();
+        s.read(m);
+
+        s.solveAll();
+    }
+
+    @Test
     public void testVector() {
         int n = 4;
 
