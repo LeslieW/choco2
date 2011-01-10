@@ -31,6 +31,8 @@ public aspect CPVizTracer {
 
     trace.Visualization visu;
 
+    trace.Wrapper wrapper;
+
     /*************************************************/
     /**                                             **/
     /**                 POINTCUTS 					**/
@@ -77,45 +79,46 @@ public aspect CPVizTracer {
 
     // start of the tree search
     before(): incrementalRun() {
-        trace.VisuWrapper.init(visu);
+        this.wrapper = WrapperFactory.build(visu);
+        this.wrapper.init();
     }
 
     before(choco.kernel.solver.search.IntBranchingDecision decision): storeCurrentDecision(decision){
-        trace.VisuWrapper.setBranchingDecision(visu, decision);
+        this.wrapper.setBranchingDecision(decision);
     }
 
     // start of the tree search
     before(): intialPropagation() {
-        trace.VisuWrapper.beforeInitialPropagation(visu);
+        this.wrapper.beforeInitialPropagation();
     }
 
 
     // Try node
     after() returning: intialPropagation() {
-        trace.VisuWrapper.afterInitialPropagation(visu);
+        this.wrapper.afterInitialPropagation();
     }
 
     // Try node
     after() returning: applyDecision() {
-        trace.VisuWrapper.tryNode(visu);
+        this.wrapper.tryNode();
     }
 
     // Fail node
     after() throwing(choco.kernel.solver.ContradictionException c): applyDecision() {
-        trace.VisuWrapper.hasFailed(visu);
+        this.wrapper.hasFailed();
     }
 
     after(): worldPop(){
-        trace.VisuWrapper.failNode(visu);
+        this.wrapper.failNode();
     }
 
     // Reconsider a decision
     after() throwing(choco.kernel.solver.ContradictionException c): reconsiderDecision() {
-        trace.VisuWrapper.hasFailed(visu);
+        this.wrapper.hasFailed();
     }
 
     // Record a solution
     after(): recordSolution() {
-        trace.VisuWrapper.succNode(visu);
+        this.wrapper.succNode();
     }
 }

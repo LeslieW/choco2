@@ -30,47 +30,57 @@ import choco.kernel.solver.search.IntBranchingDecision;
 
 /**
  * A wrapper to communicate with the Visualization, used in weaved code.
- *
+ * <p/>
  * <br/>
  *
  * @author Charles Prud'homme
  * @since 9 déc. 2010
  */
-public class VisuWrapper {
+public class VisuWrapper extends Wrapper {
 
-    VisuWrapper() {
+    final Visualization visu;
+
+    VisuWrapper(Visualization visu) {
+        this.visu = visu;
     }
 
-    public static void init(Visualization visu) {
+    @Override
+    public void init() {
         visu.init();
     }
 
-    public static void beforeInitialPropagation(Visualization visu) {
+    @Override
+    public void beforeInitialPropagation() {
         visu.beforeInitialPropagation();
     }
 
-    public static void afterInitialPropagation(Visualization visu){
+    @Override
+    public void afterInitialPropagation() {
         visu.afterInitialPropagation();
     }
 
-    public static void setBranchingDecision(Visualization visu, IntBranchingDecision currentDecision) {
+    @Override
+    public void setBranchingDecision(IntBranchingDecision currentDecision) {
         visu.setBranchingDecision(currentDecision);
     }
 
-    public static void tryNode(Visualization visu) {
+    @Override
+    public void tryNode() {
         visu.tryNode();
     }
 
-    public static void hasFailed(Visualization visu){
+    @Override
+    public void hasFailed() {
         visu.hasFailed();
     }
 
-    public static void failNode(Visualization visu) {
+    @Override
+    public void failNode() {
         visu.failNode();
     }
 
-    public static void succNode(Visualization visu) {
+    @Override
+    public void succNode() {
         visu.succNode();
     }
-
 }
