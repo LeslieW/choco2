@@ -28,7 +28,7 @@
 package choco.cp.common.util.preprocessor.detector;
 
 import choco.Choco;
-import choco.cp.common.util.preprocessor.AbstractDetector;
+import choco.cp.common.util.preprocessor.AbstractAdvancedDetector;
 import choco.cp.common.util.preprocessor.ExpressionTools;
 import choco.cp.model.CPModel;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
@@ -47,7 +47,7 @@ import java.util.List;
  * Date : 2 avr. 2010br/>
  * Since : Choco 2.1.1<br/>
  */
-public class ExpressionSolverDetector extends AbstractDetector{
+public class ExpressionSolverDetector extends AbstractAdvancedDetector {
 
     private final PreProcessCPSolver ppsolver;
 

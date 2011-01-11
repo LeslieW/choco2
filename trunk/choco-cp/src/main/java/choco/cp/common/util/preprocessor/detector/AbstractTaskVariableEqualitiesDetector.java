@@ -27,6 +27,7 @@
 
 package choco.cp.common.util.preprocessor.detector;
 
+import choco.cp.common.util.preprocessor.AbstractAdvancedDetector;
 import choco.cp.common.util.preprocessor.AbstractDetector;
 import choco.cp.common.util.preprocessor.merger.TaskVariableMerger;
 import choco.cp.model.CPModel;
@@ -50,7 +51,7 @@ import java.util.logging.Level;
  * <p/>
  * A class detector to detect equalities between TaskVariable within a model.
  */
-public abstract class AbstractTaskVariableEqualitiesDetector extends AbstractDetector {
+public abstract class AbstractTaskVariableEqualitiesDetector extends AbstractAdvancedDetector {
 
 
     public AbstractTaskVariableEqualitiesDetector(final CPModel model) {

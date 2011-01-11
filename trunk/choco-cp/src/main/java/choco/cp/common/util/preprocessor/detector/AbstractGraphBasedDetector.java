@@ -27,7 +27,7 @@
 
 package choco.cp.common.util.preprocessor.detector;
 
-import choco.cp.common.util.preprocessor.AbstractDetector;
+import choco.cp.common.util.preprocessor.AbstractAdvancedDetector;
 import choco.cp.common.util.preprocessor.graph.ArrayGraph;
 import choco.cp.common.util.preprocessor.graph.MaxCliques;
 import choco.cp.model.CPModel;
@@ -46,7 +46,7 @@ import java.util.Iterator;
  * A class dedicated to detect clique of differences or disjonctions
  * and state the corresponding global constraints
  */
-public abstract class AbstractGraphBasedDetector extends AbstractDetector {
+public abstract class AbstractGraphBasedDetector extends AbstractAdvancedDetector {
 
     /**
      * The graph of differences

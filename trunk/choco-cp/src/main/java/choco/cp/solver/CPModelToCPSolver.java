@@ -120,10 +120,9 @@ public class CPModelToCPSolver {
 
     public void readIntegerVariables(final CPModel model) {
         IntegerVariable i;
-
-        final Iterator it = model.getIntVarIterator();
+        final Iterator<IntegerVariable> it = model.getIntVarIterator();
         while (it.hasNext()) {
-            i = (IntegerVariable) it.next();
+            i = it.next();
             if (!cpsolver.mapvariables.containsKey(i.getIndex())) {
                 cpsolver.mapvariables.put(i.getIndex(), readModelVariable(i));
             }
@@ -132,9 +131,9 @@ public class CPModelToCPSolver {
 
     public void readRealVariables(final CPModel model) {
         RealVariable r;
-        final Iterator it = model.getRealVarIterator();
+        final Iterator<RealVariable> it = model.getRealVarIterator();
         while (it.hasNext()) {
-            r = (RealVariable) it.next();
+            r = it.next();
             if (!cpsolver.mapvariables.containsKey(r.getIndex())) {
                 cpsolver.mapvariables.put(r.getIndex(), readModelVariable(r));
             }
@@ -143,9 +142,9 @@ public class CPModelToCPSolver {
 
     public void readSetVariables(final CPModel model) {
         SetVariable s;
-        final Iterator it = model.getSetVarIterator();
+        final Iterator<SetVariable> it = model.getSetVarIterator();
         while (it.hasNext()) {
-            s = (SetVariable) it.next();
+            s = it.next();
             if (!cpsolver.mapvariables.containsKey(s.getIndex())) {
                 final SetVar setVar = (SetVar) readModelVariable(s);
                 cpsolver.mapvariables.put(s.getIndex(), setVar);
@@ -160,9 +159,9 @@ public class CPModelToCPSolver {
         IntegerConstantVariable ci;
         RealConstantVariable cr;
         SetConstantVariable cs;
-        final Iterator it = model.getConstVarIterator();
+        final Iterator<Variable> it = model.getConstVarIterator();
         while (it.hasNext()) {
-            v = (Variable) it.next();
+            v = it.next();
             if (!cpsolver.mapvariables.containsKey(v.getIndex())) {
                 switch (v.getVariableType()) {
                     case CONSTANT_INTEGER:
@@ -190,7 +189,7 @@ public class CPModelToCPSolver {
 
     public void readMultipleVariables(final CPModel model) {
         MultipleVariables mv;
-        final Iterator it = model.getMultipleVarIterator();
+        final Iterator<MultipleVariables> it = model.getMultipleVarIterator();
         while (it.hasNext()) {
             mv = (MultipleVariables) it.next();
             if (!cpsolver.mapvariables.containsKey(mv.getIndex())) {

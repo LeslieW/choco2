@@ -28,7 +28,7 @@
 package choco.cp.solver.preprocessor;
 
 import choco.Choco;
-import choco.cp.common.util.preprocessor.AbstractDetector;
+import choco.cp.common.util.preprocessor.AbstractAdvancedDetector;
 import choco.cp.model.CPModel;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.model.constraints.Constraint;
@@ -41,7 +41,7 @@ import java.util.Iterator;
 /**
  * Simple symetry detection.
  */
-public class SymetryBreakingModelDetector extends AbstractDetector{
+public class SymetryBreakingModelDetector extends AbstractAdvancedDetector {
 
     private IntegerVariable[] maxclique = null;
 
@@ -59,7 +59,6 @@ public class SymetryBreakingModelDetector extends AbstractDetector{
      * Break symetries in graph coloring by instantiating
      * the largest clique. Conditions are :
      * - a unique domain and only difference constraints
-     * @param model the cp model
      */
     @Override
     public final void apply() {
