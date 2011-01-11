@@ -62,7 +62,7 @@ public aspect CPVizTracer {
     pointcut worldPop(): execution(void choco.kernel.solver.search.AbstractSearchLoop+.worldPop()) && cflow(execution(void choco.kernel.solver.search.AbstractSearchLoop.upBranch()));
 
     // reconsider decision
-    pointcut reconsiderDecision(): execution(void Solver+.propagate()) && cflow(execution(void choco.kernel.solver.search.AbstractSearchLoop.upBranch()));
+    pointcut reconsiderDecision(): execution(void choco.kernel.solver.Solver+.propagate()) && cflow(execution(void choco.kernel.solver.search.AbstractSearchLoop.upBranch()));
 
     // Solution recording
     pointcut recordSolution(): call(void choco.kernel.solver.search.AbstractSearchStrategy.recordSolution());
