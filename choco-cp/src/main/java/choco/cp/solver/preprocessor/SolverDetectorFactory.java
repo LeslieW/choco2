@@ -27,7 +27,7 @@
 
 package choco.cp.solver.preprocessor;
 
-import choco.cp.common.util.preprocessor.AbstractDetector;
+import choco.cp.common.util.preprocessor.AbstractAdvancedDetector;
 import choco.cp.common.util.preprocessor.DetectorFactory;
 import choco.cp.common.util.preprocessor.detector.AbstractIntegerVariableEqualitiesDetector;
 import choco.cp.common.util.preprocessor.detector.AbstractTaskVariableEqualitiesDetector;
@@ -50,7 +50,7 @@ public class SolverDetectorFactory extends DetectorFactory{
      * @param m model
      * @return new instance of {@link choco.cp.common.util.preprocessor.detector.AbstractIntegerVariableEqualitiesDetector}
      */
-    public static AbstractDetector intVarEqDet(final CPModel m,
+    public static AbstractAdvancedDetector intVarEqDet(final CPModel m,
                                                                         final PreProcessCPSolver ppsolver){
         return new AbstractIntegerVariableEqualitiesDetector.IntegerVariableEqualitiesSolverDetector(m, ppsolver);
     }
@@ -61,7 +61,7 @@ public class SolverDetectorFactory extends DetectorFactory{
      * @param ppsolver instance of {@link PreProcessCPSolver}
      * @return new instance of {@link choco.cp.common.util.preprocessor.detector.AbstractTaskVariableEqualitiesDetector}
      */
-    public static AbstractDetector taskVarEqDet(final CPModel m, final PreProcessCPSolver ppsolver){
+    public static AbstractAdvancedDetector taskVarEqDet(final CPModel m, final PreProcessCPSolver ppsolver){
         return new AbstractTaskVariableEqualitiesDetector.TaskVariableEqualitiesSolverDetector(m, ppsolver);
     }
 
@@ -71,7 +71,7 @@ public class SolverDetectorFactory extends DetectorFactory{
      * @param ppsolver solver scope
      * @return new instance of {@link choco.cp.common.util.preprocessor.detector.DisjunctionsSolverDetector}
      */
-    public static AbstractDetector disjunctionDetector(final CPModel m, final PreProcessCPSolver ppsolver){
+    public static AbstractAdvancedDetector disjunctionDetector(final CPModel m, final PreProcessCPSolver ppsolver){
         return new DisjunctionsSolverDetector(m, ppsolver);
     }
 
@@ -81,7 +81,7 @@ public class SolverDetectorFactory extends DetectorFactory{
      * @param ppsolver solver scope
      * @return new instance of {@link choco.cp.common.util.preprocessor.detector.ExpressionSolverDetector}
      */
-    public static AbstractDetector expressionDetector(final CPModel m, final PreProcessCPSolver ppsolver){
+    public static AbstractAdvancedDetector expressionDetector(final CPModel m, final PreProcessCPSolver ppsolver){
         return new ExpressionSolverDetector(m, ppsolver);
     }
 }

@@ -27,21 +27,14 @@
 
 package choco.cp.model.preprocessor;
 
+import choco.cp.common.util.preprocessor.AbstractAdvancedDetector;
 import choco.cp.common.util.preprocessor.AbstractDetector;
 import choco.cp.common.util.preprocessor.DetectorFactory;
 import choco.cp.common.util.preprocessor.detector.AbstractIntegerVariableEqualitiesDetector;
 import choco.cp.common.util.preprocessor.detector.AbstractTaskVariableEqualitiesDetector;
+import choco.cp.common.util.preprocessor.detector.AnalysisModelDetector;
 import choco.cp.common.util.preprocessor.detector.CliquesModelDetector;
-import choco.cp.common.util.preprocessor.detector.scheduling.DisjFromCumulModelDetector;
-import choco.cp.common.util.preprocessor.detector.scheduling.DisjointFromCumulModelDetector;
-import choco.cp.common.util.preprocessor.detector.scheduling.DisjointFromDisjModelDetector;
-import choco.cp.common.util.preprocessor.detector.scheduling.DisjointModelDetector;
-import choco.cp.common.util.preprocessor.detector.scheduling.DisjunctiveModel;
-import choco.cp.common.util.preprocessor.detector.scheduling.PrecFromDisjointModelDetector;
-import choco.cp.common.util.preprocessor.detector.scheduling.PrecFromImpliedModelDetector;
-import choco.cp.common.util.preprocessor.detector.scheduling.PrecFromReifiedModelDetector;
-import choco.cp.common.util.preprocessor.detector.scheduling.PrecFromTimeWindowModelDetector;
-import choco.cp.common.util.preprocessor.detector.scheduling.RmDisjModelDetector;
+import choco.cp.common.util.preprocessor.detector.scheduling.*;
 import choco.cp.model.CPModel;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -57,8 +50,10 @@ import choco.kernel.model.variables.scheduling.TaskVariable;
  */
 public final class ModelDetectorFactory extends DetectorFactory {
 
+
+
 	/**
-	 * Run {@link choco.cp.common.util.preprocessor.AbstractDetector#apply()} and {@link choco.cp.common.util.preprocessor.AbstractDetector#commit()} for each {@code detectors}.
+	 * Run {@link choco.cp.common.util.preprocessor.AbstractAdvancedDetector#apply()} and {@link choco.cp.common.util.preprocessor.AbstractAdvancedDetector#commit()} for each {@code detectors}.
 	 * @param detectors list of detectors to run
 	 */
 	public static void run(final CPModel model, final AbstractDetector... detectors){
@@ -67,6 +62,14 @@ public final class ModelDetectorFactory extends DetectorFactory {
 			detector.applyThenCommit();
 		}
 		resetIndexes(model);
+	}
+
+    /**
+	 * Anslyses a model and print messages about general statistics
+	 * @return new instance of {@link choco.cp.common.util.preprocessor.detector.AbstractIntegerVariableEqualitiesDetector}
+	 */
+	public static AbstractAdvancedDetector analysis(final CPModel m){
+		return new AnalysisModelDetector(m);
 	}
 
 	/**

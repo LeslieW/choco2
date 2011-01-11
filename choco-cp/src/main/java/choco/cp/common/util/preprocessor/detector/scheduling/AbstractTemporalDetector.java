@@ -27,18 +27,18 @@
 
 package choco.cp.common.util.preprocessor.detector.scheduling;
 
-import java.util.Iterator;
-
 import choco.Choco;
 import choco.Options;
-import choco.cp.common.util.preprocessor.AbstractDetector;
+import choco.cp.common.util.preprocessor.AbstractAdvancedDetector;
 import choco.cp.model.CPModel;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintType;
 import choco.kernel.model.constraints.TemporalConstraint;
 
+import java.util.Iterator;
 
-abstract class AbstractSchedulingDetector extends AbstractDetector {
+
+abstract class AbstractSchedulingDetector extends AbstractAdvancedDetector {
 
 	public final DisjunctiveModel disjMod;
 

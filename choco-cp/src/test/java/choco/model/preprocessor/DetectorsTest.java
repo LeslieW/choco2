@@ -27,45 +27,6 @@
 
 package choco.model.preprocessor;
 
-import static choco.Choco.ONE;
-import static choco.Choco.ZERO;
-import static choco.Choco.constant;
-import static choco.Choco.constantArray;
-import static choco.Choco.cumulativeMax;
-import static choco.Choco.eq;
-import static choco.Choco.gt;
-import static choco.Choco.leq;
-import static choco.Choco.makeBooleanVarArray;
-import static choco.Choco.makeIntVar;
-import static choco.Choco.makeIntVarArray;
-import static choco.Choco.makeTaskVar;
-import static choco.Choco.makeTaskVarArray;
-import static choco.Choco.minus;
-import static choco.Choco.mult;
-import static choco.Choco.neq;
-import static choco.Choco.precedence;
-import static choco.Choco.precedenceDisjoint;
-import static choco.Choco.precedenceImplied;
-import static choco.Choco.precedenceReified;
-import static choco.cp.model.preprocessor.ModelDetectorFactory.cliqueDetector;
-import static choco.cp.model.preprocessor.ModelDetectorFactory.disjFromCumulDetector;
-import static choco.cp.model.preprocessor.ModelDetectorFactory.disjointDetector;
-import static choco.cp.model.preprocessor.ModelDetectorFactory.intVarEqDet;
-import static choco.cp.model.preprocessor.ModelDetectorFactory.precFromDisjointDetector;
-import static choco.cp.model.preprocessor.ModelDetectorFactory.precFromImpliedDetector;
-import static choco.cp.model.preprocessor.ModelDetectorFactory.precFromReifiedDetector;
-import static choco.cp.model.preprocessor.ModelDetectorFactory.precFromTimeWindowDetector;
-import static choco.cp.model.preprocessor.ModelDetectorFactory.run;
-import static choco.cp.model.preprocessor.ModelDetectorFactory.schedulingModelDetectors;
-import static choco.cp.model.preprocessor.ModelDetectorFactory.taskVarEqDet;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.util.logging.Logger;
-
-import org.junit.Test;
-
 import choco.Choco;
 import choco.Options;
 import choco.cp.common.util.preprocessor.detector.scheduling.DisjunctiveModel;
@@ -83,6 +44,14 @@ import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.scheduling.TaskVar;
+import org.junit.Test;
+
+import java.util.logging.Logger;
+
+import static choco.Choco.*;
+import static choco.cp.model.preprocessor.ModelDetectorFactory.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * User : cprudhom<br/>

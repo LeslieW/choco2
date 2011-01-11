@@ -27,12 +27,12 @@
 
 package choco.cp.common.util.preprocessor.detector.scheduling;
 
-import choco.cp.common.util.preprocessor.AbstractDetector;
+import choco.cp.common.util.preprocessor.AbstractAdvancedDetector;
 import choco.cp.model.CPModel;
 import choco.kernel.model.variables.MultipleVariables;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 
-public final class PrecFromTimeWindowModelDetector extends AbstractDetector {
+public final class PrecFromTimeWindowModelDetector extends AbstractAdvancedDetector {
 
 	public final DisjunctiveModel disjMod;
 

@@ -28,6 +28,7 @@
 package choco.cp.common.util.preprocessor.detector;
 
 import choco.Choco;
+import choco.cp.common.util.preprocessor.AbstractAdvancedDetector;
 import choco.cp.common.util.preprocessor.AbstractDetector;
 import choco.cp.common.util.preprocessor.merger.IntegerVariableMerger;
 import choco.cp.model.CPModel;
@@ -55,7 +56,7 @@ import java.util.logging.Level;
  * <p/>
  * A class detector to detect equalities between IntegerVariable within a model.
  */
-public abstract class AbstractIntegerVariableEqualitiesDetector extends AbstractDetector {
+public abstract class AbstractIntegerVariableEqualitiesDetector extends AbstractAdvancedDetector {
 
 
     public AbstractIntegerVariableEqualitiesDetector(final CPModel model) {
