@@ -45,6 +45,7 @@ public enum ConstraintType {
     //BATCH("batchresource", "constraint.batchresource"),
     CHANNELING("channeling", "constraint.channeling", false),
     CLAUSES("clauses", "constraint.clauses", false),
+    COMPLEMENTSET("complementSet", "constraint.complementset", false),
     CST("cst"),
     COSTKNAPSACK("costknapsack","constraint.costknapsack", false),
     COSTREGULAR("costregular", "constraint.costregular", false),
@@ -112,7 +113,9 @@ public enum ConstraintType {
     REIFIEDXOR("reifiedXor", "constraint.reifiedXor", false),
     SETDISJOINT("setDisjoint", "constraint.setDisjoint", false),
     SETINTER("setInter", "constraint.setInter", false),
+    SETLEXICOGRAPHICORDERING("setLex", "constraint.setlex", false),
     SETUNION("union", "constraint.union", false),
+    SETVALUEPRECEDE("set value precede", "constraint.setvalueprecede", false),
     SIGNOP("signop", "constraint.signop", true),
     SOFTMULTICOSTREGULAR("soft_multicostregular", "constraint.softmulticostregular", false),
     SORTING("sorting", "constraint.sorting", false),
@@ -122,16 +125,18 @@ public enum ConstraintType {
     TIMES("times", "constraint.times", false),
     TREE("tree", "constraint.tree", false),
     TRUE("true", "constraint.true", false),
-   // USE_RESOURCES("useResources", "constraint.useResources", false),
+    // USE_RESOURCES("useResources", "constraint.useResources", false),
     XNOR("xnor", "constraint.xnor", true),
-    XOR("xor", "constraint.xor", true);
+    XOR("xor", "constraint.xor", true),
+    ;
 
     public final String name;
     public final String property;
     public final boolean canContainExpression;
 
 
-ConstraintType(String name, String property, boolean canContainExpression) {
+
+    ConstraintType(String name, String property, boolean canContainExpression) {
         this.property = property;
         this.name = name;
         this.canContainExpression = canContainExpression;
@@ -144,6 +149,6 @@ ConstraintType(String name, String property, boolean canContainExpression) {
 	public final String getName() {
 		return name;
 	}
-    
-    
+
+
 }

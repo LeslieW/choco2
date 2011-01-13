@@ -1,5 +1,5 @@
 /**
- *  Copyright (c) 1999-2010, Ecole des Mines de Nantes
+ *  Copyright (c) 1999-2011, Ecole des Mines de Nantes
  *  All rights reserved.
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are met:
@@ -27,41 +27,22 @@
 
 package choco.cp.model.managers.constraints.set;
 
-import choco.cp.model.managers.MixedConstraintManager;
+import choco.cp.model.managers.SetConstraintManager;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.set.InverseSet;
-import choco.cp.solver.constraints.set.InverseSetInt;
-import choco.kernel.common.util.tools.VariableUtils;
-import choco.kernel.model.variables.Variable;
-import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.cp.solver.constraints.set.ComplementSet;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 
 import java.util.List;
 
-public final class InverseSetManager extends MixedConstraintManager {
+public final class ComplementSetManager extends SetConstraintManager {
 
     @Override
-    public SConstraint makeConstraint(Solver solver, Variable[] variables,
+    public SConstraint makeConstraint(Solver solver, SetVariable[] setVariables,
                                       Object parameters, List<String> options) {
         if (solver instanceof CPSolver) {
-            final CPSolver s = (CPSolver) solver;
-            final int array1Length = (Integer) parameters;
-            if (array1Length > 0) {
-                if (variables[0] instanceof IntegerVariable) {
-                    return new InverseSetInt(
-                            VariableUtils.getIntVar(s, variables, 0, array1Length),
-                            VariableUtils.getSetVar(s, variables, array1Length, variables.length)
-                    );
-                }else if(variables[0] instanceof SetVariable){
-                    return new InverseSet(
-                            VariableUtils.getSetVar(s, variables, 0, array1Length),
-                            VariableUtils.getSetVar(s, variables, array1Length, variables.length)
-                    );
-                }
-            }
-
+            return new ComplementSet(solver.getVar(setVariables[0]), solver.getVar(setVariables[1]));
         }
         return null;
     }
