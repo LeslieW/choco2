@@ -3641,6 +3641,24 @@ public class Choco {
     // ------------- Constraints over sets -------------------------------
 
     /**
+     * complement(X) == Y <br/>
+     * i.e.<br/>
+     * let min = minimum possible value for x or y <br/>
+     * and max = maximum possible value for x or y <br/>
+     * <p/>
+     * forall i in min .. max,<br/>
+     * i in x <=> i notin y
+     *
+     * @param x a set variable
+     * @param y the complement set variable
+     * @return Constraint
+     */
+    public static Constraint complementSet(SetVariable x, SetVariable y) {
+        return new ComponentConstraint(ConstraintType.COMPLEMENTSET, null, new SetVariable[]{x, y});
+    }
+
+
+    /**
      * Enforce a set to be the intersection of two others.
      *
      * @param sv1   the first set variable
@@ -3871,6 +3889,59 @@ public class Choco {
         return new ComponentConstraint(ConstraintType.INVERSE_SET,
                 iv.length, ArrayUtils.<Variable>append(iv, sv));
     }
+
+    /**
+     * X collection set-variable<br/>
+     * Y collection set-variable<br/>
+     * <p/>
+     * Y should have enough slots to handle X domain size (ie. Y.length <= X.max)   <br/>
+     * <p/>
+     * j in X[i]  <=> i in Y[j]<br/>
+     * <p/>
+     * cf. http://www.emn.fr/z-info/sdemasse/gccat/Cinverse_set.html
+     *
+     * @param xs an array of set variable
+     * @param ys another array set variables
+     * @return the new constraint
+     */
+    public static Constraint inverseSet(SetVariable[] xs, SetVariable[] ys) {
+        return new ComponentConstraint(ConstraintType.INVERSE_SET,
+                xs.length, ArrayUtils.<SetVariable>append(xs, ys));
+    }
+
+
+    /**
+     * X <=lex Y
+     * @param x a set variable
+     * @param y a set variable
+     * @return Constraint
+     */
+    public static Constraint setLex(SetVariable x, SetVariable y) {
+        return new ComponentConstraint(ConstraintType.SETLEXICOGRAPHICORDERING,
+                null, new SetVariable[]{x,y} );
+    }
+
+
+    /**
+     *
+     * If there exists a set variable v1 of VARIABLES such that S does not belong to v1 and T does,
+     * then there also exists a set variable v2 preceding v1 such that S belongs to v2 and T does not.
+     *
+     * <p/>
+     *
+     * based on the paper
+     * Y. C. Law, J. H. M. Lee,
+     * Global Constraints for Integer and Set Value Precedence
+     * Principles and Practice of Constraint Programming (CP'2004) LNCS 3258 Springer -Verlag M. G. Wallace, 362–376 2004
+     * @param sv set variables
+     * @param s first value
+     * @param t second value
+     * @return Constraint
+     */
+    public static Constraint setValuePrecede(SetVariable[] sv, int s, int t) {
+        return new ComponentConstraint(ConstraintType.SETVALUEPRECEDE, new int[]{s, t}, sv);
+    }
+
 
     /**
      * Ensure that the two variables are not equal (not exactly the same values in the set)
@@ -4429,7 +4500,6 @@ public class Choco {
     public static Constraint[] clauses(ALogicTree tree) {
         Constraint[] c;
         tree = LogicTreeToolBox.toCNF(tree);
-        System.out.printf("%s\n", tree.toString());
         if (Singleton.TRUE.equals(tree)) {
             LOGGER.warning("A \"TRUE\" constraint is build. Make sure, the scoped variables are correctly added to the model!");
             c = new Constraint[]{TRUE};
