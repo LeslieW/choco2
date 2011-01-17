@@ -1,18 +1,10 @@
 package choco.cp.solver.constraints.set;
 
-import choco.cp.model.managers.SetConstraintManager;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
-import choco.kernel.model.constraints.ComponentConstraint;
-import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.Solver;
-import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.set.AbstractLargeSetSConstraint;
 import choco.kernel.solver.variables.set.SetVar;
-
-import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -38,20 +30,6 @@ import java.util.List;
  * propagation algorithm given on figure 4
  */
 public class SetValuePrecede extends AbstractLargeSetSConstraint {
-
-    public static Constraint build(SetVariable[] sv, int s, int t) {
-        return new ComponentConstraint(SetValuePrecedeManager.class, new int[]{s, t}, sv);
-    }
-
-    public static class SetValuePrecedeManager extends SetConstraintManager {
-        @Override
-        public SConstraint makeConstraint(Solver solver, SetVariable[] setVariables, Object o, List<String> strings) {
-            int[] values = (int[]) o;
-            return new SetValuePrecede(values[0], values[1], solver.getVar(setVariables), solver.getEnvironment());
-        }
-    }
-
-
     int s;
     int t;
     int n;

@@ -28,7 +28,7 @@ package choco.cp.common.util.preprocessor.detector;
 
 import choco.Choco;
 import choco.Options;
-import choco.cp.common.util.preprocessor.AbstractAdvancedDetector;
+import choco.cp.common.util.preprocessor.AbstractDetector;
 import choco.cp.model.CPModel;
 import choco.cp.model.managers.variables.IntegerVariableManager;
 import choco.kernel.common.util.tools.StringUtils;
@@ -49,7 +49,7 @@ import java.util.logging.Level;
  * @author Charles Prud'homme
  * @since 11/01/11
  */
-public class AnalysisModelDetector extends AbstractAdvancedDetector {
+public class AnalysisModelDetector extends AbstractDetector {
 
 
     static int NB_STATS = 0;
@@ -88,6 +88,10 @@ public class AnalysisModelDetector extends AbstractAdvancedDetector {
         analyseMultipleVariables(model);
 
         print();
+    }
+
+    @Override
+    public void commit() {
     }
 
     public void analyseIntegerVariables(final CPModel model) {

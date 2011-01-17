@@ -1,10 +1,6 @@
 package choco.cp.solver.constraints.set;
 
-import choco.cp.model.managers.constraints.set.ComplementSetManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.model.constraints.ComponentConstraint;
-import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.set.AbstractBinSetSConstraint;
 import choco.kernel.solver.variables.set.SetVar;
@@ -32,11 +28,6 @@ import choco.kernel.solver.variables.set.SetVar;
 public class ComplementSet extends AbstractBinSetSConstraint {
 
     int minvalue, maxvalue;
-
-    public static Constraint build(SetVariable x, SetVariable y) {
-        return new ComponentConstraint(ComplementSetManager.class, null, new SetVariable[]{x, y});
-    }
-
 
     public ComplementSet(SetVar v0, SetVar v1) {
         super(v0, v1);

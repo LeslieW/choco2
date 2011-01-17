@@ -1,18 +1,9 @@
 package choco.cp.solver.constraints.set;
 
-import choco.cp.model.managers.SetConstraintManager;
-import choco.cp.solver.CPSolver;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.model.constraints.ComponentConstraint;
-import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.Solver;
-import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.set.AbstractBinSetSConstraint;
 import choco.kernel.solver.variables.set.SetVar;
-
-import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -30,21 +21,6 @@ import java.util.List;
  * <p/>
  * */
 public class SetLexicographicOrdering extends AbstractBinSetSConstraint{
-
-    public static Constraint build(SetVariable x, SetVariable y) {
-        return new ComponentConstraint(LexSetManager.class, null, new SetVariable[]{x,y} );
-    }
-
-    public static class LexSetManager extends SetConstraintManager {
-        @Override
-        public SConstraint makeConstraint(Solver solver, SetVariable[] setVariables, Object o, List<String> strings) {
-            if (solver instanceof CPSolver) {
-                //  return null;
-                return new SetLexicographicOrdering(solver.getVar(setVariables[0]), solver.getVar(setVariables[1]));
-            }
-            return null;
-        }
-    }
 
     public SetLexicographicOrdering(SetVar v0, SetVar v1) {
         super(v0, v1);

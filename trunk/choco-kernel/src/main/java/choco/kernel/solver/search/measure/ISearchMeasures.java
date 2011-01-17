@@ -60,6 +60,11 @@ public interface ISearchMeasures {
      * @return restart count
      */
     int getRestartCount();
-    
+
+    /**
+     * Get the solution count of the measure
+     * @return restart count
+     */
+    int getSolutionCount();
         
 }

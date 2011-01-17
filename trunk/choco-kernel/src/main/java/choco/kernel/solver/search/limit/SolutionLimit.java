@@ -27,56 +27,22 @@
 
 package choco.kernel.solver.search.limit;
 
-import choco.kernel.solver.search.measure.ISearchMeasures;
+import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 
-/*
- * Created by IntelliJ IDEA.
- * User: charles
- * Date: 11 juin 2008
- * Since : Choco 2.0.0
- *
+/**
+ * check the number of solution
  */
-public enum Limit {
-    TIME("Time (ms)"),
-    NODE("Nodes"),
-    BACKTRACK("Backtracks"),
-    FAIL("Fails"),
-    SOLUTION("Solutions"),
-    RESTART("Restarts"),
-    CUSTOM(""),
-    UNDEF("");
+public final class SolutionLimit extends AbstractGlobalSearchLimit {
 
-    private final String unit;
+	public SolutionLimit(AbstractGlobalSearchStrategy theStrategy, int theLimit) {
+		super(theStrategy, theLimit, Limit.SOLUTION);
+	}
 
 
-    private Limit(String unit) {
-        this.unit = unit;
-    }
-
-
-    public final String getUnit() {
-        return unit;
-    }
-
-    /**
-     * get the value of the given measure
-     */
-    public final int getValue(final ISearchMeasures measures) {
-        switch (this) {
-            case TIME:
-                return measures.getTimeCount();
-            case NODE:
-                return measures.getNodeCount();
-            case BACKTRACK:
-                return measures.getBackTrackCount();
-            case RESTART:
-                return measures.getRestartCount();
-            case FAIL:
-                return measures.getFailCount();
-            default:
-                return Integer.MIN_VALUE;
-        }
-    }
-
-
+	@Override
+	public final int getNb() {
+		return strategy.getSolutionCount();
+	}
+	
 }
+

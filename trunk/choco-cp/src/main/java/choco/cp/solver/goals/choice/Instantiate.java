@@ -48,16 +48,16 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 public class Instantiate implements Goal {
 
 	protected IntDomainVar var;
-	protected ValSelector valSelector;
-  protected ValIterator valIterator;
+	protected ValSelector<IntDomainVar> valSelector;
+  protected ValIterator<IntDomainVar> valIterator;
   protected int previousVal = Integer.MAX_VALUE;
 
-  public Instantiate(IntDomainVar var, ValSelector s) {
+  public Instantiate(IntDomainVar var, ValSelector<IntDomainVar> s) {
 		this.var = var;
 		this.valSelector = s;
 	}
 
-  public Instantiate(IntDomainVar var, ValIterator valIterator) {
+  public Instantiate(IntDomainVar var, ValIterator<IntDomainVar> valIterator) {
     this.var = var;
 		this.valIterator = valIterator;
   }

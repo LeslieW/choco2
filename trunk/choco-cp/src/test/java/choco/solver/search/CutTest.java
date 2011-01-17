@@ -29,6 +29,7 @@ package choco.solver.search;
 
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.search.BranchingFactory;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -173,6 +174,7 @@ public class CutTest {
         IntegerVariable v3 = makeIntVar("v3", 0, 1);
         m.addVariable(v3);
         s.read(m);
+        s.addGoal(BranchingFactory.minDomMinVal(s));
         s.solve();  // first solution 0,0,0
         s.postCut(s.geq(s.plus(s.getVar(v1), s.plus(s.getVar(v2), s.getVar(v3))), 2));
 //         now three more solutions
@@ -199,6 +201,7 @@ public class CutTest {
         IntegerVariable v3 = makeIntVar("v3", 0, 1);
         m.addVariable(v3);
         s.read(m);
+        s.addGoal(BranchingFactory.minDomMinVal(s));
         s.solve();  // first solution 0,0,0
         s.postCut(s.eq(s.plus(s.getVar(v1), s.plus(s.getVar(v2), s.getVar(v3))), 2));
         // now three more solutions

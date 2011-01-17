@@ -27,7 +27,6 @@
 
 package choco.solver.goals;
 
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.goals.choice.Generate;
@@ -38,10 +37,12 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
-import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
+import static org.junit.Assert.assertEquals;
 
 
 /**
@@ -57,9 +58,9 @@ public class SearchTest {
 	@Test
 	public void testnode() {
 		//ChocoLogging.setVerbosity(Verbosity.SEARCH);
-		int n1 = testNQueens(true);
-		int n2 = testNQueens(false);
-		assertEquals("Nb Nodes", n1 ,n2);
+        int n1 = testNQueens(true);
+        int n2 = testNQueens(false);
+        assertEquals("Nb Nodes", n1 ,n2);
 	}
 
 	//return the number of nodes needed to solve the problem
@@ -90,10 +91,11 @@ public class SearchTest {
 
 		Solver s = new CPSolver();
 		s.read(m);
-		s.attachGoal(new AssignVar(new MinDomain(s), new IncreasingDomain()));
 		if (withgoal) {
-			s.setIlogGoal(new Generate(s.getVar(vars)));
-		}
+            s.setIlogGoal(new Generate(s.getVar(vars)));
+        }else{
+            s.addGoal(new AssignVar(new MinDomain(s), new IncreasingDomain()));
+        }
 
 		s.solveAll();
 		LOGGER.info("Nb solutions = " + s.getNbSolutions());

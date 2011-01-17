@@ -191,7 +191,7 @@ public class CPModelToCPSolver {
         MultipleVariables mv;
         final Iterator<MultipleVariables> it = model.getMultipleVarIterator();
         while (it.hasNext()) {
-            mv = (MultipleVariables) it.next();
+            mv = it.next();
             if (!cpsolver.mapvariables.containsKey(mv.getIndex())) {
                 cpsolver.mapvariables.put(mv.getIndex(), readModelVariable(mv));
             }
