@@ -37,8 +37,8 @@ import choco.kernel.solver.variables.set.SetVar;
 
 public class AssignSetVar extends AbstractSetBranchingStrategy {
 
-	VarSelector<SetVar> varselector;
-	ValSelector<SetVar> valselector;
+	protected VarSelector<SetVar> varselector;
+	protected ValSelector<SetVar> valselector;
 
 	public AssignSetVar(VarSelector<SetVar> varselect, ValSelector<SetVar> valselect) {
 		varselector = varselect;

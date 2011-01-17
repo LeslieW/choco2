@@ -39,29 +39,49 @@ public class InverseSet extends AbstractLargeSetSConstraint {
 
     @Override
     public void awake() throws ContradictionException {
+        for (int idx = 0; idx < x.length ; idx++) {
+           SetVar var = x[idx];
+           for (int i = var.getEnveloppeInf() ; i<= var.getEnveloppeSup() ; i++) {
+               if (var.isInDomainEnveloppe(i)) {
+                   if (i >= y.length) {
+                       var.remFromEnveloppe(i, this, false);
+                   }
+                   else if (! y[i].isInDomainEnveloppe(idx) ) {
+                       var.remFromEnveloppe(i, this, false);
+                   }
+               }
+           }
 
-        // première étape : nettoyer les domaines initiaux
-        int maxYvalue = Integer.MIN_VALUE;
-        for (SetVar var : y) {
-            maxYvalue = Math.max(maxYvalue, var.getEnveloppeSup());
         }
 
-        int maxXvalue = Integer.MIN_VALUE;
-        for (SetVar var : x) {
-            maxXvalue = Math.max(maxXvalue, var.getEnveloppeSup());
+        for (int idx = 0; idx < y.length ; idx++) {
+           SetVar var = y[idx];
+           for (int i = var.getEnveloppeInf() ; i<= var.getEnveloppeSup() ; i++) {
+               if (var.isInDomainEnveloppe(i)) {
+                   if (i >= x.length) {
+                       var.remFromEnveloppe(i, this, false);
+                   }
+                   else if (! x[i].isInDomainEnveloppe(idx) ) {
+                       var.remFromEnveloppe(i, this, false);
+                   }
+               }
+           }
+
         }
 
-        // x should not take values from y.length to maxXvalue
-        for (int i = y.length ; i <= maxXvalue ; i++) {
-            for (SetVar var : x) {
-               var.remFromEnveloppe(i, this, false);
+        for (int idx = 0; idx < x.length ; idx++) {
+            SetVar var = x[idx];
+            DisposableIntIterator it = var.getDomain().getKernelIterator();
+            while (it.hasNext()) {
+                awakeOnKer(idx, it.next());
             }
         }
 
-        // y should not take values from x.length to maxYvalue
-        for (int i = x.length ; i <= maxYvalue ; i++) {
-            for (SetVar var : y) {
-               var.remFromEnveloppe(i, this, false);
+        for (int idx = 0; idx < y.length ; idx++) {
+            SetVar var = y[idx];
+            DisposableIntIterator it = var.getDomain().getKernelIterator();
+            while (it.hasNext()) {
+                awakeOnKer(idx + varoffset, it.next());
             }
         }
     }

@@ -27,7 +27,6 @@
 
 package choco.cp.model.preprocessor;
 
-import choco.cp.common.util.preprocessor.AbstractAdvancedDetector;
 import choco.cp.common.util.preprocessor.AbstractDetector;
 import choco.cp.common.util.preprocessor.DetectorFactory;
 import choco.cp.common.util.preprocessor.detector.AbstractIntegerVariableEqualitiesDetector;
@@ -68,7 +67,7 @@ public final class ModelDetectorFactory extends DetectorFactory {
 	 * Anslyses a model and print messages about general statistics
 	 * @return new instance of {@link choco.cp.common.util.preprocessor.detector.AbstractIntegerVariableEqualitiesDetector}
 	 */
-	public static AbstractAdvancedDetector analysis(final CPModel m){
+	public static AbstractDetector analysis(final CPModel m){
 		return new AnalysisModelDetector(m);
 	}
 

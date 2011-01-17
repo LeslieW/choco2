@@ -28,8 +28,7 @@
 package choco.cp.common.util.preprocessor.detector;
 
 import choco.Choco;
-import static choco.Choco.constant;
-import static choco.Choco.makeIntVar;
+import choco.cp.common.util.preprocessor.DetectorFactory;
 import choco.cp.common.util.preprocessor.ExpressionTools;
 import choco.cp.model.CPModel;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
@@ -42,6 +41,9 @@ import choco.kernel.model.variables.scheduling.TaskVariable;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Iterator;
+
+import static choco.Choco.constant;
+import static choco.Choco.makeIntVar;
 
 /**
  * User : cprudhom<br/>
@@ -75,6 +77,7 @@ public class DisjunctionsSolverDetector extends AbstractGraphBasedDetector{
      */
     @Override
     public void apply() {
+        int currentHook = DetectorFactory.maxHookOnMultipleVariables(model);
         final int[] durations = addAllDisjunctiveEdges(ppsolver);
         if (durations != null) {
             final BitSet[] precedenceAlreadyAdded = new BitSet[model.getNbIntVars()];
@@ -105,6 +108,9 @@ public class DisjunctionsSolverDetector extends AbstractGraphBasedDetector{
                     }
                 }
                 add(Choco.disjunctive(tasks));
+                // new variables required indexes
+                DetectorFactory.associateIndexes(currentHook, tasks);
+                currentHook +=  tasks.length;
                 //delete the disjunctions
                 it.remove();
             }

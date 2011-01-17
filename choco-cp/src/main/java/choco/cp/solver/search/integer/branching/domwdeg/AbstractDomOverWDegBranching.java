@@ -28,7 +28,6 @@
 package choco.cp.solver.search.integer.branching.domwdeg;
 
 import choco.cp.solver.search.integer.branching.IRandomBreakTies;
-import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.*;
 import choco.cp.solver.search.integer.varselector.ratioselector.IntVarRatioSelector;
 import choco.cp.solver.search.integer.varselector.ratioselector.MinRatioSelector;
 import choco.cp.solver.search.integer.varselector.ratioselector.RandMinRatioSelector;
@@ -43,6 +42,8 @@ import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.Var;
 
 import java.util.Iterator;
+
+import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.*;
 
 public abstract class AbstractDomOverWDegBranching extends
 AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomBreakTies {
@@ -125,7 +126,9 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 				final AbstractVar var = (AbstractVar) cstr.getVarQuick(k);
 				if (var != currentVar && ! var.isInstantiated()) {
 					getVarExtension(var).add(delta);
-					assert getVarExtension(var).get() >= 0; //check robustness of the incremental weights
+                    //check robustness of the incremental weights
+                    assert getVarExtension(var).get() >= 0:
+                            ""+var.getName()+ " weight is negative ("+getVarExtension(var).get()+"). This is due to incremental computation of weights in Dom/WDeg.";
 				}
 			}
 		}

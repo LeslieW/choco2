@@ -49,22 +49,22 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  */
 public class Generate implements Goal {
 
-	protected VarSelector varSelector;
-  protected ValSelector valSelector;
-  protected ValIterator valIterator;
+	protected VarSelector<IntDomainVar> varSelector;
+  protected ValSelector<IntDomainVar> valSelector;
+  protected ValIterator<IntDomainVar> valIterator;
   protected IntDomainVar[] vars;
 
-  public Generate(IntDomainVar[] vars, VarSelector varSelector, ValIterator valIterator) {
+  public Generate(IntDomainVar[] vars, VarSelector<IntDomainVar> varSelector, ValIterator<IntDomainVar> valIterator) {
     this(vars, varSelector);
     this.valIterator = valIterator;
   }
 
-  public Generate(IntDomainVar[] vars, VarSelector varSelector, ValSelector valSelector) {
+  public Generate(IntDomainVar[] vars, VarSelector<IntDomainVar> varSelector, ValSelector<IntDomainVar> valSelector) {
     this(vars, varSelector);
     this.valSelector = valSelector;
   }
 
-  public Generate(IntDomainVar[] vars, VarSelector varSelector) {
+  public Generate(IntDomainVar[] vars, VarSelector<IntDomainVar> varSelector) {
     this.varSelector = varSelector;
     this.vars = new IntDomainVar[vars.length];
     System.arraycopy(vars, 0, this.vars, 0, vars.length);

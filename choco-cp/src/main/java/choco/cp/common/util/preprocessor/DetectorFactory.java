@@ -30,6 +30,7 @@ package choco.cp.common.util.preprocessor;
 import choco.cp.model.CPModel;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.MultipleVariables;
+import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 
@@ -51,6 +52,7 @@ public abstract class DetectorFactory {
     /**
      * Add an index to the variables to be able to map them easily
      * to nodes of the constraint graph
+     *
      * @param m model
      */
     public static void associateIndexes(final CPModel m) {
@@ -65,18 +67,47 @@ public abstract class DetectorFactory {
         cpt = 0;
         while (it.hasNext()) {
             final MultipleVariables iv = (MultipleVariables) it.next();
-            if(iv instanceof TaskVariable){
+            if (iv instanceof TaskVariable) {
                 iv.setHook(cpt);
                 cpt++;
             }
         }
     }
 
+
+    public static void associateIndexes(int from, Variable... ivars) {
+        int cpt = from;
+        for (int i = 0; i < ivars.length; i++) {
+            ivars[i].setHook(cpt++);
+        }
+    }
+
+    /**
+     * Get the max hook from a list of multiple variables
+     * @param model current model
+     * @return
+     */
+    public static int maxHookOnMultipleVariables(CPModel model) {
+        Iterator<MultipleVariables> it = model.getMultipleVarIterator();
+        int hook = Integer.MIN_VALUE;
+        while (it.hasNext()) {
+            final MultipleVariables iv = it.next();
+            if (iv instanceof TaskVariable) {
+                if (iv.getHook() > hook) {
+                    hook = iv.getHook();
+                }
+            }
+        }
+        return Math.max(0, hook);
+    }
+
     /**
      * Add an index to the variables to be able to map them easily
      * to nodes of the constraint graph
+     *
      * @param m model
      */
+
     public static void resetIndexes(final CPModel m) {
         Iterator it = m.getIntVarIterator();
         while (it.hasNext()) {
@@ -86,7 +117,7 @@ public abstract class DetectorFactory {
         it = m.getMultipleVarIterator();
         while (it.hasNext()) {
             final MultipleVariables iv = (MultipleVariables) it.next();
-            if(iv instanceof TaskVariable){
+            if (iv instanceof TaskVariable) {
                 iv.resetHook();
             }
         }

@@ -27,12 +27,7 @@
 
 package choco.kernel.solver.search;
 
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.DOWN_BRANCH;
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.INIT_SEARCH;
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.OPEN_NODE;
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.RESTART;
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.STOP;
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.UP_BRANCH;
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.*;
 
 
 public abstract class AbstractSearchLoop implements ISearchLoop {
@@ -66,7 +61,7 @@ public abstract class AbstractSearchLoop implements ISearchLoop {
 		return stop;
 	}
 
-	public final int getNodeCount() {
+	public int getNodeCount() {
 		return nodeCount;
 	}
 

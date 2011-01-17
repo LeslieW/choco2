@@ -11,6 +11,7 @@ import choco.kernel.model.constraints.cnf.Literal;
 import choco.kernel.model.constraints.cnf.Node;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
+import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import gnu.trove.TIntHashSet;
 import org.junit.Assert;
@@ -133,6 +134,94 @@ public class InverseSetTests {
             Assert.assertEquals(solvers[0].getNbSolutions(), solvers[1].getNbSolutions());
         }
 
+    }
+
+    @Test
+    public void testRandom02() {
+        for (int test = 0; test < 5; test++) {
+            Random rgen = new Random(test * 123456);
+            int size = Math.max(5 + test, 8);
+            int min = rgen.nextInt(5);
+            int max = min + 1 + rgen.nextInt(10);
+            SetVariable[] x = new SetVariable[size];
+            SetVariable[] y = new SetVariable[max]; // on purpose too little variables ;)
+            for (int i = 0; i < x.length; i++) {
+                x[i] = Choco.makeSetVar("x" + i, buildValues(rgen, min, max));
+            }
+
+            for (int i = 0; i < y.length; i++) {
+                y[i] = Choco.makeSetVar("y" + i, buildValues(rgen, 0, size + 3), Options.V_NO_DECISION); // on purpose too large domains
+            }
+
+            Model model = new CPModel();
+
+            model.addConstraint(Choco.inverseSet(x, y));
+
+
+            Solver solver = new CPSolver();
+
+            solver.read(model);
+            solver.setVarSetSelector(new RandomSetVarSelector(solver, test));
+            solver.setValSetSelector(new RandomSetValSelector(test));
+
+
+            solver.solve();
+            do {
+                for (SetVariable var : y) {
+                    Assert.assertTrue(solver.getVar(var).isInstantiated());
+                }
+            } while (solver.nextSolution());
+        }
+    }
+
+    @Test
+    public void testRandom03() {
+        for (int test = 0; test < 5; test++) {
+            Random rgen = new Random(test * 123456);
+            int size = Math.max(5 + test, 10);
+            int min = rgen.nextInt(5);
+            int max = min + 1 + rgen.nextInt(10);
+            SetVariable[] x = new SetVariable[size];
+            SetVariable[] y = new SetVariable[max]; // on purpose too little variables ;)
+            for (int i = 0; i < x.length; i++) {
+                x[i] = Choco.makeSetVar("x" + i, buildValues(rgen, min, max));
+            }
+
+            for (int i = 0; i < y.length; i++) {
+                y[i] = Choco.makeSetVar("y" + i, buildValues(rgen, 0, size + 3), Options.V_NO_DECISION); // on purpose too large domains
+            }
+
+            Model model = new CPModel();
+
+            model.addConstraint(Choco.inverseSet(x, y));
+
+
+            Solver solver = new CPSolver();
+
+            solver.read(model);
+            solver.setVarSetSelector(new RandomSetVarSelector(solver, test));
+            solver.setValSetSelector(new RandomSetValSelector(test));
+
+            int idx = rgen.nextInt(x.length);
+            try {
+                solver.getVar(x[idx]).addToKernel(solver.getVar(x[idx]).getEnveloppeInf(), null, false);
+                idx = rgen.nextInt(y.length);
+                solver.getVar(y[idx]).addToKernel(solver.getVar(y[idx]).getEnveloppeInf(), null, false);
+
+
+                if (solver.solve()) {
+                    do {
+                        for (SetVariable var : y) {
+                            Assert.assertTrue(solver.getVar(var).isInstantiated());
+                        }
+                    } while (solver.nextSolution());
+                }
+            } catch (ContradictionException e) {
+                Assert.assertTrue(true);
+            }
+
+
+        }
     }
 
 

@@ -54,6 +54,8 @@ public class GoalSearchLoop extends AbstractSearchLoop {
     protected int currentChoiceIndex;
     protected List<GoalTrace> goalTraceStack;
     protected boolean globalContradiction = false;
+    private int node_count;
+
 
     public GoalSearchLoop(AbstractGlobalSearchStrategy searchStrategy, Goal mainGoal) {
         super(searchStrategy);
@@ -100,6 +102,12 @@ public class GoalSearchLoop extends AbstractSearchLoop {
         super.initialize();
     }
 
+    @Override
+    public final int getNodeCount() {
+		return node_count;
+	}
+
+
     //*****************************************************************//
     //*******************  OPEN_NODE  ********************************//
     //***************************************************************//
@@ -140,6 +148,7 @@ public class GoalSearchLoop extends AbstractSearchLoop {
                             break;
                         case GEN:
                             // AMAL : node count increasing should be done there...
+                            node_count++;
                             searchStrategy.limitManager.newNode();
                         default:
                             Goal newG = g.execute(searchStrategy.solver);
