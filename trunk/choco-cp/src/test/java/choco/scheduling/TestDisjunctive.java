@@ -27,30 +27,12 @@
 
 package choco.scheduling;
 
-import static choco.Choco.constantArray;
-import static choco.Choco.disjunctive;
-import static choco.Choco.makeBooleanVarArray;
-import static choco.Choco.makeTaskVar;
-import static choco.Choco.makeTaskVarArray;
-import static choco.cp.solver.constraints.global.scheduling.disjunctive.Disjunctive.DETECTABLE_PRECEDENCE;
-import static choco.cp.solver.constraints.global.scheduling.disjunctive.Disjunctive.EDGE_FINDING_D;
-import static choco.cp.solver.constraints.global.scheduling.disjunctive.Disjunctive.NF_NL;
-import static choco.cp.solver.constraints.global.scheduling.disjunctive.Disjunctive.OVERLOAD_CHECKING;
-
-import java.util.Arrays;
-import java.util.logging.Logger;
-
-import junit.framework.Assert;
-
-import org.junit.Test;
-
 import choco.Choco;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.global.scheduling.disjunctive.Disjunctive.Policy;
+import choco.cp.solver.constraints.global.scheduling.disjunctive.Disjunctive.*;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.bitmask.BitMask;
 import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.model.Model;
@@ -59,7 +41,13 @@ import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.Configuration;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
+import junit.framework.Assert;
+import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.logging.Logger;
+
+import static choco.Choco.*;
 
 /**
  * @author Arnaud Malapert
@@ -252,7 +240,6 @@ public class TestDisjunctive {
 		m.addConstraint( disjunctive(dtasks));
 		CPSolver s = new CPSolver();
 		s.read(m);
-		System.out.println(s.pretty());
 		s.setRandomSelectors(0);
 		s.solveAll();
 		Assert.assertFalse(s.isFeasible());

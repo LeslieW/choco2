@@ -1697,20 +1697,19 @@ public class ReifiedSomeTest {
 
     @Test
     public void testRichard3() {
-        for (int seed = 0; seed < 5; seed++) {
+        for (int seed = 0; seed < 20; seed++) {
             CPModel m = new CPModel();
             m.setDefaultExpressionDecomposition(true);
             IntegerVariable r1 = makeIntVar("x", 0, 1);
             IntegerVariable r2 = makeIntVar("y", 0, 1);
-            IntegerVariable s1 = makeIntVar("z", 0, 1);
-            IntegerVariable s2 = makeIntVar("z", 0, 1);
+            IntegerVariable s1 = makeIntVar("z1", 0, 1);
+            IntegerVariable s2 = makeIntVar("z2", 0, 1);
             List<int[]> tuples = new LinkedList<int[]>();
             tuples.add(new int[]{0, 0});
             tuples.add(new int[]{1, 1});
 
             m.addConstraint(implies(feasTupleAC(tuples, r1, r2), gt(s1, s2)));
 
-            //m.addConstraint(implies(eq(r1, 3), and(geq(s1, e2), leq(s2, e1))));
             CPSolver s = new CPSolver();
             s.read(m);
             s.setVarIntSelector(new RandomIntVarSelector(s, seed));
@@ -1850,7 +1849,6 @@ public class ReifiedSomeTest {
 
     @Test
     public void test_syndaegy1() {
-//        ChocoLogging.toSearch();
         int NV = 3;
                                                                             
         Model m = new CPModel();
@@ -1866,8 +1864,8 @@ public class ReifiedSomeTest {
                 eq(vars[2], 2)), or(neq(vars[1], 1), neq(vars[2], 2))));
 
         s.read(m);
-        System.out.println(s.pretty());
         s.solveAll();
+        Assert.assertEquals(121, s.getSolutionCount());
     }
 
     }
