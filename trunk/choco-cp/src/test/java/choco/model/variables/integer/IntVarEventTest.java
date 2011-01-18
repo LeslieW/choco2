@@ -28,7 +28,7 @@ package choco.model.variables.integer;
 
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.EqualXYC;
-import choco.cp.solver.propagation.ChocEngine;
+import choco.cp.solver.propagation.ChocoEngine;
 import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.Constant;
@@ -53,7 +53,7 @@ import static org.junit.Assert.*;
 public class IntVarEventTest  {
 	private final static Logger LOGGER = ChocoLogging.getTestLogger();
   private Solver s;
-  private ChocEngine pe;
+  private ChocoEngine pe;
   private IntDomainVarImpl x;
   private IntDomainVarImpl y;
   private IntDomainVarImpl z;
@@ -88,7 +88,7 @@ public class IntVarEventTest  {
   public void setUp() {
     LOGGER.fine("IntVarEvent Testing...");
     s = new CPSolver();
-    pe = (ChocEngine) s.getPropagationEngine();
+    pe = (ChocoEngine) s.getPropagationEngine();
     x = (IntDomainVarImpl) ((CPSolver)s).createIntVar("X",1, 0, 100);
     y = (IntDomainVarImpl) ((CPSolver)s).createIntVar("Y", 1, 0, 100);
     z = (IntDomainVarImpl) ((CPSolver)s).createIntVar("Z",1,  0, 100);

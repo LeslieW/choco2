@@ -48,7 +48,7 @@ import choco.cp.solver.constraints.reified.ReifiedFactory;
 import choco.cp.solver.constraints.set.Disjoint;
 import choco.cp.solver.constraints.set.*;
 import choco.cp.solver.goals.GoalSearchSolver;
-import choco.cp.solver.propagation.ChocEngine;
+import choco.cp.solver.propagation.ChocoEngine;
 import choco.cp.solver.propagation.EventQueueFactory;
 import choco.cp.solver.search.GlobalSearchStrategy;
 import choco.cp.solver.search.GoalSearchLoop;
@@ -367,7 +367,7 @@ public class CPSolver implements Solver {
 		taskDecisionVars = new ArrayList<TaskVar>(8);
 		intconstantVars = new HashMap<Integer, IntDomainVar>(10);
 		realconstantVars = new HashMap<Double, RealIntervalConstant>(8);
-		this.propagationEngine = new ChocEngine(this);
+		this.propagationEngine = new ChocoEngine(this);
 		this.constraints = env.makePartiallyStoredVector();
 		indexfactory = new IndexFactory();
 		this.indexOfLastInitializedStaticConstraint = env.makeInt(PartiallyStoredVector.getFirstStaticIndex() - 1);
@@ -402,7 +402,7 @@ public class CPSolver implements Solver {
 	public void clear() {
 		mod2sol.clear();
 		clearVarLists();
-		this.propagationEngine = new ChocEngine(this);
+		this.propagationEngine = new ChocoEngine(this);
 		this.constraints.clear();
 		//		indexfactory = new IndexFactory();
 		this.indexOfLastInitializedStaticConstraint.set(PartiallyStoredVector.getFirstStaticIndex() - 1);

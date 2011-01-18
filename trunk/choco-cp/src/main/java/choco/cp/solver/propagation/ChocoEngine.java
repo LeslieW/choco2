@@ -50,7 +50,7 @@ import java.util.logging.Level;
 /**
  * Implementation of an {@link choco.kernel.solver.propagation.AbstractPropagationEngine} for Choco.
  */
-public class ChocEngine extends AbstractPropagationEngine {
+public class ChocoEngine extends AbstractPropagationEngine {
 
 
 	/**
@@ -89,7 +89,7 @@ public class ChocEngine extends AbstractPropagationEngine {
 	 * @param solver Solver master
 	 */
 
-	public ChocEngine(Solver solver) {
+	public ChocoEngine(Solver solver) {
 		super(solver);
 		constEventQueues = new ConstraintEventQueue[NB_CONST_QUEUES];
 		for (int i = 0; i < NB_CONST_QUEUES; i++) {
