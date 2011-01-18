@@ -39,8 +39,6 @@ import choco.kernel.solver.propagation.listener.IntPropagator;
 @SuppressWarnings({"unchecked"})
 public class IntVarEvent<C extends AbstractSConstraint & IntPropagator> extends VarEvent<IntDomainVarImpl> {
 
-    public static int add, pop;
-
     /**
      * Constants for the <i>eventType</i> bitvector: index of bit for updates to lower bound of IntVars
      */
@@ -182,7 +180,6 @@ public class IntVarEvent<C extends AbstractSConstraint & IntPropagator> extends 
      * @throws ContradictionException
      */
     public boolean propagateEvent() throws ContradictionException {
-        pop++;
         // /!\ Logging statements really decrease performance
         //if(LOGGER.isLoggable(Level.FINER)) {LOGGER.log(Level.FINER, "propagate {0}", this);}
         // first, mark event
@@ -294,7 +291,6 @@ public class IntVarEvent<C extends AbstractSConstraint & IntPropagator> extends 
     }
 
     public void recordEventTypeAndCause(int basicEvt, final SConstraint constraint, final boolean forceAwake) {
-        add++;
         // if no such event was active on the same variable
 //        if ((oldCause == NOEVENT) || (eventType == EMPTYEVENT)) {  // note: these two tests should be equivalent
         if (eventType == EMPTYEVENT) {

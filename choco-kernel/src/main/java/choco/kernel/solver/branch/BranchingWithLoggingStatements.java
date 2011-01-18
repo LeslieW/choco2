@@ -38,12 +38,6 @@ import java.util.logging.Level;
 
 public class BranchingWithLoggingStatements extends AbstractIntBranchingStrategy {
 
-	/**
-	 * prefixes for log statements (visualize search depth)
-	 */
-	public final static String[] LOG_PREFIX = { "", ".", "..", "...", "....",
-		".....", "......", ".......", "........", ".........", ".........." };
-
 	public final AbstractIntBranchingStrategy internalBranching;
 
 	private int nextInformationNode = ChocoLogging.getEveryXNodes();

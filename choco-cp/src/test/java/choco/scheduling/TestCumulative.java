@@ -27,24 +27,6 @@
 
 package choco.scheduling;
 
-import static choco.Choco.constantArray;
-import static choco.Choco.cumulativeMax;
-import static choco.Choco.makeTaskVar;
-import static choco.cp.solver.constraints.global.scheduling.cumulative.AbstractCumulativeSConstraint.TASK_INTERVAL;
-import static choco.cp.solver.constraints.global.scheduling.cumulative.AbstractCumulativeSConstraint.TASK_INTERVAL_SLOW;
-import static choco.cp.solver.constraints.global.scheduling.cumulative.AbstractCumulativeSConstraint.VHM_CEF_ALGO_N2K;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.util.Arrays;
-import java.util.Random;
-import java.util.logging.Logger;
-
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
-
 import choco.Choco;
 import choco.DeprecatedChoco;
 import choco.Options;
@@ -60,6 +42,17 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import org.junit.Assert;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Random;
+import java.util.logging.Logger;
+
+import static choco.Choco.*;
+import static choco.cp.solver.constraints.global.scheduling.cumulative.AbstractCumulativeSConstraint.*;
+import static org.junit.Assert.*;
 
 
 /**
@@ -125,7 +118,6 @@ public class TestCumulative {
 			SchedUtilities.solveRandom(cp.solver, nbSol, nbNodes, cp.rsc.getOptions().toString());
 			
 			cp.generateSolver(AbstractTestProblem.getConfig(true));
-			System.out.println(cp.solver.pretty());
 			SchedUtilities.solveRandom(cp.solver, nbSol, nbNodes, cp.rsc.getOptions().toString());
 		}
 	}

@@ -29,56 +29,59 @@ package choco.kernel.solver.constraints.integer.extension;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
-import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 public abstract class CspBinSConstraint extends AbstractBinIntSConstraint {
 
 
-  protected BinRelation relation;
+    protected BinRelation relation;
 
 
-  protected CspBinSConstraint(IntDomainVar x, IntDomainVar y, BinRelation relation) {
-    super(x, y);
-    this.relation = relation;
-  }
-
-  /**
-   * Checks if the constraint is satisfied when the variables are instantiated.
-   *
-   * @return true if the constraint is satisfied
-   */
-
-  public boolean isSatisfied(int[] tuple) {
-    return relation.isConsistent(tuple[0], tuple[1]); //table.get((v1.getVal() - offset) * n + (v0.getVal() - offset));
-  }
-
-  public BinRelation getRelation() {
-    return relation;
-  }
-
-
-  public Boolean isEntailed() {
-    boolean always = true;
-    DisposableIntIterator itv1 = v0.getDomain().getIterator();
-    while (itv1.hasNext()) {
-      int nbs = 0;
-      int val = itv1.next();
-      DisposableIntIterator itv2 = v1.getDomain().getIterator();
-      while (itv2.hasNext()) {
-        if (relation.isConsistent(val, itv2.next())) nbs += 1;
-      }
-      if (nbs == 0) {
-        always = false;
-      } else if (nbs != v1.getDomainSize()) {
-        return null;
-      }
-      itv2.dispose();
+    protected CspBinSConstraint(IntDomainVar x, IntDomainVar y, BinRelation relation) {
+        super(x, y);
+        this.relation = relation;
     }
-    itv1.dispose();
-    if (always)
-      return Boolean.TRUE;
-    else
-      return Boolean.FALSE;
-  }
+
+    /**
+     * Checks if the constraint is satisfied when the variables are instantiated.
+     *
+     * @return true if the constraint is satisfied
+     */
+
+    public boolean isSatisfied(int[] tuple) {
+        return relation.isConsistent(tuple[0], tuple[1]); //table.get((v1.getVal() - offset) * n + (v0.getVal() - offset));
+    }
+
+    public BinRelation getRelation() {
+        return relation;
+    }
+
+
+    public Boolean isEntailed() {
+        int nbCons = 0;
+
+        DisposableIntIterator itv0 = v0.getDomain().getIterator();
+        while (itv0.hasNext()) {
+            int val = itv0.next();
+            int nbS = 0;
+            DisposableIntIterator itv1 = v1.getDomain().getIterator();
+            while (itv1.hasNext()) {
+                if (relation.isConsistent(val, itv1.next())) {
+                    nbS++;
+                }
+            }
+            if (nbS > 0 && nbS < v1.getDomainSize()) {
+                return null;
+            }
+            nbCons += nbS;
+
+        }
+        itv0.dispose();
+        if (nbCons == 0) {
+            return Boolean.FALSE;
+        } else if (nbCons == v0.getDomainSize() * v1.getDomainSize()) {
+            return Boolean.TRUE;
+        }
+        return null;
+    }
 }

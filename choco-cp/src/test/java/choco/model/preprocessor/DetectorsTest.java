@@ -423,9 +423,6 @@ public class DetectorsTest {
 		run(model, precFromTimeWindowDetector(model, disjMod),
 				precFromDisjointDetector(model, disjMod),
 				disjointDetector(model, disjMod));
-		System.out.println(model.pretty());
-		//		System.out.println(disjMod.toString());
-				System.out.println(disjMod.setupTimesToString());
 		assertEquals(0, model.getNbConstraints());
 	}
 
@@ -445,9 +442,6 @@ public class DetectorsTest {
 		final DisjunctiveModel disjMod = new DisjunctiveModel(model);
 		run(model, disjointDetector(model, disjMod));
 		//assertEquals(2, model.getNbConstraints());
-		System.out.println(model.pretty());
-		System.out.println(disjMod.toString());
-		System.out.println(disjMod.setupTimesToString());
 		VisuFactory.toDotty(disjMod);
 	}
 	

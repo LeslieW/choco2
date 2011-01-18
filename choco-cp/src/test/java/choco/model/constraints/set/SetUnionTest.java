@@ -134,7 +134,6 @@ public class SetUnionTest {
         Random r = new Random(0);
         for (int i = 3; i < 7; i++) {
             for (int b = 0; b < 10; b++) {
-                System.out.printf("%d - %d\n", i, b);
                 int[][] pairs = buildEdges(r, i);
 
                 CPModel m1 = new CPModel();
