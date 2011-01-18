@@ -31,7 +31,8 @@ import choco.Choco;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.global.scheduling.disjunctive.Disjunctive.*;
+import choco.cp.solver.constraints.global.scheduling.disjunctive.Disjunctive;
+import choco.cp.solver.constraints.global.scheduling.disjunctive.Disjunctive.Policy;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.bitmask.BitMask;
 import choco.kernel.common.util.tools.MathUtils;
@@ -84,14 +85,14 @@ public class TestDisjunctive {
 				SchedUtilities.solveRandom(apc.solver, nbSol, -1, "disj " + rules[j]);
 			}
 			SETTINGS.clear();
-			SETTINGS.set(OVERLOAD_CHECKING);
+			SETTINGS.set(Disjunctive.OVERLOAD_CHECKING);
 			solveAll(apc, nbSol, Policy.DEFAULT);
 
-			SETTINGS.set(NF_NL);
-			SETTINGS.set(DETECTABLE_PRECEDENCE);
+			SETTINGS.set(Disjunctive.NF_NL);
+			SETTINGS.set(Disjunctive.DETECTABLE_PRECEDENCE);
 			solveAll(apc, nbSol, Policy.VILIM);
 
-			SETTINGS.set(EDGE_FINDING_D);
+			SETTINGS.set(Disjunctive.EDGE_FINDING_D);
 			apc.generateSolver(Policy.DEFAULT);
 			CPSolver s = apc.solver;
 			apc.generateSolver(Policy.VILIM);
