@@ -35,8 +35,15 @@ import choco.kernel.solver.propagation.Propagator;
  */
 public class ConstraintEvent implements PropagationEvent {
 
-    public final static int HIGH = 0, MEDIUM = 1, LOW = 2;
-    public final static int nbpriority = 3;
+    private static int _value = 1;
+    public final static int VERY_SLOW = _value++;
+    public final static int QUADRATIC = _value++;
+    public final static int CUBIC = _value++;
+    public final static int LINEAR = _value++;
+    public final static int TERNARY = _value++;
+    public final static int BINARY = _value++;
+    public final static int UNARY = _value++;
+    public final static int NB_PRIORITY = _value;
 
 
   /**
@@ -77,6 +84,7 @@ public class ConstraintEvent implements PropagationEvent {
    * Returns the priority of the var.
    */
 
+  @Override
   public int getPriority() {
     return priority;
   }

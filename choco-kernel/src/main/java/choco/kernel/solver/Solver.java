@@ -61,7 +61,6 @@ import choco.kernel.solver.variables.real.RealConstant;
 import choco.kernel.solver.variables.real.RealVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 import choco.kernel.solver.variables.set.SetVar;
-import choco.kernel.visu.IVisu;
 
 import java.util.Collection;
 import java.util.List;
@@ -700,14 +699,6 @@ public interface Solver extends IMeasures, IPretty {
 	public IntExp sum(IntExp...lv);
 
 	public void read(Model m);
-
-	public void visualize(IVisu visu);
-
-	/**
-	 * Return the type of eventQueues.
-	 * @return the type of event queue
-	 */
-	public int getEventQueueType();
 
 	public Boolean solve(boolean all);
 

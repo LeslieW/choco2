@@ -33,7 +33,7 @@ import choco.kernel.solver.propagation.event.PropagationEvent;
 
 import java.util.Vector;
 
-public class ObservableVarEventQueue extends BasicVarEventQueue implements IObservable{
+public class ObservableVarEventQueue extends VariableEventQueue implements IObservable{
 
     private Vector obs;
 

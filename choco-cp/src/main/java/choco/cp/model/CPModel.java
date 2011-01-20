@@ -122,7 +122,17 @@ public class CPModel implements Model {
 	/**
 	 * Properties file
 	 */
-	public final Properties properties;
+	public static final Properties properties;
+
+    static{
+        properties = new Properties();
+            try {
+                final InputStream is = CPModel.class.getResourceAsStream( "/application.properties" );
+                properties.load(is);
+            } catch (IOException e) {
+                LOGGER.severe("Could not open application.properties");
+            }
+    }
 
 	/**
 	 * Constructor.
@@ -153,13 +163,6 @@ public class CPModel implements Model {
 		constraints = new DeterministicIndicedList<Constraint>(Constraint.class, nbCstrs);
 
 		constraintsByType = new THashMap<ConstraintType, TIntHashSet>();
-		properties = new Properties();
-		try {
-			final InputStream is = getClass().getResourceAsStream( "/application.properties" );
-			properties.load(is);
-		} catch (IOException e) {
-			LOGGER.severe("Could not open application.properties");
-		}
 	}
 
 	public String pretty() {

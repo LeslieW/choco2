@@ -28,15 +28,15 @@
 package choco.visu;
 
 import choco.cp.solver.propagation.ObservableVarEventQueue;
+import choco.cp.solver.propagation.VariableEventQueue;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.search.AbstractSearchLoop;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.visu.IVisu;
 import choco.kernel.visu.components.IVisuVariable;
 import choco.kernel.visu.components.panels.AVarChocoPanel;
-import static choco.visu.VisuButton.NEXT;
-import static choco.visu.VisuButton.PLAY;
 import choco.visu.searchloop.IObservableStepSearchLoop;
 import choco.visu.searchloop.ObservableStepSearchLoop;
 import choco.visu.variables.VisuVariable;
@@ -47,8 +47,12 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import static choco.visu.VisuButton.NEXT;
+import static choco.visu.VisuButton.PLAY;
 
 public final class Visu implements IVisu {
 
@@ -268,9 +272,9 @@ public final class Visu implements IVisu {
 	 /**
 	  * Initializes the {@code IVisu} from the {@code Solver}
 	  *
-	  * @param s the solver
-	  */
-	 public final void init(final Solver s) {
+      * @param s the solver
+      */
+	 public final void listen(final Solver s) {
 		 for (AVarChocoPanel vp : panelList) {
 			 // Get the list of visuvars
 			 vp.init(getVisuvariables(s, vp.getVariables()));
@@ -278,11 +282,27 @@ public final class Visu implements IVisu {
 			 width = Math.max(width, (int) vp.getDimensions().getWidth());
 			 heigth = Math.max(heigth, (int) vp.getDimensions().getHeight());
 		 }
-		 //Set the VarEventQueue as a observable object to the tracer
-		 tracer.addObservable((ObservableVarEventQueue) s.getPropagationEngine().getVarEventQueues()[0]);
-		 tracer.addObservable((ObservableVarEventQueue) s.getPropagationEngine().getVarEventQueues()[1]);
-		 tracer.addObservable((ObservableVarEventQueue) s.getPropagationEngine().getVarEventQueues()[2]);
-		 //Set the variables to observe
+         PropagationEngine pe = s.getPropagationEngine();
+         try {
+             Field field = pe.getClass().getDeclaredField("varEventQueue");
+             field.setAccessible(true);
+             VariableEventQueue[] old_veq = (VariableEventQueue[]) field.get(pe);
+             VariableEventQueue[] new_veq = new VariableEventQueue[old_veq.length];
+             for(int i = 0 ; i < old_veq.length; i++){
+                 ObservableVarEventQueue tmp = new ObservableVarEventQueue();
+                 tracer.addObservable(tmp);
+                 new_veq[i] = tmp;
+             }
+             field.set(pe, new_veq);
+             field.setAccessible(false);
+         } catch (NoSuchFieldException e) {
+             e.printStackTrace();
+         } catch (IllegalAccessException e) {
+             e.printStackTrace();
+         }
+
+
+//		 Set the variables to observe
 		 tracer.setVariables(visuvars.values());
 
 		 // Change the actual search loop by an observable and "step" one
@@ -299,6 +319,9 @@ public final class Visu implements IVisu {
 
 		 //Define the correct size of the frame
 		 frame.setSize(width, heigth);
+
+
+         this.setVisible(true);
 	 }
 
 	 private static IObservableStepSearchLoop chooseSearchLoop(final Solver s) {

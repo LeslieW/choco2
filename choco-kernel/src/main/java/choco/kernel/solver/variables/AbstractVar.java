@@ -131,6 +131,10 @@ public abstract class AbstractVar implements Var {
         return index;
     }
 
+    public final int getPriority() {
+        return constraints.getPriority();
+    }
+
     /**
 	 * Adds a new extension.
 	 * @param extensionNumber should use the number returned by getAbstractSConstraintExtensionNumber

@@ -44,7 +44,7 @@ public abstract class AbstractUnIntSConstraint extends AbstractLargeIntSConstrai
 
 
     protected AbstractUnIntSConstraint(IntDomainVar v0) {
-        super(ConstraintEvent.HIGH, new IntDomainVar[]{v0});
+        super(ConstraintEvent.UNARY, new IntDomainVar[]{v0});
         this.v0 = v0;
     }
 

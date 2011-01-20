@@ -28,7 +28,6 @@
 package choco.model.constraints.integer;
 
 import choco.Choco;
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -38,15 +37,17 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.ContradictionException;
-import static choco.model.constraints.integer.MaxTest.testAll;
 import org.junit.After;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import static java.text.MessageFormat.format;
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
+import static choco.model.constraints.integer.MaxTest.testAll;
+import static java.text.MessageFormat.format;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by IntelliJ IDEA.
@@ -284,7 +285,7 @@ public class MinTest{
 		IntegerVariable[] vars = Choco.constantArray(new int[]{1,2,3});
         IntegerVariable min = makeIntVar("min", 0, 3);
         SetVariable svar = makeSetVar("sv", 0, 2);
-        m.addConstraint(min(svar, vars, min, Integer.valueOf(0)));
+        m.addConstraint(min(svar, vars, min, 0));
         s.read(m);
         s.solveAll();
         assertEquals("nb-sols", 8, s.getNbSolutions());        

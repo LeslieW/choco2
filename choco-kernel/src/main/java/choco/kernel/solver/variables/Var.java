@@ -133,4 +133,10 @@ public interface Var extends IPretty, IIndex, IExtensionnable {
 	 * @return an iterator over all constraints involving this variable
 	 */
 	public DisposableIterator<SConstraint> getConstraintsIterator();
+
+    /**
+     * Return the priority of <code>this</code> according to the related constraints (minimum over all constraints priority)
+     * @return
+     */
+    int getPriority();
 }

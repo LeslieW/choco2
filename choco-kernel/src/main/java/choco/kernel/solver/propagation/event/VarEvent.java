@@ -27,7 +27,6 @@
 
 package choco.kernel.solver.propagation.event;
 
-import choco.kernel.common.util.objects.IPrioritizable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.Var;
@@ -36,7 +35,7 @@ import choco.kernel.solver.variables.Var;
  * Implements an
  * {@link PropagationEvent} for the variable events.
  */
-public abstract class VarEvent <E extends Var> implements PropagationEvent, IPrioritizable {
+public abstract class VarEvent <E extends Var> implements PropagationEvent{
 
     /**
    * empty bitvector for the event type.
@@ -176,7 +175,7 @@ public abstract class VarEvent <E extends Var> implements PropagationEvent, IPri
   }
 
   public int getPriority() {
-    return 0;
+    return modifiedVar.getPriority();
   }
 
     public final int getEventType() {

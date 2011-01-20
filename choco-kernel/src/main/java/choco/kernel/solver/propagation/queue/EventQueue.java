@@ -51,6 +51,10 @@ public interface EventQueue {
 	public boolean isEmpty();
 
 
+    /**
+     * Clear datastructures for safe reuses
+     */
+    public void clear();
 	/**
 	 * Pops the next var to propagate.
 	 */
@@ -78,7 +82,7 @@ public interface EventQueue {
 	 * Removes an event.
 	 */
 
-	public void remove(PropagationEvent event);
+	public boolean remove(PropagationEvent event);
 
 
 	/**
@@ -87,7 +91,7 @@ public interface EventQueue {
 	 * @throws choco.kernel.solver.ContradictionException
 	 */
 
-	public void propagateSomeEvents() throws ContradictionException;
+	public void propagateAllEvents() throws ContradictionException;
 
 	/**
 	 * Propagate one single event from the queue).

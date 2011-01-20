@@ -37,7 +37,7 @@ public abstract class AbstractLargeIntSConstraint extends AbstractIntSConstraint
 
 
     public AbstractLargeIntSConstraint(IntDomainVar[] vars) {
-        super(ConstraintEvent.LOW, vars);
+        super(ConstraintEvent.LINEAR, vars);
     }
 
     protected AbstractLargeIntSConstraint(int priority, IntDomainVar[] vars) {

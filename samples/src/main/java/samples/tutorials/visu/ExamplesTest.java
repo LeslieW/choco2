@@ -67,7 +67,7 @@ public final class ExamplesTest {
         v.addPanel(new VarChocoPanel("TreeSearch", vars, TREESEARCH, null));
 
         s.generateSearchStrategy();
-        s.visualize(v);
+        v.listen(s);
         s.launch();
         s.printRuntimeStatistics();
         // Print name value
@@ -139,7 +139,7 @@ public final class ExamplesTest {
         Variable[] vars = ArrayUtils.append(p.myvars);
         v.addPanel(new VarChocoPanel("Picross", vars, PicrossPApplet.class, new int[]{rows.length, cols.length}));
         s.generateSearchStrategy();
-        s.visualize(v);
+        v.listen(s);
         s.launch();
         v.kill();
     }

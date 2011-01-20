@@ -32,6 +32,7 @@ import choco.kernel.memory.IStateIntVector;
 import choco.kernel.memory.trailing.EnvironmentTrailing;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.logging.Logger;
@@ -218,6 +219,7 @@ public class StoredIntVectorTest {
 		assertEquals(vector.size(), 0);
 	}
 
+    @Ignore
 	@Test
 	public void test4() {
 		LOGGER.finer("test4");

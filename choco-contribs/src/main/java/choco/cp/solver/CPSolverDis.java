@@ -28,7 +28,9 @@
 package choco.cp.solver;
 
 import choco.cp.solver.propagation.BlockingVarEventQueue;
-import choco.kernel.solver.propagation.queue.VarEventQueue;
+import choco.cp.solver.propagation.VariableEventQueue;
+
+import java.lang.reflect.Field;
 
 /*
 * User : charles
@@ -41,10 +43,20 @@ public class CPSolverDis extends CPSolver{
 
     public CPSolverDis() {
         super();
-        VarEventQueue[] qs = new BlockingVarEventQueue[3];
-        for(int i = 0; i < 3; i++){
-            qs[i] = new BlockingVarEventQueue();
-        }
-        this.getPropagationEngine().setVarEventQueues(qs);
+         try {
+             Field field = propagationEngine.getClass().getDeclaredField("varEventQueue");
+             field.setAccessible(true);
+             VariableEventQueue[] old_veq = (VariableEventQueue[]) field.get(propagationEngine);
+             VariableEventQueue[] new_veq = new VariableEventQueue[old_veq.length];
+             for(int i = 0 ; i < old_veq.length; i++){
+                 new_veq[i] = new BlockingVarEventQueue();
+             }
+             field.set(propagationEngine, new_veq);
+             field.setAccessible(false);
+         } catch (NoSuchFieldException e) {
+             e.printStackTrace();
+         } catch (IllegalAccessException e) {
+             e.printStackTrace();
+         }
     }
 }

@@ -29,12 +29,10 @@ package choco.kernel.memory.structure;
 
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.IEnvironment;
-import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.structure.iterators.PSCLEIterator;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
-import choco.kernel.solver.propagation.Propagator;
 
 /*
 * User : charles
@@ -46,9 +44,6 @@ import choco.kernel.solver.propagation.Propagator;
 public final class PartiallyStoredIntCstrList <C extends AbstractSConstraint> extends APartiallyStoredCstrList<C>{
 
     private final PartiallyStoredIntVector[] events;
-
-    private final IStateInt priority;
-
     private final int[] eventTypes;
     private final int[] idxEventTypes;
 
@@ -62,7 +57,6 @@ public final class PartiallyStoredIntCstrList <C extends AbstractSConstraint> ex
             events[i] = env.makePartiallyStoredIntVector();
             idxEventTypes[eventTypes[i]] = i;
 		}
-        priority = env.makeInt(0);
     }
 
 
@@ -79,7 +73,6 @@ public final class PartiallyStoredIntCstrList <C extends AbstractSConstraint> ex
 	public int addConstraint(SConstraint c, int varIdx, boolean dynamicAddition) {
 		int constraintIdx = super.addConstraint(c, varIdx, dynamicAddition);
         AbstractSConstraint ic = ((AbstractSConstraint)c);
-		computePriority(ic);
 		int mask = ic.getFilteredEventMask(varIdx);
         for(int evt : eventTypes){
             if((mask & evt) !=0){
@@ -87,14 +80,6 @@ public final class PartiallyStoredIntCstrList <C extends AbstractSConstraint> ex
             }
         }
 		return constraintIdx;
-	}
-
-    /**
-	 * Compute the priotity of the variable
-	 * @param c the new constraint
-	 */
-	private void computePriority(SConstraint c) {
-		priority.set(Math.max(priority.get(),((Propagator)c).getPriority()));
 	}
 
     /**
@@ -131,10 +116,6 @@ public final class PartiallyStoredIntCstrList <C extends AbstractSConstraint> ex
 
     public PartiallyStoredIntVector[] getEventsVector(){
 		return events;
-	}
-
-	public int getPriority() {
-		return priority.get();
 	}
 
     @SuppressWarnings({"unchecked"})

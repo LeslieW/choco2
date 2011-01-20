@@ -31,10 +31,8 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.event.ConstraintEvent;
+import choco.kernel.solver.propagation.event.PropagationEvent;
 import choco.kernel.solver.propagation.listener.PropagationEngineListener;
-import choco.kernel.solver.propagation.queue.AbstractConstraintEventQueue;
-import choco.kernel.solver.propagation.queue.EventQueue;
-import choco.kernel.solver.propagation.queue.VarEventQueue;
 import choco.kernel.solver.search.measure.FailMeasure;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -51,7 +49,12 @@ public interface PropagationEngine {
 	public final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
 	FailMeasure getFailMeasure();
-	/**
+
+    //****************************************************************************************************************//
+    //*************************************** CONTRADICTION **********************************************************//
+    //****************************************************************************************************************//
+
+    /**
 	 * Raising a contradiction with a cause.
 	 */
 	public void raiseContradiction(Object cause) throws ContradictionException;
@@ -67,19 +70,10 @@ public interface PropagationEngine {
     @Deprecated
     public void raiseContradiction(int cidx, Var variable, final SConstraint cause) throws ContradictionException;
 
-	/**
-	 * Retrieving the cause of the last contradiction.
-	 */
 
-	public Object getContradictionCause();
-
-
-	/**
-	 * Returns the next active var queue to propagate some events.
-	 * If it returns null, the propagation is finished.
-	 */
-
-	public EventQueue getNextActiveEventQueue();
+    //****************************************************************************************************************//
+    //************************************ EVENTS ********************************************************************//
+    //****************************************************************************************************************//
 
 	/**
 	 * Removes all pending events (used when interrupting a propagation because
@@ -91,8 +85,17 @@ public interface PropagationEngine {
 	 * checking that the propagation engine remains in a proper state
 	 */
 	public boolean checkCleanState();
+	/**
+	 * Generic method to post events. The caller is reponsible of basic event
+	 * type field: it should be meaningful for the the associate kind of event.
+	 * @param v The modified variable.
+     * @param basicEvt A integer specifying mdofication kind for the attached
+     * @param constraint
+     * @param forceAwake
+     */
+	void postEvent(Var v, int basicEvt, final SConstraint constraint, final boolean forceAwake);
 
-	void postUpdateInf(IntDomainVar v, final SConstraint constraint, final boolean forceAwake);
+    void postUpdateInf(IntDomainVar v, final SConstraint constraint, final boolean forceAwake);
 
 	void postUpdateSup(IntDomainVar v, final SConstraint constraint, final boolean forceAwake);
 
@@ -110,32 +113,49 @@ public interface PropagationEngine {
 
 	void postInstSet(SetVar v, final SConstraint constraint, final boolean forceAwake);
 
-	/**
-	 * Generic method to post events. The caller is reponsible of basic event
-	 * type field: it should be meaningful for the the associate kind of event.
-	 * @param v The modified variable.
-     * @param basicEvt A integer specifying mdofication kind for the attached
+    /**
+     *
      * @param constraint
-     * @param forceAwake
+     * @param init
+     * @return
      */
-	void postEvent(Var v, int basicEvt, final SConstraint constraint, final boolean forceAwake);
-
 	boolean postConstAwake(Propagator constraint, boolean init);
 
+    /**
+     *
+     * @param event
+     */
 	void registerEvent(ConstraintEvent event);
 
-	VarEventQueue[] getVarEventQueues();
+    /**
+     * Propagate one by one events registered
+     *
+     * @throws choco.kernel.solver.ContradictionException
+     */
+    void propagateEvents() throws ContradictionException;
+
+    void removeEvent(PropagationEvent event);
+
+    /**
+     * Decrements the number of init constraint awake events.
+     */
+
+    void decPendingInitConstAwakeEvent();
 
 
-	void setVarEventQueues(int eventQueueType);
+    /**
+     * Increments the number of init constraint awake events.
+     */
 
-	void setVarEventQueues(VarEventQueue[] veq);
+    void incPendingInitConstAwakeEvent();
 
-	AbstractConstraintEventQueue[] getConstraintEventQueues();
+    void freeze();
 
-	void setConstraintEventQueues(AbstractConstraintEventQueue[] ceq);
+    void unfreeze();
 
-	void decPendingInitConstAwakeEvent();
+    //****************************************************************************************************************//
+    //********************************** LISTENERS *******************************************************************//
+    //****************************************************************************************************************//
 
 	/**
 	 * Adds a new listener to some events occuring in the propagation engine.
@@ -149,8 +169,11 @@ public interface PropagationEngine {
      */
     void removePropagationEngineListener(PropagationEngineListener listener);
 
+    /**
+     * Check wether <code>this</code> contains <code>listener</code> in its list of listeners
+     * @param listener
+     * @return
+     */
     boolean containsPropagationListener(PropagationEngineListener listener);
-
-	EventQueue getQueue(ConstraintEvent csvt);
 
 }

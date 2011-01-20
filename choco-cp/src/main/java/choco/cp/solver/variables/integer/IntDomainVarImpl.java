@@ -140,10 +140,6 @@ public class IntDomainVarImpl<C extends AbstractSConstraint & IntPropagator> ext
         return ((PartiallyStoredIntCstrList) constraints).getEventsVector();
     }
 
-    public final int getPriority() {
-        return ((PartiallyStoredIntCstrList) constraints).getPriority();
-    }
-
     // ============================================
     // Methods of the interface
     // ============================================

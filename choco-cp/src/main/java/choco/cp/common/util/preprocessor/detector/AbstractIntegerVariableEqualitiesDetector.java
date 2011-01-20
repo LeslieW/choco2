@@ -220,7 +220,7 @@ public abstract class AbstractIntegerVariableEqualitiesDetector extends Abstract
                         dtmp = domainByColor.get(col);
                         vtmp = dtmp.create();
                         vtmp.addOptions(dtmp.optionsSet);
-                        vtmp.findManager(model.properties);
+                        vtmp.findManager(CPModel.properties);
                         var[col] = (IntDomainVar)ppsolver.getMod2Sol().readModelVariable(vtmp);
                     }
                     ppsolver.setVar(v, var[col]);

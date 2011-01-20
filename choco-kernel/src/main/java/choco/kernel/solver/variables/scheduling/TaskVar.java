@@ -98,7 +98,13 @@ public final class TaskVar<C extends AbstractSConstraint & TaskPropagator> exten
 		return index;
 	}
 
-	//*****************************************************************//
+    @Override
+    public int getPriority() {
+        return constraints.getPriority();
+    }
+
+
+    //*****************************************************************//
 	//*******************  TaskVariable  ********************************//
 	//***************************************************************//
 

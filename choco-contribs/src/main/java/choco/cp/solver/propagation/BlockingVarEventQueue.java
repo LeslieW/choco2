@@ -30,7 +30,6 @@ package choco.cp.solver.propagation;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.propagation.event.PropagationEvent;
-import choco.kernel.solver.propagation.queue.VarEventQueue;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;
@@ -54,7 +53,7 @@ import java.util.Queue;
 * - Run DisTest class
 * 
 */
-public class BlockingVarEventQueue implements VarEventQueue {
+public class BlockingVarEventQueue extends VariableEventQueue {
 
     public static boolean _LOG = true;
 
@@ -94,7 +93,7 @@ public class BlockingVarEventQueue implements VarEventQueue {
      * @throws choco.kernel.solver.ContradictionException
      *
      */
-    public void propagateSomeEvents() throws ContradictionException {
+    public void propagateAllEvents() throws ContradictionException {
         try{
             if(_LOG)LOGGER.info("START PROPAGATION");
             // Initialisation de l'exception qui peut être levée
@@ -207,7 +206,7 @@ public class BlockingVarEventQueue implements VarEventQueue {
     /**
      * Removes an event. This method should not be useful for variable events.
      */
-    public void remove(PropagationEvent event) {
+    public boolean remove(PropagationEvent event) {
         throw new Error("not yet implemented");
     }
 
