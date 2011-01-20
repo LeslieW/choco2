@@ -30,7 +30,7 @@ package choco.cp.solver.propagation;
 
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.propagation.event.PropagationEvent;
-import choco.kernel.solver.propagation.queue.VarEventQueue;
+import choco.kernel.solver.propagation.queue.EventQueue;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
@@ -41,7 +41,7 @@ import java.util.Queue;
  * Date: 29 oct. 2008
  */
 
-public class BasicVarEventQueue implements VarEventQueue {
+public class VariableEventQueue implements EventQueue {
 
 
     /**
@@ -75,15 +75,10 @@ public class BasicVarEventQueue implements VarEventQueue {
 	 *
 	 * @throws choco.kernel.solver.ContradictionException
 	 */
-	public void propagateSomeEvents() throws ContradictionException {
+	public void propagateAllEvents() throws ContradictionException {
 		while (queue.size() != 0) {
 			PropagationEvent evt = popEvent();
 			evt.propagateEvent();
-			// in case the propagation of the event is not complete
-			// the event will be pushed right back onto the queue
-			/*
-			 * if (!evt.propagateEvent()) { pushEvent(evt); }
-			 */
 		}
 	}
 
@@ -94,13 +89,7 @@ public class BasicVarEventQueue implements VarEventQueue {
 	 */
 	public void propagateOneEvent() throws ContradictionException {
 		if (queue.size() != 0) {
-			// PropagationEvent evt =
-			popEvent();
-			// in case the propagation of the event is not complete
-			// the event will be pushed right back onto the queue
-			/*
-			 * if (!evt.propagateEvent()) { pushEvent(evt); }
-			 */
+			popEvent().propagateEvent();
 		}
 	}
 
@@ -110,12 +99,6 @@ public class BasicVarEventQueue implements VarEventQueue {
 	public PropagationEvent popEvent() {
 		PropagationEvent event = queue.poll();
 		lastPopped = event;
-		////////////////////////////////DEBUG ONLY ///////////////////////////
-		//Logging statements really decrease performance
-		//		if(LOGGER.isLoggable(Level.FINEST)) {
-		//			LOGGER.log(Level.FINEST, "just popped {0}", event);
-		//		}
-		//////////////////////////////////////////////////////////////////////////////////
 		return event;
 	}
 
@@ -149,18 +132,15 @@ public class BasicVarEventQueue implements VarEventQueue {
         while(!queue.isEmpty()){
             queue.remove().clear();
         }
-//        for (PropagationEvent event : queue) {
-//			event.clear();
-//		}
-//		queue.clear();
+
 	}
 
 	/**
 	 * Removes an event. This method should not be useful for variable events.
 	 */
 
-	public void remove(PropagationEvent event) {
-		queue.remove(event);
+	public boolean remove(PropagationEvent event) {
+		return queue.remove(event);
 	}
 
 	public int size() {

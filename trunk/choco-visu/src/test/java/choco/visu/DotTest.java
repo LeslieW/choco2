@@ -27,7 +27,6 @@
 
 package choco.visu;
 
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -41,7 +40,6 @@ import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.visu.components.panels.VarChocoPanel;
-import static choco.visu.components.papplets.ChocoPApplet.DOTTYTREESEARCH;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -49,6 +47,9 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
+import static choco.visu.components.papplets.ChocoPApplet.DOTTYTREESEARCH;
 
 /**
  * Created by IntelliJ IDEA.
@@ -129,7 +130,7 @@ public class DotTest {
         // Solve the model
         s.setFirstSolution(true);
         s.generateSearchStrategy();
-        s.visualize(v);
+        v.listen(s);
         s.launch();
 
 
@@ -184,7 +185,7 @@ public class DotTest {
         // Solve the model
         s.setFirstSolution(false);
         s.generateSearchStrategy();
-        s.visualize(v);
+        v.listen(s);
         s.launch();
         v.kill();
     }
@@ -228,7 +229,7 @@ public class DotTest {
         s.setFirstSolution(false);
 
         s.generateSearchStrategy();
-        s.visualize(v);
+        v.listen(s);
 
         s.launch();
         LOGGER.info("obj1: " + s.getVar(obj1).getVal());

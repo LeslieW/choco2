@@ -27,8 +27,14 @@
 
 package choco.model.constraints;
 
+import choco.Choco;
+import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.model.Model;
+import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.Configuration;
+import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -66,5 +72,32 @@ public class ConstraintTest {
         }catch (Exception e){
             Assert.fail();
         }
+    }
+
+
+    @Test
+    public void orderTest(){
+        Model m = new CPModel();
+        IntegerVariable x = Choco.makeIntVar("x", 0, 2);
+        IntegerVariable y = Choco.makeIntVar("y", -2, 2);
+        IntegerVariable z = Choco.makeIntVar("z", 1, 2);
+
+        m.addConstraint(Choco.abs(x,y));
+        m.addConstraint(Choco.allDifferent(y,z));
+
+        Configuration conf = new Configuration();
+        conf.putInt(Configuration.VEQ_ORDER, 1234567);
+        conf.putInt(Configuration.CEQ_ORDER, 1234567);
+
+        Solver s = new CPSolver(conf);
+        s.read(m);
+
+        try {
+            s.propagate();
+        } catch (ContradictionException e) {
+            e.printStackTrace();
+        }
+
+
     }
 }

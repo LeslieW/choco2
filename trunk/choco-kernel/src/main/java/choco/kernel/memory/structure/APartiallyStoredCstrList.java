@@ -29,7 +29,10 @@ package choco.kernel.memory.structure;
 
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.IEnvironment;
+import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.propagation.Propagator;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 
 /*
 * User : charles
@@ -44,9 +47,12 @@ public abstract class APartiallyStoredCstrList<C extends SConstraint> {
 
     protected final PartiallyStoredIntVector indices;
 
+    protected final IStateInt priority;
+
     protected APartiallyStoredCstrList(IEnvironment env) {
         elements = env.makePartiallyStoredVector();
         indices = env.makePartiallyStoredIntVector();
+        priority = env.makeInt(ConstraintEvent.UNARY);
     }
 
     /**
@@ -123,8 +129,18 @@ public abstract class APartiallyStoredCstrList<C extends SConstraint> {
 			constraintIdx = elements.staticAdd((C)c);
 			indices.staticAdd(varIdx);
 		}
+        computePriority(c);
 		return constraintIdx;
 	}
+
+    /**
+     * Compute the priotity of the variable
+     *
+     * @param c the new constraint
+     */
+    protected void computePriority(SConstraint c) {
+        priority.set(Math.max(priority.get(), ((Propagator) c).getPriority()));
+    }
 
     /**
 	 * This methods should be used if one want to access the different constraints stored.
@@ -140,5 +156,13 @@ public abstract class APartiallyStoredCstrList<C extends SConstraint> {
 	 */
 	public final DisposableIterator<SConstraint> getConstraintsIterator() {
 		return elements.getIterator();
+	}
+
+    /**
+     * Return the minimum priority of the constraints in <code>this</code>
+     * @return priority
+     */
+    public final int getPriority() {
+		return priority.get();
 	}
 }

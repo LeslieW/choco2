@@ -32,7 +32,6 @@ import choco.kernel.memory.IStateBool;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.propagation.event.PropagationEvent;
-import choco.kernel.solver.propagation.queue.EventQueue;
 
 import java.util.EventListener;
 
@@ -62,7 +61,7 @@ public abstract class Propagator implements EventListener {
 	protected final int priority;
 
     protected Propagator() {
-        this(0);
+        this(ConstraintEvent.UNARY);
     }
 
     protected Propagator(int priority) {
@@ -159,9 +158,7 @@ public abstract class Propagator implements EventListener {
 	public final void setPassive() {
 		if (active != null) {
 			active.set(false);
-			ConstraintEvent evt = constAwakeEvent;
-			EventQueue q = propagationEngine.getQueue(evt);
-			q.remove(evt);
+			propagationEngine.removeEvent(constAwakeEvent);
 		}
 	}
 

@@ -27,7 +27,6 @@
 
 package choco.cp.solver.variables.real;
 
-import choco.cp.solver.propagation.RealVarEvent;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.structure.Couple;
 import choco.kernel.memory.structure.PartiallyStoredRealCstrList;

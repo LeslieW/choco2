@@ -164,7 +164,7 @@ public class ExamplesTest {
         v.addPanel(new VarChocoPanel("Domain", vars, FULLDOMAIN, null));
 
         s.generateSearchStrategy();
-        s.visualize(v);
+        v.listen(s);
         s.launch();
 
         v.kill();
@@ -243,7 +243,7 @@ public class ExamplesTest {
 
         // Solve the model
         s.generateSearchStrategy();
-        s.visualize(v);
+        v.listen(s);
         s.launch();
         for (int i = 0; i < n; i++) {
             StringBuilder st = new StringBuilder(128);
@@ -495,7 +495,7 @@ public class ExamplesTest {
         Visu v = Visu.createVisu(1024, 1600);
         v.addPanel(new VarChocoPanel("Map", etats, ColoringPApplet.class, "./images/usa.svg"));
         s.generateSearchStrategy();
-        s.visualize(v);
+        v.listen(s);
         s.launch();
 //        v.kill();
     }
@@ -530,7 +530,7 @@ public class ExamplesTest {
 
         s.getConfiguration().putBoolean(Configuration.STOP_AT_FIRST_SOLUTION, false);
         s.generateSearchStrategy();
-        s.visualize(v);
+        v.listen(s);
         s.launch();
         v.kill();
 
@@ -559,7 +559,7 @@ public class ExamplesTest {
 
         s.getConfiguration().putBoolean(Configuration.STOP_AT_FIRST_SOLUTION, false);
         s.generateSearchStrategy();
-        s.visualize(v);
+        v.listen(s);
         s.launch();
         v.kill();
 
@@ -597,7 +597,7 @@ public class ExamplesTest {
         s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MAXIMIZE);
         s.setObjective(s.getVar(c));
         s.generateSearchStrategy();
-        s.visualize(v);
+        v.listen(s);
         s.launch();
         v.kill();
     }

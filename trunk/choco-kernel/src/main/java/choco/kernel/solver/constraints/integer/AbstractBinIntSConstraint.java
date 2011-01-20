@@ -45,7 +45,7 @@ public abstract class AbstractBinIntSConstraint extends AbstractIntSConstraint {
 
 
     public AbstractBinIntSConstraint(IntDomainVar x0, IntDomainVar x1) {
-        super(ConstraintEvent.HIGH, new IntDomainVar[]{x0, x1});
+        super(ConstraintEvent.BINARY, new IntDomainVar[]{x0, x1});
         v0 = x0;
         v1 = x1;
     }

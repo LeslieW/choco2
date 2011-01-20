@@ -27,14 +27,14 @@
 
 package choco.kernel.solver;
 
-import static choco.kernel.common.util.tools.PropertyUtils.*;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.reflect.Field;
 import java.util.Properties;
+
+import static choco.kernel.common.util.tools.PropertyUtils.*;
 
 /**
  * User : cprudhom<br/>
@@ -300,6 +300,24 @@ public class Configuration extends Properties {
      */
     @Default(value = "0.7f")
     public static final String RATION_HOLE = "cp.domain.rationHole";
+
+    /**
+     * <br/><b>Goal</b>: variable priority order for propagation engine
+     * <br/><b>Type</b>: int
+     * <br/><b>Default value</b>: 1234567
+     * <br/><b>Restriction</b>: |VEQ_ORDER| = 7, VEQ_ORDER = {1,2,3,4,5,6,7}
+     */
+    @Default(value = "1234567")
+    public static final String VEQ_ORDER = "cp.propagation.variables.order";
+
+    /**
+     * <br/><b>Goal</b>: constraint priority order for propagation engine
+     * <br/><b>Type</b>: int
+     * <br/><b>Default value</b>: 1234567
+     * * <br/><b>Restriction</b>: |CEQ_ORDER| = 7, CEQ_ORDER = {1,2,3,4,5,6,7}
+     */
+    @Default(value = "1234567")
+    public static final String CEQ_ORDER = "cp.propagation.constraints.order";
 
 
     /**

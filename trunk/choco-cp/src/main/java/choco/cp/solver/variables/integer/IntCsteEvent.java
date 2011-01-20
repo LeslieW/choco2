@@ -52,11 +52,6 @@ public class IntCsteEvent<C extends AbstractSConstraint & IntPropagator> extends
                 + ']');
     }
 
-    @Override
-    public int getPriority() {
-        return modifiedVar.getPriority();
-    }
-
     /**
      * Clears the var: delegates to the basic events.
      */

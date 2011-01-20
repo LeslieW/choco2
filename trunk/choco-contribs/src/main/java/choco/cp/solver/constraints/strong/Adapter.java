@@ -41,7 +41,7 @@ public class Adapter extends AbstractIntSConstraint implements ISpecializedConst
     private final AbstractIntSConstraint sConstraint;
 
     public Adapter(AbstractIntSConstraint sConstraint) {
-        super(ConstraintEvent.MEDIUM, new IntDomainVar[]{});
+        super(ConstraintEvent.LINEAR, new IntDomainVar[]{});
         this.sConstraint = sConstraint;
     }
 

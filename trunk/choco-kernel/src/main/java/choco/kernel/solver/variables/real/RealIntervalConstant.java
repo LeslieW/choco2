@@ -36,6 +36,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.Extension;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.real.RealExp;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.propagation.event.VarEvent;
 
 import java.util.List;
@@ -234,6 +235,11 @@ public class RealIntervalConstant implements RealConstant {
     @Override
     public DisposableIterator<SConstraint> getConstraintsIterator() {
         return null;
+    }
+
+    @Override
+    public int getPriority() {
+        return ConstraintEvent.UNARY;
     }
 
     @Override

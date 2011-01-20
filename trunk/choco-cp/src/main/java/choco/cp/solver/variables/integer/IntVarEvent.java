@@ -118,11 +118,6 @@ public class IntVarEvent<C extends AbstractSConstraint & IntPropagator> extends 
                 + ((eventType & INSTINT_MASK) != 0 ? "X" : "")
                 + "]");
     }
-    
-    @Override
-    public int getPriority() {
-        return modifiedVar.getPriority();
-    }
 
     /**
      * Clears the var: delegates to the basic events.

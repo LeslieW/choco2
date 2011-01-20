@@ -52,7 +52,7 @@ public abstract class AbstractTernIntSConstraint extends AbstractIntSConstraint 
      */
     public AbstractTernIntSConstraint(final IntDomainVar x0,
                                       final IntDomainVar x1, final IntDomainVar x2) {
-        super(ConstraintEvent.HIGH, new IntDomainVar[]{x0, x1, x2});
+        super(ConstraintEvent.TERNARY, new IntDomainVar[]{x0, x1, x2});
         v0 = x0;
         v1 = x1;
         v2 = x2;

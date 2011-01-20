@@ -27,7 +27,6 @@
 
 package choco.regression;
 
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -38,14 +37,15 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.propagation.PropagationEngine;
-import choco.kernel.solver.propagation.queue.EventQueue;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import static org.junit.Assert.*;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Iterator;
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
+import static org.junit.Assert.*;
 
 /**
  * @author grochart
@@ -175,20 +175,11 @@ public class RegressionTest {
             Solver s = new CPSolver();
             s.read(m);
             try {
-                //s.propagate();
-                PropagationEngine pe = s.getPropagationEngine();
-                boolean someEvents = true;
-                while (someEvents) {
-                    EventQueue q = pe.getNextActiveEventQueue();
-                    if (q != null) {
-                        q.propagateSomeEvents();
-                    } else {
-                        someEvents = false;
-                    }
-                }
-                assertTrue(pe.checkCleanState());
+                s.propagate();
             } catch (ContradictionException e) {
+                e.printStackTrace();
             }
+            Assert.assertTrue(s.getPropagationEngine().checkCleanState());
         }
     }
 

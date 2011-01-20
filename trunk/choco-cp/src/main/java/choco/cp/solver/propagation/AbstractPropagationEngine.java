@@ -25,15 +25,21 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package choco.kernel.solver.propagation;
+package choco.cp.solver.propagation;
 
+import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.cp.solver.variables.real.RealVarEvent;
+import choco.cp.solver.variables.set.SetVarEvent;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.propagation.listener.PropagationEngineListener;
-import choco.kernel.solver.propagation.queue.EventQueue;
 import choco.kernel.solver.search.measure.FailMeasure;
 import choco.kernel.solver.variables.Var;
+import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.kernel.solver.variables.real.RealVar;
+import choco.kernel.solver.variables.set.SetVar;
 
 /**
  * An abstract class for all implementations of propagation engines.
@@ -143,18 +149,107 @@ public abstract class AbstractPropagationEngine implements PropagationEngine {
         return i < pelIdx;
     }
 
+
     /**
-     * Retrieving the cause of the last contradiction.
+     * Posts an Inst var.
+     *
+     * @param v          The variable that is instantiated.
+     * @param constraint
+     * @param forceAwake
      */
-    public final Object getContradictionCause() {
-        return reuseException.getContradictionCause();
+
+    public final void postInstInt(final IntDomainVar v, final SConstraint constraint, final boolean forceAwake) {
+        postEvent(v, IntVarEvent.INSTINT, constraint, forceAwake);
+    }
+
+
+    /**
+     * Posts an lower bound event for an integer variable.
+     *
+     * @param v          the real variable
+     * @param constraint
+     * @param forceAwake
+     */
+    public final void postUpdateInf(final IntDomainVar v, final SConstraint constraint, final boolean forceAwake) {
+        postEvent(v, IntVarEvent.INCINF, constraint, forceAwake);
     }
 
     /**
-     * Gets the next queue from which a var will be propagated.
+     * Posts an upper bound event for an integer variable
+     *
+     * @param v          real variable
+     * @param constraint
+     * @param forceAwake
+     */
+    public final void postUpdateSup(final IntDomainVar v, final SConstraint constraint, final boolean forceAwake) {
+        postEvent(v, IntVarEvent.DECSUP, constraint, forceAwake);
+    }
+
+    /**
+     * Posts an Remove var.
+     *
+     * @param v          The variable the value is removed from.
+     * @param constraint
+     * @param forceAwake
      */
 
-    public EventQueue getNextActiveEventQueue() {
-        return null;
-	}
+    public final void postRemoveVal(final IntDomainVar v, int x, final SConstraint constraint, final boolean forceAwake) {
+        postEvent(v, IntVarEvent.REMVAL, constraint, forceAwake);
+    }
+
+    /**
+     * Posts an lower bound event for a real variable.
+     *
+     * @param v          the real variable
+     * @param constraint
+     * @param forceAwake
+     */
+    public final void postUpdateInf(final RealVar v, final SConstraint constraint, final boolean forceAwake) {
+        postEvent(v, RealVarEvent.INCINF, constraint, forceAwake);
+    }
+
+    /**
+     * Posts an upper bound event for a real variable
+     *
+     * @param v          real variable
+     * @param constraint
+     * @param forceAwake
+     */
+    public final void postUpdateSup(final RealVar v, final SConstraint constraint, final boolean forceAwake) {
+        postEvent(v, RealVarEvent.DECSUP, constraint, forceAwake);
+    }
+
+    /**
+     * Posts a removal event on a set variable
+     *
+     * @param v          the variable the enveloppe is modified
+     * @param constraint
+     * @param forceAwake
+     */
+    public final void postRemEnv(final SetVar v, final SConstraint constraint, final boolean forceAwake) {
+        postEvent(v, SetVarEvent.REMENV, constraint, forceAwake);
+    }
+
+    /**
+     * Posts a kernel addition event on a set variable
+     *
+     * @param v          the variable the kernel is modified
+     * @param constraint
+     * @param forceAwake
+     */
+    public final void postAddKer(final SetVar v, final SConstraint constraint, final boolean forceAwake) {
+        postEvent(v, SetVarEvent.ADDKER, constraint, forceAwake);
+    }
+
+    /**
+     * Posts an Inst event on a set var.
+     *
+     * @param v          The variable that is instantiated.
+     * @param constraint
+     * @param forceAwake
+     */
+
+    public final void postInstSet(final SetVar v, final SConstraint constraint, final boolean forceAwake) {
+        postEvent(v, SetVarEvent.INSTSET, constraint, forceAwake);
+    }
 }

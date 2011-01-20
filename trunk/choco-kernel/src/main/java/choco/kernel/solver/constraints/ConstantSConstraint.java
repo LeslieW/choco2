@@ -37,7 +37,7 @@ public class ConstantSConstraint extends AbstractIntSConstraint {
     private final boolean satisfied;
 
     protected ConstantSConstraint(boolean value) {
-        super(ConstraintEvent.HIGH, new IntDomainVar[]{});
+        super(ConstraintEvent.UNARY, new IntDomainVar[]{});
         satisfied = value;
     }
 

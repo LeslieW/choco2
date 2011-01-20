@@ -25,9 +25,8 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package choco.cp.solver.propagation;
+package choco.cp.solver.variables.real;
 
-import choco.cp.solver.variables.real.RealVarImpl;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.structure.Couple;
 import choco.kernel.solver.ContradictionException;

@@ -66,6 +66,6 @@ public interface IVisu {
      * Initializes the {@code IVisu} from the {@code Solver}
      * @param s solver
      */
-    public void init(final Solver s);
+    public void listen(final Solver s);
 
 }

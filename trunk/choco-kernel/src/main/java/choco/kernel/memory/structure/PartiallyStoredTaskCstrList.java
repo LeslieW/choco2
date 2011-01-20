@@ -34,9 +34,9 @@ import choco.kernel.memory.structure.iterators.PSCLEIterator;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
-import choco.kernel.solver.propagation.Propagator;
-import static choco.kernel.solver.propagation.event.TaskVarEvent.HYPDOMMODbitvector;
 import choco.kernel.solver.propagation.listener.TaskPropagator;
+
+import static choco.kernel.solver.propagation.event.TaskVarEvent.HYPDOMMODbitvector;
 
 /*
 * User : charles
@@ -71,20 +71,11 @@ public final class PartiallyStoredTaskCstrList<C extends AbstractSConstraint & T
 	public int addConstraint(SConstraint c, int varIdx, boolean dynamicAddition) {
 		int constraintIdx = super.addConstraint(c, varIdx, dynamicAddition);
         AbstractSConstraint ic = ((AbstractSConstraint)c);
-		computePriority(ic);
 		int mask = ic.getFilteredEventMask(varIdx);
         if((mask & HYPDOMMODbitvector) != 0){
             addEvent(dynamicAddition, constraintIdx);
 		}
 		return constraintIdx;
-	}
-
-    /**
-	 * Compute the priotity of the variable
-	 * @param c the new constraint
-	 */
-	private void computePriority(SConstraint c) {
-		priority.set(Math.max(priority.get(),((Propagator)c).getPriority()));
 	}
 
     /**
@@ -118,10 +109,6 @@ public final class PartiallyStoredTaskCstrList<C extends AbstractSConstraint & T
 
     public PartiallyStoredIntVector getEventsVector(){
 		return events;
-	}
-
-	public int getPriority() {
-		return priority.get();
 	}
 
     @SuppressWarnings({"unchecked"})

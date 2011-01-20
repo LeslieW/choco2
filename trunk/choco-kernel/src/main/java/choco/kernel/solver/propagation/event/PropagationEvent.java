@@ -28,6 +28,7 @@
 package choco.kernel.solver.propagation.event;
 
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.util.objects.IPrioritizable;
 import choco.kernel.solver.ContradictionException;
 
 import java.util.logging.Logger;
@@ -35,16 +36,10 @@ import java.util.logging.Logger;
 /**
  * An interface for all implementations of events.
  */
-public interface PropagationEvent {
+public interface PropagationEvent extends IPrioritizable {
 
 
 	public final static Logger LOGGER = ChocoLogging.getEngineLogger();
-
-	/**
-	 * Value of the state in the queue: -1 means the var is being propagated.
-	 * (see VarEvent.qState)
-	 */
-	public final static int POPPING = -1;
 
 	/**
 	 * Returns the object, whose modification is described by the event
