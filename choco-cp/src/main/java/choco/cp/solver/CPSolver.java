@@ -98,7 +98,6 @@ import choco.kernel.solver.constraints.real.RealExp;
 import choco.kernel.solver.goals.Goal;
 import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.propagation.Propagator;
-import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.propagation.listener.PropagationEngineListener;
 import choco.kernel.solver.propagation.listener.SetPropagator;
 import choco.kernel.solver.search.*;
@@ -1775,8 +1774,7 @@ public class CPSolver implements Solver {
                     indexOfLastInitializedStaticConstraint.set(idx);
                 }
                 c.addListener(dynamicPost);
-                ConstraintEvent event = (ConstraintEvent) c.getEvent();
-                propagationEngine.registerEvent(event);
+                propagationEngine.registerPropagator(c);
                 propagationEngine.postConstAwake(c, true);
                 postRedundantSetConstraints(cc);
                 if (strategy != null) {

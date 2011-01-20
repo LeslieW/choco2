@@ -41,13 +41,25 @@ import choco.kernel.solver.propagation.queue.EventQueue;
 import choco.kernel.solver.variables.Var;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.logging.Level;
 
 /**
  * Implementation of an {@link AbstractPropagationEngine} for Choco.
  */
 public class ChocoEngine extends AbstractPropagationEngine {
+    private static int[] indice;
+    static {
+        indice = new int[1 << ConstraintEvent.NB_PRIORITY];
+        indice[0] = -1;
+        for (int i = 0; i < ConstraintEvent.NB_PRIORITY; i++) {
+            for (int j = (1 << i); j < (1 << i + 1); j++) {
+                indice[j] = i;
+            }
+        }
+    }
+
+    private final static char CHAR_NB_P = Character.forDigit(ConstraintEvent.NB_PRIORITY, 10);
+
     /**
      * The different queues for the constraint awake events.
      */
@@ -71,9 +83,7 @@ public class ChocoEngine extends AbstractPropagationEngine {
     private int nbFrozenVE;
 
     private final int[] v_order;
-    private final int[] v_indice;
     private final int[] c_order;
-    private final int[] c_indice;
 
     /**
      * Constructs a new engine by initializing the var queues.
@@ -83,11 +93,7 @@ public class ChocoEngine extends AbstractPropagationEngine {
     public ChocoEngine(Solver solver) {
         super(solver);
         v_order = toInt(solver.getConfiguration().readString(Configuration.VEQ_ORDER));
-        v_indice = toIndice(v_order);
         c_order = toInt(solver.getConfiguration().readString(Configuration.CEQ_ORDER));
-        c_indice = toIndice(c_order);
-
-        assert Arrays.equals(c_indice, v_indice);
 
         constEventQueues = new ConstraintEventQueue[ConstraintEvent.NB_PRIORITY];
         for (int i = 1; i < ConstraintEvent.NB_PRIORITY; i++) {
@@ -104,21 +110,9 @@ public class ChocoEngine extends AbstractPropagationEngine {
         int[] values = new int[value.length() + 1];
         char[] value_c = value.toCharArray();
         for (int i = 0; i < value.length(); i++) {
-            values[i + 1] = value_c[i] - 48;
+            values[i + 1] = CHAR_NB_P - value_c[i];
         }
         return values;
-    }
-
-    private static int[] toIndice(int[] order) {
-        int[] indice = new int[1 << order.length];
-        indice[0] = -1;
-        for (int i = 0; i < order.length; i++) {
-            int k = order[i];
-            for (int j = (1 << k); j < (1 << k + 1); j++) {
-                indice[j] = k;
-            }
-        }
-        return indice;
     }
 
     //****************************************************************************************************************//
@@ -131,13 +125,13 @@ public class ChocoEngine extends AbstractPropagationEngine {
     public void clear() {
         int idx;
         while (v_active > 0) {
-            idx = v_indice[v_active];
+            idx = indice[v_active];
             this.varEventQueue[idx].clear();
             v_active -= 1 << idx;
         }
 
         while (c_active > 0) {
-            idx = c_indice[c_active];
+            idx = indice[c_active];
             this.constEventQueues[idx].clear();
             c_active -= 1 << idx;
         }
@@ -145,12 +139,9 @@ public class ChocoEngine extends AbstractPropagationEngine {
     }
 
     /**
-     * Private method for completing the bound var posting.
-     *
-     * @param basicEvt   The basic event posted.
-     * @param constraint
-     * @param forceAwake
+     * {@inheritDoc}
      */
+    @Override
     // idee: - si on est "frozen", devenir en plus "redondant" (ie: double).
     //       - par ailleurs, noter le changement (garder la vieille valeur de la borne ou
     //       - devenir enqueued
@@ -167,13 +158,9 @@ public class ChocoEngine extends AbstractPropagationEngine {
     }
 
     /**
-     * Posts a constraint awake var.
-     *
-     * @param constraint The constraint that must be awaken.
-     * @param init       Specifies if the constraint must be initialized
-     *                   (awake instead of propagate).
+     * {@inheritDoc}
      */
-
+    @Override
     public boolean postConstAwake(final Propagator constraint, final boolean init) {
         final ConstraintEvent event = (ConstraintEvent) constraint.getEvent();
         if (constEventQueues[c_order[event.getPriority()]].pushEvent(event)) {
@@ -190,24 +177,29 @@ public class ChocoEngine extends AbstractPropagationEngine {
 
 
     /**
-     * Registers an event in the queue. It should be called before using the queue to add
-     * the var in the available events of the queue.
-     *
-     * @param event the event to register
+     * {@inheritDoc}
+     * It should be called before call to {@link choco.kernel.solver.propagation.Propagator#propagate()}.
      */
-
-    public void registerEvent(final ConstraintEvent event) {
+    @Override
+    public void registerPropagator(final Propagator c) {
+        PropagationEvent event = c.getEvent();
         constEventQueues[c_order[event.getPriority()]].add(event);
     }
 
 
+    /**
+     * {@inheritDoc}.
+     * First, it propagates every variable events (respecting priority hierarchy).
+     * Then, it propagates one constraint event and checks for variable events to propagate.
+     * Loops until no event found.
+     */
     @Override
     public void propagateEvents() throws ContradictionException {
         do {
             // first empty variable events
             int idx;
             while (v_active > 0) {
-                idx = v_indice[v_active];
+                idx = indice[v_active];
                 this.varEventQueue[idx].propagateAllEvents();
                 if (this.varEventQueue[idx].isEmpty()) {
                     v_active -= 1 << idx;
@@ -216,47 +208,53 @@ public class ChocoEngine extends AbstractPropagationEngine {
 
             // then propagate one constraint event
             if (c_active > 0) {
-                idx = c_indice[c_active];
+                idx = indice[c_active];
                 if (this.constEventQueues[idx].size() == 1) {
                     c_active -= 1 << idx;
                 }
                 this.constEventQueues[idx].propagateOneEvent();
             }
         } while (v_active > 0 || c_active > 0);
-//        assert (getNbPendingEvents() == 0);
         assert checkCleanState();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void removeEvent(PropagationEvent event) {
-        if (event instanceof ConstraintEvent) {
-            int idx = c_order[event.getPriority()];
-            if (constEventQueues[idx].remove(event)) {
-                if (this.constEventQueues[idx].isEmpty()) {
-                    c_active -= 1 << idx;
-                }
+    public void desactivatePropagator(Propagator propagator) {
+        PropagationEvent event = propagator.getEvent();
+        int idx = c_order[propagator.getPriority()];
+        if (constEventQueues[idx].remove(event)) {
+            if (this.constEventQueues[idx].isEmpty()) {
+                c_active -= 1 << idx;
             }
+
         }
     }
 
     /**
-     * Decrements the number of init constraint awake events.
+     * {@inheritDoc}
      */
-
+    @Override
     public void decPendingInitConstAwakeEvent() {
         this.nbPendingInitConstAwakeEvent--;
     }
 
 
     /**
-     * Increments the number of init constraint awake events.
+     * {@inheritDoc}
      */
-
+    @Override
     public void incPendingInitConstAwakeEvent() {
         this.nbPendingInitConstAwakeEvent++;
     }
 
-
+    /**
+     * Return the number of pending events.
+     *
+     * @return number of pending events.
+     */
     public int getNbPendingEvents() {
         int nbEvts = 0;
         for (int i = 1; i < ConstraintEvent.NB_PRIORITY; i++) {
@@ -309,9 +307,9 @@ public class ChocoEngine extends AbstractPropagationEngine {
     }
 
     /**
-     * Removes all pending events (used when interrupting a propagation because
-     * a contradiction has been raised)
+     * {@inheritDoc}
      */
+    @Override
     public void flushEvents() {
         for (int i = 1; i < varEventQueue.length; i++) {
             this.varEventQueue[i].flushEventQueue();
@@ -326,6 +324,10 @@ public class ChocoEngine extends AbstractPropagationEngine {
         this.nbPendingInitConstAwakeEvent = 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public boolean checkCleanState() {
         boolean ok = true;
         final int nbiv = solver.getNbIntVars();
@@ -349,6 +351,9 @@ public class ChocoEngine extends AbstractPropagationEngine {
         return ok;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void freeze() {
         if (freeze == null) {
@@ -356,7 +361,7 @@ public class ChocoEngine extends AbstractPropagationEngine {
         }
         int idx;
         while (v_active > 0) {
-            idx = v_indice[v_active];
+            idx = indice[v_active];
             while (!this.varEventQueue[idx].isEmpty()) {
                 freeze.add(this.varEventQueue[idx].popEvent());
             }
@@ -365,7 +370,7 @@ public class ChocoEngine extends AbstractPropagationEngine {
         }
         nbFrozenVE = freeze.size();
         while (c_active > 0) {
-            idx = c_indice[c_active];
+            idx = indice[c_active];
             while (!this.constEventQueues[idx].isEmpty()) {
                 freeze.add(this.constEventQueues[idx].popEvent());
             }
@@ -373,6 +378,9 @@ public class ChocoEngine extends AbstractPropagationEngine {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void unfreeze() {
         for (int i = freeze.size() - 1; i >= nbFrozenVE; i--) {
