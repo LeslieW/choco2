@@ -78,12 +78,9 @@ public abstract class AbstractPropagationEngine implements PropagationEngine {
     }
 
     /**
-     * Throws a contradiction with the specified cause.
-     *
-     * @throws choco.kernel.solver.ContradictionException
-     *
+     * {@inheritDoc}
      */
-
+    @Override
     public final void raiseContradiction(final Object cause) throws ContradictionException {
         reuseException.set(cause);
         for (int i = 0; i < pelIdx; i++) {
@@ -92,6 +89,10 @@ public abstract class AbstractPropagationEngine implements PropagationEngine {
         throw (reuseException);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public final void raiseContradiction(final Object cause, final int move) throws ContradictionException {
         reuseException.set(cause, move);
         for (int i = 0; i < pelIdx; i++) {
@@ -100,6 +101,10 @@ public abstract class AbstractPropagationEngine implements PropagationEngine {
         throw (reuseException);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     @Deprecated
     public final void raiseContradiction(int cidx, Var variable, final SConstraint cause) throws ContradictionException {
         if (cidx >= 0) {
@@ -114,6 +119,10 @@ public abstract class AbstractPropagationEngine implements PropagationEngine {
         throw (reuseException);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public final void addPropagationEngineListener(PropagationEngineListener listener) {
         if (pelIdx == propagationEngineListeners.length) {
             PropagationEngineListener[] tmp = propagationEngineListeners;
@@ -124,9 +133,7 @@ public abstract class AbstractPropagationEngine implements PropagationEngine {
     }
 
     /**
-     * Removes a old listener from the propagation engine
-     *
-     * @param listener removal listener
+     * {@inheritDoc}
      */
     @Override
     public final void removePropagationEngineListener(PropagationEngineListener listener) {
@@ -140,6 +147,9 @@ public abstract class AbstractPropagationEngine implements PropagationEngine {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean containsPropagationListener(PropagationEngineListener listener) {
         int i = 0;
@@ -151,104 +161,74 @@ public abstract class AbstractPropagationEngine implements PropagationEngine {
 
 
     /**
-     * Posts an Inst var.
-     *
-     * @param v          The variable that is instantiated.
-     * @param constraint
-     * @param forceAwake
+     * {@inheritDoc}
      */
-
+    @Override
     public final void postInstInt(final IntDomainVar v, final SConstraint constraint, final boolean forceAwake) {
         postEvent(v, IntVarEvent.INSTINT, constraint, forceAwake);
     }
 
 
     /**
-     * Posts an lower bound event for an integer variable.
-     *
-     * @param v          the real variable
-     * @param constraint
-     * @param forceAwake
+     * {@inheritDoc}
      */
+    @Override
     public final void postUpdateInf(final IntDomainVar v, final SConstraint constraint, final boolean forceAwake) {
         postEvent(v, IntVarEvent.INCINF, constraint, forceAwake);
     }
 
     /**
-     * Posts an upper bound event for an integer variable
-     *
-     * @param v          real variable
-     * @param constraint
-     * @param forceAwake
+     * {@inheritDoc}
      */
+    @Override
     public final void postUpdateSup(final IntDomainVar v, final SConstraint constraint, final boolean forceAwake) {
         postEvent(v, IntVarEvent.DECSUP, constraint, forceAwake);
     }
 
     /**
-     * Posts an Remove var.
-     *
-     * @param v          The variable the value is removed from.
-     * @param constraint
-     * @param forceAwake
+     * {@inheritDoc}
      */
-
+    @Override
     public final void postRemoveVal(final IntDomainVar v, int x, final SConstraint constraint, final boolean forceAwake) {
         postEvent(v, IntVarEvent.REMVAL, constraint, forceAwake);
     }
 
     /**
-     * Posts an lower bound event for a real variable.
-     *
-     * @param v          the real variable
-     * @param constraint
-     * @param forceAwake
+     * {@inheritDoc}
      */
+    @Override
     public final void postUpdateInf(final RealVar v, final SConstraint constraint, final boolean forceAwake) {
         postEvent(v, RealVarEvent.INCINF, constraint, forceAwake);
     }
 
     /**
-     * Posts an upper bound event for a real variable
-     *
-     * @param v          real variable
-     * @param constraint
-     * @param forceAwake
+     * {@inheritDoc}
      */
+    @Override
     public final void postUpdateSup(final RealVar v, final SConstraint constraint, final boolean forceAwake) {
         postEvent(v, RealVarEvent.DECSUP, constraint, forceAwake);
     }
 
     /**
-     * Posts a removal event on a set variable
-     *
-     * @param v          the variable the enveloppe is modified
-     * @param constraint
-     * @param forceAwake
+     * {@inheritDoc}
      */
+    @Override
     public final void postRemEnv(final SetVar v, final SConstraint constraint, final boolean forceAwake) {
         postEvent(v, SetVarEvent.REMENV, constraint, forceAwake);
     }
 
     /**
-     * Posts a kernel addition event on a set variable
-     *
-     * @param v          the variable the kernel is modified
-     * @param constraint
-     * @param forceAwake
+     * {@inheritDoc}
      */
+    @Override
     public final void postAddKer(final SetVar v, final SConstraint constraint, final boolean forceAwake) {
         postEvent(v, SetVarEvent.ADDKER, constraint, forceAwake);
     }
 
     /**
-     * Posts an Inst event on a set var.
-     *
-     * @param v          The variable that is instantiated.
-     * @param constraint
-     * @param forceAwake
+     * {@inheritDoc}
      */
-
+    @Override
     public final void postInstSet(final SetVar v, final SConstraint constraint, final boolean forceAwake) {
         postEvent(v, SetVarEvent.INSTSET, constraint, forceAwake);
     }

@@ -158,7 +158,7 @@ public abstract class Propagator implements EventListener {
 	public final void setPassive() {
 		if (active != null) {
 			active.set(false);
-			propagationEngine.removeEvent(constAwakeEvent);
+			propagationEngine.desactivatePropagator(this);
 		}
 	}
 
