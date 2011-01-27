@@ -1,4 +1,5 @@
-package samples.tutorials.lns.rcpsp;/*
+package samples.tutorials.lns.rcpsp;
+/*
  * Created by IntelliJ IDEA.
  * User: sofdem - sophie.demassey{at}mines-nantes.fr
  * Date: 11/01/11 - 14:49
@@ -10,29 +11,20 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.BranchingFactory;
 import choco.kernel.model.Model;
-import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.Configuration;
-import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
 import parser.instances.AbstractInstanceModel;
-import samples.tutorials.lns.lns.LNSCPSolver;
-import samples.tutorials.lns.lns.Neighborhood;
-import samples.tutorials.lns.lns.RandomNeighborhoodOperator;
-import samples.tutorials.lns.lns.RandomTaskNeighborhoodOperator;
+import samples.tutorials.lns.lns.*;
 
 import java.util.logging.Level;
 
-/** @author Sophie Demassey */
+/**
+ * A CP model for the  Resource Constrained Project Scheduling Problem
+ * @author Sophie Demassey
+ */
 public class RCPSPModeler extends AbstractInstanceModel {
-
-RCPSPData data;
-TaskVariable[] tasks;
-Constraint[] cumulatives;
-Solution lastSolution;
-int incumbent;
-boolean lns = true;
 
 
 public RCPSPModeler(Configuration defaultConfiguration)
@@ -55,23 +47,20 @@ public Boolean preprocess()
 @Override
 public Model buildModel()
 {
-	data = ((RCPSPFileParser) parser).getData();
+	RCPSPData data = ((RCPSPFileParser) parser).getData();
 	int nAct = data.nAct();
 	int nRes = data.nRes();
-	int horizon = data.getDurationSum();
+	int horizon = data.getHorizon();
 
 	Model m = new CPModel();
 
-	tasks = Choco.makeTaskVarArray("A", 0, horizon, data.getDurations());
+	TaskVariable[] tasks = Choco.makeTaskVarArray("A", 0, horizon, data.getDurations());
 
 	for (int a1 = 0; a1 < nAct; a1++) {
 		for (int a2 = 0; a2 < nAct; a2++) {
 			if (data.isPrecedence(a1, a2)) m.addConstraint(Choco.endsAfterBegin(tasks[a1], tasks[a2]));
 		}
 	}
-
-
-	cumulatives = new Constraint[data.nRes()];
 
 	for (int k = 0; k < nRes; k++) {
 		int nTasks = 0;
@@ -89,11 +78,10 @@ public Model buildModel()
 				i++;
 			}
 		}
-		cumulatives[k] = Choco.cumulativeMax("R" + k, subTasks, subRequests, Choco.constant(data.getCapacity(k)), "");
 		if (LOGGER.isLoggable(Level.INFO)) {
 			LOGGER.log(Level.INFO, "resource " + k + ": cumulative / " + nTasks + " variables");
 		}
-		m.addConstraint(cumulatives[k]);
+		m.addConstraint(Choco.cumulativeMax("R" + k, subTasks, subRequests, Choco.constant(data.getCapacity(k)), ""));
 		m.addVariable(Options.V_OBJECTIVE, tasks[nAct - 1].end());
 	}
 	return m;
@@ -103,11 +91,14 @@ public Model buildModel()
 @Override
 public Solver buildSolver()
 {
-	return (lns) ? buildLNSCPSolver() : buildCPSolver();
+	return (defaultConf.readBoolean(LNSCPConfiguration.LNS_USE)) ? buildLNSCPSolver() : buildCPSolver();
 }
 
-/** create a solver from the current model */
-public Solver buildLNSCPSolver()
+/**
+ * create a LNS/CP solver from the current model
+ * @return the solver
+ */
+private Solver buildLNSCPSolver()
 {
 	LNSCPSolver s = new LNSCPSolver(defaultConf);
 	s.read(model);
@@ -117,8 +108,11 @@ public Solver buildLNSCPSolver()
 	return s;
 }
 
-/** create a solver from the current model */
-public Solver buildCPSolver()
+/**
+ * create a CP solver from the current model
+ * @return the solver
+ */
+private Solver buildCPSolver()
 {
 	Solver s = new CPSolver(defaultConf);
 	s.read(model);

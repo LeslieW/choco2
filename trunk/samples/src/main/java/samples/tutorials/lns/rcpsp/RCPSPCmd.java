@@ -7,14 +7,17 @@ package samples.tutorials.lns.rcpsp;
 
 import choco.kernel.solver.Configuration;
 import cli.AbstractBenchmarkCmd;
+import org.kohsuke.args4j.CmdLineException;
 import parser.instances.AbstractInstanceModel;
 import samples.tutorials.lns.lns.LNSCPConfiguration;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 
-/** @author Sophie Demassey */
+/**
+ * launch the resolution of the RCPSP by CP or LNS/CP
+ * @author Sophie Demassey
+ */
 public class RCPSPCmd extends AbstractBenchmarkCmd {
 
 public RCPSPCmd(Configuration configuration)
@@ -39,11 +42,20 @@ public boolean execute(File file)
 	return instance.getStatus().isValidWithCSP();
 }
 
+@Override
+protected void checkData() throws CmdLineException
+{
+	if (!inputFile.exists() || !inputFile.canRead()) {
+		inputFile = new File(RCPSPCmd.class.getResource("/lns-tut/bl2014").getPath());
+	}
+	super.checkData();
+}
+
 public static void main(String[] args)
 {
 	Configuration configuration = new LNSCPConfiguration();
 	try {
-		configuration.load(new FileInputStream("/Users/sofdem/Documents/Code/choco/samples/src/main/resources/lns-tut/lns-rcpsp.properties"));
+		configuration.load(RCPSPCmd.class.getResourceAsStream("/lns-tut/lns-rcpsp.properties"));
 	} catch (IOException e) {
 		e.printStackTrace();
 	}

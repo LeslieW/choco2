@@ -8,7 +8,10 @@ import gnu.trove.TIntHashSet;
 
 import java.util.Random;
 
-/** @author Sophie Demassey */
+/**
+ * A neighborhood operator which fix/unfix task variables randomly
+ * @author Sophie Demassey
+ */
 public class RandomTaskNeighborhoodOperator implements NeighborhoodOperator {
 protected Random random;
 protected int minSize;
@@ -18,7 +21,7 @@ protected int maxSize;
 protected TIntHashSet selected;
 
 /**
- * Default constructor for a random value de-selector.
+ * Constructs with a fixed seed.
  * @param nbRelaxedTasks number of task variables to let free
  */
 public RandomTaskNeighborhoodOperator(int nbRelaxedTasks)
@@ -27,7 +30,7 @@ public RandomTaskNeighborhoodOperator(int nbRelaxedTasks)
 }
 
 /**
- * Constructs a random value selector for branching with a specified seed.
+ * Constructs with a specified seed.
  * @param nbRelaxedTasks number of task variables to let free
  * @param seed           random seed
  */
@@ -37,7 +40,7 @@ public RandomTaskNeighborhoodOperator(int nbRelaxedTasks, long seed)
 }
 
 /**
- * Constructs a random value selector for branching with a specified seed.
+ * Constructs with a specified seed and a variable neighborhood size.
  * @param minNbRelaxedTasks minimum number of task variables to let free
  * @param maxNbRelaxedTasks maximum number of task variables to let free
  * @param seed              random seed
@@ -50,6 +53,12 @@ public RandomTaskNeighborhoodOperator(int minNbRelaxedTasks, int maxNbRelaxedTas
 	selected = new TIntHashSet();
 }
 
+/**
+ * restrict the search space around the solution by selecting nbRelaxedTasks task variables randomly to let free
+ * and by fixing all other task variables to their value in solution
+ * @param solution the solution to build the neighborhood around
+ * @return true iff the search space is actually shrunken
+ */
 @Override
 public boolean restrictNeighborhood(Solution solution)
 {

@@ -6,16 +6,30 @@ package samples.tutorials.lns.rcpsp;/*
 
 import choco.kernel.common.util.tools.ArrayUtils;
 
-/** @author Sophie Demassey */
+/**
+ * An instance of the Resource-Constrained Proect Scheduling Problem (RCPSP)
+ * @author Sophie Demassey
+ */
 public class RCPSPData {
 
+/** number of real non-preemptive activities (indexed from 0 to nAct-1) */
 final int nAct;
+/** number of cumulative renewable resources */
 final int nRes;
+/**
+ * simple precedences between activities
+ * pred[i][j]=1 iff activity i cannot finish after activity j starts
+ * pred[i][j]=0 otherwise
+ */
 int[][] pred;
+/** duration[i] the duration of activity i */
 int[] duration;
+/** request[i][r] the amount of resource r consumed by activity i between its starting time (included) and its ending time (excluded) */
 int[][] request;
+/** capacity[r] the amount of resource r available at each moment */
 int[] capacity;
-int durationSum;
+/** the latest finishing time of the schedule */
+int horizon;
 
 public RCPSPData(int nAct, int nRes)
 {
@@ -25,6 +39,7 @@ public RCPSPData(int nAct, int nRes)
 	duration = new int[nAct];
 	request = new int[nAct][nRes];
 	capacity = new int[nRes];
+	horizon = -1;
 }
 
 public void setPrecedence(int actPred, int actSucc)
@@ -82,12 +97,12 @@ public int getCapacity(int res)
 	return capacity[res];
 }
 
-public int getDurationSum()
+public int getHorizon()
 {
-	if (durationSum == 0) {
-		for (int d : duration) { durationSum += d; }
+	if (horizon < 0) {
+		for (int d : duration) { horizon += d; }
 	}
-	return durationSum;
+	return horizon;
 }
 
 @Override

@@ -2,12 +2,23 @@ package samples.tutorials.lns.lns;
 
 import choco.kernel.solver.branch.AbstractIntBranchingStrategy;
 
-/** @author Sophie Demassey */
+/**
+ * Neighborhood defines how to build and to explore the search space of a problem around a solution
+ * in hope to improve locally the solution
+ * @author Sophie Demassey
+ * @see LNSCPSolver
+ */
 public class Neighborhood implements Comparable {
 
 //private Solution solution;
+/** operator defines how to build the search space around a solution */
 private NeighborhoodOperator operator;
+/**
+ * strategy defines how to explore this search space within a backtracking
+ * todo: encapsulate the type of the heuristic rather than a heuristic attached to a solver
+ */
 private AbstractIntBranchingStrategy strategy;
+/** impact is a performance indicator */
 private int impact;
 
 public Neighborhood(NeighborhoodOperator operator, AbstractIntBranchingStrategy strategy, int impact)
@@ -50,13 +61,6 @@ public int compareTo(Object o)
 {
 	return (this.impact - ((Neighborhood) o).impact);
 }
-
-/*
-public Neighborhood clone() 
-{
-	return new Neighborhood(solution, operator, strategy, impact);
-}
-*/
 
 public int decreaseImpact()
 {
