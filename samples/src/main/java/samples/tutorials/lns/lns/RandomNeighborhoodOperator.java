@@ -7,7 +7,10 @@ import gnu.trove.TIntHashSet;
 
 import java.util.Random;
 
-/** @author Sophie Demassey */
+/**
+ * A neighborhood operator which fix/unfix integer variables randomly
+ * @author Sophie Demassey
+ */
 public class RandomNeighborhoodOperator implements NeighborhoodOperator {
 
 protected Random random;
@@ -15,8 +18,8 @@ protected int nbRelaxedVars;
 protected TIntHashSet selected;
 
 /**
- * Default constructor for a random value de-selector.
- * @param nbRelaxedVars number of variables to de-instantiate
+ * Constructs with a fixed seed.
+ * @param nbRelaxedVars number of variables to relax
  */
 public RandomNeighborhoodOperator(int nbRelaxedVars)
 {
@@ -24,8 +27,8 @@ public RandomNeighborhoodOperator(int nbRelaxedVars)
 }
 
 /**
- * Constructs a random value selector for branching with a specified seed.
- * @param nbRelaxedVars number of variables to de-instantiate
+ * Constructs with a specified seed.
+ * @param nbRelaxedVars number of variables to relax
  * @param seed          random seed
  */
 public RandomNeighborhoodOperator(int nbRelaxedVars, long seed)
@@ -35,6 +38,12 @@ public RandomNeighborhoodOperator(int nbRelaxedVars, long seed)
 	selected = new TIntHashSet();
 }
 
+/**
+ * restrict the search space around the solution by selecting nbRelaxedVars variables randomly to let free
+ * and by fixing all other integer variables to their value in solution
+ * @param solution the solution to build the neighborhood around
+ * @return true iff the search space is actually shrunken
+ */
 @Override
 public boolean restrictNeighborhood(Solution solution)
 {
@@ -43,7 +52,6 @@ public boolean restrictNeighborhood(Solution solution)
 	int nbTotalVars = solver.getNbIntVars() - 1;
 
 	int n = nbTotalVars - nbRelaxedVars;
-	;
 	boolean b = false;
 	IntVar var;
 	selected.clear();

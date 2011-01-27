@@ -22,9 +22,11 @@ import java.util.*;
 /**
  * A Large Neighborhood Search approach encapsulating a CP solver.
  * First, the CP solver computes an initial set of solutions.
- * Then, it is re-used to explore several neighborhoods around these solutions.
- * The neighborhood of a solution is obtained by fixing some of the variables to their values in the solution and by relaxing the others.
- * todo make LNSCPSolver implement Solver and remove the inheritance from CPSolver
+ * Then, it is re-used to explore several neighborhoods around these solutions, in hope to locally improve these solutions.
+ * The neighborhood of a solution is obtained by restricting the search space around the solution
+ * e.g. by fixing some of the variables to their values in the solution and by relaxing the others.
+ * todo 1 make LNSCPSolver implement Solver and remove the inheritance from CPSolver: aggregate the statistics of the encapsulated CPSolver
+ * OR todo 2 make LNS a BranchingStrategy with restarts
  * @author Sophie Demassey
  */
 public class LNSCPSolver extends CPSolver {
@@ -37,17 +39,6 @@ boolean maximize;
 LNSCPConfiguration lnsConfiguration;
 
 
-/*
-public LNSCPSolver()
-{
-	this((Configuration)null);
-}
-
-public LNSCPSolver(IEnvironment env)
-{
-	this(env, null);
-}
-*/
 public LNSCPSolver(Configuration configuration)
 {
 	this(new EnvironmentTrailing(), configuration);
@@ -58,6 +49,7 @@ public LNSCPSolver(IEnvironment env, Configuration configuration)
 {
 	super(env, configuration);
 	solver = this;  // todo delegate rather than inherits
+	//solver = new CPSolver(configuration);
 	lnsConfiguration = (LNSCPConfiguration) configuration;
 	neighborhoods = new PriorityQueue<Neighborhood>();
 	solutions = new ArrayList<Solution>();
@@ -71,6 +63,7 @@ public LNSCPSolver(IEnvironment env, Configuration configuration)
 public void read(Model model)
 {
 	super.read(model); // todo delegate rather than inherits
+	//solver.read(model);
 }
 
 /**
@@ -96,7 +89,7 @@ protected Boolean optimize(boolean maximize, Var obj, boolean restart)
 
 /**
  * add a neighborhood operator to apply to the solutions
- * @param operator the operator type
+ * @param operator the operator type to build the neighborhood
  * @param strategy the branching heuristic to explore the neighborhood // todo branching type rather than branching object
  * @param impact   the number of runs the operator will apply without improvement
  */
@@ -124,7 +117,7 @@ public void addNeighborhood(Neighborhood neighborhood)
 	neighborhoods.add(neighborhood);
 }
 
-/** Definition of the default list of neighborhood operators. */
+/** define the default list of neighborhood operators. */
 private void loadNeighborhoods()
 {
 	if (neighborhoods.isEmpty()) {
@@ -230,12 +223,11 @@ private Boolean searchNeighborhoods()
 
 /**
  * Explore one neighborhood defined by an operator applied to a solution:
- * the operator selects a subset of variables to fix to their values in the solution
- * and the objective is bounded by the value to improve upon
- * a backtracking is then launched from the partial solution until either a limit is reached
- * or the first new improving solution is found.
+ * the search space of the solver is restricted around the solution by the neighborhood operator,
+ * and the objective is bounded by the value to improve upon.
+ * The restricted search space is then explored by limited backtracking.
  * @param neighborhood the neighborhood operator
- * @param solution     the complete instantiation from which the neighborhood is explored
+ * @param solution     the solution around which the neighborhood is explored
  * @param objToImprove the objective value to improve upon (ex: incumbent or solution objective value)
  * @return FALSE if infeasibility is proved, TRUE if one improving solution is found, null otherwise
  */
@@ -252,7 +244,9 @@ public Boolean searchNeighborhood(Neighborhood neighborhood, Solution solution, 
 	solver.getConfiguration().putInt(Configuration.SEARCH_LIMIT_BOUND, lnsConfiguration.readInt(LNSCPConfiguration.LNS_NEIGHBORHOOD_SEARCH_LIMIT_BOUND));
 	solver.resetSearchStrategy();
 	solver.clearGoals();
-	solver.addGoal(neighborhood.getStrategy());
+	if (neighborhood.getStrategy() != null) {
+		solver.addGoal(neighborhood.getStrategy());
+	}
 
 	solver.post((maximize) ? solver.gt((IntVar) solver.getObjective(), objToImprove) : solver.lt((IntVar) solver.getObjective(), objToImprove));
 

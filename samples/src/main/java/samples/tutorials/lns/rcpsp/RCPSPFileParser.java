@@ -42,7 +42,11 @@ public void parse(boolean displayInstance) throws UnsupportedConstraintException
 {
 	try {
 		Scanner sc = new Scanner(file);
-		if (file.getName().startsWith("bl")) { parseBL(sc); } else {
+		if (file.getName().startsWith("bl")) {
+			parseBL(sc);
+		} else if (file.getName().endsWith(".sm")) {
+			parseKSD(sc);
+		} else {
 			throw new UnsupportedConstraintException("no parser for file " + file.getName());
 		}
 	} catch (FileNotFoundException e) {
@@ -53,7 +57,11 @@ public void parse(boolean displayInstance) throws UnsupportedConstraintException
 	}
 }
 
-public void parseBL(Scanner sc)
+/**
+ * parse the Baptiste-Le Pape instance files
+ * @param sc the instance file scanner
+ */
+private void parseBL(Scanner sc)
 {
 	final int nDummyAct = 2;
 	int nAct = sc.nextInt() - nDummyAct;
@@ -64,7 +72,7 @@ public void parseBL(Scanner sc)
 	data = new RCPSPData(nAct, nRes);
 
 	for (int i = 0; i < nRes + 2; i++) {
-		bidon = sc.nextInt();
+		sc.next();
 	}
 	for (int i = 0; i < nAct; i++) {
 		int act = sc.nextInt();
@@ -75,7 +83,7 @@ public void parseBL(Scanner sc)
 		}
 	}
 	for (int i = 0; i < nRes + 2; i++) {
-		bidon = sc.nextInt();
+		sc.next();
 	}
 
 	bidon = sc.nextInt();
@@ -93,6 +101,71 @@ public void parseBL(Scanner sc)
 		act1 = sc.nextInt();
 	}
 }
+
+/**
+ * parse the PSPLib (Kolisch-Sprecher-Drexl) instance files
+ * @param sc the instance file scanner
+ */
+private void parseKSD(Scanner sc)
+{
+	final int nDummyAct = 2;
+	String line;
+	do {
+		line = sc.findInLine("sink\\s*\\):");
+		if (line == null) sc.nextLine();
+	} while (line == null);
+	int nAct = sc.nextInt() - nDummyAct;
+	sc.nextLine();
+	line = sc.findInLine("horizon\\s*:");
+	assert line != null;
+	int horizon = sc.nextInt();
+	sc.nextLine();
+	line = sc.findInLine("RESOURCES");
+	assert line != null;
+	sc.nextLine();
+	line = sc.findInLine("renewable\\s*:");
+	assert line != null;
+	int nRes = sc.nextInt();
+
+	data = new RCPSPData(nAct, nRes);
+
+	do {
+		line = sc.findInLine("successors");
+		sc.nextLine();
+	} while (line == null);
+	sc.nextLine();
+
+	for (int act = 0; act < nAct; act++) {
+		assert act == sc.nextInt() - nDummyAct;
+		sc.next();
+		for (int nSucc = sc.nextInt(); nSucc > 0; nSucc--) {
+			int act2 = sc.nextInt() - nDummyAct;
+			if (act2 < nAct) {
+				data.setPrecedence(act, act2);
+			}
+		}
+	}
+
+	for (int i = 0; i < 7; i++) {
+		sc.nextLine();
+	}
+	for (int act = 0; act < nAct; act++) {
+		assert act == sc.nextInt() - nDummyAct;
+		sc.next();
+		data.setDuration(act, sc.nextInt());
+		for (int k = 0; k < nRes; k++) {
+			data.setRequest(act, k, sc.nextInt());
+		}
+	}
+
+	for (int i = 0; i < 5; i++) {
+		sc.nextLine();
+	}
+	for (int k = 0; k < nRes; k++) {
+		data.setCapacity(k, sc.nextInt());
+	}
+}
+
 
 @Override
 public void cleanup()

@@ -7,7 +7,18 @@ package samples.tutorials.lns.lns;
 
 import choco.kernel.solver.Solution;
 
-/** @author Sophie Demassey */
+/**
+ * NeighborhoodOperator defines how to restrict the search space of a problem around a given solution
+ * @author Sophie Demassey
+ * @see LNSCPSolver
+ */
 public interface NeighborhoodOperator {
-boolean restrictNeighborhood(Solution solution);
+
+/**
+ * add restrictions (constraints or variable fixing) to the solver associated to the solution
+ * @param solution the solution to build the neighborhood around
+ * @return true iff the search space is actually shrunken
+ */
+public boolean restrictNeighborhood(Solution solution);
+
 }
