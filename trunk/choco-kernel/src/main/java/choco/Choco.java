@@ -3260,8 +3260,8 @@ public class Choco {
      * @param t2 another task
      * @return precedence constraint
      */
-    public static Constraint precedence(TaskVariable t1, TaskVariable t2, int setupTime) {
-        return precedenceDisjoint(t1, t2, ONE, setupTime, 0);
+    public static Constraint precedence(TaskVariable t1, TaskVariable t2, int delta) {
+        return precedenceDisjoint(t1, t2, ONE, delta, 0);
     }
 
     /**
@@ -3336,12 +3336,12 @@ public class Choco {
     /**
      * represents a reidied precedence with setup times between a pair of tasks:
      * <ul>
-     * <li> b = 1 => e1 + k1 <= s2
-     * <li> b = 0 => e1 + k1 > s2
+     * <li> b = 1 => e1 + delta <= s2
+     * <li> b = 0 => e1 + delta > s2
      * </ul>
      */
-    public static Constraint precedenceReified(TaskVariable t1, int k1, TaskVariable t2, IntegerVariable b) {
-        return new TemporalConstraint(ConstraintType.PRECEDENCE_REIFIED, Boolean.TRUE, new Variable[]{t1, constant(k1), t2, ZERO, b});
+    public static Constraint precedenceReified(TaskVariable t1, int delta, TaskVariable t2, IntegerVariable b) {
+        return new TemporalConstraint(ConstraintType.PRECEDENCE_REIFIED, Boolean.TRUE, new Variable[]{t1, constant(delta), t2, ZERO, b});
     }
 
     /**
@@ -3358,12 +3358,12 @@ public class Choco {
     /**
      * represents a reidied precedence with setup times between a pair of tasks:
      * <ul>
-     * <li> b = 1 => e1 + k1 <= s2
+     * <li> b = 1 => e1 + delta <= s2
      * <li> b = 0 => TRUE;
      * </ul>
      */
-    public static Constraint precedenceImplied(TaskVariable t1, int k1, TaskVariable t2, IntegerVariable b) {
-        return new TemporalConstraint(ConstraintType.PRECEDENCE_IMPLIED, Boolean.TRUE, new Variable[]{t1, constant(k1), t2, ZERO, b});
+    public static Constraint precedenceImplied(TaskVariable t1, int delta, TaskVariable t2, IntegerVariable b) {
+        return new TemporalConstraint(ConstraintType.PRECEDENCE_IMPLIED, Boolean.TRUE, new Variable[]{t1, constant(delta), t2, ZERO, b});
     }
 
     @SuppressWarnings({"deprecation"})

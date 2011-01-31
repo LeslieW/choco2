@@ -334,11 +334,10 @@ public final class TaskVar<C extends AbstractSConstraint & TaskPropagator> exten
 		}
 	}
 
-	public final void postHorizonConstraint(Solver solver) {
-		final int h = solver.getHorizon();
-		if(getLCT() > h) {
+	public final void postHorizonConstraint(Solver solver, int horizon) {
+		if(getLCT() > horizon) {
 			// create makespan constraint : horizon >= end(T)
-			solver.post( solver.leq(end(), h));
+			solver.post( solver.leq(end(), horizon));
 		}
 	}
 
