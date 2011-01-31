@@ -1425,7 +1425,7 @@ public class CPSolver implements Solver {
                 if (horizon < Choco.MAX_UPPER_BOUND) {
                     // create makespan constraint : horizon >= end(T)
                     for (TaskVar t : taskVars) {
-                        t.postHorizonConstraint(this);
+                        t.postHorizonConstraint(this, horizon);
                     }
                 }
             }

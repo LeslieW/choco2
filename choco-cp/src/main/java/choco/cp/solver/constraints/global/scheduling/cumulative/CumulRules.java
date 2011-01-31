@@ -205,6 +205,7 @@ public class CumulRules implements ICumulRules {
 	}
 
 
+	@Override
 	public void slowTaskIntervals() throws ContradictionException {
 		long e, tote;
 		int startI, endI = Integer.MIN_VALUE;
