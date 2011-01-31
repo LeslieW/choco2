@@ -42,12 +42,12 @@ import gnu.trove.TIntArrayList;
  * Date : 22 févr. 2010
  * Since : Choco 2.1.1
  */
-public final class Among extends AbstractUnIntSConstraint {
+public final class MemberEnum extends AbstractUnIntSConstraint {
 
 
     final TIntArrayList values;
 
-    public Among(final IntDomainVar v0, final int[] values) {
+    public MemberEnum(final IntDomainVar v0, final int[] values) {
         super(v0);
         this.values = new TIntArrayList(values);
     }
@@ -83,12 +83,12 @@ public final class Among extends AbstractUnIntSConstraint {
      */
     @Override
     public AbstractSConstraint opposite(final Solver solver) {
-        return new Disjoint(v0, values.toNativeArray());
+        return new NotMemberEnum(v0, values.toNativeArray());
     }
 
     @Override
     public String pretty() {
-        final StringBuilder sb = new StringBuilder("AMONG(");
+        final StringBuilder sb = new StringBuilder("MEMBER(");
         sb.append(v0.pretty()).append(",{");
         sb.append(StringUtils.pretty(values.toNativeArray()));
         sb.append("})");

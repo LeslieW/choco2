@@ -30,7 +30,8 @@ package choco.cp.model.managers.constraints.integer;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.AmongGAC;
-import choco.cp.solver.constraints.integer.Among;
+import choco.cp.solver.constraints.integer.MemberBound;
+import choco.cp.solver.constraints.integer.MemberEnum;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -38,7 +39,7 @@ import choco.kernel.solver.constraints.SConstraint;
 
 import java.util.List;
 
-public final class AmongManager extends IntConstraintManager {
+public final class MemberManager extends IntConstraintManager {
 
         /**
          * Build a constraint for the given solver and "model variables"
@@ -55,11 +56,16 @@ public final class AmongManager extends IntConstraintManager {
                 if (parameters instanceof int[]) {
                     int[] values = (int[]) parameters;
                     if(variables.length == 1){
-                        return new Among(solver.getVar(variables[0]), values);
+                        return new MemberEnum(solver.getVar(variables[0]), values);
                     }else{
                         return new AmongGAC(solver.getVar(variables), values, solver.getEnvironment());
                     }
 
+                }else if(parameters instanceof Object[]){
+                    Object[] values = (Object[]) parameters;
+                    int lower = (Integer)values[0];
+                    int upper = (Integer)values[1];
+                    return new MemberBound(solver.getVar(variables[0]), lower, upper);
                 }
             }
             throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");

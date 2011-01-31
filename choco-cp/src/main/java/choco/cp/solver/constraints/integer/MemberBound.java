@@ -27,7 +27,6 @@
 
 package choco.cp.solver.constraints.integer;
 
-import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
@@ -40,14 +39,15 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Date : 22 févr. 2010
  * Since : Choco 2.1.1
  */
-public final class Disjoint extends AbstractUnIntSConstraint {
+public final class MemberBound extends AbstractUnIntSConstraint {
 
 
-    final int[] values;
+    final int lower, upper;
 
-    public Disjoint(IntDomainVar v0, int[] values) {
+    public MemberBound(IntDomainVar v0, int lower, int upper) {
         super(v0);
-        this.values = values;
+        this.lower = lower;
+        this.upper = upper;
     }
 
     /**
@@ -59,9 +59,8 @@ public final class Disjoint extends AbstractUnIntSConstraint {
      */
     @Override
     public void propagate() throws ContradictionException {
-        for (int val : values) {
-            v0.removeVal(val, this, false);
-        }
+        v0.updateInf(lower, this, false);
+        v0.updateSup(upper, this, false);
         this.setEntailed();
     }
 
@@ -72,16 +71,14 @@ public final class Disjoint extends AbstractUnIntSConstraint {
      * @return the opposite constraint  @param solver
      */
     @Override
-    public AbstractSConstraint opposite(Solver solver) {
-        return new Among(v0, values);
+    public AbstractSConstraint opposite(final Solver solver) {
+        return new NotMemberBound(v0, lower, upper);
     }
 
     @Override
     public String pretty() {
-        StringBuffer sb = new StringBuffer("DISJOINT(");
-        sb.append(v0.pretty()).append(",{");
-        StringUtils.pretty(values);
-        sb.append("})");
+        final StringBuilder sb = new StringBuilder("MEMBER(");
+        sb.append(v0.pretty()).append(",[").append(lower).append(",").append(upper).append("])");
         return sb.toString();
     }
 
@@ -94,13 +91,8 @@ public final class Disjoint extends AbstractUnIntSConstraint {
      * @return
      */
     @Override
-    public boolean isSatisfied(int[] tuple) {
-        for (int val : values) {
-            if (tuple[0] == val) {
-                return false;
-            }
-        }
-        return true;
+    public boolean isSatisfied(final int[] tuple) {
+        return tuple[0] >= lower && tuple[0] <= upper;
     }
 
     /**
@@ -111,12 +103,7 @@ public final class Disjoint extends AbstractUnIntSConstraint {
      */
     @Override
     public boolean isSatisfied() {
-        for (int val : values) {
-            if (v0.canBeInstantiatedTo(val)) {
-                return false;
-            }
-        }
-        return true;
+        return v0.getInf() >= lower && v0.getSup() <= upper;
     }
 
     /**
@@ -126,14 +113,6 @@ public final class Disjoint extends AbstractUnIntSConstraint {
      */
     @Override
     public Boolean isEntailed() {
-        int nb = 0;
-        for(int val : values){
-            if(v0.canBeInstantiatedTo(val)){
-                nb++;
-            }
-        }
-        if(nb == 0)return true;
-        else if(nb == v0.getDomainSize())return false;
-        return null;
+        return v0.getInf() >= lower && v0.getSup() <= upper;
     }
 }
