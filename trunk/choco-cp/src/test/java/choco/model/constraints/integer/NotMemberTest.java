@@ -27,7 +27,6 @@
 
 package choco.model.constraints.integer;
 
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
@@ -44,13 +43,15 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Random;
 
+import static choco.Choco.*;
+
 /**
  * User : cprudhom
  * Mail : cprudhom(a)emn.fr
  * Date : 22 févr. 2010
  * Since : Choco 2.1.1
  */
-public class DisjointTest {
+public class NotMemberTest {
 
 
     private static int[] buildValues(Random r, int low, int up){
@@ -167,6 +168,90 @@ public class DisjointTest {
             s2.solveAll();
 
             Assert.assertEquals("seed:"+i, s2.getSolutionCount(), s1.getSolutionCount());
+        }
+    }
+
+    @Test
+    public void test4() {
+        Random r;
+        for (int i = 0; i < 1000; i++) {
+            r = new Random(i);
+            int low = r.nextInt(20);
+            int up = low + r.nextInt(10) + 1;
+
+            IntegerVariable v = makeIntVar("v", low, up);
+
+            int lower, upper;
+            lower = low + r.nextInt(up - low + 1);
+            upper = lower + r.nextInt(up - low + 1);
+
+
+            Model m1 = new CPModel();
+            Constraint among = notMember(v, lower, upper);
+
+            m1.addConstraint(among);
+
+            int min = Math.max(low, lower);
+            int max = Math.min(up, upper);
+            int n = up - low + 1;
+
+            Solver s = new CPSolver();
+            s.read(m1);
+            try {
+                s.worldPush();
+                s.propagate();
+                Assert.assertEquals("seed:"+i, n - (max - min +1), s.getVar(v).getDomainSize());
+            } catch (ContradictionException e) {
+                s.worldPopUntil(0);
+                Assert.assertEquals("seed:"+i, min, s.getVar(v).getInf());
+                Assert.assertEquals("seed:"+i, max, s.getVar(v).getSup());
+            }
+        }
+    }
+
+    @Test
+    public void test5() {
+        Random r;
+        for (int i = 0; i < 200; i++) {
+            r = new Random(i);
+            int low = r.nextInt(20);
+            int up = low + r.nextInt(10) + 1;
+
+            IntegerVariable v = makeIntVar("v", low, up);
+
+            int lower, upper;
+            lower = low + r.nextInt(up - low + 1);
+            upper = lower + r.nextInt(up - low + 1);
+
+
+            Model m1 = new CPModel();
+            Constraint among = notMember(v, lower, upper);
+
+            m1.addConstraint(among);
+
+            Model m2 = new CPModel();
+            IntegerVariable[] bools = new IntegerVariable[upper - lower +1];
+            for (int j = 0; j < bools.length; j++) {
+                bools[j] = makeBooleanVar("b" + j);
+                m2.addConstraint(reifiedConstraint(bools[j], neq(v, lower + j)));
+            }
+             m2.addConstraint(eq(sum(bools), upper - lower +1));
+
+
+            Solver s1 = new CPSolver();
+            s1.read(m1);
+            s1.setVarIntSelector(new RandomIntVarSelector(s1, i));
+            s1.setValIntSelector(new RandomIntValSelector(i));
+
+            Solver s2 = new CPSolver();
+            s2.read(m2);
+            s2.setVarIntSelector(new RandomIntVarSelector(s2, i));
+            s2.setValIntSelector(new RandomIntValSelector(i));
+
+            s1.solveAll();
+            s2.solveAll();
+
+            Assert.assertEquals("seed:" + i, s2.getSolutionCount(), s1.getSolutionCount());
         }
     }
 

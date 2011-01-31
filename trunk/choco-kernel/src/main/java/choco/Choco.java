@@ -29,7 +29,6 @@ package choco;
 
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.tools.ArrayUtils;
-import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.*;
@@ -1859,9 +1858,24 @@ public class Choco {
      */
     public static Constraint member(IntegerVariable var, int[] values) {
         if (values.length == 0) {
-            throw new ModelException("AMONG requirement : |values| > 0");
+            throw new ModelException("MEMBER requirement : |values| > 0");
         }
-        return new ComponentConstraint(ConstraintType.AMONG, values, new IntegerVariable[]{var});
+        return new ComponentConstraint(ConstraintType.INTMEMBER, values, new IntegerVariable[]{var});
+    }
+
+    /**
+     * VAR takes it value between LOWER and UPPER
+     *
+     * @param var   int variable
+     * @param lower lower bound
+     * @param upper upper bound
+     * @return AMONG constraint
+     */
+    public static Constraint member(IntegerVariable var, int lower, int upper) {
+        if (upper - lower < 0) {
+            throw new ModelException("MEMBER requirement : lower <= upper");
+        }
+        return new ComponentConstraint(ConstraintType.INTMEMBER, new Object[]{lower, upper}, new IntegerVariable[]{var});
     }
 
     /**
@@ -1877,7 +1891,7 @@ public class Choco {
         if (values.length == 0) {
             throw new ModelException("AMONG requirement : |values| > 0");
         }
-        return new ComponentConstraint(ConstraintType.AMONG, values, new IntegerVariable[]{var});
+        return new ComponentConstraint(ConstraintType.INTMEMBER, values, new IntegerVariable[]{var});
     }
 
 
@@ -1899,7 +1913,7 @@ public class Choco {
         if (variables.length == 0) {
             throw new ModelException("AMONG requirement : |variables| > 0");
         }
-        return new ComponentConstraint(ConstraintType.AMONG, values, ArrayUtils.append(variables, new IntegerVariable[]{nvar}));
+        return new ComponentConstraint(ConstraintType.INTMEMBER, values, ArrayUtils.append(variables, new IntegerVariable[]{nvar}));
     }
 
     /**
@@ -1941,7 +1955,19 @@ public class Choco {
      * @return DISJOINT constraint
      */
     public static Constraint notMember(IntegerVariable var, int[] values) {
-        return new ComponentConstraint(ConstraintType.DISJOINT, values, new IntegerVariable[]{var});
+        return new ComponentConstraint(ConstraintType.INTNOTMEMBER, values, new IntegerVariable[]{var});
+    }
+
+    /**
+     * VAR does not take it value between LOWER and UPPER
+     *
+     * @param var   int variable
+     * @param lower lower bound
+     * @param upper upper bound
+     * @return DISJOINT constraint
+     */
+    public static Constraint notMember(IntegerVariable var, int lower, int upper) {
+        return new ComponentConstraint(ConstraintType.INTNOTMEMBER, new Object[]{lower, upper}, new IntegerVariable[]{var});
     }
 
     /**
@@ -1954,7 +1980,7 @@ public class Choco {
      */
     @Deprecated
     public static Constraint disjoint(IntegerVariable var, int[] values) {
-        return new ComponentConstraint(ConstraintType.DISJOINT, values, new IntegerVariable[]{var});
+        return new ComponentConstraint(ConstraintType.INTNOTMEMBER, values, new IntegerVariable[]{var});
     }
 
     /**
@@ -3912,30 +3938,31 @@ public class Choco {
 
     /**
      * X <=lex Y
+     *
      * @param x a set variable
      * @param y a set variable
      * @return Constraint
      */
     public static Constraint setLex(SetVariable x, SetVariable y) {
         return new ComponentConstraint(ConstraintType.SETLEXICOGRAPHICORDERING,
-                null, new SetVariable[]{x,y} );
+                null, new SetVariable[]{x, y});
     }
 
 
     /**
-     *
      * If there exists a set variable v1 of VARIABLES such that S does not belong to v1 and T does,
      * then there also exists a set variable v2 preceding v1 such that S belongs to v2 and T does not.
-     *
      * <p/>
-     *
+     * <p/>
+     * <p/>
      * based on the paper
      * Y. C. Law, J. H. M. Lee,
      * Global Constraints for Integer and Set Value Precedence
      * Principles and Practice of Constraint Programming (CP'2004) LNCS 3258 Springer -Verlag M. G. Wallace, 362–376 2004
+     *
      * @param sv set variables
-     * @param s first value
-     * @param t second value
+     * @param s  first value
+     * @param t  second value
      * @return Constraint
      */
     public static Constraint setValuePrecede(SetVariable[] sv, int s, int t) {
@@ -4525,17 +4552,18 @@ public class Choco {
     }
 
     /**
-	 * A constraint for logical disjunction between boolean variables
-	 * lit1 OR lit2 OR ... OR litn
-	 * @param literals list of boolean variables
-	 * @return Constraint
-	 */
-	public static Constraint or(IntegerVariable... literals){
-		for(IntegerVariable lit : literals){
-			if(!lit.isBoolean())throw new ModelException("OR constraint must be used with boolean variables");
-		}
-		return new ComponentConstraint(ConstraintType.OR, null, literals);
-	}
+     * A constraint for logical disjunction between boolean variables
+     * lit1 OR lit2 OR ... OR litn
+     *
+     * @param literals list of boolean variables
+     * @return Constraint
+     */
+    public static Constraint or(IntegerVariable... literals) {
+        for (IntegerVariable lit : literals) {
+            if (!lit.isBoolean()) throw new ModelException("OR constraint must be used with boolean variables");
+        }
+        return new ComponentConstraint(ConstraintType.OR, null, literals);
+    }
 
     /**
      * A reified constraint for logical disjunction between boolean variables
@@ -5082,8 +5110,7 @@ public class Choco {
     //***************************************************************//
 
     protected static Constraint timeWindow(final IntegerVariable var, final int min, final int max) {
-        //FIXME do not create variable. use MetaConstraint ?
-        return eq(var, makeIntVar(StringUtils.randomName() + "-TW", min, max, Options.V_BOUND, Options.V_NO_DECISION));
+        return member(var, min, max);
     }
 
     /**
