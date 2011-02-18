@@ -42,6 +42,7 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.*;
@@ -75,7 +76,7 @@ public final class Regular extends AbstractLargeIntSConstraint {
     private int nbVars;
 
     public Regular(final DFA auto, final IntDomainVar[] vs, final int[] lbs, final int[] dsize, final IEnvironment environment) {
-        super(vs);
+        super(ConstraintEvent.LINEAR, vs);
         init(auto.lightGraph, lbs, dsize, environment);
     }
 
@@ -87,7 +88,7 @@ public final class Regular extends AbstractLargeIntSConstraint {
      * @param environment
      */
     public Regular(final DFA auto, final IntDomainVar[] vs, final IEnvironment environment) {
-        super(vs);
+        super(ConstraintEvent.LINEAR, vs);
         final int[] offset = new int[vars.length];
         final int[] sizes = new int[vars.length];
         for (int i = 0; i < vars.length; i++) {

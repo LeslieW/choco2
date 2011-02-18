@@ -43,6 +43,7 @@ import choco.kernel.solver.constraints.global.automata.fast_multicostregular.str
 import choco.kernel.solver.constraints.global.automata.fast_multicostregular.structure.SoftStoredMultiValuedDirectedMultiGraph;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.TIntHashSet;
 import gnu.trove.TIntIterator;
@@ -143,7 +144,7 @@ private static final double PRECISION = Math.pow(10,Constant.MCR_PRECISION);
 
 public SoftMultiCostRegular(IntDomainVar[] x, IntDomainVar[] y, IntDomainVar[] z, IntDomainVar Z, int[] indexes, IPenaltyFunction[] f, IAutomaton pi, int[][][][] costs, CPSolver solver)
 {
-        super(ArrayUtils.append(x,y,z,new IntDomainVar[]{Z}));
+        super(ConstraintEvent.VERY_SLOW, ArrayUtils.append(x,y,z,new IntDomainVar[]{Z}));
         this.x  = x;
         this.y = y;
         this.z = z;

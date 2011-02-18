@@ -33,6 +33,7 @@ import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
@@ -61,7 +62,7 @@ public final class ReifiedLargeNand extends AbstractLargeIntSConstraint {
      * @param environment
      */
     public ReifiedLargeNand(IntDomainVar[] vars, IEnvironment environment) {
-        super(vars);
+        super(ConstraintEvent.LINEAR, vars);
         toONE = environment.makeInt(0);
     }
 

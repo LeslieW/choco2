@@ -31,6 +31,7 @@ import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 
@@ -93,7 +94,7 @@ public final class LexChain extends AbstractLargeIntSConstraint {
 
     public  LexChain(IntDomainVar[] vars, int n, boolean strict ) {
 
-        super(vars);
+        super(ConstraintEvent.LINEAR, vars);
         this.strict = strict;
         this.n = n;
         numOfVectors = vars.length / n;

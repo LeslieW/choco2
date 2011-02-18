@@ -35,6 +35,7 @@ import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.constraints.integer.extension.ConsistencyRelation;
 import choco.kernel.solver.constraints.integer.extension.LargeRelation;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 public class CspLargeSConstraint extends AbstractLargeIntSConstraint {
@@ -44,7 +45,7 @@ public class CspLargeSConstraint extends AbstractLargeIntSConstraint {
 	protected int[] currentTuple;
 
 	public CspLargeSConstraint(IntDomainVar[] vs, LargeRelation relation) {
-		super(vs);
+		super(ConstraintEvent.QUADRATIC, vs);
 		this.relation = relation;
 		this.currentTuple = new int[vs.length];
 	}

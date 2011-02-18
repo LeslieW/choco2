@@ -33,6 +33,7 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /*
@@ -54,7 +55,7 @@ public final class LargeAnd extends AbstractLargeIntSConstraint {
      * @param vars boolean variables
      */
     LargeAnd(IntDomainVar[] vars) {
-        super(vars);
+        super(ConstraintEvent.LINEAR, vars);
     }
 
     @Override

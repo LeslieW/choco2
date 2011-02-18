@@ -105,7 +105,7 @@ public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint{
      * @param oppositeCons the opposite reified constraint
      */
     ReifiedIntSConstraint(final IntDomainVar bool, final AbstractIntSConstraint cons, final AbstractIntSConstraint oppositeCons) {
-        super(makeTableVar(bool, cons, oppositeCons));
+        super(Math.max(cons.getPriority(), oppositeCons.getPriority()), makeTableVar(bool, cons, oppositeCons));
         this.cons = cons;
         this.oppositeCons = oppositeCons;
         init();

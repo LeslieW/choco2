@@ -32,6 +32,7 @@ import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
@@ -53,7 +54,7 @@ public final class MaxOfAList extends AbstractLargeIntSConstraint {
   protected final IStateInt indexOfMaximumVariable;
 
   public MaxOfAList(IEnvironment environment, final IntDomainVar[] vars) {
-    super(vars);
+    super(ConstraintEvent.LINEAR, vars);
     indexOfMaximumVariable = environment.makeInt(-1);
   }
 

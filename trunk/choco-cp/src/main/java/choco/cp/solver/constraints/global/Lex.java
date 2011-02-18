@@ -33,6 +33,7 @@ import choco.kernel.memory.IStateBool;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
@@ -53,7 +54,7 @@ public final class Lex extends AbstractLargeIntSConstraint {
 
 	// two vectors of same size n vars = [.. v1 ..,.. v2 ..]
 	public Lex(IntDomainVar[] vars, int n, boolean strict, IEnvironment environment) {
-		super(vars);
+		super(ConstraintEvent.LINEAR, vars);
 		x = new IntDomainVar[n];
 		y = new IntDomainVar[n];
 		for (int i = 0; i < n; i++) {

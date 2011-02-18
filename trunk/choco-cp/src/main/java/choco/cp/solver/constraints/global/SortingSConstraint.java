@@ -30,6 +30,7 @@ package choco.cp.solver.constraints.global;
 
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.integer.IntVar;
 
@@ -75,7 +76,7 @@ public final class SortingSConstraint extends AbstractLargeIntSConstraint {
      * @param y the second array of integer variables
      */
 	public SortingSConstraint(IntDomainVar[] x, IntDomainVar[] y) {
-		super(SortingSConstraint.mergeIntVarArrays(x, y));
+		super(ConstraintEvent.LINEAR, SortingSConstraint.mergeIntVarArrays(x, y));
 		if (x.length != y.length || x.length == 0 || y.length == 0) {
 			throw new IllegalArgumentException("SortingConstraint Error: the two vectors "
 					+ "must be of the same (non zero) size");

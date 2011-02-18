@@ -42,6 +42,7 @@ import choco.kernel.solver.constraints.global.automata.fast_costregular.structur
 import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.Node;
 import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.StoredValuedDirectedMultiGraph;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.TIntArrayList;
 import gnu.trove.TIntHashSet;
@@ -79,7 +80,7 @@ public class CostRegular extends AbstractLargeIntSConstraint{
 
     private CostRegular(IntDomainVar[] vars,Solver s)
     {
-        super(vars);
+        super(ConstraintEvent.CUBIC, vars);
         this.environment = s.getEnvironment();
         this.solver = s;
         this.vs = new IntDomainVar[vars.length-1];

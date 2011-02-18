@@ -33,6 +33,7 @@ import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.IStateIntVector;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.text.MessageFormat;
@@ -88,7 +89,7 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
      * @param nbRight number of right nodes, domain values of vars
      */
 	public AbstractBipartiteGraph(IEnvironment environment, IntDomainVar[] vars, int nbLeft, int nbRight) {
-		super(vars);
+		super(ConstraintEvent.CUBIC, vars);
 		init(environment, nbLeft, nbRight);
 	}
 //

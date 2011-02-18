@@ -33,6 +33,7 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.propagation.listener.TaskPropagator;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
@@ -59,7 +60,7 @@ public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstrain
 
 	
 	public AbstractTaskSConstraint(final TaskVar[] taskvars, final IntDomainVar[] intvars, final IntDomainVar... otherVars) {
-		super(makeIntVarArray(taskvars, intvars, otherVars));
+		super(ConstraintEvent.LINEAR, makeIntVarArray(taskvars, intvars, otherVars));
 		this.taskvars = taskvars;
 		startOffset = getNbTasks();
 		endOffset = 2 * startOffset;

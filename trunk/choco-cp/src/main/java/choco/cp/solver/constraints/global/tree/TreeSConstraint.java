@@ -36,6 +36,7 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.logging.Level;
@@ -102,7 +103,7 @@ public final class TreeSConstraint extends AbstractLargeIntSConstraint {
      */
     public TreeSConstraint(IntDomainVar[] allVars, TreeParameters tree){
         // allVars = ntree, nproper, ojectif, s[nbNodes], o[nbNodes], d[nbNodes], p[nbNodes] ==> |allVars| = (4*n)+3
-        super(allVars);
+        super(ConstraintEvent.VERY_SLOW, allVars);
         this.tree = tree;
     }
 

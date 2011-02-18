@@ -40,8 +40,8 @@ public class ConstraintEvent implements PropagationEvent {
     public final static int BINARY = _value++;
     public final static int TERNARY = _value++;
     public final static int LINEAR = _value++;
-    public final static int CUBIC = _value++;
     public final static int QUADRATIC = _value++;
+    public final static int CUBIC = _value++;
     public final static int VERY_SLOW = _value++;
     public final static int NB_PRIORITY = _value;
 

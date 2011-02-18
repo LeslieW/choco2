@@ -32,6 +32,7 @@ import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateIntVector;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.TLongIntHashMap;
 
@@ -89,7 +90,7 @@ public final class ClauseStore extends AbstractLargeIntSConstraint {
     }
 
     public ClauseStore(IntDomainVar[] vars, ArrayList<WLClause> listclause, Lits voc, IEnvironment environment) {
-        super(vars);
+        super(ConstraintEvent.QUADRATIC, vars);
         this.environment = environment;
         this.voc = voc;
         this.listclause = listclause;

@@ -30,6 +30,7 @@ package choco.cp.solver.constraints.global;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomain;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.TIntArrayList;
@@ -77,7 +78,7 @@ public final class AtMostNValue extends AbstractLargeIntSConstraint {
 	}
 
 	public AtMostNValue(final IntDomainVar[] vars, final IntDomainVar nvalue) {
-		super(makeVarTable(vars, nvalue));
+		super(ConstraintEvent.QUADRATIC, makeVarTable(vars, nvalue));
 		int toffset = Integer.MAX_VALUE;
 		int tsize = 0;
 		for (final IntDomainVar v : vars) {

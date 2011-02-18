@@ -31,6 +31,7 @@ import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
@@ -102,7 +103,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
                        IntDomainVar[] card,
                        int firstCardValue,
                        int lastCardValue, IEnvironment environment) {
-        super(makeVarTable(vars, card));
+        super(ConstraintEvent.LINEAR, makeVarTable(vars, card));
         this.card = card;
         build(vars.length, firstCardValue, lastCardValue, environment);
     }

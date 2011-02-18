@@ -34,6 +34,7 @@ import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.integer.IntVar;
 
@@ -89,7 +90,7 @@ public final class LeximinSConstraint extends AbstractLargeIntSConstraint {
      * @param environment
      */
 	public LeximinSConstraint(IntVar[] x, IntVar[] y, IEnvironment environment) {
-		super(LeximinSConstraint.mergeIntVarArrays(x, y));
+		super(ConstraintEvent.LINEAR, LeximinSConstraint.mergeIntVarArrays(x, y));
 		if (x.length != y.length || x.length == 0 || y.length == 0) {
 			throw new IllegalArgumentException("LeximinConstraint Error: the two vectors "
 					+ "must be of the same (non zero) size");
@@ -112,7 +113,7 @@ public final class LeximinSConstraint extends AbstractLargeIntSConstraint {
      * @param environment
 	 */
 	public LeximinSConstraint(IntDomainVar[] x, IEnvironment environment) {
-		super(x);
+		super(ConstraintEvent.LINEAR, x);
 		if (x.length % 2 != 0 || x.length == 0) {
 			throw new IllegalArgumentException("LeximinConstraint Error: the two vectors "
 					+ "must be of the same (non zero) size");
