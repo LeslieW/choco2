@@ -48,17 +48,17 @@ public final class MetaConstraint<E extends Constraint> extends AbstractConstrai
 
     public MetaConstraint(final ConstraintType type, final E... constraints) {
         super(type, EMPTY_ARRAY);
-        this.constraints = constraints;
+        this.constraints = constraints.clone();
     }
 
     public MetaConstraint(final Class metaManager, final E... constraints) {
         super(metaManager.getName(),EMPTY_ARRAY);
-        this.constraints = constraints;
+        this.constraints = constraints.clone();
     }
 
     public MetaConstraint(final String metaManager, final E... constraints) {
         super(metaManager,EMPTY_ARRAY);
-        this.constraints = constraints;
+        this.constraints = constraints.clone();
     }
 
     public E[] getConstraints() {

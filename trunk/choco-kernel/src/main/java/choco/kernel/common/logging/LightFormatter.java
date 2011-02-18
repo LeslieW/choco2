@@ -42,8 +42,7 @@ abstract class AbstractFormatter extends Formatter {
 
 	// Line separator string.  This is the value of the line.separator
 	// property at the moment that the SimpleFormatter was created.
-	protected static final String lineSeparator = (String) java.security.AccessController.doPrivileged(
-			new sun.security.action.GetPropertyAction("line.separator"));
+	protected static final String lineSeparator =(String) System.getProperty("line.separator");
 	
 	protected final void setWarningSign(LogRecord record, StringBuilder buffer) {
 		if(record.getLevel().intValue()> Level.INFO.intValue()) {

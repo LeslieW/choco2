@@ -27,8 +27,13 @@
 
 package choco.model.constraints;
 
+import choco.Choco;
+import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.model.Model;
+import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Configuration;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
@@ -55,7 +60,7 @@ public class ConstraintTest {
     /**
      * John Horan bug on PartiallyStoredVector#staticRemove(int idx)
      */
-    public void eraseConstraintTest(){
+    public void eraseConstraintTest() {
         Solver s = new CPSolver();
         IntDomainVar v = s.createEnumIntVar("v", 0, 3);
         SConstraint c1 = s.lt(v, 1);
@@ -66,15 +71,15 @@ public class ConstraintTest {
         s.postCut(c3);
         s.eraseConstraint(c2);
         s.eraseConstraint(c3);
-        try{
+        try {
             LOGGER.info(s.pretty());
-        }catch (Exception e){
+        } catch (Exception e) {
             Assert.fail();
         }
     }
 
 
-    private static final class MockConstraint extends AbstractSConstraint{
+    private static final class MockConstraint extends AbstractSConstraint {
 
         StringBuilder st;
         String name;
@@ -107,19 +112,19 @@ public class ConstraintTest {
     }
 
 
-    private static void orderTest(int order, String expected){
+    private static void orderTest(int order, String expected) {
         Configuration conf = new Configuration();
         conf.putInt(Configuration.CEQ_ORDER, order);
 
         Solver s = new CPSolver(conf);
         StringBuilder st = new StringBuilder();
-        s.post(new MockConstraint("U",st, ConstraintEvent.UNARY));
-        s.post(new MockConstraint("B",st, ConstraintEvent.BINARY));
-        s.post(new MockConstraint("T",st, ConstraintEvent.TERNARY));
-        s.post(new MockConstraint("L",st, ConstraintEvent.LINEAR));
-        s.post(new MockConstraint("C",st, ConstraintEvent.CUBIC));
-        s.post(new MockConstraint("Q",st, ConstraintEvent.QUADRATIC));
-        s.post(new MockConstraint("S",st, ConstraintEvent.VERY_SLOW));
+        s.post(new MockConstraint("U", st, ConstraintEvent.UNARY));
+        s.post(new MockConstraint("B", st, ConstraintEvent.BINARY));
+        s.post(new MockConstraint("T", st, ConstraintEvent.TERNARY));
+        s.post(new MockConstraint("L", st, ConstraintEvent.LINEAR));
+        s.post(new MockConstraint("C", st, ConstraintEvent.CUBIC));
+        s.post(new MockConstraint("Q", st, ConstraintEvent.QUADRATIC));
+        s.post(new MockConstraint("S", st, ConstraintEvent.VERY_SLOW));
 
         try {
             s.propagate();
@@ -132,11 +137,70 @@ public class ConstraintTest {
     }
 
     @Test
-    public void test1(){
+    public void test1() {
         orderTest(1234567, "UBTLCQS");
         orderTest(7654321, "SQCLTBU");
         orderTest(3214765, "TBULSQC");
         orderTest(1111777, "LTBUSQC");
         orderTest(7777777, "SQCLTBU");
     }
+
+    @Test
+    public void stynesTest1() {
+        Model m = new CPModel();
+        IntegerVariable x = Choco.makeIntVar("X", 0, 5);
+        IntegerVariable y = Choco.makeIntVar("Y", 0, 5);
+
+        Constraint[] constraints = new Constraint[2];
+
+        constraints[0] = Choco.geq( x, 0);
+        constraints[1] = Choco.eq(x, 3);
+        m.addConstraint( Choco.ifOnlyIf( Choco.eq(y, 1), Choco.and(constraints) )  );
+        // this modification must not be taken into account
+        constraints[1] = Choco.eq(x, 4);
+
+        m.addConstraint(Choco.eq(y,1));
+        Solver s = new CPSolver();
+        s.read(m);
+        s.solveAll();
+        Assert.assertEquals(s.getSolutionCount(), 1);
+        Assert.assertEquals(s.getVar(x).getVal(), 3);
+
+    }
+
+    @Test
+    public void stynesTest2() {
+        Model m = new CPModel();
+        IntegerVariable x = Choco.makeIntVar("X", 0, 5);
+        IntegerVariable y = Choco.makeIntVar("Y", 0, 5);
+
+        Constraint[] constraints = new Constraint[2];
+        postRecursiveConstraint(constraints, m, x, y, 1, 0);
+
+        m.addConstraint(Choco.eq(y,1));
+
+        Solver s = new CPSolver();
+        s.read(m);
+        s.solveAll();
+        Assert.assertEquals(s.getSolutionCount(), 1);
+        Assert.assertEquals(s.getVar(x).getVal(), 3);
+        Assert.assertEquals(s.getVar(y).getVal(), 1);
+    }
+
+    private void postRecursiveConstraint(Constraint[] constraints, Model m, IntegerVariable x, IntegerVariable y, int yValue, int position){
+
+        if (position == 1){
+
+            Constraint andConstraint = Choco.and(constraints);
+            m.addConstraint(
+                    Choco.ifOnlyIf(Choco.eq(y, yValue), andConstraint));
+        } else{
+            constraints[position] = Choco.geq(x, 0);
+            constraints[position + 1] = Choco.eq(x, 3);
+            postRecursiveConstraint(constraints, m, x, y, 1, 1);
+            constraints[position + 1] = Choco.eq(x, 4);
+            postRecursiveConstraint(constraints, m, x, y, 2, 1);
+        }
+    }
+
 }
