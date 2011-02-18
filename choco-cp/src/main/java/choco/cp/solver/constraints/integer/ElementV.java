@@ -35,6 +35,7 @@ import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBool;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -47,7 +48,7 @@ public final class ElementV extends AbstractLargeIntSConstraint {
     private int offset;
 
     public ElementV(IntDomainVar[] vars, int offset, IEnvironment environment) {
-    super(vars);
+    super(ConstraintEvent.QUADRATIC, vars);
     this.offset = offset;
     initElementV(environment);
   }

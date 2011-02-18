@@ -45,6 +45,7 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.HashMap;
@@ -87,7 +88,7 @@ public final class Geost_Constraint extends AbstractLargeIntSConstraint {
                             boolean increment_, Solver solver)
 	{
 
-        super(vars);
+        super(ConstraintEvent.VERY_SLOW, vars);
 
         cst = new Constants();
 		stp = new Setup(cst, solver.getPropagationEngine(), this);
@@ -130,7 +131,7 @@ public final class Geost_Constraint extends AbstractLargeIntSConstraint {
 
 	public Geost_Constraint(IntDomainVar[] vars, int k, List<Obj> objects, List<ShiftedBox> shiftedBoxes, List<ExternalConstraint> ectr, boolean memo, HashMap<Pair<Integer, Integer>, Boolean> included, Solver solver)
 	{
-        super(vars);
+        super(ConstraintEvent.VERY_SLOW, vars);
 
         cst = new Constants();
 		stp = new Setup(cst, solver.getPropagationEngine(), this);

@@ -32,6 +32,7 @@ import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 public final class BoundAllDiff extends AbstractLargeIntSConstraint {
@@ -52,7 +53,7 @@ public final class BoundAllDiff extends AbstractLargeIntSConstraint {
     boolean supBoundModified = true;
 
     public BoundAllDiff(IntDomainVar[] vars, boolean global) {
-        super(vars);
+        super(ConstraintEvent.LINEAR,vars);
         int n = this.getNbVars();
         if (!global) {
             PROPAGATE_ON_BOUNDS = false;

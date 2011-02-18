@@ -32,6 +32,7 @@ import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.logging.Level;
@@ -74,7 +75,7 @@ public final class SemiLeximinSConstraint extends AbstractLargeIntSConstraint {
      * @param environment
      */
     public SemiLeximinSConstraint(int[] x, IntDomainVar[] y, IEnvironment environment) {
-        super(y);
+        super(ConstraintEvent.LINEAR, y);
         if (x.length != y.length || x.length == 0 || y.length == 0) {
             throw new IllegalArgumentException("LeximinConstraint Error: the two vectors "
                     + "must be of the same (non zero) size");

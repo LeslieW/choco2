@@ -35,6 +35,7 @@ import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
@@ -72,7 +73,7 @@ public final class DomainChanneling extends AbstractLargeIntSConstraint {
      * @param environment
      */
 	public DomainChanneling(IntDomainVar[] yij, IntDomainVar xi, IEnvironment environment) {
-		super(ArrayUtils.append(yij, new IntDomainVar[]{xi}));    	
+		super(ConstraintEvent.LINEAR, ArrayUtils.append(yij, new IntDomainVar[]{xi}));
 		this.dsize = yij.length;        
 		oldinf = environment.makeInt();
 		oldsup = environment.makeInt();

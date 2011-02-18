@@ -35,6 +35,7 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
@@ -94,7 +95,7 @@ public final class IntLinComb extends AbstractLargeIntSConstraint {
     public IntLinComb(final IntDomainVar[] lvars, final int[] lcoeffs,
                       final int nbPositive, final int c, final int linOperator) {
         // create the appropriate data structure
-        super(lvars);
+        super(priority(lvars.length),lvars);
         this.nbPosVars = nbPositive;
         switch (linOperator) {
             case EQ:
@@ -113,6 +114,21 @@ public final class IntLinComb extends AbstractLargeIntSConstraint {
                 intlincomb = null;
         }
     }
+
+    private static int priority(int nbVars){
+        switch (nbVars){
+            case 0:
+            case 1:
+                return ConstraintEvent.UNARY;
+            case 2:
+                return ConstraintEvent.BINARY;
+            case 3:
+                return ConstraintEvent.TERNARY;
+            default:
+                return ConstraintEvent.LINEAR;
+        }
+    }
+
 
     public int getFilteredEventMask(int idx) {
         return IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK;

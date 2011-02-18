@@ -34,6 +34,7 @@ import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 public final class Occurrence extends AbstractLargeIntSConstraint {
@@ -73,7 +74,7 @@ public final class Occurrence extends AbstractLargeIntSConstraint {
      * @param environment
      */
     public Occurrence(IntDomainVar[] vars, int occval, boolean onInf, boolean onSup, IEnvironment environment) {
-        super(vars);
+        super(ConstraintEvent.LINEAR, vars);
         init(occval, onInf, onSup, environment);
     }
 

@@ -30,6 +30,7 @@ package choco.cp.solver.constraints.global;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.TIntHashSet;
 
@@ -76,7 +77,7 @@ public final class IncreasingNValue extends AbstractLargeIntSConstraint {
     }
 
     public IncreasingNValue(final IntDomainVar occ, final IntDomainVar[] x, final Mode m) {
-        super(concat(occ, x));
+        super(ConstraintEvent.LINEAR, concat(occ, x));
         this.x = x;
         this.n = x.length;
         this.occ = occ;

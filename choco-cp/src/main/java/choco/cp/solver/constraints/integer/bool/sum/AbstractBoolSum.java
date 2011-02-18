@@ -31,6 +31,7 @@ import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
@@ -41,7 +42,7 @@ public class AbstractBoolSum extends AbstractLargeIntSConstraint {
 	protected final BoolSumStructure boolSumS;
 
 	public AbstractBoolSum(IEnvironment environment, IntDomainVar[] vars, int bValue) {
-		super(vars);
+		super(ConstraintEvent.LINEAR, vars);
 		this.boolSumS = new BoolSumStructure(environment, this, vars, bValue);
 	}
 

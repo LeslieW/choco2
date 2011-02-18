@@ -31,6 +31,7 @@ package choco.cp.solver.constraints.integer;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 public final class InverseChanneling extends AbstractLargeIntSConstraint {
@@ -44,7 +45,7 @@ public final class InverseChanneling extends AbstractLargeIntSConstraint {
    * It is used to maintain both model on permutation problems
    */
   public InverseChanneling(IntDomainVar[] allVars, int n) {
-    super(allVars);
+    super(ConstraintEvent.CUBIC, allVars);
     this.min = allVars[0].getInf();
     this.n = n;
   }

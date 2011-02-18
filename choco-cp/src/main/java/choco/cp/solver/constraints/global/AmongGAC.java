@@ -35,6 +35,7 @@ import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.TIntArrayList;
 
@@ -72,7 +73,7 @@ public final class AmongGAC extends AbstractLargeIntSConstraint {
      * @param environment
      */
     public AmongGAC(IntDomainVar[] vars, int[] values, IEnvironment environment) {
-        super(vars);
+        super(ConstraintEvent.QUADRATIC, vars);
         nb_vars = vars.length - 1;
         this.values = values;
         this.valuesAsList = new TIntArrayList(values);

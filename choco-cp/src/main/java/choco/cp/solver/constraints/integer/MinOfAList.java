@@ -32,6 +32,7 @@ import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
@@ -53,7 +54,7 @@ public final class MinOfAList extends AbstractLargeIntSConstraint {
   protected final IStateInt indexOfMinimumVariable;
 
   public MinOfAList(IEnvironment environment, final IntDomainVar[] vars) {
-    super(vars);
+    super(ConstraintEvent.QUADRATIC, vars);
     indexOfMinimumVariable = environment.makeInt(-1);
   }
 

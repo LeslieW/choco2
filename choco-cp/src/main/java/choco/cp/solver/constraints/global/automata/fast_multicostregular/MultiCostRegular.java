@@ -45,6 +45,7 @@ import choco.kernel.solver.constraints.global.automata.fast_multicostregular.str
 import choco.kernel.solver.constraints.global.automata.fast_multicostregular.structure.Node;
 import choco.kernel.solver.constraints.global.automata.fast_multicostregular.structure.StoredDirectedMultiGraph;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.TIntHashSet;
 import gnu.trove.TIntIterator;
@@ -206,7 +207,7 @@ private boolean computed;
 
 private MultiCostRegular(final IntDomainVar[] vars, final IntDomainVar[] counterVars, final Solver solver)
 {
-        super(ArrayUtils.<IntDomainVar>append(vars,counterVars));
+        super(ConstraintEvent.VERY_SLOW, ArrayUtils.<IntDomainVar>append(vars,counterVars));
         this.environment = solver.getEnvironment();
         this.solver= solver;
         this.vs = vars;

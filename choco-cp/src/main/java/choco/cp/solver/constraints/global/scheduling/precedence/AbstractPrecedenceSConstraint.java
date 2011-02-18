@@ -32,6 +32,7 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.model.constraints.ITemporalRelation;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 
@@ -45,7 +46,7 @@ implements ITemporalRelation<TaskVar<?>, IntDomainVar> {
 	protected int k1, k2;
 
 	public AbstractPrecedenceSConstraint(IntDomainVar[] vars) {
-		super(vars);
+		super(ConstraintEvent.LINEAR, vars);
 	}
 
 	@Override

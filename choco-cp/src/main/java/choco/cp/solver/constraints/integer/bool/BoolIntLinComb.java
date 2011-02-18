@@ -38,6 +38,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
@@ -125,6 +126,7 @@ public final class BoolIntLinComb extends AbstractLargeIntSConstraint {
      * - op belongs to EQ, GT, NEQ and LEQ
      */
     public BoolIntLinComb(IEnvironment environment, IntDomainVar[] vs, int[] coefs, IntDomainVar c, int objcoef, int scste, int op) {
+//        super(priority(vs.length), makeTableVar(vs, c));
         super(makeTableVar(vs, c));
         this.sCoeffs = coefs;
         this.op = op;
@@ -150,6 +152,20 @@ public final class BoolIntLinComb extends AbstractLargeIntSConstraint {
             rmemb = new SimpleRightMemberBounds();
         } else {
             rmemb = new RightMemberBounds();
+        }
+    }
+
+    private static int priority(int nbVars){
+        switch (nbVars){
+            case 0:
+            case 1:
+                return ConstraintEvent.UNARY;
+            case 2:
+                return ConstraintEvent.BINARY;
+            case 3:
+                return ConstraintEvent.TERNARY;
+            default:
+                return ConstraintEvent.LINEAR;
         }
     }
 

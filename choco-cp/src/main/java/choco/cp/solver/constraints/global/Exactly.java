@@ -30,6 +30,7 @@ package choco.cp.solver.constraints.global;
 import choco.kernel.common.util.objects.Pair;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.ArrayList;
@@ -72,7 +73,7 @@ public final class Exactly extends AbstractLargeIntSConstraint {
      */
     @SuppressWarnings({"unchecked"})
     public Exactly(IntDomainVar[] vars, int N, int value) {
-        super(vars);
+        super(ConstraintEvent.LINEAR, vars);
         nb_vars = vars.length;
         this.value = value;
         this.N = N;

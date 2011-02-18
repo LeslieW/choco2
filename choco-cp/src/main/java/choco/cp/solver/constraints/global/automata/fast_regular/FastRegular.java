@@ -38,6 +38,7 @@ import choco.kernel.solver.constraints.global.automata.fast_regular.structure.Ar
 import choco.kernel.solver.constraints.global.automata.fast_regular.structure.Node;
 import choco.kernel.solver.constraints.global.automata.fast_regular.structure.StoredDirectedMultiGraph;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.TIntHashSet;
 import gnu.trove.TIntIterator;
@@ -69,7 +70,7 @@ public class FastRegular extends AbstractLargeIntSConstraint {
      * @param auto An automaton forming a regular languauge
      */
     public FastRegular(IEnvironment environment, IntDomainVar[] vars, IAutomaton auto) {
-        super(vars);
+        super(ConstraintEvent.LINEAR, vars);
 
         int aid = 0;
         int nid = 0;
