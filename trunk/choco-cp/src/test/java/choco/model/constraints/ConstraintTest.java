@@ -122,8 +122,8 @@ public class ConstraintTest {
         s.post(new MockConstraint("B", st, ConstraintEvent.BINARY));
         s.post(new MockConstraint("T", st, ConstraintEvent.TERNARY));
         s.post(new MockConstraint("L", st, ConstraintEvent.LINEAR));
-        s.post(new MockConstraint("C", st, ConstraintEvent.CUBIC));
         s.post(new MockConstraint("Q", st, ConstraintEvent.QUADRATIC));
+        s.post(new MockConstraint("C", st, ConstraintEvent.CUBIC));
         s.post(new MockConstraint("S", st, ConstraintEvent.VERY_SLOW));
 
         try {
@@ -138,11 +138,11 @@ public class ConstraintTest {
 
     @Test
     public void test1() {
-        orderTest(1234567, "UBTLCQS");
-        orderTest(7654321, "SQCLTBU");
-        orderTest(3214765, "TBULSQC");
-        orderTest(1111777, "LTBUSQC");
-        orderTest(7777777, "SQCLTBU");
+        orderTest(1234567, "UBTLQCS");
+        orderTest(7654321, "SCQLTBU");
+        orderTest(3214765, "TBULSCQ");
+        orderTest(1111777, "LTBUSCQ");
+        orderTest(7777777, "SCQLTBU");
     }
 
     @Test
@@ -187,7 +187,7 @@ public class ConstraintTest {
         Assert.assertEquals(s.getVar(y).getVal(), 1);
     }
 
-    private void postRecursiveConstraint(Constraint[] constraints, Model m, IntegerVariable x, IntegerVariable y, int yValue, int position){
+    private static void postRecursiveConstraint(Constraint[] constraints, Model m, IntegerVariable x, IntegerVariable y, int yValue, int position){
 
         if (position == 1){
 
