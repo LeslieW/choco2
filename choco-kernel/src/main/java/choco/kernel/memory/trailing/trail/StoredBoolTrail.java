@@ -105,8 +105,12 @@ public final class StoredBoolTrail implements ITrailStorage {
 		worldStartLevels = new int[nWorlds];
 	}
 
+    @Override
+    public void clear() {
+		currentLevel = 0;
+    }
 
-	/**
+    /**
 	 * Moving up to the next world.
 	 */
 

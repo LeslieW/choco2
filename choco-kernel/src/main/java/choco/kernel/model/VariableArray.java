@@ -27,9 +27,6 @@
 
 package choco.kernel.model;
 
-import java.io.Serializable;
-import java.util.Iterator;
-
 import choco.Choco;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.common.util.tools.ArrayUtils;
@@ -37,6 +34,9 @@ import choco.kernel.common.util.tools.IteratorUtils;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Variable;
+
+import java.io.Serializable;
+import java.util.Iterator;
 
 public class VariableArray implements IVariableArray, Serializable {
 
@@ -54,7 +54,7 @@ public class VariableArray implements IVariableArray, Serializable {
 
 	public VariableArray(final Variable[] variables) {
 		super();
-		this.variables = variables;
+		this.variables = variables.clone();
 	}
 
 	@Override

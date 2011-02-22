@@ -75,6 +75,11 @@ public interface IEnvironment {
     void worldCommit();
 
     /**
+     * Clear the entire internal structures
+     */
+    void clear();
+
+    /**
      * Factory pattern: new IStateInt objects are created by the environment
      * (no initial value is assigned to the backtrackable search)
      * @return new IStateInt computed by the environment

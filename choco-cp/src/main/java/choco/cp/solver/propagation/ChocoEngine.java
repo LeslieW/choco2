@@ -82,8 +82,8 @@ public class ChocoEngine extends AbstractPropagationEngine {
     private ArrayList<PropagationEvent> freeze;
     private int nbFrozenVE;
 
-    private final int[] v_order;
-    private final int[] c_order;
+    private int[] v_order;
+    private int[] c_order;
 
     /**
      * Constructs a new engine by initializing the var queues.
@@ -92,9 +92,7 @@ public class ChocoEngine extends AbstractPropagationEngine {
      */
     public ChocoEngine(Solver solver) {
         super(solver);
-        v_order = toInt(solver.getConfiguration().readString(Configuration.VEQ_ORDER));
-        c_order = toInt(solver.getConfiguration().readString(Configuration.CEQ_ORDER));
-
+        loadSettings(solver.getConfiguration());
         constEventQueues = new ConstraintEventQueue[ConstraintEvent.NB_PRIORITY];
         for (int i = 1; i < ConstraintEvent.NB_PRIORITY; i++) {
             constEventQueues[i] = new ConstraintEventQueue(this);
@@ -115,6 +113,12 @@ public class ChocoEngine extends AbstractPropagationEngine {
         return values;
     }
 
+    public void loadSettings(Configuration configuration){
+        v_order = toInt(configuration.readString(Configuration.VEQ_ORDER));
+        c_order = toInt(configuration.readString(Configuration.CEQ_ORDER));
+    }
+
+
     //****************************************************************************************************************//
     //****************************************************************************************************************//
     //****************************************************************************************************************//
@@ -123,19 +127,22 @@ public class ChocoEngine extends AbstractPropagationEngine {
      * Clear datastructures for safe reuses
      */
     public void clear() {
-        int idx;
-        while (v_active > 0) {
-            idx = indice[v_active];
-            this.varEventQueue[idx].clear();
-            v_active -= 1 << idx;
+        super.clear();
+        for (int i = 1; i < varEventQueue.length; i++) {
+            this.varEventQueue[i].clear();
+        }
+        v_active = 0;
+
+        for (int i = 1; i < constEventQueues.length; i++) {
+            this.constEventQueues[i].clear();
+        }
+        c_active = 0;
+        nbPendingInitConstAwakeEvent = 0;
+        if (freeze != null) {
+            freeze.clear();
         }
 
-        while (c_active > 0) {
-            idx = indice[c_active];
-            this.constEventQueues[idx].clear();
-            c_active -= 1 << idx;
-        }
-        nbPendingInitConstAwakeEvent = 0;
+        nbFrozenVE = 0;
     }
 
     /**

@@ -107,6 +107,8 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 
 	public AbstractSearchLoop searchLoop;
 
+    protected long initialPropagation;
+
 	protected AbstractGlobalSearchStrategy(Solver solver) {
 		super(solver);
 		traceStack = new IntBranchingTrace[solver.getNbIntVars() + solver.getNbSetVars()];
@@ -198,10 +200,12 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 		try {
 			newTreeSearch();
 			//initializeDegreeOfVariables();
+            long timer = -System.currentTimeMillis();
 			solver.propagate();
 			//System.out.println(solver.pretty());
-			advancedInitialPropagation();
-			newFeasibleRootState();
+            advancedInitialPropagation();
+            initialPropagation = System.currentTimeMillis() + timer;
+            newFeasibleRootState();
 		} catch (ContradictionException e) {
 			solver.setFeasible(Boolean.FALSE);
 		}

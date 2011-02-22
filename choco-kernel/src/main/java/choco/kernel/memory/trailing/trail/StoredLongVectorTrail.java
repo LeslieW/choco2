@@ -108,6 +108,10 @@ public class StoredLongVectorTrail implements ITrailStorage
 		this.worldStartLevels = new int[nWorlds];
 	}
 
+    @Override
+    public void clear() {
+		currentLevel = 0;
+    }
 
 	/**
 	 * Reacts on the modification of an element in a stored search vector.

@@ -65,6 +65,11 @@ public final class RcSave implements RecomputableElement {
     public RcSave(EnvironmentCopying env) {
         lastSavedWorldIndex = env.getWorldIndex();
 
+        clear();
+    }
+
+    public void clear(){
+
         saveInt.clear();
         saveVector.clear();
         saveIntVector.clear();
@@ -73,7 +78,6 @@ public final class RcSave implements RecomputableElement {
         saveDouble.clear();
         saveObject.clear();
     }
-
 
     public void save(int worldIndex) {
         if (lastSavedWorldIndex >= worldIndex)

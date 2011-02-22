@@ -27,9 +27,9 @@
 
 package choco.kernel.memory.trailing.trail;
 
-import java.util.logging.Logger;
-
 import choco.kernel.common.logging.ChocoLogging;
+
+import java.util.logging.Logger;
 
 /**
  * An interface for classes implementing trails of modifications to objects.
@@ -87,6 +87,6 @@ public interface ITrailStorage {
 	 */
 	public void resizeWorldCapacity(int newWorldCapacity);
 
-
+    public void clear();
 }
 

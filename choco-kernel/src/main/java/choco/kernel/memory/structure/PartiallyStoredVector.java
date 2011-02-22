@@ -27,7 +27,6 @@
 
 package choco.kernel.memory.structure;
 
-import static choco.kernel.common.Constant.*;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.IEnvironment;
@@ -37,6 +36,8 @@ import choco.kernel.memory.structure.iterators.PSVIndexIterator;
 import choco.kernel.memory.structure.iterators.PSVIterator;
 
 import java.util.Arrays;
+
+import static choco.kernel.common.Constant.*;
 
 /**
  * A class implementing a vector with two kind of storage:
@@ -142,7 +143,7 @@ public final class PartiallyStoredVector<E> {
      *
      * @param idx
      */
-    void staticRemove(final int idx) {
+    void staticRemove(int idx) {
         staticObjects[idx] = null;
         if (idx == nStaticObjects - 1) {
             while (staticObjects[nStaticObjects] == null && nStaticObjects > 0) {
@@ -150,6 +151,18 @@ public final class PartiallyStoredVector<E> {
             }
             if (staticObjects[nStaticObjects] != null) {
                 nStaticObjects++;
+            }
+        }
+    }
+
+    void storedRemove(int idx) {
+        storedObjects[idx] = null;
+        if (idx == nStoredObjects.get() - 1) {
+            while (storedObjects[nStoredObjects.get()] == null && nStoredObjects.get() > 0) {
+                nStoredObjects.add(-1);
+            }
+            if (storedObjects[nStoredObjects.get()] != null) {
+                nStoredObjects.add(1);
             }
         }
     }
@@ -171,6 +184,19 @@ public final class PartiallyStoredVector<E> {
                 return i;
             }
         }
+        if(nStoredObjects.getEnvironment().getWorldIndex() == 0){
+            for (int i = 0; i < nStoredObjects.get(); i++) {
+                final Object storedObject = storedObjects[i];
+                if (storedObject == o) {
+                    storedRemove(i);
+                    return i;
+                }
+            }
+        }else{
+            throw new MemoryException("impossible to remove the object (a constraint ?) from the dynamic part of the collection (root node ?)");
+        }
+
+
         throw new MemoryException("impossible to remove the object (a constraint ?) from the static part of the collection (cut manager ?)");
     }
 

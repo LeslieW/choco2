@@ -121,6 +121,15 @@ public class EnvironmentCopying extends AbstractEnvironment {
 	}
 
     @Override
+    public void clear() {
+        for(int i = NB_TYPE; --i>=0;){
+            indices[i] = 0;
+        }
+        clonedWorldIdxStack.clear();
+        save.clear();
+    }
+
+    @Override
 	public void worldCommit() {
 		//TODO
 		throw (new UnsupportedOperationException());
