@@ -101,6 +101,11 @@ public class StoredLongTrail implements ITrailStorage {
 	}
 
 
+    @Override
+    public void clear() {
+		currentLevel = 0;
+    }
+
 	/**
 	 * Moving up to the next world.
 	 */

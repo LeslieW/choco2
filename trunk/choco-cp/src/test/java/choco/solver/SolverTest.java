@@ -27,9 +27,10 @@
 
 package choco.solver;
 
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.constraints.integer.GreaterOrEqualXC;
+import choco.cp.solver.constraints.integer.LessOrEqualXC;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.memory.MemoryException;
@@ -40,14 +41,14 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetVar;
-import org.junit.After;
-import static org.junit.Assert.assertEquals;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 
-import static java.text.MessageFormat.format;
+import java.io.IOException;
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
+import static java.text.MessageFormat.format;
+import static org.junit.Assert.assertEquals;
 
 /*
  * User : charles
@@ -194,6 +195,50 @@ public class SolverTest {
         solver.post(c2);
         solver.eraseConstraint(c1);
         solver.eraseConstraint(c2);
+    }
+
+    @Test
+    public void test1() throws IOException {
+        // Model definition:
+        // x = [1,3]
+        // x != 2
+        Model model = new CPModel();
+        IntegerVariable X = makeIntVar("X", 1, 3);
+        model.addConstraint(neq(X, 2));
+
+        // Solver definition, based on the model
+        Solver solver = new CPSolver();
+        solver.read(model);
+
+        // push a new world, to preserve the constraint x != 2
+        solver.worldPush();
+
+        // RESOLUTIONS
+        // 1. add a new constraint on x: x >= 2
+        // 1a. get the current world index (usefull to restore this state after)
+        int wi = solver.getWorldIndex();
+        // 1b. push a new world, where the new constraint can be defined safely
+        solver.worldPush();
+        // 1c. add the new constraint to the solver (it will be removed upon backtracking)
+        solver.post(new GreaterOrEqualXC(solver.getVar(X), 2));
+        // 1d. solve the problem
+        solver.solve();
+        Assert.assertEquals(3, solver.getVar(X).getVal());
+
+
+        // 2. go back to a state where the new constraint doesn't exist anymore
+        solver.worldPopUntil(wi);
+
+        // 3. add a new constraint on x: x <= 2
+        // 3a. push a new world, where the new constraint can be defined safely
+        solver.worldPush();
+        // 3b. add the new constraint to the solver (it will be removed upon backtracking)
+        solver.post(new LessOrEqualXC(solver.getVar(X), 2));
+        // 3c. as the solver has been used once, clear the search strategies
+        solver.clearGoals();
+        // 3d. solve the problem
+        solver.solve();
+        Assert.assertEquals(1, solver.getVar(X).getVal());
     }
 
 }

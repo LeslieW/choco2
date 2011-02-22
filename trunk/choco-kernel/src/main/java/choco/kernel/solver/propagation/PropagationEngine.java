@@ -28,6 +28,7 @@
 package choco.kernel.solver.propagation;
 
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.solver.Configuration;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.listener.PropagationEngineListener;
@@ -51,6 +52,10 @@ public interface PropagationEngine {
      * @return fails counter
      */ 
 	FailMeasure getFailMeasure();
+
+    void clear();
+
+    void loadSettings(Configuration configuration);
 
     //****************************************************************************************************************//
     //*************************************** CONTRADICTION **********************************************************//

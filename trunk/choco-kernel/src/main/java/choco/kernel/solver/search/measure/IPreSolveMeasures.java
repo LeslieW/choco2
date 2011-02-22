@@ -1,5 +1,5 @@
 /**
- *  Copyright (c) 1999-2010, Ecole des Mines de Nantes
+ *  Copyright (c) 1999-2011, Ecole des Mines de Nantes
  *  All rights reserved.
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are met:
@@ -24,13 +24,17 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package choco.kernel.solver.search.measure;
 
+/**
+ * <br/>
+ *
+ * @author Charles Prud'homme
+ * @since 31/01/11
+ */
+public interface IPreSolveMeasures {
 
+    int getReadingTimeCount();
 
-
-public interface IMeasures extends IPreSolveMeasures, ISolutionMeasures, IOptimizationMeasures, ISearchMeasures {
-	
-		
+    int getInitialPropagationTimeCount();
 }

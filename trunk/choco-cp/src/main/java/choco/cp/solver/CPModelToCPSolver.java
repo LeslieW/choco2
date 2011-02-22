@@ -101,6 +101,7 @@ public class CPModelToCPSolver {
         this.setNoDecisionVar.clear();
         this.realNoDecisionVar.clear();
         this.taskNoDecisionVar.clear();
+        this.postponedConstraint.clear();
     }
     //************************************************* CONCERNING VARIABLES ***********************************************
 

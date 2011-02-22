@@ -37,7 +37,11 @@ public class MeasuresBean implements IMeasures {
 	public double objectiveRealValue = Double.POSITIVE_INFINITY;
 	
 	public boolean objectiveOptimal; 
-	
+
+    public int readingTime;
+
+    public int initialPropTime;
+
 	public int timeCount;
 	
 	public int nodeCount ;
@@ -53,6 +57,8 @@ public class MeasuresBean implements IMeasures {
 	}
 	
 	public final void reset() {
+        readingTime = 0;
+        initialPropTime = 0;
 		timeCount = 0;
 		nodeCount = 0;
 		backtrackCount = 0; 
@@ -112,7 +118,17 @@ public class MeasuresBean implements IMeasures {
 		return nodeCount;
 	}
 
-	@Override
+    @Override
+    public int getReadingTimeCount() {
+        return readingTime;
+    }
+
+    @Override
+    public int getInitialPropagationTimeCount() {
+        return initialPropTime;
+    }
+
+    @Override
 	public final int getTimeCount() {
 		return timeCount;
 	}
@@ -143,7 +159,17 @@ public class MeasuresBean implements IMeasures {
 		this.restartCount = restartCount;
 	}
 
-	public final void setTimeCount(int timeCount) {
+
+    public void setReadingTimeCount(int readingTimeCount) {
+        this.readingTime = readingTimeCount;
+    }
+
+
+    public void setInitialPropagationTimeCount(int initialPropagationTimeCount) {
+        this.initialPropTime = initialPropagationTimeCount;
+    }
+
+    public final void setTimeCount(int timeCount) {
 		this.timeCount = timeCount;
 	}
 

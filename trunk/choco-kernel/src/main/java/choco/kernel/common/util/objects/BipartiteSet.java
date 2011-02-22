@@ -30,9 +30,7 @@ package choco.kernel.common.util.objects;
 import choco.kernel.common.logging.ChocoLogging;
 import gnu.trove.TObjectIntHashMap;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -54,7 +52,8 @@ public final class BipartiteSet<E> {
      * Contains all the objects in the two parts of the set.
      */
 
-    private List<E> objects;
+    private E[] objects;
+    private int size;
 
 
     /**
@@ -69,7 +68,6 @@ public final class BipartiteSet<E> {
      */
 
     private TObjectIntHashMap<E> indices;
-    //HashMap<E,Integer> indices = new HashMap<E,Integer>();
 
 
     /**
@@ -77,8 +75,7 @@ public final class BipartiteSet<E> {
      */
 
     public BipartiteSet() {
-        this.objects = new ArrayList<E>();
-        /*this.indices = new HashMap<E,Integer>();*/
+        this.objects =(E[]) new Object[16];
         this.indices = new TObjectIntHashMap<E>();
     }
 
@@ -86,7 +83,8 @@ public final class BipartiteSet<E> {
      * Clear datastructures for safe reuses
      */
     public void clear() {
-        this.objects.clear();
+        this.size = 0;
+        this.nbLeft = 0;
         this.indices.clear();
     }
 
@@ -97,10 +95,10 @@ public final class BipartiteSet<E> {
 
     private void swap(int idx1, int idx2) {
         if (idx1 != idx2) {
-            E obj1 = objects.get(idx1);
-            E obj2 = objects.get(idx2);
-            this.objects.set(idx1, obj2);
-            this.objects.set(idx2, obj1);
+            E obj1 = objects[idx1];
+            E obj2 = objects[idx2];
+            this.objects[idx1] =  obj2;
+            this.objects[idx2] = obj1;
             this.indices.put(obj1, idx2);
             this.indices.put(obj2, idx1);
         }
@@ -148,7 +146,7 @@ public final class BipartiteSet<E> {
      */
 
     public void moveAllLeft() {
-        this.nbLeft = this.objects.size();
+        this.nbLeft = this.size;
     }
 
 
@@ -171,8 +169,18 @@ public final class BipartiteSet<E> {
                 LOGGER.logp(Level.SEVERE, "BipartiteSet", "addRight", object + "already in the set bipartite set ");
             }
         } else {
-            objects.add(object);
-            indices.put(object, objects.size() - 1);
+            ensureCapacity(size+1);
+            objects[size++] = object;
+            indices.put(object, size - 1);
+        }
+    }
+
+    @SuppressWarnings({"unchecked"})
+    private void ensureCapacity(int newSize) {
+        if(newSize>objects.length){
+            E[] tmp = objects;
+            objects = (E[]) new Object[size * 3/2 + 1];
+            System.arraycopy(tmp, 0, objects, 0, size);
         }
     }
 
@@ -226,7 +234,7 @@ public final class BipartiteSet<E> {
      */
 
     public int getNbRight() {
-        return (this.objects.size() - this.nbLeft);
+        return (this.size - this.nbLeft);
     }
 
 
@@ -235,7 +243,7 @@ public final class BipartiteSet<E> {
      */
 
     public int getNbObjects() {
-        return this.objects.size();
+        return this.size;
     }
 
 
@@ -249,7 +257,7 @@ public final class BipartiteSet<E> {
         // Autant eviter d'appeler la fonction de hachage pour popper le
         // dernier evenement !
         if (this.nbLeft > 0) {
-            return this.objects.get(--this.nbLeft);
+            return this.objects[--this.nbLeft];
         } else {
             return null;
         }
@@ -273,7 +281,7 @@ public final class BipartiteSet<E> {
         }
 
         public E next() {
-            return objects.get(cursor++);
+            return objects[cursor++];
         }
 
         public void remove() {
@@ -294,11 +302,11 @@ public final class BipartiteSet<E> {
         private int cursor = nbLeft;
 
         public boolean hasNext() {
-            return cursor != objects.size();
+            return cursor != size;
         }
 
         public E next() {
-            return objects.get(cursor++);
+            return objects[cursor++];
         }
 
         public void remove() {

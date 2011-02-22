@@ -145,7 +145,20 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 		currentWorld--;
 	}
 
-	@Override
+    @Override
+    public void clear() {
+        boolTrail.clear();
+		intTrail.clear();
+		vectorTrail.clear();
+		intVectorTrail.clear();
+		longVectorTrail.clear();
+		doubleVectorTrail.clear();
+		doubleTrail.clear();
+		longTrail.clear();
+		btreeTrail.clear();
+    }
+
+    @Override
 	public IStateInt makeInt() {
 		return makeInt(0);
 	}

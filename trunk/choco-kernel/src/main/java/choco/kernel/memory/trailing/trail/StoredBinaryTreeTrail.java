@@ -68,6 +68,10 @@ public class StoredBinaryTreeTrail implements ITrailStorage {
 		this.maxHist = maxHist;
 	}
 	
+    @Override
+    public void clear() {
+		currentLevel = 0;
+    }
 
 
 	public void stack(IStateBinaryTree b, IStateBinaryTree.Node n, int operation)

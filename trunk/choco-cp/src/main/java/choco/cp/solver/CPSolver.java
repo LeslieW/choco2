@@ -45,7 +45,6 @@ import choco.cp.solver.constraints.real.MixedEqXY;
 import choco.cp.solver.constraints.real.exp.*;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
 import choco.cp.solver.constraints.reified.ReifiedFactory;
-import choco.cp.solver.constraints.set.Disjoint;
 import choco.cp.solver.constraints.set.*;
 import choco.cp.solver.goals.GoalSearchSolver;
 import choco.cp.solver.propagation.ChocoEngine;
@@ -261,7 +260,7 @@ public class CPSolver implements Solver {
     /**
      * The object controlling the global search exploration
      */
-    private AbstractGlobalSearchStrategy strategy;
+    protected AbstractGlobalSearchStrategy strategy;
 
     /**
      * Variable selector for integer
@@ -314,7 +313,7 @@ public class CPSolver implements Solver {
     /**
      * Temporary attached goal for the future generated strategy.
      */
-    private AbstractIntBranchingStrategy tempGoal;
+    protected AbstractIntBranchingStrategy tempGoal;
     /**
      * Another way to define search is by using the api similar to ilog on
      * search goals.
@@ -322,6 +321,8 @@ public class CPSolver implements Solver {
     private Goal ilogGoal = null;
 
     protected final Configuration configuration;
+
+    protected long readingTime;
 
     public CPSolver() {
         this(new EnvironmentTrailing());
@@ -361,11 +362,22 @@ public class CPSolver implements Solver {
         return strategy;
     }
 
+    /**
+     * Calls {@link choco.kernel.solver.Solver#clearGoals()} and set the current strategy to <code>null</code>.
+     */
     public void resetSearchStrategy() {
+        clearGoals();
         strategy = null;
     }
 
-    protected void clearVarLists() {
+    /**
+     * Removes all of the elements from this solver (optional operation).
+     * The solver will be 'empty' after this call returns.
+     */
+    public void clear() {
+        //this.configuration.setDefault();
+
+        mod2sol.clear();
         mapvariables.clear();
         mapconstraints.clear();
         intVars.clear();
@@ -378,18 +390,32 @@ public class CPSolver implements Solver {
         taskDecisionVars.clear();
         intconstantVars.clear();
         realconstantVars.clear();
-    }
-    /**
-     * Removes all of the elements from this solver (optional operation).
-     * The solver will be 'empty' after this call returns.
-     */
-    public void clear() {
-        mod2sol.clear();
-        clearVarLists();
-        this.propagationEngine = new ChocoEngine(this);
         this.constraints.clear();
-        //		indexfactory = new IndexFactory();
+        this.mapvariables.clear();
+        this.mapconstraints.clear();
+        this.environment.clear();
+        this.propagationEngine.clear();
+
         this.indexOfLastInitializedStaticConstraint.set(PartiallyStoredVector.getFirstStaticIndex() - 1);
+
+        this.strategy = null;
+        this.feasible = null;
+        this.uniqueReading = true;
+        this.ilogGoal = null;
+        this.tempGoal = null;
+        this.propNogoodWorld = -1;
+        this.nogoodStore = null;
+        this.makespan = null;
+        this.objective = null;
+        this.varIntSelector = null;
+        this.valIntIterator = null;
+        this.valIntSelector = null;
+        this.varSetSelector = null;
+        this.valSetIterator = null;
+        this.valSetIterator = null;
+        this.varRealSelector = null;
+        this.varRealSelector = null;
+        this.model = null;
     }
 
     public final boolean isUniqueReading() {
@@ -472,6 +498,7 @@ public class CPSolver implements Solver {
     }
 
     public void read(Model m) {
+        long timer = -System.currentTimeMillis();
         if (this.model == null) {
             this.model = (CPModel) m;
             initReading();
@@ -485,6 +512,7 @@ public class CPSolver implements Solver {
         mod2sol.readVariables(model);
         mod2sol.readDecisionVariables();
         mod2sol.readConstraints(model);
+        readingTime = timer + System.currentTimeMillis();
     }
 
     /**
@@ -892,7 +920,7 @@ public class CPSolver implements Solver {
             AbstractIntBranchingStrategy br = tempGoal;
             while (br != null) {
                 AbstractIntBranchingStrategy tmp = (AbstractIntBranchingStrategy) br.getNextBranching();
-                br = null;
+                br.setNextBranching(null);
                 br = tmp;
             }
         }
@@ -905,7 +933,7 @@ public class CPSolver implements Solver {
                     ((PropagationEngineListener) strategy.mainGoal).safeDelete();
                 }
                 AbstractIntBranchingStrategy tmp = (AbstractIntBranchingStrategy) br.getNextBranching();
-                br = null;
+                br.setNextBranching(null);
                 br = tmp;
             }
         }
@@ -1025,6 +1053,25 @@ public class CPSolver implements Solver {
 
 
     /**
+     * Get the time spent in reading the model
+     * @return
+     */
+    @Override
+    public int getReadingTimeCount() {
+        return model == null ? 0 : (int)readingTime;
+    }
+
+
+    /**
+     * Get the time spent in the initial propagation
+     * @return
+     */
+    @Override
+    public int getInitialPropagationTimeCount() {
+        return strategy == null ? 0 : 0;
+    }
+
+    /**
      * Get the time count of the search algorithm
      *
      * @return time count
@@ -1032,7 +1079,6 @@ public class CPSolver implements Solver {
     public final int getTimeCount() {
         return strategy == null ? 0 : strategy.getTimeCount();
     }
-
 
     /**
      * Get the node count of the search algorithm
@@ -1748,7 +1794,10 @@ public class CPSolver implements Solver {
      * removes (permanently) a constraint from the constraint network Beware,
      * this is a permanent removal, it may not be backtracked Warnin : For a
      * composition of constraint by boolean connectors, only the root constraint
-     * may be removed
+     * may be removed.
+     * <br/>
+     * post cutted constraints can be removed at anytime, dynamic posted constraints can only be
+     * removed at root node (when {@link choco.kernel.memory.IEnvironment#getWorldIndex()} == 0.
      */
     public void eraseConstraint(SConstraint c) {
         constraints.remove(c);

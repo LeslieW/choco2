@@ -41,6 +41,8 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.real.RealVar;
 import choco.kernel.solver.variables.set.SetVar;
 
+import java.util.Arrays;
+
 /**
  * An abstract class for all implementations of propagation engines.
  */
@@ -48,7 +50,7 @@ public abstract class AbstractPropagationEngine implements PropagationEngine {
 
     public final Solver solver;
 
-    private final FailMeasure failMeasure;
+    protected final FailMeasure failMeasure;
 
 
     /**
@@ -75,6 +77,12 @@ public abstract class AbstractPropagationEngine implements PropagationEngine {
 
     public final FailMeasure getFailMeasure() {
         return failMeasure;
+    }
+
+    @Override
+    public void clear() {
+        failMeasure.safeReset();
+        Arrays.fill(propagationEngineListeners, 0, pelIdx = 0, null);
     }
 
     /**

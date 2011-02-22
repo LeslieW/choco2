@@ -27,43 +27,6 @@
 
 package samples.documentation;
 
-import static choco.Choco.abs;
-import static choco.Choco.allDifferent;
-import static choco.Choco.among;
-import static choco.Choco.and;
-import static choco.Choco.atMostNValue;
-import static choco.Choco.boolChanneling;
-import static choco.Choco.clause;
-import static choco.Choco.constant;
-import static choco.Choco.costRegular;
-import static choco.Choco.cumulative;
-import static choco.Choco.disjoint;
-import static choco.Choco.distanceEQ;
-import static choco.Choco.distanceGT;
-import static choco.Choco.distanceLT;
-import static choco.Choco.distanceNEQ;
-import static choco.Choco.domainChanneling;
-import static choco.Choco.eq;
-import static choco.Choco.eqCard;
-import static choco.Choco.equation;
-import static choco.Choco.feasPairAC;
-import static choco.Choco.feasTupleAC;
-import static choco.Choco.feasTupleFC;
-import static choco.Choco.makeBooleanVarArray;
-import static choco.Choco.makeIntVar;
-import static choco.Choco.makeIntVarArray;
-import static choco.Choco.makeSetVar;
-import static choco.Choco.member;
-import static choco.Choco.minus;
-import static choco.Choco.notMember;
-import static choco.Choco.plus;
-import static choco.Choco.sum;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Vector;
-
 import choco.Choco;
 import choco.Options;
 import choco.cp.model.CPModel;
@@ -73,7 +36,6 @@ import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.constraints.automaton.FA.IAutomaton;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.constraints.geost.externalConstraints.IExternalConstraint;
 import choco.kernel.model.constraints.geost.externalConstraints.NonOverlappingModel;
@@ -85,6 +47,12 @@ import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import static choco.Choco.*;
 
 /*
 * User : charles
@@ -250,7 +218,7 @@ public class Code4Doc2 {
         //totex
     }
 
-    public void ccostregular(){
+    public void ccostregular() {
         ////totex ccostregular
         // z counts the number of 2 followed by a 0 or a 1 in sequence x
         IntegerVariable[] vars = makeIntVarArray("x", 10, 0, 2, Options.V_ENUM);
@@ -270,20 +238,20 @@ public class Code4Doc2 {
         auto.addTransition(end, start, 0, 1);
         // costs
         int[][][] costs = new int[vars.length][3][auto.getNbStates()];
-        for (int i = 0 ; i < costs.length ; i++) {
+        for (int i = 0; i < costs.length; i++) {
             costs[i][0][end] = 1;
             costs[i][1][end] = 1;
         }
 
         CPModel m = new CPModel();
         m.addConstraint(costRegular(z, vars, auto, costs));
-        CPSolver s= new CPSolver();
+        CPSolver s = new CPSolver();
         s.read(m);
         s.solveAll();
         //totex
     }
 
-    public void ccostregular2(){
+    public void ccostregular2() {
         ////totex ccostregular2
         IntegerVariable[] vars = makeIntVarArray("x", 28, 0, 2, Options.V_ENUM);
         IntegerVariable z = makeIntVar("z", 0, 100, Options.V_BOUND);
@@ -316,13 +284,14 @@ public class Code4Doc2 {
         System.out.println(auto.getNbStates() + " states");
         // costs: count the number of 0 and of 1 at odd positions
         int[][] costs = new int[vars.length][3];
-        for (int i = 1 ; i < costs.length ; i+=2) {
-            costs[i][0] = 1; costs[i][1] = 1;
+        for (int i = 1; i < costs.length; i += 2) {
+            costs[i][0] = 1;
+            costs[i][1] = 1;
         }
 
         CPModel m = new CPModel();
         m.addConstraint(costRegular(z, vars, auto, costs));
-        CPSolver s= new CPSolver();
+        CPSolver s = new CPSolver();
         s.read(m);
         s.minimize(s.getVar(z), true);
         System.out.println(s.solutionToString());
@@ -352,7 +321,7 @@ public class Code4Doc2 {
         IntegerVariable obj = makeIntVar("obj", 0, n, Options.V_BOUND, Options.V_OBJECTIVE);
         //post the cumulative
         m.addConstraint(cumulative("cumulative", tasks, height, constant(0), capa,
-        		Options.C_CUMUL_TI));
+                Options.C_CUMUL_TI));
         //post the channeling to know if the task is scheduled or not
         for (int i = 0; i < n; i++) {
             m.addConstraint(boolChanneling(bool[i], height[i], heights_data[i]));
@@ -438,24 +407,24 @@ public class Code4Doc2 {
         //totex
     }
 
-    public void cdisjoint1(){
+    public void cdisjoint1() {
         //totex cdisjoint1
         Model m = new CPModel();
         Solver s = new CPSolver();
         IntegerVariable var = makeIntVar("v1", 0, 100, Options.V_BOUND);
-        int[] values = new int[]{10,20,30,40,50,60,70,80,90};
+        int[] values = new int[]{10, 20, 30, 40, 50, 60, 70, 80, 90};
         m.addConstraint(notMember(var, values));
         s.read(m);
         s.solve();
         //totex
     }
 
-    public void cdisjoint2(){
+    public void cdisjoint2() {
         //totex cdisjoint2
         Model m = new CPModel();
         Solver s = new CPSolver();
-        TaskVariable[] tasks1 = Choco.makeTaskVarArray("Task1", 0, 10, new int[]{2,5});
-        TaskVariable[] tasks2 = Choco.makeTaskVarArray("Task2", 0, 10, new int[]{3,4});
+        TaskVariable[] tasks1 = Choco.makeTaskVarArray("Task1", 0, 10, new int[]{2, 5});
+        TaskVariable[] tasks2 = Choco.makeTaskVarArray("Task2", 0, 10, new int[]{3, 4});
         m.addConstraints(disjoint(tasks1, tasks2));
         s.read(m);
         s.solve();
@@ -591,7 +560,7 @@ public class Code4Doc2 {
         int nbOfObj = 3;
         long seed = 0;
         //Create the Objects
-        Vector<GeostObject> obj = new Vector<GeostObject>();
+        List<GeostObject> obj = new ArrayList<GeostObject>();
         for (int i = 0; i < nbOfObj; i++) {
             IntegerVariable shapeId = Choco.makeIntVar("sid", i, i);
             IntegerVariable coords[] = new IntegerVariable[dim];
@@ -604,14 +573,14 @@ public class Code4Doc2 {
             obj.add(new GeostObject(dim, i, shapeId, coords, start, duration, end));
         }
         //Create the ShiftedBoxes and add them to corresponding shapes
-        Vector<ShiftedBox> sb = new Vector<ShiftedBox>();
+        List<ShiftedBox> sb = new ArrayList<ShiftedBox>();
         int[] t = {0, 0, 0};
         for (int d = 0; d < nbOfObj; d++) {
             int[] l = {lengths[d], heights[d], widths[d]};
             sb.add(new ShiftedBox(d, t, l));
         }
         //Create the external constraints vector
-        Vector<IExternalConstraint> ectr = new Vector<IExternalConstraint>();
+        List<IExternalConstraint> ectr = new ArrayList<IExternalConstraint>();
         //create the list of dimensions for the external constraint
         int[] ectrDim = new int[dim];
         for (int d = 0; d < dim; d++)
@@ -619,7 +588,7 @@ public class Code4Doc2 {
         //create the list of object ids for the external constraint
         int[] objOfEctr = new int[nbOfObj];
         for (int d = 0; d < nbOfObj; d++) {
-            objOfEctr[d] = obj.elementAt(d).getObjectId();
+            objOfEctr[d] = obj.get(d).getObjectId();
         }
         //create and add one external constraint of type non overlapping
         NonOverlappingModel n = new NonOverlappingModel(Constants.NON_OVERLAPPING, ectrDim, objOfEctr);
