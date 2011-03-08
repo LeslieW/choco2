@@ -27,7 +27,6 @@
 
 package choco.kernel.memory.trailing.trail;
 
-import choco.kernel.memory.trailing.EnvironmentTrailing;
 import choco.kernel.memory.trailing.StoredLongVector;
 
 /**
@@ -38,13 +37,6 @@ import choco.kernel.memory.trailing.StoredLongVector;
  */
 public class StoredLongVectorTrail implements ITrailStorage
 {
-
-	/**
-	 * The current environment.
-	 */
-
-	private EnvironmentTrailing environment;
-
 
 	/**
 	 * All the stored search vectors.
@@ -97,8 +89,7 @@ public class StoredLongVectorTrail implements ITrailStorage
 	 * specified numbers of updates and worlds.
 	 */
 
-	public StoredLongVectorTrail(EnvironmentTrailing env, int nUpdates, int nWorlds) {
-		this.environment = env;
+	public StoredLongVectorTrail(int nUpdates, int nWorlds) {
 		this.currentLevel = 0;
 		maxUpdates = nUpdates;
 		this.vectorStack = new StoredLongVector[nUpdates];
@@ -158,19 +149,21 @@ public class StoredLongVectorTrail implements ITrailStorage
 
 	/**
 	 * Moving up to the next world.
-	 */
+     * @param wi
+     */
 
-	public void worldPush() {
-		this.worldStartLevels[this.environment.getWorldIndex() + 1] = currentLevel;
+	public void worldPush(int wi) {
+		this.worldStartLevels[wi] = currentLevel;
 	}
 
 
 	/**
 	 * Moving down to the previous world.
-	 */
+     * @param wi
+     */
 
-	public void worldPop() {
-		while (currentLevel > worldStartLevels[this.environment.getWorldIndex()]) {
+	public void worldPop(int wi) {
+		while (currentLevel > worldStartLevels[wi]) {
 			currentLevel--;
 			StoredLongVector v = vectorStack[currentLevel];
 			v._set(indexStack[currentLevel], valueStack[currentLevel], stampStack[currentLevel]);
@@ -180,16 +173,17 @@ public class StoredLongVectorTrail implements ITrailStorage
 
 	/**
 	 * Comits a world: merging it with the previous one.
-	 */
+     * @param wi
+     */
 
-	public void worldCommit() {
+	public void worldCommit(int wi) {
 		// principle:
 		//   currentLevel decreases to end of previous world
 		//   updates of the committed world are scanned:
 		//     if their stamp is the previous one (merged with the current one) -> remove the update (garbage collecting this position for the next update)
 		//     otherwise update the worldStamp
-		int startLevel = worldStartLevels[environment.getWorldIndex()];
-		int prevWorld = environment.getWorldIndex() - 1;
+		int startLevel = worldStartLevels[wi];
+		int prevWorld = wi - 1;
 		int writeIdx = startLevel;
 		for (int level = startLevel; level < currentLevel; level++) {
 			StoredLongVector var = vectorStack[level];

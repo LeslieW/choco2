@@ -70,6 +70,8 @@ public final class StoredDoubleVector implements IStateDoubleVector {
 
 	private final EnvironmentTrailing environment;
 
+    protected final StoredDoubleVectorTrail myTrail;
+
 
 	/**
 	 * Constructs a stored search vector with an initial size, and initial values.
@@ -94,6 +96,7 @@ public final class StoredDoubleVector implements IStateDoubleVector {
 			this.worldStamps[i] = w;
 		}
 		this.size = new StoredInt(env, initialSize);
+        this.myTrail = env.getDoubleVectorTrail();
 	}
 
 
@@ -113,6 +116,7 @@ public final class StoredDoubleVector implements IStateDoubleVector {
 			this.worldStamps[i] = w;
 		}
 		this.size = new StoredInt(env, initialSize);
+        this.myTrail = env.getDoubleVectorTrail();
 	}
 
 	/**
@@ -259,7 +263,7 @@ public final class StoredDoubleVector implements IStateDoubleVector {
         if (val != oldValue) {
 		    int oldStamp = this.worldStamps[index];
 			if (oldStamp < environment.getWorldIndex()) {
-			    environment.savePreviousState(this, index, oldValue, oldStamp);
+			    myTrail.savePreviousState(this, index, oldValue, oldStamp);
 				worldStamps[index] = environment.getWorldIndex();
 		    }
 		    elementData[index] = val;

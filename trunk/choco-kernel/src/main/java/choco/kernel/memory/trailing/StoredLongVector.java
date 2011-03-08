@@ -29,6 +29,7 @@ package choco.kernel.memory.trailing;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateLongVector;
+import choco.kernel.memory.trailing.trail.StoredLongVectorTrail;
 
 /**
  * Created by IntelliJ IDEA.
@@ -69,6 +70,8 @@ public class StoredLongVector implements IStateLongVector
 
 	private final EnvironmentTrailing environment;
 
+    protected final StoredLongVectorTrail myTrail;
+
 
 	/**
 	 * Constructs a stored search vector with an initial size, and initial values.
@@ -93,8 +96,7 @@ public class StoredLongVector implements IStateLongVector
 			this.worldStamps[i] = w;
 		}
 		this.size = new StoredInt(env, initialSize);
-
-	//	this.trail = (StoredIntVectorTrail) this.environment.getTrail(choco.kernel.memory.IEnvironment.INT_VECTOR_TRAIL);
+        this.myTrail= environment.getLongVectorTrail();
 	}
 
 
@@ -114,6 +116,7 @@ public class StoredLongVector implements IStateLongVector
 			this.worldStamps[i] = w;
 		}
 		this.size = new StoredInt(env, initialSize);
+        this.myTrail= environment.getLongVectorTrail();
 	}
 
 	/**
@@ -265,7 +268,7 @@ public class StoredLongVector implements IStateLongVector
 			if (val != oldValue) {
 				final int oldStamp = this.worldStamps[index];
 				if (oldStamp < environment.getWorldIndex()) {
-					environment.savePreviousState(this, index, oldValue, oldStamp);
+					myTrail.savePreviousState(this, index, oldValue, oldStamp);
 					worldStamps[index] = environment.getWorldIndex();
 				}
 				elementData[index] = val;

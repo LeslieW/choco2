@@ -28,6 +28,7 @@
 package choco.kernel.memory.trailing;
 
 
+import choco.kernel.memory.trailing.trail.StoredVectorTrail;
 
 /**
  * <p>
@@ -60,6 +61,8 @@ public final class StoredVector<E> implements choco.kernel.memory.IStateVector<E
 
 	private final EnvironmentTrailing environment;
 
+    protected final StoredVectorTrail myTrail;
+
 
 	/**
 	 * Constructs a stored search vector with an initial size, and initial values.
@@ -76,6 +79,7 @@ public final class StoredVector<E> implements choco.kernel.memory.IStateVector<E
 		this.worldStamps = new int[initialCapacity];
 
 		this.size = new StoredInt(env, 0);
+        myTrail = env.getVectorTrail();
 
 	}
 
@@ -153,7 +157,7 @@ public final class StoredVector<E> implements choco.kernel.memory.IStateVector<E
 				//				if (LOGGER.isLoggable(Level.FINEST))
 				//					LOGGER.log(Level.FINEST, "W: {0}@{1}ts:{2}", new Object[]{ environment.getWorldIndex(), index,this.worldStamps[index]});
 				if (oldStamp < environment.getWorldIndex()) {
-					environment.savePreviousState(this, index, oldValue, oldStamp);
+					myTrail.savePreviousState(this, index, oldValue, oldStamp);
 					worldStamps[index] = environment.getWorldIndex();
 				}
 				elementData[index] = val;

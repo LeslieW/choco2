@@ -27,19 +27,10 @@
 
 package choco.kernel.memory.trailing.trail;
 
-import choco.kernel.memory.trailing.EnvironmentTrailing;
 import choco.kernel.memory.trailing.StoredLong;
 
 
 public class StoredLongTrail implements ITrailStorage {
-
-
-	/**
-	 * Reference towards the overall environment
-	 * (responsible for all memory management).
-	 */
-
-	private final EnvironmentTrailing environment;
 
 
 	/**
@@ -86,12 +77,11 @@ public class StoredLongTrail implements ITrailStorage {
 	/**
 	 * Constructs a trail with predefined size.
 	 *
-	 * @param nUpdates maximal number of updates that will be stored
-	 * @param nWorlds  maximal number of worlds that will be stored
-	 */
+     * @param nUpdates maximal number of updates that will be stored
+     * @param nWorlds  maximal number of worlds that will be stored
+     */
 
-	public StoredLongTrail(EnvironmentTrailing env, int nUpdates, int nWorlds) {
-		environment = env;
+	public StoredLongTrail(int nUpdates, int nWorlds) {
 		currentLevel = 0;
 		maxUpdates = nUpdates;
 		variableStack = new StoredLong[maxUpdates];
@@ -108,19 +98,21 @@ public class StoredLongTrail implements ITrailStorage {
 
 	/**
 	 * Moving up to the next world.
-	 */
+     * @param wi
+     */
 
-	public void worldPush() {
-		worldStartLevels[environment.getWorldIndex() + 1] = currentLevel;
+	public void worldPush(int wi) {
+		worldStartLevels[wi] = currentLevel;
 	}
 
 
 	/**
 	 * Moving down to the previous world.
-	 */
+     * @param wi
+     */
 
-	public void worldPop() {
-		while (currentLevel > worldStartLevels[environment.getWorldIndex()]) {
+	public void worldPop(int wi) {
+		while (currentLevel > worldStartLevels[wi]) {
 			currentLevel--;
 			final StoredLong v = variableStack[currentLevel];
 			v._set(valueStack[currentLevel], stampStack[currentLevel]);
@@ -139,9 +131,10 @@ public class StoredLongTrail implements ITrailStorage {
 
 	/**
 	 * Comits a world: merging it with the previous one.
-	 */
+     * @param wi
+     */
 
-	public void worldCommit() {
+	public void worldCommit(int wi) {
 		// TODO
 	}
 

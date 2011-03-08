@@ -50,9 +50,10 @@ public interface ITrailStorage {
 	 * <p/>
 	 * Cette methode doit garder l'etat de la variable avant la modification
 	 * de sorte a la remettre en etat le cas echeant.
-	 */
+     * @param wi
+     */
 
-	public void worldPush();
+	public void worldPush(int wi);
 
 
 	/**
@@ -60,18 +61,20 @@ public interface ITrailStorage {
 	 * <p/>
 	 * Cette methode reattribute a la variable ou l'element d'un tableau sa valeur
 	 * precedente.
-	 */
+     * @param wi
+     */
 
-	public void worldPop();
+	public void worldPop(int wi);
 
 
 	/**
 	 * Comitting the current world: merging it with the previous one.
 	 * <p/>
 	 * Not used yet.
-	 */
+     * @param wi
+     */
 
-	public void worldCommit();
+	public void worldCommit(int wi);
 
 
 	/**

@@ -28,9 +28,11 @@
 package choco.kernel.memory.trailing;
 
 import choco.kernel.memory.IStateLong;
+import choco.kernel.memory.trailing.trail.StoredLongTrail;
 
 public final class StoredLong extends AbstractStoredObject implements IStateLong {
 
+    protected final StoredLongTrail myTrail;
 
 	private long currentValue;
 
@@ -54,6 +56,7 @@ public final class StoredLong extends AbstractStoredObject implements IStateLong
 
 	public StoredLong(final EnvironmentTrailing env, final long d) {
 		super(env);
+        myTrail = env.getLongTrail();
 		currentValue = d;
 	}
 
@@ -68,7 +71,7 @@ public final class StoredLong extends AbstractStoredObject implements IStateLong
 	public void set(final long y) {
 		if (y != currentValue) {
 			if (this.worldStamp < environment.getWorldIndex()) {
-				environment.savePreviousState(this, currentValue, worldStamp);
+				myTrail.savePreviousState(this, currentValue, worldStamp);
 				worldStamp = environment.getWorldIndex();
 			}
 			currentValue = y;

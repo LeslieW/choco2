@@ -29,6 +29,7 @@ package choco.kernel.memory.trailing;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateIntVector;
+import choco.kernel.memory.trailing.trail.StoredIntVectorTrail;
 
 /**
  * Implements a backtrackable search vector.
@@ -69,6 +70,8 @@ public final class StoredIntVector implements IStateIntVector {
 
 	private final EnvironmentTrailing environment;
 
+    protected final StoredIntVectorTrail myTrail;
+
 
 	/**
 	 * Constructs a stored search vector with an initial size, and initial values.
@@ -93,8 +96,7 @@ public final class StoredIntVector implements IStateIntVector {
 			this.worldStamps[i] = w;
 		}
 		this.size = new StoredInt(env, initialSize);
-
-	//	this.trail = (StoredIntVectorTrail) this.environment.getTrail(choco.kernel.memory.IEnvironment.INT_VECTOR_TRAIL);
+        this.myTrail= environment.getIntVectorTrail();
 	}
 
 
@@ -114,6 +116,7 @@ public final class StoredIntVector implements IStateIntVector {
 			this.worldStamps[i] = w;
 		}
 		this.size = new StoredInt(env, initialSize);
+        this.myTrail= environment.getIntVectorTrail();
 	}
 
 	/**
@@ -265,7 +268,7 @@ public final class StoredIntVector implements IStateIntVector {
 			if (val != oldValue) {
 				final int oldStamp = this.worldStamps[index];
 				if (oldStamp < environment.getWorldIndex()) {
-					environment.savePreviousState(this, index, oldValue, oldStamp);
+					myTrail.savePreviousState(this, index, oldValue, oldStamp);
 					worldStamps[index] = environment.getWorldIndex();
 				}
 				elementData[index] = val;

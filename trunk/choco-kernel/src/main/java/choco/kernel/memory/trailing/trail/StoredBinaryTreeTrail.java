@@ -28,7 +28,6 @@
 package choco.kernel.memory.trailing.trail;
 
 import choco.kernel.memory.IStateBinaryTree;
-import choco.kernel.memory.trailing.EnvironmentTrailing;
 
 /**
  * Created by IntelliJ IDEA.
@@ -49,15 +48,12 @@ public class StoredBinaryTreeTrail implements ITrailStorage {
 
 	private int[] worldStartLevels;
 
-	private EnvironmentTrailing environment;
-
 	private int maxHist;
 	private int currentLevel;
 
-	public StoredBinaryTreeTrail(EnvironmentTrailing env, int maxHist, int maxWorld)
+	public StoredBinaryTreeTrail(int maxHist, int maxWorld)
 	{
 
-		this.environment = env;
 		this.currentLevel = 0;
 		this.opStack = new int[maxHist];
 		this.oldValues = new int[maxHist];
@@ -126,15 +122,15 @@ public class StoredBinaryTreeTrail implements ITrailStorage {
 	}
 
 
-	public void worldPush() {
-		worldStartLevels[environment.getWorldIndex() +1] = currentLevel;
+	public void worldPush(int wi) {
+		worldStartLevels[wi] = currentLevel;
 	}
 
-	public void worldPop() {
+	public void worldPop(int wi) {
 
 
 
-		while (currentLevel > worldStartLevels[environment.getWorldIndex()]) {
+		while (currentLevel > worldStartLevels[wi]) {
 			currentLevel--;
 
 			final IStateBinaryTree b = treeStack[currentLevel];
@@ -159,7 +155,7 @@ public class StoredBinaryTreeTrail implements ITrailStorage {
 		}
 	}
 
-	public void worldCommit() {
+	public void worldCommit(int wi) {
 		//TODO
 	}
 
