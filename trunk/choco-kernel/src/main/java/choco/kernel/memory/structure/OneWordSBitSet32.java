@@ -28,32 +28,30 @@
 package choco.kernel.memory.structure;
 
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.objects.OpenBitSet;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
-import choco.kernel.memory.IStateLong;
 
 import java.lang.reflect.Array;
 import java.util.BitSet;
 import java.util.logging.Logger;
 
 
-public class SBitSet implements IStateBitSet{
+public class OneWordSBitSet32 implements IStateBitSet {
     protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
 
     /*
     * BitSets are packed into arrays of "words."  Currently a word is
-    * a long, which consists of 64 bits, requiring 6 address bits.
+    * an int, which consists of 32 bits, requiring 6 address bits.
     * The choice of word size is determined purely by performance concerns.
     */
-    private final static int ADDRESS_BITS_PER_WORD = 6;
+    private final static int ADDRESS_BITS_PER_WORD = 5;
     private final static int BITS_PER_WORD = 1 << ADDRESS_BITS_PER_WORD;
     private final static int BIT_INDEX_MASK = BITS_PER_WORD - 1;
 
     /* Used to shift left or right for a partial word mask */
-    private static final long WORD_MASK = 0xffffffffffffffffL;
+    private static final int WORD_MASK = 0xffffffff;
 
     /**
      * The current environment.
@@ -63,54 +61,16 @@ public class SBitSet implements IStateBitSet{
     /**
      * The internal field corresponding to the serialField "bits".
      */
-    private IStateLong[] words;
-
-    /**
-     * The number of words in the logical size of this BitSet.
-     */
-    private IStateInt wordsInUse;
-
-
-    /**
-     * Given a bit index, return word index containing it.
-     * @param bitIndex
-     */
-    private static int wordIndex(int bitIndex) {
-        return bitIndex >> ADDRESS_BITS_PER_WORD;
-    }
-
-    /**
-     * Every public method must preserve these invariants.
-     */
-    /*private void checkInvariants() {
-        assert (wordsInUse.get() == 0 || words[wordsInUse.get() - 1].get() != 0);
-        assert (wordsInUse.get() >= 0 && wordsInUse.get() <= words.length);
-        assert (wordsInUse.get() == words.length || words[wordsInUse.get()].get() == 0);
-    } */
-
-    /**
-     * Set the field wordsInUse with the logical size in words of the bit
-     * set.  WARNING:This method assumes that the number of words actually
-     * in use is less than or equal to the current value of wordsInUse!
-     */
-    private void recalculateWordsInUse() {
-        // Traverse the bitset until a used word is found
-        int i;
-        for (i = wordsInUse.get() - 1; i >= 0; i--)
-            if (words[i].get() != 0)
-                break;
-
-        wordsInUse.set(i + 1); // The new logical size
-    }
+    private IStateInt words;
 
     /**
      * Creates a new bit set. All bits are initially <code>false</code>.
+     *
      * @param environment bactrackable environment
      */
-    public SBitSet(IEnvironment environment) {
+    public OneWordSBitSet32(IEnvironment environment) {
         this.environment = environment;
-        this.wordsInUse = environment.makeInt(0);
-        initWords(BITS_PER_WORD);
+        words = this.environment.makeInt(0);
     }
 
     /**
@@ -119,41 +79,19 @@ public class SBitSet implements IStateBitSet{
      * <code>nbits-1</code>. All bits are initially <code>false</code>.
      *
      * @param environment backtrackable environment
-     * @param nbits the initial size of the bit set.
+     * @param nbits       the initial size of the bit set.
      * @throws NegativeArraySizeException if the specified initial size
      *                                    is negative.
      */
-    public SBitSet(IEnvironment environment, int nbits) {
+    public OneWordSBitSet32(IEnvironment environment, int nbits) {
         this.environment = environment;
-        this.wordsInUse =  environment.makeInt(0);
         // nbits can't be negative; size 0 is OK
         if (nbits < 0)
             throw new NegativeArraySizeException("nbits < 0: " + nbits);
+        if (nbits > 32)
+            throw new ArrayIndexOutOfBoundsException("nbits > 32: " + nbits);
 
-        initWords(nbits);
-    }
-
-    private void initWords(int nbits) {
-        words = new IStateLong[wordIndex(nbits - 1) + 1];
-        for (int i = 0; i < words.length; i++) words[i] = this.environment.makeLong(0);
-    }
-
-
-    /**
-     * Ensures that the BitSet can hold enough words.
-     *
-     * @param wordsRequired the minimum acceptable number of words.
-     */
-    public void ensureCapacity(int wordsRequired) {
-        if (words.length < wordsRequired) {
-            // Allocate larger of doubled size or required size
-            int request = Math.max(2 * words.length, wordsRequired);
-          int oldSize = words.length;
-            words = copyOf(words, request);
-          for(int i = oldSize; i < request; i++) {
-            words[i] = environment.makeLong(0);
-          }
-        }
+        words = this.environment.makeInt(0);
     }
 
     @SuppressWarnings({"unchecked"})
@@ -162,8 +100,8 @@ public class SBitSet implements IStateBitSet{
     }
 
     @SuppressWarnings({"unchecked", "SuspiciousSystemArraycopy"})
-    public static <T,U> T[] copyOf(U[] original, int newLength, Class<? extends T[]> newType) {
-        T[] copy = ((Object)newType == (Object)Object[].class)
+    public static <T, U> T[] copyOf(U[] original, int newLength, Class<? extends T[]> newType) {
+        T[] copy = ((Object) newType == (Object) Object[].class)
                 ? (T[]) new Object[newLength]
                 : (T[]) Array.newInstance(newType.getComponentType(), newLength);
         System.arraycopy(original, 0, copy, 0,
@@ -173,30 +111,15 @@ public class SBitSet implements IStateBitSet{
 
     public BitSet copyToBitSet() {
         BitSet view = new BitSet(this.size());
-        for (int i = this.nextSetBit(0); i >= 0; i = this.nextSetBit(i + 1)) view.set(i,true);
+        for (int i = this.nextSetBit(0); i >= 0; i = this.nextSetBit(i + 1)) view.set(i, true);
         return view;
     }
 
     /**
-     * Ensures that the BitSet can accommodate a given wordIndex,
-     * temporarily violating the invariants.  The caller must
-     * restore the invariants before returning to the user,
-     * possibly using recalculateWordsInUse().
-     *
-     * @param wordIndex the index to be accommodated.
-     */
-    private void expandTo(int wordIndex) {
-        int wordsRequired = wordIndex + 1;
-        if (wordsInUse.get() < wordsRequired) {
-            ensureCapacity(wordsRequired);
-            wordsInUse.set(wordsRequired);
-        }
-    }
-
-    /**
      * Checks that fromIndex ... toIndex is a valid range of bit indices.
+     *
      * @param fromIndex starting index
-     * @param toIndex ending index
+     * @param toIndex   ending index
      */
     private static void checkRange(int fromIndex, int toIndex) {
         if (fromIndex < 0)
@@ -219,15 +142,9 @@ public class SBitSet implements IStateBitSet{
         if (bitIndex < 0)
             throw new IndexOutOfBoundsException("bitIndex < 0: " + bitIndex);
 
-        int wordIndex = wordIndex(bitIndex);
-        expandTo(wordIndex);
-
-        long tmp = words[wordIndex].get();
-        tmp ^= (1L << bitIndex);
-        words[wordIndex].set(tmp);
-
-        recalculateWordsInUse();
-        //checkInvariants();
+        int tmp = words.get();
+        tmp ^= (1 << bitIndex);
+        words.set(tmp);
     }
 
     /**
@@ -247,33 +164,11 @@ public class SBitSet implements IStateBitSet{
 
         if (fromIndex == toIndex)
             return;
-
-        int startWordIndex = wordIndex(fromIndex);
-        int endWordIndex = wordIndex(toIndex - 1);
-        expandTo(endWordIndex);
-
-        long firstWordMask = WORD_MASK << fromIndex;
-        long lastWordMask = WORD_MASK >>> -toIndex;
-        if (startWordIndex == endWordIndex) {
-            // Case 1: One word
-            long tmp = words[startWordIndex].get();
-            tmp ^= (firstWordMask & lastWordMask);
-            words[startWordIndex].set(tmp);
-        } else {
-            // Case 2: Multiple words
-            // Handle first word
-            words[startWordIndex].set(words[startWordIndex].get() ^ firstWordMask);
-
-            // Handle intermediate words, if any
-            for (int i = startWordIndex + 1; i < endWordIndex; i++)
-                words[i].set(~words[i].get());
-
-            // Handle last word
-            words[endWordIndex].set(words[endWordIndex].get() ^ lastWordMask);
-        }
-
-        recalculateWordsInUse();
-        //checkInvariants();
+        int firstWordMask = WORD_MASK << fromIndex;
+        int lastWordMask = WORD_MASK >>> -toIndex;
+        int tmp = words.get();
+        tmp ^= (firstWordMask & lastWordMask);
+        words.set(tmp);
     }
 
     /**
@@ -287,11 +182,7 @@ public class SBitSet implements IStateBitSet{
         if (bitIndex < 0)
             throw new IndexOutOfBoundsException("bitIndex < 0: " + bitIndex);
 
-        int wordIndex = wordIndex(bitIndex);
-        expandTo(wordIndex);
-
-        words[wordIndex].set(words[wordIndex].get() | (1L << bitIndex)); // Restores invariants
-
+        words.set(words.get() | (1 << bitIndex)); // Restores invariants
         //checkInvariants();
     }
 
@@ -327,29 +218,9 @@ public class SBitSet implements IStateBitSet{
         if (fromIndex == toIndex)
             return;
 
-        // Increase capacity if necessary
-        int startWordIndex = wordIndex(fromIndex);
-        int endWordIndex = wordIndex(toIndex - 1);
-        expandTo(endWordIndex);
-
-        long firstWordMask = WORD_MASK << fromIndex;
-        long lastWordMask = WORD_MASK >>> -toIndex;
-        if (startWordIndex == endWordIndex) {
-            // Case 1: One word
-            words[startWordIndex].set(words[startWordIndex].get() | (firstWordMask & lastWordMask));
-        } else {
-            // Case 2: Multiple words
-            // Handle first word
-            words[startWordIndex].set(words[startWordIndex].get() | firstWordMask);
-
-            // Handle intermediate words, if any
-            for (int i = startWordIndex + 1; i < endWordIndex; i++)
-                words[i].set(WORD_MASK);
-
-            // Handle last word (restores invariants)
-            words[endWordIndex].set(words[endWordIndex].get() | lastWordMask);
-        }
-
+        int firstWordMask = WORD_MASK << fromIndex;
+        int lastWordMask = WORD_MASK >>> -toIndex;
+        words.set(words.get() | (firstWordMask & lastWordMask));
         //checkInvariants();
     }
 
@@ -383,13 +254,7 @@ public class SBitSet implements IStateBitSet{
         if (bitIndex < 0)
             throw new IndexOutOfBoundsException("bitIndex < 0: " + bitIndex);
 
-        int wordIndex = wordIndex(bitIndex);
-        if (wordIndex >= wordsInUse.get())
-            return;
-
-        words[wordIndex].set(words[wordIndex].get() & ~(1L << bitIndex));
-
-        recalculateWordsInUse();
+        words.set(words.get() & ~(1 << bitIndex));
         //checkInvariants();
     }
 
@@ -410,35 +275,9 @@ public class SBitSet implements IStateBitSet{
         if (fromIndex == toIndex)
             return;
 
-        int startWordIndex = wordIndex(fromIndex);
-        if (startWordIndex >= wordsInUse.get())
-            return;
-
-        int endWordIndex = wordIndex(toIndex - 1);
-        if (endWordIndex >= wordsInUse.get()) {
-            toIndex = length();
-            endWordIndex = wordsInUse.get() - 1;
-        }
-
-        long firstWordMask = WORD_MASK << fromIndex;
-        long lastWordMask = WORD_MASK >>> -toIndex;
-        if (startWordIndex == endWordIndex) {
-            // Case 1: One word
-            words[startWordIndex].set(words[startWordIndex].get() & ~(firstWordMask & lastWordMask));
-        } else {
-            // Case 2: Multiple words
-            // Handle first word
-            words[startWordIndex].set(words[startWordIndex].get() & ~firstWordMask);
-
-            // Handle intermediate words, if any
-            for (int i = startWordIndex + 1; i < endWordIndex; i++)
-                words[i].set(0);
-
-            // Handle last word
-            words[endWordIndex].set(words[endWordIndex].get() & ~lastWordMask);
-        }
-
-        recalculateWordsInUse();
+        int firstWordMask = WORD_MASK << fromIndex;
+        int lastWordMask = WORD_MASK >>> -toIndex;
+        words.set(words.get() & ~(firstWordMask & lastWordMask));
         //checkInvariants();
     }
 
@@ -448,12 +287,7 @@ public class SBitSet implements IStateBitSet{
      * @since 1.4
      */
     public void clear() {
-        /*while (wordsInUse.get() > 0)
-            wordsInUse.set(wordsInUse.get() - 1);
-        words[wordsInUse.get()].set(0);      */
-        for (IStateLong word : words) {
-            word.set(0);
-        }
+        words.set(0);
     }
 
     /**
@@ -471,10 +305,7 @@ public class SBitSet implements IStateBitSet{
         //    throw new IndexOutOfBoundsException("bitIndex < 0: " + bitIndex);
 
         //checkInvariants();
-
-        int wordIndex =  bitIndex >> ADDRESS_BITS_PER_WORD; //wordIndex(bitIndex);
-        return (wordIndex < wordsInUse.get())
-                && ((words[wordIndex].get() & (1L << bitIndex)) != 0);
+        return ((words.get() & (1 << bitIndex)) != 0);
     }
 
     /**
@@ -489,49 +320,8 @@ public class SBitSet implements IStateBitSet{
      *                                   larger than <tt>toIndex</tt>.
      * @since 1.4
      */
-    public SBitSet get(int fromIndex, int toIndex) {
-        checkRange(fromIndex, toIndex);
-
-        //checkInvariants();
-
-        int len = length();
-
-        // If no set bits in range return empty bitset
-        if (len <= fromIndex || fromIndex == toIndex)
-            return new SBitSet(environment, 0);
-
-        // An optimization
-        if (toIndex > len)
-            toIndex = len;
-
-        SBitSet result = new SBitSet(environment, toIndex - fromIndex);
-        int targetWords = wordIndex(toIndex - fromIndex - 1) + 1;
-        int sourceIndex = wordIndex(fromIndex);
-        boolean wordAligned = ((fromIndex & BIT_INDEX_MASK) == 0);
-
-        // Process all words but the last word
-        for (int i = 0; i < targetWords - 1; i++, sourceIndex++)
-            result.words[i].set(
-                    wordAligned ? words[sourceIndex].get() :
-                            (words[sourceIndex].get() >>> fromIndex) |
-                                    (words[sourceIndex + 1].get() << -fromIndex));
-
-        // Process the last word
-        long lastWordMask = WORD_MASK >>> -toIndex;
-        result.words[targetWords - 1].set(
-                ((toIndex - 1) & BIT_INDEX_MASK) < (fromIndex & BIT_INDEX_MASK)
-                        ? /* straddles source words */
-                        ((words[sourceIndex].get() >>> fromIndex) |
-                                (words[sourceIndex + 1].get() & lastWordMask) << -fromIndex)
-                        :
-                        ((words[sourceIndex].get() & lastWordMask) >>> fromIndex));
-
-        // Set wordsInUse correctly
-        result.wordsInUse.set(targetWords);
-        result.recalculateWordsInUse();
-        //result.checkInvariants();
-
-        return result;
+    public OneWordSBitSet32 get(int fromIndex, int toIndex) {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -553,23 +343,17 @@ public class SBitSet implements IStateBitSet{
      * @since 1.4
      */
     public int nextSetBit(int fromIndex) {
-        //if (fromIndex < 0)
-        //    throw new IndexOutOfBoundsException("fromIndex < 0: " + fromIndex);
+//        if (fromIndex < 0)
+//            throw new IndexOutOfBoundsException("fromIndex < 0: " + fromIndex);
 
         //checkInvariants();
 
-        int u = wordIndex(fromIndex);
-        if (u >= wordsInUse.get())
+        int word = words.get() & (WORD_MASK << fromIndex);
+
+        if (word != 0) {
+            return Integer.numberOfTrailingZeros(word);
+        } else {
             return -1;
-
-        long word = words[u].get() & (WORD_MASK << fromIndex);
-
-        while (true) {
-            if (word != 0)
-                return (u * BITS_PER_WORD) + Long.numberOfTrailingZeros(word);
-            if (++u == wordsInUse.get())
-                return -1;
-            word = words[u].get();
         }
     }
 
@@ -585,57 +369,47 @@ public class SBitSet implements IStateBitSet{
      */
 
 
-
     public int prevSetBit(int fromIndex) {
 //        if (fromIndex < 0)
 //            throw new IndexOutOfBoundsException("fromIndex < 0: " + fromIndex);
 
         //checkInvariants();
-
-        int u = wordIndex(fromIndex);
-        if (u >= wordsInUse.get()) {
+        if (fromIndex > 32) {
             return length() - 1;
         }
+        int mask = ~(WORD_MASK << fromIndex + 1);
+        int word = words.get() & (mask != 0 ? mask : WORD_MASK);
 
-        long mask = ~(WORD_MASK << fromIndex + 1);
-        long word = words[u].get() & ( mask != 0 ? mask : WORD_MASK );
-
-        while (true) {
-            if (word != 0)
-                return (u * BITS_PER_WORD) + BIT_INDEX_MASK - Long.numberOfLeadingZeros(word);
-            if (u-- == 0)
-                return -1;
-            word = words[u].get();
+        if (word != 0) {
+            return BIT_INDEX_MASK - Integer.numberOfLeadingZeros(word);
+        } else {
+            return -1;
         }
     }
 
     public int prevClearBit(int fromIndex) {
 //        if (fromIndex < 0)
 //            throw new IndexOutOfBoundsException("fromIndex < 0: " + fromIndex);
-
+//
         //checkInvariants();
-
-        int u = wordIndex(fromIndex);
-        if (u >= wordsInUse.get()) {
-            return fromIndex;
-        }else if(u < 0){
+        if(fromIndex < 0){
             return -1;
+        } else
+        if (fromIndex > 32) {
+            return fromIndex;
         }
+        int mask = ~(WORD_MASK << fromIndex + 1);
+        int word = ~words.get() & (mask != 0 ? mask : WORD_MASK);
 
-        long mask = ~(WORD_MASK << fromIndex + 1);
-        long word = ~words[u].get() & ( mask != 0 ? mask : WORD_MASK );
-
-        while (true) {
-            if (word != 0)
-                return (u * BITS_PER_WORD) + BIT_INDEX_MASK - Long.numberOfLeadingZeros(word);
-            if (u-- == 0)
-                return -1;
-            word = ~words[u].get();
+        if (word != 0) {
+            return BIT_INDEX_MASK - Integer.numberOfLeadingZeros(word);
+        } else {
+            return -1;
         }
     }
 
     public int capacity() {
-        return words.length*BITS_PER_WORD;
+        return BITS_PER_WORD;
     }
 
     /**
@@ -654,20 +428,16 @@ public class SBitSet implements IStateBitSet{
 //            throw new IndexOutOfBoundsException("fromIndex < 0: " + fromIndex);
 
         //checkInvariants();
-
-        int u = wordIndex(fromIndex);
-        if (u >= wordsInUse.get())
+        if (fromIndex > 32) {
             return fromIndex;
-
-        long word = ~words[u].get() & (WORD_MASK << fromIndex);
-
-        while (true) {
-            if (word != 0)
-                return (u * BITS_PER_WORD) + Long.numberOfTrailingZeros(word);
-            if (++u == wordsInUse.get())
-                return wordsInUse.get() * BITS_PER_WORD;
-            word = ~words[u].get();
         }
+
+        int word = ~words.get() & (WORD_MASK << fromIndex);
+
+        if (word != 0)
+            return Integer.numberOfTrailingZeros(word);
+        else
+            return BITS_PER_WORD;
     }
 
     /**
@@ -679,11 +449,7 @@ public class SBitSet implements IStateBitSet{
      * @since 1.2
      */
     public int length() {
-        if (wordsInUse.get() == 0)
-            return 0;
-
-        return BITS_PER_WORD * (wordsInUse.get() - 1) +
-                (BITS_PER_WORD - Long.numberOfLeadingZeros(words[wordsInUse.get() - 1].get()));
+        return (BITS_PER_WORD - Integer.numberOfLeadingZeros(words.get()));
     }
 
     /**
@@ -694,31 +460,7 @@ public class SBitSet implements IStateBitSet{
      * @since 1.4
      */
     public boolean isEmpty() {
-        return wordsInUse.get() == 0;
-    }
-
-    /**
-     * Returns true if the specified <code>BitSet</code> has any bits set to
-     * <code>true</code> that are also set to <code>true</code> in this
-     * <code>BitSet</code>.
-     *
-     * @param set <code>BitSet</code> to intersect with
-     * @return boolean indicating whether this <code>BitSet</code> intersects
-     *         the specified <code>BitSet</code>.
-     * @since 1.4
-     */
-    public boolean intersects(SBitSet set) {
-        for (int i = Math.min(wordsInUse.get(), set.wordsInUse.get()) - 1; i >= 0; i--)
-            if ((words[i].get() & set.words[i].get()) != 0)
-                return true;
-        return false;
-    }
-
-	public boolean intersects(OpenBitSet set) {
-        for (int i = Math.min(wordsInUse.get(), set.wordsInUse) - 1; i >= 0; i--)
-            if ((words[i].get() & set.words[i]) != 0)
-                return true;
-        return false;
+        return words.get() == 0;
     }
 
     /**
@@ -730,10 +472,7 @@ public class SBitSet implements IStateBitSet{
      * @since 1.4
      */
     public int cardinality() {
-        int sum = 0;
-        for (int i = 0; i < wordsInUse.get(); i++)
-            sum += Long.bitCount(words[i].get());
-        return sum;
+        return Integer.bitCount(words.get());
     }
 
     /**
@@ -746,21 +485,7 @@ public class SBitSet implements IStateBitSet{
      * @param setI a bit set.
      */
     public void and(IStateBitSet setI) {
-        SBitSet set = (SBitSet) setI;
-        if (this == set)
-            return;
-
-        while (wordsInUse.get() > set.wordsInUse.get()) {
-            wordsInUse.add(-1);
-            words[wordsInUse.get()].set(0);
-        }
-
-        // Perform logical AND on words in common
-        for (int i = 0; i < wordsInUse.get(); i++)
-            words[i].set(words[i].get() & set.words[i].get());
-
-        recalculateWordsInUse();
-        //checkInvariants();
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -773,29 +498,7 @@ public class SBitSet implements IStateBitSet{
      * @param setI a bit set.
      */
     public void or(IStateBitSet setI) {
-        SBitSet set = (SBitSet) setI;
-        if (this == set)
-            return;
-
-        int wordsInCommon = Math.min(wordsInUse.get(), set.wordsInUse.get());
-
-        if (wordsInUse.get() < set.wordsInUse.get()) {
-            ensureCapacity(set.wordsInUse.get());
-            wordsInUse.set(set.wordsInUse.get());
-        }
-
-        // Perform logical OR on words in common
-        for (int i = 0; i < wordsInCommon; i++)
-            words[i].set(words[i].get() | set.words[i].get());
-
-        // Copy any remaining words
-        if (wordsInCommon < set.wordsInUse.get())
-            System.arraycopy(set.words, wordsInCommon,
-                    words, wordsInCommon,
-                    wordsInUse.get() - wordsInCommon);
-
-        // recalculateWordsInUse() is unnecessary
-        //checkInvariants();
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -813,26 +516,7 @@ public class SBitSet implements IStateBitSet{
      * @param setI a bit set.
      */
     public void xor(IStateBitSet setI) {
-        SBitSet set = (SBitSet) setI;
-        int wordsInCommon = Math.min(wordsInUse.get(), set.wordsInUse.get());
-
-        if (wordsInUse.get() < set.wordsInUse.get()) {
-            ensureCapacity(set.wordsInUse.get());
-            wordsInUse.set(set.wordsInUse.get());
-        }
-
-        // Perform logical XOR on words in common
-        for (int i = 0; i < wordsInCommon; i++)
-            words[i].set(words[i].get() ^ set.words[i].get());
-
-        // Copy any remaining words
-        if (wordsInCommon < set.wordsInUse.get())
-            System.arraycopy(set.words, wordsInCommon,
-                    words, wordsInCommon,
-                    set.wordsInUse.get() - wordsInCommon);
-
-        recalculateWordsInUse();
-        //checkInvariants();
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -840,17 +524,11 @@ public class SBitSet implements IStateBitSet{
      * bit is set in the specified <code>BitSet</code>.
      *
      * @param setI the <code>BitSet</code> with which to mask this
-     *            <code>BitSet</code>.
+     *             <code>BitSet</code>.
      * @since 1.2
      */
     public void andNot(IStateBitSet setI) {
-        SBitSet set = (SBitSet) setI;
-        // Perform logical (a & !b) on words in common
-        for (int i = Math.min(wordsInUse.get(), set.wordsInUse.get()) - 1; i >= 0; i--)
-            words[i].set(words[i].get() & ~set.words[i].get());
-
-        recalculateWordsInUse();
-        //checkInvariants();
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -858,25 +536,19 @@ public class SBitSet implements IStateBitSet{
      * <code>true</code> that are also set to <code>true</code> in this
      * <code>BitSet</code>.
      *
-     * @param	setI <code>BitSet</code> to intersect with
-     * @return  boolean indicating whether this <code>BitSet</code> intersects
-     *          the specified <code>BitSet</code>.
-     * @since   1.4
+     * @param setI <code>BitSet</code> to intersect with
+     * @return boolean indicating whether this <code>BitSet</code> intersects
+     *         the specified <code>BitSet</code>.
+     * @since 1.4
      */
     public boolean intersects(IStateBitSet setI) {
-        SBitSet set = (SBitSet) setI;
-        for (int i = Math.min(wordsInUse.get(), set.wordsInUse.get()) - 1; i >= 0; i--)
-            if ((words[i].get() & set.words[i].get()) != 0)
-                return true;
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     public int hashCode() {
-        long h = 1234;
-        for (int i = wordsInUse.get(); --i >= 0;)
-            h ^= words[i].get() * (i + 1);
-
-        return (int) ((h >> 32) ^ h);
+        int h = 1234;
+        h ^= words.get();
+        return (h >> 16) ^ h;
     }
 
     /**
@@ -887,39 +559,29 @@ public class SBitSet implements IStateBitSet{
      * @return the number of bits currently in this bit set.
      */
     public int size() {
-        return words.length * BITS_PER_WORD;
+        return BITS_PER_WORD;
     }
 
     public boolean equals(Object obj) {
-        if (!(obj instanceof SBitSet))
+        if (!(obj instanceof OneWordSBitSet32))
             return false;
         if (this == obj)
             return true;
 
-        SBitSet set = (SBitSet) obj;
+        OneWordSBitSet32 set = (OneWordSBitSet32) obj;
 
         //checkInvariants();
         //set.checkInvariants();
 
-        if (wordsInUse != set.wordsInUse)
-            return false;
-
         // Check words in use by both BitSets
-        for (int i = 0; i < wordsInUse.get(); i++)
-            if (words[i] != set.words[i])
-                return false;
-
-        return true;
+        return words == set.words;
     }
 
     public IStateBitSet copy() {
         //if (!sizeIsSticky.get()) trimToSize();
-        SBitSet result = new SBitSet(environment, this.size());
-        result.wordsInUse.set(wordsInUse.get());
+        OneWordSBitSet32 result = new OneWordSBitSet32(environment, this.size());
         //result.sizeIsSticky.set(sizeIsSticky.get());
-        for (int i = 0; i < wordsInUse.get(); i++) {
-            result.words[i].set(words[i].get());
-        }
+        result.words.set(words.get());
         //result.checkInvariants();
         return result;
     }
@@ -927,8 +589,7 @@ public class SBitSet implements IStateBitSet{
     public String toString() {
         //checkInvariants();
 
-        int numBits = (wordsInUse.get() > 128) ?
-                cardinality() : wordsInUse.get() * BITS_PER_WORD;
+        int numBits = BITS_PER_WORD;
         StringBuilder b = new StringBuilder(6 * numBits + 2);
         b.append('{');
 
