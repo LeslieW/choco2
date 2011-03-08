@@ -36,10 +36,17 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.variables.integer.AbstractIntDomain;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.memory.IEnvironment;
+import choco.kernel.memory.IStateBitSet;
+import choco.kernel.memory.structure.OneWordSBitSet32;
+import choco.kernel.memory.structure.OneWordSBitSet64;
+import choco.kernel.memory.structure.SBitSet;
+import choco.kernel.memory.trailing.EnvironmentTrailing;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomain;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -198,20 +205,20 @@ public class BitSetIntDomainTest {
     public void test4() {
         logger.finer("test2");
         try {
-        yDom.removeVal(10, null, true);
-        yDom.removeVal(12, null, true);
-        yDom.removeVal(14, null, true);
-        yDom.removeVal(13, null, true);
-        yDom.updateSup(14);
-        yDom.instantiate(7, null, true);
-        assertEquals(7, yDom.getInf());
-        assertEquals(7, yDom.getSup());
-        assertEquals(1, yDom.getSize());
-        DisposableIntIterator it = yDom.getIterator();
-        assertTrue(it.hasNext());
-        assertEquals(7, it.next());
-        assertFalse(it.hasNext());
-        it.dispose();
+            yDom.removeVal(10, null, true);
+            yDom.removeVal(12, null, true);
+            yDom.removeVal(14, null, true);
+            yDom.removeVal(13, null, true);
+            yDom.updateSup(14);
+            yDom.instantiate(7, null, true);
+            assertEquals(7, yDom.getInf());
+            assertEquals(7, yDom.getSup());
+            assertEquals(1, yDom.getSize());
+            DisposableIntIterator it = yDom.getIterator();
+            assertTrue(it.hasNext());
+            assertEquals(7, it.next());
+            assertFalse(it.hasNext());
+            it.dispose();
         } catch (ContradictionException e) {
             assertTrue(false);
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -237,4 +244,73 @@ public class BitSetIntDomainTest {
             assertTrue(xDom.contains(val));
         }
     }
+
+
+    @Test
+    public void testSBitSetTest() {
+        IEnvironment env = new EnvironmentTrailing();
+        SBitSet bit = new SBitSet(env, 15);
+        testSBitSet(bit);
+    }
+
+    @Test
+    public void testOneWordSBitSet64Test() {
+        IEnvironment env = new EnvironmentTrailing();
+        OneWordSBitSet64 bit = new OneWordSBitSet64(env, 15);
+        testSBitSet(bit);
+    }
+
+    @Test
+    public void testOneWordSBitSet32Test() {
+        IEnvironment env = new EnvironmentTrailing();
+        OneWordSBitSet32 bit = new OneWordSBitSet32(env, 15);
+        testSBitSet(bit);
+    }
+
+    protected void testSBitSet(IStateBitSet bit) {
+        bit.set(2, 13);
+        StringBuffer st = new StringBuffer();
+        for (int i = bit.nextSetBit(0); i >= 0; i = bit.nextSetBit(i + 1)) {
+            st.append(i);
+        }
+        Assert.assertEquals("23456789101112", st.toString());
+        st.setLength(0);
+        for (int i = bit.nextClearBit(0); i >= 0 && i < 15; i = bit.nextClearBit(i + 1)) {
+            st.append(i);
+        }
+        Assert.assertEquals("011314", st.toString());
+        st.setLength(0);
+        for (int i = bit.prevSetBit(15); i >= 0; i = bit.prevSetBit(i - 1)) {
+            st.append(i);
+        }
+        Assert.assertEquals("12111098765432", st.toString());
+        st.setLength(0);
+        for (int i = bit.prevClearBit(14); i >= 0; i = bit.prevClearBit(i - 1)) {
+            st.append(i);
+        }
+        Assert.assertEquals("141310", st.toString());
+
+        bit.clear(4, 10);
+        st.setLength(0);
+        for (int i = bit.nextSetBit(0); i >= 0; i = bit.nextSetBit(i + 1)) {
+            st.append(i);
+        }
+        Assert.assertEquals("23101112", st.toString());
+        st.setLength(0);
+        for (int i = bit.nextClearBit(0); i >= 0 && i < 15; i = bit.nextClearBit(i + 1)) {
+            st.append(i);
+        }
+        Assert.assertEquals("014567891314", st.toString());
+        st.setLength(0);
+        for (int i = bit.prevSetBit(15); i >= 0; i = bit.prevSetBit(i - 1)) {
+            st.append(i);
+        }
+        Assert.assertEquals("12111032", st.toString());
+        st.setLength(0);
+        for (int i = bit.prevClearBit(14); i >= 0; i = bit.prevClearBit(i - 1)) {
+            st.append(i);
+        }
+        Assert.assertEquals("141398765410", st.toString());
+    }
+
 }

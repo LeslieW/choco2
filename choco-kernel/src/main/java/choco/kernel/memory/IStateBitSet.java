@@ -27,8 +27,6 @@
 
 package choco.kernel.memory;
 
-import choco.kernel.common.util.iterators.DisposableIntIterator;
-
 import java.util.BitSet;
 
 /**
@@ -40,44 +38,49 @@ import java.util.BitSet;
 public interface IStateBitSet {
 
 
-
-
     /**
-   * Number of bits on. Sums the number of on bits in each integer.
+     * Number of bits on. Sums the number of on bits in each integer.
+     *
      * @return the total number of bits on
      */
     int cardinality();
 
     /**
      * Size of the bitset
+     *
      * @return
      */
     int size();
 
     /**
-   * Puts the specified bit on.
+     * Puts the specified bit on.
+     *
      * @param bitIndex the bit to put on
      */
     void set(int bitIndex);
 
     /**
-   * Puts the specified bit off.
+     * Puts the specified bit off.
+     *
      * @param bitIndex the bit to put off
      */
     void clear(int bitIndex);
 
-  /**
-   * Remove all bits;
-   */
-  void clear();
+    /**
+     * Remove all bits;
+     */
+    void clear();
+
+    void clear(int fromIndex, int toIndex);
 
     void set(int index, boolean value);
+
     void set(int fromIdex, int toIndex);
 
     boolean get(int bitIndex);
 
     /**
-   * Returns the index of the first bit that is set to <code>true</code>
+     * Returns the index of the first bit that is set to <code>true</code>
      * that occurs on or after the specified starting index. If no such
      * bit exists then -1 is returned.
      * <p/>
@@ -97,15 +100,20 @@ public interface IStateBitSet {
     int nextSetBit(int fromIndex);
 
     /**
-   * Returns the index of the first bit that is set to <code>true</code>
+     * Returns the index of the first bit that is set to <code>true</code>
      * that occurs on or before the specified starting index. If no such
      * bit exists then -1 is returned.
+     *
      * @param fromIndex the index to start checking from (inclusive).
      * @return the index of the previous set bit.
      * @throws IndexOutOfBoundsException if the specified index is
-     * negative or too large
+     *                                   negative or too large
      */
     int prevSetBit(int fromIndex);
+
+    int nextClearBit(int fromIndex);
+
+    int prevClearBit(int fromIndex);
 
     int capacity();
 
@@ -114,16 +122,20 @@ public interface IStateBitSet {
     BitSet copyToBitSet();
 
 
-    void or (IStateBitSet other);
-    void and (IStateBitSet other);
-    void xor (IStateBitSet other);
+    void or(IStateBitSet other);
+
+    void and(IStateBitSet other);
+
+    void xor(IStateBitSet other);
+
     void andNot(IStateBitSet other);
+
     boolean intersects(IStateBitSet setI);
+
     void flip(int bitIndex);
+
     void flip(int fromIndex, int toIndex);
 
     boolean isEmpty();
-
-    DisposableIntIterator getCycleButIterator(int avoidIndex);
 
 }

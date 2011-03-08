@@ -34,6 +34,8 @@ import choco.kernel.common.util.iterators.OneValueIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
+import choco.kernel.memory.structure.OneWordSBitSet32;
+import choco.kernel.memory.structure.OneWordSBitSet64;
 import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.variables.integer.IBitSetIntDomain;
 
@@ -86,9 +88,9 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
     /**
      * Constructs a new domain for the specified variable and bounds.
      *
-     * @param v The involved variable.
-     * @param a Minimal value.
-     * @param b Maximal value.
+     * @param v                 The involved variable.
+     * @param a                 Minimal value.
+     * @param b                 Maximal value.
      * @param environment
      * @param propagationEngine
      */
@@ -98,7 +100,13 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
         capacity = b - a + 1;           // number of entries
         this.offset = a;
         size = environment.makeInt(capacity);
-        contents = environment.makeBitSet(capacity);
+        if (capacity < 32) {
+            contents = new OneWordSBitSet32(environment, capacity);
+        } else if (capacity < 64) {
+            contents = new OneWordSBitSet64(environment, capacity);
+        } else {
+            contents = environment.makeBitSet(capacity);
+        }
         contents.set(0, capacity);
         deltaDom = new BitSetDeltaDomain(capacity, offset);
         inf = environment.makeInt(a);
@@ -112,19 +120,25 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
         capacity = b - a + 1;           // number of entries
         this.offset = a;
         size = environment.makeInt(sortedValues.length);
-        contents = environment.makeBitSet(capacity);
+        if (capacity < 32) {
+            contents = new OneWordSBitSet32(environment, capacity);
+        } else if (capacity < 64) {
+            contents = new OneWordSBitSet64(environment, capacity);
+        } else {
+            contents = environment.makeBitSet(capacity);
+        }
         // TODO : could be improved...
         for (final int sortedValue : sortedValues) {
             contents.set(sortedValue - a);
         }
         deltaDom = new BitSetDeltaDomain(capacity, offset);
-        inf =  environment.makeInt(a);
-        sup =  environment.makeInt(b);
+        inf = environment.makeInt(a);
+        sup = environment.makeInt(b);
     }
 
-	public IStateBitSet getContent() {
-		return contents;
-	}
+    public IStateBitSet getContent() {
+        return contents;
+    }
 
     /**
      * Returns the minimal present value.
@@ -152,7 +166,7 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
     public int updateInf(final int x) {
         final int newi = x - offset;  // index of the new lower bound
         for (int i = inf.get() - offset; i < newi; i = contents.nextSetBit(i + 1)) {
-            assert(contents.get(i));
+            assert (contents.get(i));
             //LOGGER.severe("Bug in BitSetIntDomain.updateInf ?");
             removeIndex(i);
         }
@@ -169,9 +183,9 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
     public int updateSup(final int x) {
         final int newi = x - offset;  // index of the new lower bound
         for (int i = sup.get() - offset; i > newi; i = contents.prevSetBit(i - 1)) {
-                assert(contents.get(i));
-                //LOGGER.severe("Bug in BitSetIntDomain.updateSup ?");
-                removeIndex(i);
+            assert (contents.get(i));
+            //LOGGER.severe("Bug in BitSetIntDomain.updateSup ?");
+            removeIndex(i);
         }
         sup.set(contents.prevSetBit(newi) + offset);
         return sup.get();
@@ -204,8 +218,8 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
         //assert(i != firstIndexToBePropagated);
         //LOGGER.severe("Bug in BitSetIntDomain.removeIndex ?");
         contents.clear(i);
-        deltaDom.remove(i+offset);
-        assert(!contents.get(i)) ;
+        deltaDom.remove(i + offset);
+        assert (!contents.get(i));
         //LOGGER.severe("Bug in BitSetIntDomain.removeIndex ?");
         size.add(-1);
     }
@@ -216,19 +230,13 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
 
     public void restrict(final int x) {
         final int xi = x - offset;
-      // IF NEED REMOVALS
         for (int i = contents.nextSetBit(0); i >= 0; i = contents.nextSetBit(i + 1)) {
             if (i != xi) {
-                removeIndex(i);
+                removeIndex(i); // BEWARE: this is mandatory to feed the dela domain
             }
         }
-      // ELSE
-//      contents.clear();
-//      contents.set(xi);
-      // ENDIF
         sup.set(x);
         inf.set(x);
-//        size.set(1);
     }
 
     /**
@@ -239,10 +247,10 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
         return size.get();
     }
 
-  public DisposableIntIterator getIterator() {
-      if(getSize() == 1) return OneValueIterator.getIterator(getInf());
-      return BitSetIntDomainIterator.getIterator(offset, contents);
-  }
+    public DisposableIntIterator getIterator() {
+        if (getSize() == 1) return OneValueIterator.getIterator(getInf());
+        return BitSetIntDomainIterator.getIterator(offset, contents);
+    }
 
     /**
      * Returns the value following <code>x</code>
@@ -314,7 +322,7 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
         return (offset == 0) && (offset + capacity - 1 == 1);
     }
 
-  protected DisposableIntIterator _cachedDeltaIntDomainIterator = null;
+    protected DisposableIntIterator _cachedDeltaIntDomainIterator = null;
 
     public String toString() {
         return "{" + getInf() + "..." + getSup() + '}';
