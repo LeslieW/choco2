@@ -29,7 +29,6 @@ package choco.kernel.memory.trailing;
 
 
 import choco.kernel.memory.*;
-import choco.kernel.memory.IStateBinaryTree.Node;
 import choco.kernel.memory.trailing.trail.*;
 
 /**
@@ -55,22 +54,22 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 
 	//Contains all the {@link ITrailStorage} trails for
 	// storing different kinds of data.
-	private final StoredIntTrail intTrail;
-	private final StoredBoolTrail boolTrail;
-	private final StoredVectorTrail vectorTrail;
-	private final StoredIntVectorTrail intVectorTrail;
-	private final StoredLongVectorTrail longVectorTrail;
-	private final StoredDoubleVectorTrail doubleVectorTrail;
-	private final StoredDoubleTrail doubleTrail;
+	private StoredIntTrail intTrail;
+    private StoredBoolTrail boolTrail;
+    private StoredVectorTrail vectorTrail;
+    private StoredLongTrail longTrail;
+    private StoredIntVectorTrail intVectorTrail;
+    private StoredDoubleVectorTrail doubleVectorTrail;
+    private StoredDoubleTrail doubleTrail;
+    private StoredBinaryTreeTrail btreeTrail;
+    private StoredLongVectorTrail longVectorTrail;
 
-	private final StoredLongTrail longTrail;
-
-	private final StoredBinaryTreeTrail btreeTrail;
 	/**
 	 * Contains all the {@link ITrailStorage} trails for
 	 * storing different kinds of data.
 	 */
-	private final ITrailStorage[] trails;
+	private ITrailStorage[] trails;
+    private int trailSize;
 
 	/**
 	 * Constructs a new <code>IEnvironment</code> with
@@ -78,84 +77,49 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 	 */
 
 	public EnvironmentTrailing() {
-		boolTrail = new StoredBoolTrail(this, MaxHist, maxWorld);
-		intTrail = new StoredIntTrail(this, MaxHist, maxWorld);
-		vectorTrail = new StoredVectorTrail(this, MaxHist, maxWorld);
-		intVectorTrail = new StoredIntVectorTrail(this, MaxHist, maxWorld);
-		longVectorTrail = new StoredLongVectorTrail(this,MaxHist,maxWorld);
-		doubleVectorTrail = new StoredDoubleVectorTrail(this, MaxHist, maxWorld);
-		doubleTrail = new StoredDoubleTrail(this, MaxHist, maxWorld);
-		longTrail = new StoredLongTrail(this, MaxHist, maxWorld);
-		btreeTrail = new StoredBinaryTreeTrail(this, MaxHist, maxWorld);
-		trails = new ITrailStorage[]{
-				boolTrail,intTrail,vectorTrail, intVectorTrail, longVectorTrail,
-				doubleVectorTrail, doubleTrail,longTrail,btreeTrail
-		};
+		trails = new ITrailStorage[0];
+        trailSize = 0;
 	}
 
 	@Override
 	public void worldPush() {
-		//code optim.: replace loop by enumeration
-		intTrail.worldPush();
-		boolTrail.worldPush();
-		vectorTrail.worldPush();
-		intVectorTrail.worldPush();
-		longVectorTrail.worldPush();
-		doubleVectorTrail.worldPush();
-		doubleTrail.worldPush();
-		longTrail.worldPush();
-		btreeTrail.worldPush();
-		currentWorld++;
-		if (currentWorld + 1 == maxWorld) {
-			resizeWorldCapacity(maxWorld * 3 / 2);
-		}
+        final int wi = currentWorld + 1;
+        for (int i = 0; i < trailSize; i++) {
+            trails[i].worldPush(wi);
+        }
+        currentWorld++;
+        if (wi == maxWorld - 1) {
+            resizeWorldCapacity(maxWorld * 3 / 2);
+        }
 	}
 
 
 	@Override
 	public void worldPop() {
-		//code optim.: replace loop by enumeration
-		intTrail.worldPop();
-		boolTrail.worldPop();
-		vectorTrail.worldPop();
-		intVectorTrail.worldPop();
-		longVectorTrail.worldPop();
-		doubleVectorTrail.worldPop();
-		doubleTrail.worldPop();
-		longTrail.worldPop();
-		btreeTrail.worldPop();
-		currentWorld--;
+		final int wi = currentWorld;
+        for (int i = trailSize-1; i >= 0; i--) {
+            trails[i].worldPop(wi);
+        }
+        currentWorld--;
 	}
 
 	@Override
 	public void worldCommit() {
-		//code optim.: replace loop by enumeration;
 		if (currentWorld == 0) {
 			throw new IllegalStateException("Commit in world 0?");
 		}
-		intTrail.worldCommit();
-		boolTrail.worldCommit();
-		vectorTrail.worldCommit();
-		intVectorTrail.worldCommit();
-		longVectorTrail.worldCommit();
-		doubleVectorTrail.worldCommit();
-		doubleTrail.worldCommit();
-		longTrail.worldCommit();
-		btreeTrail.worldCommit();
+		final int wi = currentWorld;
+        for (int i = trailSize; i >= 0; i--) {
+            trails[i].worldCommit(wi);
+        }
 		currentWorld--;
 	}
 
     @Override
     public void clear() {
-        boolTrail.clear();
-		intTrail.clear();
-		vectorTrail.clear();
-		intVectorTrail.clear();
-		longVectorTrail.clear();
-		doubleVectorTrail.clear();
-		doubleTrail.clear();
-		longTrail.clear();
-		btreeTrail.clear();
+        for (int i = trailSize; i >= 0; i--) {
+            trails[i].clear();
+        }
     }
 
     @Override
@@ -266,105 +230,109 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 
 	public int getTrailSize() {
 		int s = 0;
-		for (final ITrailStorage trail : trails) {
-			s += trail.getSize();
-		}
+		for (int i = 0; i < trailSize; i++) {
+            s+=trails[i].getSize();
+        }
 		return s;
 	}
 
-	public int getIntTrailSize() {
-		return intTrail.getSize();
-	}
-
-	public int getBoolTrailSize() {
-		return boolTrail.getSize();
-	}
-
-	public int getIntVectorTrailSize() {
-		return intVectorTrail.getSize();
-	}
-	public int getDoubleVectorTrailSize() {
-		return doubleVectorTrail.getSize();
-	}
-
-	public int getFloatTrailSize() {
-		return doubleTrail.getSize();
-	}
-
-	public int getLongTrailSize() {
-		return longTrail.getSize();
-	}
-
-	public int getVectorTrailSize() {
-		return vectorTrail.getSize();
-	}
-
-	public int getBinaryTreeTrailSize() {
-		return btreeTrail.getSize();
-	}
-
 	private void resizeWorldCapacity(final int newWorldCapacity) {
-		for (final ITrailStorage trail : trails) {
-			trail.resizeWorldCapacity(newWorldCapacity);
-		}
+		for (int i = 0; i < trailSize; i++) {
+            trails[i].resizeWorldCapacity(newWorldCapacity);
+        }
 		maxWorld = newWorldCapacity;
 	}
 
-	/**
-	 * Reacts when a StoredInt is modified: push the former value & timestamp
-	 * on the stacks.
-	 */
-	public void savePreviousState(final StoredInt v, final int oldValue, final int oldStamp) {
-		intTrail.savePreviousState(v, oldValue, oldStamp);
-	}
+    //****************************************************************************************************************//
+    //************************************* TRAIL GETTER *************************************************************//
+    //****************************************************************************************************************//
 
-	/**
-	 * Reacts when a StoredDouble is modified: push the former value & timestamp
-	 * on the stacks.
-	 */
-	public void savePreviousState(final StoredDouble v, final double oldValue, final int oldStamp) {
-		doubleTrail.savePreviousState(v, oldValue, oldStamp);
-	}
+    private void increaseTrail() {
+        ITrailStorage[] tmp = trails;
+        trails = new ITrailStorage[tmp.length + 1];
+        System.arraycopy(tmp, 0, trails, 0, tmp.length);
+    }
 
-	/**
-	 * Reacts when a StoredDouble is modified: push the former value & timestamp
-	 * on the stacks.
-	 */
-	public void savePreviousState(final StoredLong v, final long oldValue, final int oldStamp) {
-		longTrail.savePreviousState(v, oldValue, oldStamp);
-	}
+    protected StoredIntTrail getIntTrail() {
+        if (intTrail == null) {
+            intTrail = new StoredIntTrail(MaxHist, maxWorld);
+            increaseTrail();
+            trails[trailSize++] = intTrail;
+        }
+        return intTrail;
+    }
 
-	/**
-	 * Reacts when a StoredBool is modified: push the former value & timestamp
-	 * on the stacks.
-	 */
-	public void savePreviousState(final StoredBool v, final boolean oldValue, final int oldStamp) {
-		boolTrail.savePreviousState(v, oldValue, oldStamp);
-	}
-	/**
-	 * Reacts when a StoredVector is modified: push the former value & timestamp
-	 * on the stacks.
-	 */
-	public void savePreviousState(final StoredIntVector v, final int index, final int oldValue, final int oldStamp) {
-		intVectorTrail.savePreviousState(v, index, oldValue, oldStamp);
-	}
-	public void savePreviousState(final StoredLongVector v, final int index, final long oldValue, final int oldStamp) {
-		longVectorTrail.savePreviousState(v, index, oldValue, oldStamp);
-	}
+    protected StoredLongTrail getLongTrail() {
+        if (longTrail == null) {
+            longTrail = new StoredLongTrail(MaxHist, maxWorld);
+            increaseTrail();
+            trails[trailSize++] = longTrail;
+        }
+        return longTrail;
+    }
 
-	public <E> void savePreviousState(final StoredVector<E> v, final int index, final E oldValue, final int oldStamp) {
-		vectorTrail.savePreviousState(v, index, oldValue, oldStamp);
-	}
+    protected StoredBoolTrail getBoolTrail() {
+        if (boolTrail == null) {
+            boolTrail = new StoredBoolTrail(MaxHist, maxWorld);
+            increaseTrail();
+            trails[trailSize++] = boolTrail;
+        }
+        return boolTrail;
+    }
 
-	public <E> void savePreviousState(final IStateBinaryTree v, final Node n, final int op) {
-		btreeTrail.stack(v, n,op);
-	}
+    protected StoredDoubleTrail getDoubleTrail() {
+        if (doubleTrail == null) {
+            doubleTrail = new StoredDoubleTrail(MaxHist, maxWorld);
+            increaseTrail();
+            trails[trailSize++] = doubleTrail;
+        }
+        return doubleTrail;
+    }
+
+    protected StoredVectorTrail getVectorTrail() {
+        if (vectorTrail == null) {
+            vectorTrail = new StoredVectorTrail(MaxHist, maxWorld);
+            increaseTrail();
+            trails[trailSize++] = vectorTrail;
+        }
+        return vectorTrail;
+    }
+
+    protected StoredIntVectorTrail getIntVectorTrail() {
+        if (intVectorTrail == null) {
+            intVectorTrail = new StoredIntVectorTrail(MaxHist, maxWorld);
+            increaseTrail();
+            trails[trailSize++] = intVectorTrail;
+        }
+        return intVectorTrail;
+    }
+
+    protected StoredDoubleVectorTrail getDoubleVectorTrail() {
+        if (doubleVectorTrail == null) {
+            doubleVectorTrail = new StoredDoubleVectorTrail(MaxHist, maxWorld);
+            increaseTrail();
+            trails[trailSize++] = doubleVectorTrail;
+        }
+        return doubleVectorTrail;
+    }
+
+    protected StoredLongVectorTrail getLongVectorTrail() {
+        if (longVectorTrail == null) {
+            longVectorTrail = new StoredLongVectorTrail(MaxHist, maxWorld);
+            increaseTrail();
+            trails[trailSize++] = longVectorTrail;
+        }
+        return longVectorTrail;
+    }
 
 
-	public void savePreviousState(final StoredDoubleVector v,
-			final int index, final double oldValue, final int oldStamp) {
-		doubleVectorTrail.savePreviousState(v, index, oldValue, oldStamp);
-
-	}
+    public StoredBinaryTreeTrail getBinaryTreeTrail() {
+        if (btreeTrail == null) {
+            btreeTrail = new StoredBinaryTreeTrail(MaxHist, maxWorld);
+            increaseTrail();
+            trails[trailSize++] = btreeTrail;
+        }
+        return btreeTrail;
+    }
 }
 

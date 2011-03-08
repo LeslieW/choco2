@@ -27,7 +27,6 @@
 
 package choco.kernel.memory.trailing.trail;
 
-import choco.kernel.memory.trailing.EnvironmentTrailing;
 import choco.kernel.memory.trailing.StoredDouble;
 
 
@@ -36,13 +35,6 @@ import choco.kernel.memory.trailing.StoredDouble;
  * of all the float variables.
  */
 public class StoredDoubleTrail implements ITrailStorage {
-
-
-	/**
-	 * Reference towards the overall environment
-	 * (responsible for all memory management).
-	 */
-	private final EnvironmentTrailing environment;
 
 	/**
 	 * Stack of backtrackable search variables.
@@ -78,13 +70,11 @@ public class StoredDoubleTrail implements ITrailStorage {
 
 	/**
 	 * Constructs a trail with predefined size.
-	 * @param env the environment responsible of managing worlds
-	 * @param nUpdates maximal number of updates that will be stored
-	 * @param nWorlds  maximal number of worlds that will be stored
-	 */
-	public StoredDoubleTrail(final EnvironmentTrailing env, final int nUpdates,
-			final int nWorlds) {
-		environment = env;
+     * @param nUpdates maximal number of updates that will be stored
+     * @param nWorlds  maximal number of worlds that will be stored
+     */
+	public StoredDoubleTrail(int nUpdates,
+                             int nWorlds) {
 		currentLevel = 0;
 		maxUpdates = nUpdates;
 		variableStack = new StoredDouble[maxUpdates];
@@ -100,16 +90,18 @@ public class StoredDoubleTrail implements ITrailStorage {
 
 	/**
 	 * Moving up to the next world.
-	 */
-	public void worldPush() {
-		worldStartLevels[environment.getWorldIndex() + 1] = currentLevel;
+     * @param wi
+     */
+	public void worldPush(int wi) {
+		worldStartLevels[wi] = currentLevel;
 	}
 
 	/**
 	 * Moving down to the previous world.
-	 */
-	public void worldPop() {
-		while (currentLevel > worldStartLevels[environment.getWorldIndex()]) {
+     * @param wi
+     */
+	public void worldPop(int wi) {
+		while (currentLevel > worldStartLevels[wi]) {
 			currentLevel--;
 			final StoredDouble v = variableStack[currentLevel];
 			v._set(valueStack[currentLevel], stampStack[currentLevel]);
@@ -126,8 +118,9 @@ public class StoredDoubleTrail implements ITrailStorage {
 
 	/**
 	 * Commits a world: merging it with the previous one.
-	 */
-	public void worldCommit() {
+     * @param wi
+     */
+	public void worldCommit(int wi) {
 		// principle:
 		//   currentLevel decreases to end of previous world
 		//   updates of the committed world are scanned:
@@ -135,8 +128,8 @@ public class StoredDoubleTrail implements ITrailStorage {
 		//      -> remove the update (garbage collecting this position for 
 		//        the next update)
 		//     otherwise update the worldStamp
-		final int startLevel = worldStartLevels[environment.getWorldIndex()];
-		final int prevWorld = environment.getWorldIndex() - 1;
+		final int startLevel = worldStartLevels[wi];
+		final int prevWorld = wi - 1;
 		int writeIdx = startLevel;
 		for (int level = startLevel; level < currentLevel; level++) {
 			final StoredDouble var = variableStack[level];

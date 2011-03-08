@@ -44,6 +44,8 @@ public final class StoredDouble extends AbstractStoredObject implements IStateDo
 
 	private double currentValue;
 
+    protected final StoredDoubleTrail myTrail;
+
 
 	/**
 	 * Constructs a stored search with an initial value.
@@ -55,6 +57,7 @@ public final class StoredDouble extends AbstractStoredObject implements IStateDo
 		super(env);
 		currentValue = d;
 		worldStamp = env.getWorldIndex();
+        myTrail = env.getDoubleTrail();
 	}
 
 
@@ -67,7 +70,7 @@ public final class StoredDouble extends AbstractStoredObject implements IStateDo
 	public void set(final double y) {
 		if (y != currentValue) {
 			if (this.worldStamp < environment.getWorldIndex()) {
-				environment.savePreviousState(this, currentValue, worldStamp);
+				myTrail.savePreviousState(this, currentValue, worldStamp);
 				worldStamp = environment.getWorldIndex();
 			}
 			currentValue = y;

@@ -27,7 +27,6 @@
 
 package choco.kernel.memory.trailing.trail;
 
-import choco.kernel.memory.trailing.EnvironmentTrailing;
 import choco.kernel.memory.trailing.StoredInt;
 
 
@@ -37,14 +36,6 @@ import choco.kernel.memory.trailing.StoredInt;
  * @see ITrailStorage
  */
 public final class StoredIntTrail implements ITrailStorage {
-	
-
-	/**
-	 * Reference towards the overall environment
-	 * (responsible for all memory management).
-	 */
-
-	private final EnvironmentTrailing environment;
 
 
 	/**
@@ -91,12 +82,11 @@ public final class StoredIntTrail implements ITrailStorage {
 	/**
 	 * Constructs a trail with predefined size.
 	 *
-	 * @param nUpdates maximal number of updates that will be stored
-	 * @param nWorlds  maximal number of worlds that will be stored
-	 */
+     * @param nUpdates maximal number of updates that will be stored
+     * @param nWorlds  maximal number of worlds that will be stored
+     */
 
-	public StoredIntTrail(EnvironmentTrailing env, int nUpdates, int nWorlds) {
-		environment = env;
+	public StoredIntTrail(int nUpdates, int nWorlds) {
 		currentLevel = 0;
 		maxUpdates = nUpdates;
 		variableStack = new StoredInt[maxUpdates];
@@ -113,19 +103,21 @@ public final class StoredIntTrail implements ITrailStorage {
 
 	/**
 	 * Moving up to the next world.
-	 */
+     * @param wi
+     */
 
-	public void worldPush() {
-		worldStartLevels[environment.getWorldIndex() + 1] = currentLevel;
+	public void worldPush(int wi) {
+		worldStartLevels[wi] = currentLevel;
 	}
 
 
 	/**
 	 * Moving down to the previous world.
-	 */
+     * @param wi
+     */
 
-	public void worldPop() {
-		while (currentLevel > worldStartLevels[environment.getWorldIndex()]) {
+	public void worldPop(int wi) {
+		while (currentLevel > worldStartLevels[wi]) {
 			currentLevel--;
 			final StoredInt v = variableStack[currentLevel];
 			v._set(valueStack[currentLevel], stampStack[currentLevel]);
@@ -144,16 +136,17 @@ public final class StoredIntTrail implements ITrailStorage {
 
 	/**
 	 * Comits a world: merging it with the previous one.
-	 */
+     * @param wi
+     */
 
-	public void worldCommit() {
+	public void worldCommit(int wi) {
 		// principle:
 		//   currentLevel decreases to end of previous world
 		//   updates of the committed world are scanned:
 		//     if their stamp is the previous one (merged with the current one) -> remove the update (garbage collecting this position for the next update)
 		//     otherwise update the worldStamp
-		final int startLevel = worldStartLevels[environment.getWorldIndex()];
-		final int prevWorld = environment.getWorldIndex() - 1;
+		final int startLevel = worldStartLevels[wi];
+		final int prevWorld = wi - 1;
 		int writeIdx = startLevel;
 		for (int level = startLevel; level < currentLevel; level++) {
 			final StoredInt var = variableStack[level];

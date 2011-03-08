@@ -116,6 +116,8 @@ public interface IStateBinaryTree {
          */
         public Node rightNode;
 
+        protected final StoredBinaryTreeTrail myTrail;
+
         /**
          * Construct a new node (interval)
          * @param tree the tree the node belongs to
@@ -129,6 +131,7 @@ public interface IStateBinaryTree {
             this.sup = sup;
             infStamp = tree.getEnvironment().getWorldIndex();
             supStamp = tree.getEnvironment().getWorldIndex();
+            this.myTrail = tree.getEnvironment().getBinaryTreeTrail();
         }
 
         /**
@@ -175,7 +178,7 @@ public interface IStateBinaryTree {
             {
                 if (this.infStamp <= tree.getEnvironment().getWorldIndex())
                 {
-                    tree.getEnvironment().savePreviousState(tree,this,INF);
+                    myTrail.stack(tree,this,INF);
                     this.infStamp = tree.getEnvironment().getWorldIndex();
                 }
                 this.inf = newInf;
@@ -211,7 +214,7 @@ public interface IStateBinaryTree {
 
                 if (this.supStamp <= tree.getEnvironment().getWorldIndex())
                 {
-                    tree.getEnvironment().savePreviousState(tree,this,SUP);
+                    myTrail.stack(tree,this,SUP);
                     this.supStamp = tree.getEnvironment().getWorldIndex();
                 }
                 this.sup = newSup;
