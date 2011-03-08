@@ -37,10 +37,12 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.integer.extension.LargeRelation;
 import choco.kernel.solver.constraints.integer.extension.TuplesTest;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -768,7 +770,7 @@ public class NaryRelationTest {
         tuples.add(new int[] { 1, 100000 });
         tuples.add(new int[] { 4, 100000 });
 
-        m.addConstraint(Choco.feasTupleAC(tuples, new IntegerVariable[] { v1, v2 }));
+        m.addConstraint(Choco.feasTupleAC(tuples, v1, v2));
 
         s.read(m);
         
@@ -788,6 +790,58 @@ public class NaryRelationTest {
         m.addConstraint(Choco.feasTupleFC(tuples, vs));
 
         s.read(m);
+    }
+
+    @Test
+	public void testSDEM1() throws ContradictionException {
+
+		IntegerVariable x = makeIntVar("x", 1, 5, Options.V_BOUND);
+		IntegerVariable y = makeIntVar("y", 1, 5, Options.V_BOUND);
+		ArrayList<int[]> goodTuples = new ArrayList<int[]>();
+		goodTuples.add(new int[]{1, 1});
+		goodTuples.add(new int[]{2, 2});
+		goodTuples.add(new int[]{3, 3});
+		goodTuples.add(new int[]{4, 4});
+		goodTuples.add(new int[]{5, 5});
+        goodTuples.add(new int[]{6, 6});
+        goodTuples.add(new int[]{7, 7});
+        goodTuples.add(new int[]{8, 8});
+        goodTuples.add(new int[]{9, 9});
+        goodTuples.add(new int[]{10, 10});
+		m.addConstraint(feasTupleFC(goodTuples, x, y));
+		s.read(m);
+        s.propagate();
+        IntDomainVar X = s.getVar(x);
+        IntDomainVar Y = s.getVar(y);
+        X.instantiate(3, null, false);
+        s.propagate();
+        Assert.assertTrue("Y is not instantiated", Y.isInstantiated());
+    }
+
+    @Test
+	public void testSDEM2() throws ContradictionException {
+
+		IntegerVariable x = makeIntVar("x", 1, 10, Options.V_BOUND);
+		IntegerVariable y = makeIntVar("y", 1, 10, Options.V_BOUND);
+		ArrayList<int[]> goodTuples = new ArrayList<int[]>();
+		goodTuples.add(new int[]{1, 1});
+		goodTuples.add(new int[]{2, 2});
+		goodTuples.add(new int[]{3, 3});
+		goodTuples.add(new int[]{4, 4});
+		goodTuples.add(new int[]{5, 5});
+        goodTuples.add(new int[]{6, 6});
+        goodTuples.add(new int[]{7, 7});
+        goodTuples.add(new int[]{8, 8});
+        goodTuples.add(new int[]{9, 9});
+        goodTuples.add(new int[]{10, 10});
+		m.addConstraint(feasTupleAC(goodTuples, x, y));
+		s.read(m);
+        s.propagate();
+        IntDomainVar X = s.getVar(x);
+        IntDomainVar Y = s.getVar(y);
+        X.instantiate(3, null, false);
+        s.propagate();
+        Assert.assertTrue("Y is not instantiated", Y.isInstantiated());
     }
 
 
