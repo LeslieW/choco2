@@ -33,7 +33,6 @@ import choco.cp.solver.constraints.integer.GreaterOrEqualXC;
 import choco.cp.solver.constraints.integer.LessOrEqualXC;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.tools.StringUtils;
-import choco.kernel.memory.MemoryException;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -185,16 +184,18 @@ public class SolverTest {
 
 	}
 
-    @Test(expected = MemoryException.class)
+    @Test
     public void testDeletSetConstraint(){
         SetVar sv = solver.createBoundSetVar("sv", 0, 10);
         IntDomainVar iv = solver.createEnumIntVar("sv", 0, 10);
         final AbstractSConstraint c1 = (AbstractSConstraint)solver.eq(iv, 3);
         final AbstractSConstraint c2 = (AbstractSConstraint)solver.eqCard(sv, 3);
+        int nbC = solver.getNbIntConstraints();
         solver.post(c1);
         solver.post(c2);
         solver.eraseConstraint(c1);
         solver.eraseConstraint(c2);
+        Assert.assertEquals(nbC, solver.getNbIntConstraints());
     }
 
     @Test

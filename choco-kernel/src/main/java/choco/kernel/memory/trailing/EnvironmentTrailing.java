@@ -109,7 +109,7 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 			throw new IllegalStateException("Commit in world 0?");
 		}
 		final int wi = currentWorld;
-        for (int i = trailSize; i >= 0; i--) {
+        for (int i = trailSize-1; i >= 0; i--) {
             trails[i].worldCommit(wi);
         }
 		currentWorld--;
@@ -117,7 +117,7 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 
     @Override
     public void clear() {
-        for (int i = trailSize; i >= 0; i--) {
+        for (int i = trailSize-1; i >= 0; i--) {
             trails[i].clear();
         }
     }
