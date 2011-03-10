@@ -89,15 +89,16 @@ public final class GAC3rmLargeConstraint extends CspLargeSConstraint {
     }
 
     @Override
-	public AbstractSConstraint opposite(Solver solver) {
-		LargeRelation rela2 = (LargeRelation) ((ConsistencyRelation) relation).getOpposite();
-		AbstractSConstraint ct = new GAC3rmLargeConstraint(vars, rela2);
-		return ct;
-	}
+    public AbstractSConstraint opposite(Solver solver) {
+        LargeRelation rela2 = (LargeRelation) ((ConsistencyRelation) relation).getOpposite();
+        AbstractSConstraint ct = new GAC3rmLargeConstraint(vars, rela2);
+        return ct;
+    }
 
     public int getFilteredEventMask(int idx) {
         return IntVarEvent.INSTINT_MASK + IntVarEvent.REMVAL_MASK;
     }
+
     /**
      * initialize the supports of each value of indexVar
      *
@@ -110,19 +111,28 @@ public final class GAC3rmLargeConstraint extends CspLargeSConstraint {
         int val;
         if (vars[indexVar].hasEnumeratedDomain()) {
             DisposableIntIterator it = dom.getIterator();
-            try{
-            while(it.hasNext()) {
-                val = it.next();
-                if (lastSupport(indexVar, val)[0] == Integer.MIN_VALUE) { // no supports initialized yet for this value
-                    currentSupport = seekNextSupport(indexVar, val);
-                    if (currentSupport != null) {
-                        setSupport(currentSupport);
-                    } else {
-                        vars[indexVar].removeVal(val, this, false);
+            int left = Integer.MIN_VALUE;
+            int right = left;
+            try {
+                while (it.hasNext()) {
+                    val = it.next();
+                    if (lastSupport(indexVar, val)[0] == Integer.MIN_VALUE) { // no supports initialized yet for this value
+                        currentSupport = seekNextSupport(indexVar, val);
+                        if (currentSupport != null) {
+                            setSupport(currentSupport);
+                        } else {
+                            if (val == right + 1) {
+                                right = val;
+                            } else {
+                                vars[indexVar].removeInterval(left, right, this, false);
+                                left = right = val;
+                            }
+//                        vars[indexVar].removeVal(val, this, false);
+                        }
                     }
                 }
-            }
-            }finally {
+                vars[indexVar].removeInterval(left, right, this, false);
+            } finally {
                 it.dispose();
             }
         } else {
@@ -154,7 +164,9 @@ public final class GAC3rmLargeConstraint extends CspLargeSConstraint {
         int val;
         if (vars[indexVar].hasEnumeratedDomain()) {
             DisposableIntIterator it = dom.getIterator();
-            try{
+            int left = Integer.MIN_VALUE;
+            int right = left;
+            try {
                 while (it.hasNext()) {
                     val = it.next();
                     if (!isValid(lastSupport(indexVar, val))) {
@@ -162,10 +174,17 @@ public final class GAC3rmLargeConstraint extends CspLargeSConstraint {
                         if (currentSupport != null) {
                             setSupport(currentSupport);
                         } else {
-                            vars[indexVar].removeVal(val, this, false);
+                            if (val == right + 1) {
+                                right = val;
+                            } else {
+                                vars[indexVar].removeInterval(left, right, this, false);
+                                left = right = val;
+                            }
+//                            vars[indexVar].removeVal(val, this, false);
                         }
                     }
                 }
+                vars[indexVar].removeInterval(left, right, this, false);
             } finally {
                 it.dispose();
             }

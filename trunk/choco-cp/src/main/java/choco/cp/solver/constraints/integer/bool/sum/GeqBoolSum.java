@@ -48,6 +48,16 @@ public final class GeqBoolSum extends AbstractBoolSum {
 		boolSumS.awakeOnGeq();
 	}
 
+    @Override
+    public void awake() throws ContradictionException {
+        int max = boolSumS.computeUbFromScratch();
+        int val = boolSumS.bValue;
+        if(max < val){
+            this.fail();
+        }
+        this.propagate();
+    }
+
 	@Override
 	public void propagate() throws ContradictionException {
 		if( boolSumS.filterGeq()) {

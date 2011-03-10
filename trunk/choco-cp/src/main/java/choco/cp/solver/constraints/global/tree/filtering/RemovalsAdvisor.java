@@ -230,6 +230,7 @@ public class RemovalsAdvisor {
             filter = true;
             treeParams.getObjective().updateInf(minObjective, this.treeConst, false);
         }
+        int left, right;
         for (int i = 0; i < nbNodes; i++) {
             IntDomainVar var_i = nodes[i].getSuccessors();
             if (updateStart) {
@@ -238,20 +239,28 @@ public class RemovalsAdvisor {
                 if (minStart[i] > nodes[i].getTimeWindow().getInf())
                     nodes[i].getTimeWindow().updateInf(minStart[i], this.treeConst, false);
             }
+            left = right = Integer.MIN_VALUE;
             for (int j = graphRem[i].nextSetBit(0); j >= 0; j = graphRem[i].nextSetBit(j + 1)) {
                 if (var_i.canBeInstantiatedTo(j)) {
                     filter = true;
                     if (afficheRemovals)
                         LOGGER.info("1-Removals: suppression effective de l'arc (" + i + "," + j + ")");
-                    var_i.removeVal(j, this.treeConst, false);
+//                    var_i.removeVal(j, this.treeConst, false);
+                    if (j == right + 1) {
+                        right = j;
+                    } else {
+                        var_i.removeInterval(left, right, this.treeConst, false);
+                        left = right = j;
+                    }
                 }
                 if (var_i.isInstantiatedTo(j) && i != j) {
                     if (afficheRemovals)
                         LOGGER.info("1-Removals: suppression de l'arc (" + i + "," + j + ") qui est instancie => FAIL");
-                    var_i.removeVal(j, this.treeConst, false);
+                    this.treeConst.fail();
                     compatible = false;
                 }
             }
+            var_i.removeInterval(left, right, this.treeConst, false);
             if (var_i.isInstantiated() && !trueGraph[i].get(var_i.getVal())) {
                 int j = var_i.getVal();
                 IntDomainVar var_j = nodes[j].getSuccessors();
@@ -265,7 +274,7 @@ public class RemovalsAdvisor {
                     if (var_j.isInstantiatedTo(i) && i != j) {
                         if (afficheRemovals)
                             LOGGER.info("2-Removals: suppression de l'arc (" + j + "," + i + ") qui est instancie => FAIL");
-                        var_j.removeVal(i, this.treeConst, false);
+                        this.treeConst.fail();
                         compatible = false;
                     }
                 }

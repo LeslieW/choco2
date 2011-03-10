@@ -38,43 +38,53 @@ import java.util.Arrays;
 
 public final class EqBoolSum extends AbstractBoolSum {
 
-	public EqBoolSum(IEnvironment environment, IntDomainVar[] vars, int bValue) {
-		super(environment, vars, bValue);
-	}
+    public EqBoolSum(IEnvironment environment, IntDomainVar[] vars, int bValue) {
+        super(environment, vars, bValue);
+    }
 
-	@Override
-	public void awakeOnInst(int idx) throws ContradictionException {
-		super.awakeOnInst(idx);
-		boolSumS.awakeOnEq();
-	}
+    @Override
+    public void awakeOnInst(int idx) throws ContradictionException {
+        super.awakeOnInst(idx);
+        boolSumS.awakeOnEq();
+    }
 
-	@Override
-	public void propagate() throws ContradictionException {
-		if( boolSumS.filterLeq() && boolSumS.filterGeq() ) {
-			super.propagate();
-		}
-	}
+    @Override
+    public void awake() throws ContradictionException {
+        int min = boolSumS.computeLbFromScratch();
+        int max = boolSumS.computeUbFromScratch();
+        int val = boolSumS.bValue;
+        if(val < min || max < val){
+            this.fail();
+        }
+        this.propagate();
+    }
 
-	@Override
-	public boolean isSatisfied(int[] tuple) {
-		return MathUtils.sum(tuple) == boolSumS.bValue;
-	}
+    @Override
+    public void propagate() throws ContradictionException {
+        if (boolSumS.filterLeq() && boolSumS.filterGeq()) {
+            super.propagate();
+        }
+    }
 
-	@Override
-	public Boolean isEntailed() {
-		return boolSumS.isEntailedEq();
-	}
+    @Override
+    public boolean isSatisfied(int[] tuple) {
+        return MathUtils.sum(tuple) == boolSumS.bValue;
+    }
 
-	@Override
-	public AbstractSConstraint opposite(Solver solver) {
-		return new NeqBoolSum(solver.getEnvironment(), Arrays.copyOf(vars, vars.length), boolSumS.bValue);
-	}
+    @Override
+    public Boolean isEntailed() {
+        return boolSumS.isEntailedEq();
+    }
 
-	@Override
-	public String pretty() {
-		return boolSumS.pretty("==");
-	}
-	
-	
+    @Override
+    public AbstractSConstraint opposite(Solver solver) {
+        return new NeqBoolSum(solver.getEnvironment(), Arrays.copyOf(vars, vars.length), boolSumS.bValue);
+    }
+
+    @Override
+    public String pretty() {
+        return boolSumS.pretty("==");
+    }
+
 
 }

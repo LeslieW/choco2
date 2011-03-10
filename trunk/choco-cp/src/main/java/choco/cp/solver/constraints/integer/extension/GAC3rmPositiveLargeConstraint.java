@@ -133,23 +133,32 @@ public final class GAC3rmPositiveLargeConstraint extends CspLargeSConstraint {
      */
     public void reviseVar(final int indexVar) throws ContradictionException {
         DisposableIntIterator itv = vars[indexVar].getDomain().getIterator();
-        try{
-        while (itv.hasNext()) {
-            int val = itv.next();
-            int nva = val - relation.getRelationOffset(indexVar);
-            int currentIdxSupport = getSupport(indexVar, val);
-            //check the residual support !
-            if (!valcheck.isValid(relation.getTuple(currentIdxSupport))) {
-                //the residual support is not valid anymore, seek a new one
-                currentIdxSupport = seekNextSupport(indexVar, nva);
-                if (currentIdxSupport == NO_SUPPORT) {
-                    vars[indexVar].removeVal(val, this, false);
-                } else {
-                    setSupport(currentIdxSupport);
+        int left = Integer.MIN_VALUE;
+        int right = left;
+        try {
+            while (itv.hasNext()) {
+                int val = itv.next();
+                int nva = val - relation.getRelationOffset(indexVar);
+                int currentIdxSupport = getSupport(indexVar, val);
+                //check the residual support !
+                if (!valcheck.isValid(relation.getTuple(currentIdxSupport))) {
+                    //the residual support is not valid anymore, seek a new one
+                    currentIdxSupport = seekNextSupport(indexVar, nva);
+                    if (currentIdxSupport == NO_SUPPORT) {
+                        if (val == right + 1) {
+                            right = val;
+                        } else {
+                            vars[indexVar].removeInterval(left, right, this, false);
+                            left = right = val;
+                        }
+//                        vars[indexVar].removeVal(val, this, false);
+                    } else {
+                        setSupport(currentIdxSupport);
+                    }
                 }
             }
-        }
-        }finally {
+            vars[indexVar].removeInterval(left, right, this, false);
+        } finally {
             itv.dispose();
         }
     }
@@ -199,15 +208,26 @@ public final class GAC3rmPositiveLargeConstraint extends CspLargeSConstraint {
     public void initSupports() throws ContradictionException {
         for (int i = 0; i < vars.length; i++) {
             DisposableIntIterator itv = vars[i].getDomain().getIterator();
-            try{
-            while (itv.hasNext()) {
-                int val = itv.next();
-                int nva = val - relation.getRelationOffset(i);
-                if (tab[i][nva].length == 0)
-                    vars[i].removeVal(val, this, false);
-                else setSupport(tab[i][nva][0]);
-            }
-            }finally {
+            int left = Integer.MIN_VALUE;
+            int right = left;
+            try {
+                while (itv.hasNext()) {
+                    int val = itv.next();
+                    int nva = val - relation.getRelationOffset(i);
+                    if (tab[i][nva].length == 0) {
+                        if (val == right + 1) {
+                            right = val;
+                        } else {
+                            vars[i].removeInterval(left, right, this, false);
+                            left = right = val;
+                        }
+//                        vars[i].removeVal(val, this, false);
+                    } else {
+                        setSupport(tab[i][nva][0]);
+                    }
+                }
+                vars[i].removeInterval(left, right, this, false);
+            } finally {
                 itv.dispose();
             }
         }
@@ -311,29 +331,3 @@ public final class GAC3rmPositiveLargeConstraint extends CspLargeSConstraint {
         return false;
     }
 }
-
-/**
- public void reviseVar(int indexVar) throws ContradictionException {
- int nblostsup = getUBNbLostSupports(indexVar);
- if (minSupports[indexVar] <= nblostsup) {
- IntIterator itv = vars[indexVar].getDomain().getIterator();
- while (itv.hasNext()) {
- int val = itv.next();
- int nva = val - relation.getRelationOffset(indexVar);
- if (relation.getNbSupport(indexVar, nva) <= nblostsup) {
- int currentIdxSupport = getSupport(indexVar, val);
- //check the residual support !
- if (!valcheck.isValid(relation.getTuple(currentIdxSupport))) {
- //the residual support is not valid anymore, seek a new one
- currentIdxSupport = seekNextSupport(indexVar, nva);
- if (currentIdxSupport == NO_SUPPORT) {
- vars[indexVar].removeVal(val, cIndices[indexVar]);
- } else {
- setSupport(currentIdxSupport);
- }
- }
- }
- }
- }
- }
- **/

@@ -38,14 +38,13 @@ import choco.kernel.solver.constraints.integer.extension.CspBinSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
- *
  * A binary constraint for simple forward checking
  */
 public final class FCBinSConstraint extends CspBinSConstraint {
 
     public FCBinSConstraint(IntDomainVar x0, IntDomainVar x1, BinRelation rela) {//int[][] consistencyMatrice) {
-		super(x0, x1, rela);
-	}
+        super(x0, x1, rela);
+    }
 
     public int getFilteredEventMask(int idx) {
         return IntVarEvent.INSTINT_MASK;
@@ -53,57 +52,72 @@ public final class FCBinSConstraint extends CspBinSConstraint {
 
 
     public Object clone() {
-		return new FCBinSConstraint(this.v0, this.v1, this.relation);
-	}
+        return new FCBinSConstraint(this.v0, this.v1, this.relation);
+    }
 
-	// standard filtering algorithm initializing all support counts
-	public void propagate() throws ContradictionException {
+    // standard filtering algorithm initializing all support counts
+    public void propagate() throws ContradictionException {
         if (v0.isInstantiated())
             awakeOnInst(0);
         if (v1.isInstantiated())
             awakeOnInst(1);
     }
 
-	public void awakeOnInst(int idx) throws ContradictionException {
-		if (idx == 0) {
+    public void awakeOnInst(int idx) throws ContradictionException {
+		int left, right;
+        if (idx == 0) {
 			int value = v0.getVal();
 			DisposableIntIterator itv1 = v1.getDomain().getIterator();
-			try {
+			left = right = Integer.MIN_VALUE;
+            try {
 				while (itv1.hasNext()) {
 					int val = itv1.next();
 					if (!relation.isConsistent(value, val)) {
-						v1.removeVal(val, this, false);
+                        if(val == right +1){
+                            right = val;
+                        }else{
+                            v1.removeInterval(left, right, this, false);
+                            left = right = val;
+                        }
 					}
 				}
+                v1.removeInterval(left, right, this, false);
 			} finally {
 				itv1.dispose();
 			}
 		} else {
 			int value = v1.getVal();
 			DisposableIntIterator itv0 = v0.getDomain().getIterator();
-			try {
+			left = right = Integer.MIN_VALUE;
+            try {
 				while (itv0.hasNext()) {
 					int val = itv0.next();
 					if (!relation.isConsistent(val, value)) {
-						v0.removeVal(val, this, false);
+						if(val == right +1){
+                            right = val;
+                        }else{
+                            v0.removeInterval(left, right, this, false);
+                            left = right = val;
+                        }
 					}
 				}
+                v0.removeInterval(left, right, this, false);
 			} finally {
 				itv0.dispose();
 			}
-		}	}
+		}
+    }
 
 
-	public AbstractSConstraint opposite(Solver solver) {
-		BinRelation rela2 = (BinRelation) ((ConsistencyRelation) relation).getOpposite();
-		AbstractSConstraint ct = new FCBinSConstraint(v0, v1, rela2);
-		return ct;
-	}
+    public AbstractSConstraint<IntDomainVar> opposite(Solver solver) {
+        BinRelation rela2 = (BinRelation) ((ConsistencyRelation) relation).getOpposite();
+        return new FCBinSConstraint(v0, v1, rela2);
+    }
 
-	public String pretty() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("FC(").append(v0.pretty()).append(", ").append(v1.pretty()).append(", ").
-				append(this.relation.getClass().getSimpleName()).append(")");
-		return sb.toString();
-	}
+    public String pretty() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("FC(").append(v0.pretty()).append(", ").append(v1.pretty()).append(", ").
+                append(this.relation.getClass().getSimpleName()).append(")");
+        return sb.toString();
+    }
 }

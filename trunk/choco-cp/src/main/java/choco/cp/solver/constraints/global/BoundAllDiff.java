@@ -53,7 +53,7 @@ public final class BoundAllDiff extends AbstractLargeIntSConstraint {
     boolean supBoundModified = true;
 
     public BoundAllDiff(IntDomainVar[] vars, boolean global) {
-        super(ConstraintEvent.LINEAR,vars);
+        super(ConstraintEvent.LINEAR, vars);
         int n = this.getNbVars();
         if (!global) {
             PROPAGATE_ON_BOUNDS = false;
@@ -77,10 +77,10 @@ public final class BoundAllDiff extends AbstractLargeIntSConstraint {
         }
     }
 
-  public int getFilteredEventMask(int idx) {
-    return IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK;
-    // return 0x0B;
-  }
+    public int getFilteredEventMask(int idx) {
+        return IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK;
+        // return 0x0B;
+    }
 
     protected void sortmin() {
         boolean sorted = false;
@@ -130,20 +130,20 @@ public final class BoundAllDiff extends AbstractLargeIntSConstraint {
         while (true) {
             if (i < this.getNbVars() && min <= max) {
                 if (min != last) {
-					bounds[++nb] = last = min;
-				}
+                    bounds[++nb] = last = min;
+                }
                 minsorted[i].minrank = nb;
                 if (++i < this.getNbVars()) {
-					min = minsorted[i].var.getInf();
-				}
+                    min = minsorted[i].var.getInf();
+                }
             } else {
                 if (max != last) {
-					bounds[++nb] = last = max;
-				}
+                    bounds[++nb] = last = max;
+                }
                 maxsorted[j].maxrank = nb;
                 if (++j == this.getNbVars()) {
-					break;
-				}
+                    break;
+                }
                 max = maxsorted[j].var.getSup() + 1;
             }
         }
@@ -198,8 +198,8 @@ public final class BoundAllDiff extends AbstractLargeIntSConstraint {
             pathset(t, x + 1, z, z);
 
             if (d[z] < bounds[z] - bounds[y]) {
-				this.fail();
-			}
+                this.fail();
+            }
 
             if (h[x] > x) {
                 int w = pathmax(h, h[x]);
@@ -234,8 +234,8 @@ public final class BoundAllDiff extends AbstractLargeIntSConstraint {
             pathset(t, x - 1, z, z);
 
             if (d[z] < bounds[y] - bounds[z]) {
-				this.fail();
-			}
+                this.fail();
+            }
 
             if (h[x] < x) {
                 int w = pathmin(h, h[x]);
@@ -250,22 +250,32 @@ public final class BoundAllDiff extends AbstractLargeIntSConstraint {
     }
 
     @Override
-	public void awake() throws ContradictionException {
-        for (int i = 0; i < vars.length; i++) {
-            if (vars[i].isInstantiated()) {
-                for (int j = 0; j < vars.length; j++) {
+    public void awake() throws ContradictionException {
+        int left, right;
+        for (int j = 0; j < vars.length; j++) {
+            left = right = Integer.MIN_VALUE;
+            for (int i = 0; i < vars.length; i++) {
+                if (vars[i].isInstantiated()) {
+                    int val = vars[i].getVal();
                     if (i != j) {
-                        vars[j].removeVal(vars[i].getVal(), this, true);
+                        if (val == right + 1) {
+                            right = val;
+                        } else {
+                            vars[j].removeInterval(left, right, this, false);
+                            left = right = val;
+                        }
+//                        vars[j].removeVal(vars[i].getVal(), this, true);
                     }
                 }
             }
+            vars[j].removeInterval(left, right, this, false);
         }
 
         propagate();
     }
 
     @Override
-	public void propagate() throws ContradictionException {
+    public void propagate() throws ContradictionException {
         if (infBoundModified || supBoundModified) {
             sortIt();
             filterLower();
@@ -276,37 +286,37 @@ public final class BoundAllDiff extends AbstractLargeIntSConstraint {
     }
 
     @Override
-	public void awakeOnInf(int i) throws ContradictionException {
+    public void awakeOnInf(int i) throws ContradictionException {
         if (PROPAGATE_ON_BOUNDS) {
             infBoundModified = true;
             this.constAwake(false);
             for (int j = 0; j < vars.length; j++) {
                 if (j != i && vars[j].isInstantiated()) {
                     if (vars[j].getVal() == vars[i].getInf()) {
-						vars[i].updateInf(vars[j].getVal() + 1, this, true);
-					}
+                        vars[i].updateInf(vars[j].getVal() + 1, this, true);
+                    }
                 }
             }
         }
     }
 
     @Override
-	public void awakeOnSup(int i) throws ContradictionException {
+    public void awakeOnSup(int i) throws ContradictionException {
         if (PROPAGATE_ON_BOUNDS) {
             supBoundModified = true;
             this.constAwake(false);
             for (int j = 0; j < vars.length; j++) {
                 if (j != i && vars[j].isInstantiated()) {
                     if (vars[j].getVal() == vars[i].getSup()) {
-						vars[i].updateSup(vars[j].getVal() - 1, this, true);
-					}
+                        vars[i].updateSup(vars[j].getVal() - 1, this, true);
+                    }
                 }
             }
         }
     }
 
     @Override
-	public void awakeOnInst(int i) throws ContradictionException {   // Propagation classique
+    public void awakeOnInst(int i) throws ContradictionException {   // Propagation classique
         if (PROPAGATE_ON_INSTANTIATIONS) {
             infBoundModified = true;
             supBoundModified = true;
@@ -321,45 +331,46 @@ public final class BoundAllDiff extends AbstractLargeIntSConstraint {
     }
 
     @Override
-	public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
+    public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
     }
 
-  @Override
+    @Override
     public Boolean isEntailed() {
         throw new UnsupportedOperationException("isEntailed not yet implemented on package choco.kernel.solver.constraints.global.BoundAlldiff");
     }
 
-  /**
-   * This method assumes that all variables are instantiated and checks if the values are consistent with the
-   * constraint.
-   * Here it checks that all variables have distinct values. It uses double for loops (Thus the complixity is in O(n^2).
-   * @return true if values are different.
-   */
+    /**
+     * This method assumes that all variables are instantiated and checks if the values are consistent with the
+     * constraint.
+     * Here it checks that all variables have distinct values. It uses double for loops (Thus the complixity is in O(n^2).
+     *
+     * @return true if values are different.
+     */
     @Override
-	public boolean isSatisfied(int[] tuple) {
-      for(int i = 0; i < vars.length; i++) {
-		for(int j = i+1; j < vars.length; j++) {
-          if (tuple[i] == tuple[j]) {
-			return false;
-		}
+    public boolean isSatisfied(int[] tuple) {
+        for (int i = 0; i < vars.length; i++) {
+            for (int j = i + 1; j < vars.length; j++) {
+                if (tuple[i] == tuple[j]) {
+                    return false;
+                }
+            }
         }
-	}
-      return true;
+        return true;
     }
 
     @Override
-	public String pretty() {
-      StringBuilder sb = new StringBuilder();
-      sb.append("BoundAllDiff({");
-      for (int i = 0; i < vars.length; i++) {
-        if (i > 0) {
-			sb.append(", ");
-		}
-        IntDomainVar var = vars[i];
-        sb.append(var.pretty());
-      }
-      sb.append("})");
-      return sb.toString();
+    public String pretty() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("BoundAllDiff({");
+        for (int i = 0; i < vars.length; i++) {
+            if (i > 0) {
+                sb.append(", ");
+            }
+            IntDomainVar var = vars[i];
+            sb.append(var.pretty());
+        }
+        sb.append("})");
+        return sb.toString();
     }
 
     private static class Interval {

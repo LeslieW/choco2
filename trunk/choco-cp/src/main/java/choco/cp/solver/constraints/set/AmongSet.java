@@ -85,7 +85,6 @@ public final class AmongSet extends AbstractMixedSetIntSConstraint {
 
     /**
      * Constructs a constraint with the specified priority.
-     *
      */
     @SuppressWarnings({"SuspiciousSystemArraycopy"})
     public AmongSet(Var[] vars, IEnvironment environment) {
@@ -101,7 +100,7 @@ public final class AmongSet extends AbstractMixedSetIntSConstraint {
 
     @Override
     public int getFilteredEventMask(int idx) {
-        if(idx == idxS){
+        if (idx == idxS) {
             return SetVarEvent.ADDKER_MASK + SetVarEvent.REMENV_MASK + SetVarEvent.INSTSET_MASK;
         }
         return IntVarEvent.REMVAL_MASK;
@@ -214,14 +213,25 @@ public final class AmongSet extends AbstractMixedSetIntSConstraint {
             DisposableIntIterator it = null;
             int[] lb_ub = computeLastBounds();
 
+            int left, right;
             if (lb_ub[0] == n.getInf()) {
                 for (int j = 0; j < kIdx; j++) {
                     int i = bothK[j];
                     IntDomainVar v = ivars[i];
+                    left = right = Integer.MIN_VALUE;
                     it = s.getDomain().getKernelIterator();
                     while (it.hasNext()) {
-                        v.removeVal(it.next(), this, false);
+                        int val = it.next();
+                        if (val == right + 1) {
+                            right = val;
+                        } else {
+                            v.removeInterval(left, right, this, false);
+                            left = val;
+                            right = val;
+                        }
+//                        v.removeVal(it.next(), this, false);
                     }
+                    v.removeInterval(left, right, this, false);
                     it.dispose();
                 }
             }
@@ -229,13 +239,22 @@ public final class AmongSet extends AbstractMixedSetIntSConstraint {
                 for (int j = 0; j < eIdx; j++) {
                     int i = bothE[j];
                     IntDomainVar v = ivars[i];
+                    left = right = Integer.MIN_VALUE;
                     it = v.getDomain().getIterator();
                     while (it.hasNext()) {
                         int val = it.next();
                         if (!s.isInDomainEnveloppe(val)) {
-                            v.removeVal(val, this, false);
+                            if (val == right + 1) {
+                                right = val;
+                            } else {
+                                v.removeInterval(left, right, this, false);
+                                left = val;
+                                right = val;
+                            }
+//                            v.removeVal(val, this, false);
                         }
                     }
+                    v.removeInterval(left, right, this, false);
                     it.dispose();
                 }
             }
@@ -250,7 +269,7 @@ public final class AmongSet extends AbstractMixedSetIntSConstraint {
         int lub0 = inEnv.cardinality();
 
         if (glb0 < n.getInf()) {
-            if(min < Integer.MAX_VALUE){
+            if (min < Integer.MAX_VALUE) {
                 n.updateInf(min, this, false);
             }
         } else {
@@ -258,7 +277,7 @@ public final class AmongSet extends AbstractMixedSetIntSConstraint {
         }
 
         if (lub0 > n.getSup()) {
-            if(max > Integer.MIN_VALUE){
+            if (max > Integer.MIN_VALUE) {
                 n.updateSup(max, this, false);
             }
         } else {
@@ -347,27 +366,27 @@ public final class AmongSet extends AbstractMixedSetIntSConstraint {
             for (int i = 0; i < nb_vars; i++) {
                 int nb = 0;
                 IntDomainVar var = ivars[i];
-                if(!inKer.get(i)){
-                    if(var.canBeInstantiatedTo(val)){
+                if (!inKer.get(i)) {
+                    if (var.canBeInstantiatedTo(val)) {
                         DisposableIntIterator it = s.getDomain().getKernelIterator();
                         while (it.hasNext()) {
-                            if(var.canBeInstantiatedTo(it.next())){
+                            if (var.canBeInstantiatedTo(it.next())) {
                                 nb++;
                             }
                         }
                         it.dispose();
-                        if (nb == var.getDomainSize()-1) {
+                        if (nb == var.getDomainSize() - 1) {
                             lb++;
                         }
                     }
                 }
-                if(!outEnv.get(i)){
+                if (!outEnv.get(i)) {
                     nb = 0;
                     DisposableIntIterator it = var.getDomain().getIterator();
-                    while(it.hasNext()){
-                        int vv= it.next();
-                        if(vv!=val){
-                            if(s.isInDomainEnveloppe(vv)){
+                    while (it.hasNext()) {
+                        int vv = it.next();
+                        if (vv != val) {
+                            if (s.isInDomainEnveloppe(vv)) {
                                 nb++;
                                 break;
                             }

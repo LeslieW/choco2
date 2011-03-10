@@ -40,115 +40,124 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 
 public class CspLargeSConstraint extends AbstractLargeIntSConstraint {
 
-	protected LargeRelation relation;
+    protected LargeRelation relation;
 
-	protected int[] currentTuple;
+    protected int[] currentTuple;
 
-	public CspLargeSConstraint(IntDomainVar[] vs, LargeRelation relation) {
-		super(ConstraintEvent.QUADRATIC, vs);
-		this.relation = relation;
-		this.currentTuple = new int[vs.length];
-	}
+    public CspLargeSConstraint(IntDomainVar[] vs, LargeRelation relation) {
+        super(ConstraintEvent.QUADRATIC, vs);
+        this.relation = relation;
+        this.currentTuple = new int[vs.length];
+    }
 
-	@Override
-	public Object clone() throws CloneNotSupportedException {
-		CspLargeSConstraint newc = (CspLargeSConstraint) super.clone();
-		newc.currentTuple = new int[this.currentTuple.length];
-		System.arraycopy(this.currentTuple, 0, newc.currentTuple, 0, this.currentTuple.length);
-		return newc;
-	}
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        CspLargeSConstraint newc = (CspLargeSConstraint) super.clone();
+        newc.currentTuple = new int[this.currentTuple.length];
+        System.arraycopy(this.currentTuple, 0, newc.currentTuple, 0, this.currentTuple.length);
+        return newc;
+    }
 
-	public LargeRelation getRelation() {
-		return relation;
-	}
+    public LargeRelation getRelation() {
+        return relation;
+    }
 
-     public int getFilteredEventMask(int idx) {
+    public int getFilteredEventMask(int idx) {
         return IntVarEvent.INSTINT_MASK + IntVarEvent.REMVAL_MASK;
     }
 
     @Override
-	public void propagate() throws ContradictionException {
-		boolean stop = false;
-		int nbUnassigned = 0;
-		int index = -1, i = 0;
-		while (!stop && i < vars.length) {
-			if (!vars[i].isInstantiated()) {
-				nbUnassigned++;
-				index = i;
-			} else {
-				currentTuple[i] = vars[i].getVal();
-			}
-			if (nbUnassigned > 1) {
-				stop = true;
-			}
-			i++;
-		}
-		if (!stop) {
-			if (nbUnassigned == 1) {
-				DisposableIntIterator it = vars[index].getDomain().getIterator();
-				try{
-                while (it.hasNext()) {
-					currentTuple[index] = it.next();
-					if (!relation.isConsistent(currentTuple)) {
-						vars[index].removeVal(currentTuple[index], this, false);
-					}
-				}
-                }finally {
+    public void propagate() throws ContradictionException {
+        boolean stop = false;
+        int nbUnassigned = 0;
+        int index = -1, i = 0;
+        while (!stop && i < vars.length) {
+            if (!vars[i].isInstantiated()) {
+                nbUnassigned++;
+                index = i;
+            } else {
+                currentTuple[i] = vars[i].getVal();
+            }
+            if (nbUnassigned > 1) {
+                stop = true;
+            }
+            i++;
+        }
+        if (!stop) {
+            if (nbUnassigned == 1) {
+                int left = Integer.MIN_VALUE;
+                int right = left;
+                DisposableIntIterator it = vars[index].getDomain().getIterator();
+                try {
+                    while (it.hasNext()) {
+                        int val = currentTuple[index] = it.next();
+                        if (!relation.isConsistent(currentTuple)) {
+                            if (val == right + 1) {
+                                right = val;
+                            } else {
+                                vars[index].removeInterval(left, right, this, false);
+                                left = right = val;
+                            }
+//                            vars[index].removeVal(currentTuple[index], this, false);
+                        }
+                    }
+                    vars[index].removeInterval(left, right, this, false);
+                } finally {
                     it.dispose();
                 }
-			} else {
-				if (!relation.isConsistent(currentTuple)) {
-					this.fail();
-				}
-			}
-		}
-	}
+            } else {
+                if (!relation.isConsistent(currentTuple)) {
+                    this.fail();
+                }
+            }
+        }
+    }
 
-	@Override
-	public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
-		this.constAwake(false);
-	}
+    @Override
+    public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
+        this.constAwake(false);
+    }
 
-	@Override
-	public void awakeOnBounds(int varIndex) throws ContradictionException {
-		this.constAwake(false);
-	}
+    @Override
+    public void awakeOnBounds(int varIndex) throws ContradictionException {
+        this.constAwake(false);
+    }
 
-	@Override
-	public void awakeOnInst(int idx) throws ContradictionException {
-		this.constAwake(false);
-	}
+    @Override
+    public void awakeOnInst(int idx) throws ContradictionException {
+        this.constAwake(false);
+    }
 
-	@Override
-	public boolean isSatisfied(int[] tuple) {
+    @Override
+    public boolean isSatisfied(int[] tuple) {
         return relation.isConsistent(tuple);
-	}
+    }
 
-	@Override
-	public String pretty() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("CSPLarge({");
-		for (int i = 0; i < vars.length; i++) {
-			if (i > 0) {
-				sb.append(", ");
-			}
-			IntDomainVar var = vars[i];
-			sb.append(var + ", ");
-		}
-		sb.append("})");
-		return sb.toString();
-	}
+    @Override
+    public String pretty() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("CSPLarge({");
+        for (int i = 0; i < vars.length; i++) {
+            if (i > 0) {
+                sb.append(", ");
+            }
+            IntDomainVar var = vars[i];
+            sb.append(var + ", ");
+        }
+        sb.append("})");
+        return sb.toString();
+    }
 
-	@Override
-	public AbstractSConstraint opposite(Solver solver) {
-		LargeRelation rela2 = (LargeRelation) ((ConsistencyRelation) relation).getOpposite();
-		AbstractSConstraint ct = new CspLargeSConstraint(vars, rela2);
-		return ct;
-	}
+    @Override
+    public AbstractSConstraint opposite(Solver solver) {
+        LargeRelation rela2 = (LargeRelation) ((ConsistencyRelation) relation).getOpposite();
+        AbstractSConstraint ct = new CspLargeSConstraint(vars, rela2);
+        return ct;
+    }
 
-	@Override
-	public Boolean isEntailed() {
-		throw new UnsupportedOperationException("isEntailed not yet implemented in CspLargeConstraint");
-	}
+    @Override
+    public Boolean isEntailed() {
+        throw new UnsupportedOperationException("isEntailed not yet implemented in CspLargeConstraint");
+    }
 
 }

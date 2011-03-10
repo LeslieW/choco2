@@ -913,17 +913,25 @@ public void awake() throws ContradictionException
                 this.fail();
 
         this.slp = this.graph.getPathFinder();
-
+        int left, right;
         for (int i  = 0 ; i < vs.length ; i++)
         {
+                left = right = Integer.MIN_VALUE;
                 for (int j = vs[i].getInf() ; j <= vs[i].getSup() ; j = vs[i].getNextDomainValue(j))
                 {
                         StoredIndexedBipartiteSet sup = graph.getSupport(i,j);
                         if (sup == null || sup.isEmpty())
                         {
-                                vs[i].removeVal(j, this, false);
+                            if (j == right + 1) {
+                                right = j;
+                            } else {
+                                vs[i].removeInterval(left, right, this, false);
+                                left = right = j;
+                            }
+//                                vs[i].removeVal(j, this, false);
                         }
                 }
+                vs[i].removeInterval(left, right, this, false);
         }
         //prefilter();
         this.slp.computeShortestAndLongestPath(toRemove,z);

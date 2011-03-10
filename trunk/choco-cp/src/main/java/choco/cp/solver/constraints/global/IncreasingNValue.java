@@ -312,6 +312,7 @@ public final class IncreasingNValue extends AbstractLargeIntSConstraint {
         supSuffix.scanInit(0, true);
         if ((m == Mode.ATMOST || m == Mode.BOTH)) adjustMin(n, minInfSuffix(0));
         if ((m == Mode.ATLEAST || m == Mode.BOTH)) adjustMax(n, maxSupSuffix(0));
+        int left, right;
         for (int i = 0; i < n; i++) {
             infPrefix.scanInit(i, true);
             supPrefix.scanInit(i, true);
@@ -319,29 +320,41 @@ public final class IncreasingNValue extends AbstractLargeIntSConstraint {
             supSuffix.scanInit(i, true);
             int v = x[i].getInf();
             int w;
+            left = right = Integer.MIN_VALUE;
             do {
                 final int mind = infPrefix.get(i, v) + infSuffix.get(i, v) - 1;
                 final int maxd = supPrefix.get(i, v) + supSuffix.get(i, v) - 1;
                 if ((m == Mode.ATMOST) && mind > occ.getSup()) {
-                    x[i].removeVal(v, this, false);
+                    if (v == right + 1) {
+                        right = v;
+                    } else {
+                        x[i].removeInterval(left, right, this, false);
+                        left = right = v;
+                    }
+//                    x[i].removeVal(v, this, false);
                 }
                 if ((m == Mode.ATLEAST) && maxd < occ.getInf()) {
-                    x[i].removeVal(v, this, false);
-                }
-                if(m == Mode.BOTH && test(mind,maxd)) {
-                    x[i].removeVal(v, this, false);
-                }//*/
-                /*if (test(mind, maxd)) {
-                    x[i].removeVal(v, cIndices[i]);
-                    int j = i + 1;
-                    while (j < n && x[j].canBeInstantiatedTo(v)) {
-                        x[j].removeVal(v, cIndices[j]);
-                        j++;
+                    if (v == right + 1) {
+                        right = v;
+                    } else {
+                        x[i].removeInterval(left, right, this, false);
+                        left = right = v;
                     }
-                }//*/
+//                    x[i].removeVal(v, this, false);
+                }
+                if (m == Mode.BOTH && test(mind, maxd)) {
+                    if (v == right + 1) {
+                        right = v;
+                    } else {
+                        x[i].removeInterval(left, right, this, false);
+                        left = right = v;
+                    }
+//                    x[i].removeVal(v, this, false);
+                }
                 w = v;
                 v = getNext(x[i], v);
             } while (w != v);
+            x[i].removeInterval(left, right, this, false);
         }
     }
 
@@ -369,11 +382,11 @@ public final class IncreasingNValue extends AbstractLargeIntSConstraint {
      */
     @Override
     public boolean isSatisfied() {
-        if(isCompletelyInstantiated()){
+        if (isCompletelyInstantiated()) {
             final TIntHashSet values = new TIntHashSet();
             values.add(vars[0].getVal());
-            for(int i = 1; i< n; i++){
-                if(vars[i-1].getVal()>vars[i].getVal()){
+            for (int i = 1; i < n; i++) {
+                if (vars[i - 1].getVal() > vars[i].getVal()) {
                     return false;
                 }
                 values.add(vars[i].getVal());
@@ -395,8 +408,8 @@ public final class IncreasingNValue extends AbstractLargeIntSConstraint {
     public boolean isSatisfied(final int[] tuple) {
         final TIntHashSet values = new TIntHashSet();
         values.add(tuple[0]);
-        for(int i = 1; i< n; i++){
-            if(tuple[i-1]>tuple[i]){
+        for (int i = 1; i < n; i++) {
+            if (tuple[i - 1] > tuple[i]) {
                 return false;
             }
             values.add(tuple[i]);

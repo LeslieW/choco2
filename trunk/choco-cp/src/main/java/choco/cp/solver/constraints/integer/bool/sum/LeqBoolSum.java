@@ -48,6 +48,16 @@ public final class LeqBoolSum extends AbstractBoolSum {
 		boolSumS.awakeOnLeq();
 	}
 
+    @Override
+    public void awake() throws ContradictionException {
+        int min = boolSumS.computeLbFromScratch();
+        int val = boolSumS.bValue;
+        if(val < min){
+            this.fail();
+        }
+        this.propagate();
+    }
+
 	@Override
 	public void propagate() throws ContradictionException {
 		if ( boolSumS.filterLeq() ) {

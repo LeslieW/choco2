@@ -60,7 +60,7 @@ public class TreeConstraintTest {
         //1- create the  variables involved in the partitioning problem
         IntegerVariable ntree = makeIntVar("ntree",1,5);
         IntegerVariable  nproper = makeIntVar("nproper",1,1);
-        IntegerVariable  objective = makeIntVar("objective",1,100, Options.V_NO_DECISION);
+        IntegerVariable  objective = makeIntVar("objective",1,100, Options.V_BOUND, Options.V_NO_DECISION);
         //2- create the different graphs modeling restrictions
         List<BitSet[]> graphs = new ArrayList<BitSet[]>();
         BitSet[] succ = new BitSet[nbNodes];

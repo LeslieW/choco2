@@ -154,4 +154,53 @@ public class BoolSumTest {
             Assert.fail("unexpected behaviour");
         } catch (ContradictionException ignored) {}
     }
+
+    @Test
+    public void testEq4() throws ContradictionException {
+        Model m = new CPModel();
+        IntegerVariable b1 = Choco.makeBooleanVar("b1");
+        IntegerVariable b2 = Choco.constant(1);
+        IntegerVariable b3 = Choco.makeBooleanVar("b3");
+        IntegerVariable b4 = Choco.makeBooleanVar("b4");
+        m.addConstraint(Choco.eq(Choco.sum(b1,b2,b3,b4), 5));
+
+        CPSolver s = new CPSolver();
+        s.read(m);
+        try {
+            s.propagate();
+            Assert.fail("unexpected behaviour");
+        } catch (ContradictionException ignored) {}
+    }
+
+    @Test
+    public void testEq5() throws ContradictionException {
+        Model m = new CPModel();
+        IntegerVariable b1 = Choco.makeBooleanVar("b1");
+        IntegerVariable b2 = Choco.constant(0);
+        IntegerVariable b3 = Choco.makeBooleanVar("b3");
+        IntegerVariable b4 = Choco.makeBooleanVar("b4");
+        m.addConstraint(Choco.eq(Choco.sum(b1,b2,b3,b4), 4));
+
+        CPSolver s = new CPSolver();
+        s.read(m);
+        s.solveAll();
+        Assert.assertEquals(0, s.getSolutionCount());
+    }
+
+    @Test
+    public void testGeq3() throws ContradictionException {
+        Model m = new CPModel();
+        IntegerVariable b1 = Choco.makeBooleanVar("b1");
+        IntegerVariable b2 = Choco.makeBooleanVar("b2");//Choco.constant(0);
+        IntegerVariable b3 = Choco.makeBooleanVar("b3");
+        IntegerVariable b4 = Choco.makeBooleanVar("b4");
+        m.addConstraint(Choco.geq(Choco.sum(b1,b2,b3,b4), 10));
+
+        CPSolver s = new CPSolver();
+        s.read(m);
+        try {
+            s.propagate();
+            Assert.fail("unexpected behaviour");
+        } catch (ContradictionException ignored) {}
+    }
 }

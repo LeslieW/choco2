@@ -102,14 +102,24 @@ public final class MemberXY extends AbstractBinSetIntSConstraint {
 
 
 	public void propagate() throws ContradictionException {
+        int left = Integer.MIN_VALUE;
+        int right = left;
 		DisposableIntIterator it = v0.getDomain().getIterator();
         try{
             while (it.hasNext()) {
                 int val = it.next();
                 if (!v1.isInDomainEnveloppe(val)) {
-                    v0.removeVal(val, this, false);
+                    if (val == right + 1) {
+                        right = val;
+                    } else {
+                        v0.removeInterval(left, right, this, false);
+                        left = val;
+                        right = val;
+                    }
+//                    v0.removeVal(val, this, false);
                 }
             }
+            v0.removeInterval(left, right, this, false);
         }finally {
             it.dispose();
         }
