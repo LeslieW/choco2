@@ -292,16 +292,25 @@ public class FastRegular extends AbstractLargeIntSConstraint {
 
     public void awake() throws ContradictionException
     {
+        int left, right;
         for (int i  = 0 ; i < vars.length ; i++)
         {
+            left = right = Integer.MIN_VALUE;
             for (int j = vars[i].getInf() ; j <= vars[i].getSup() ; j = vars[i].getNextDomainValue(j))
             {
                 StoredIndexedBipartiteSet sup = graph.getSupport(i,j);
                 if (sup == null || sup.isEmpty())
                 {
-                    vars[i].removeVal(j, this, false);
+                    if (j == right + 1) {
+                        right = j;
+                    } else {
+                        vars[i].removeInterval(left, right, this, false);
+                        left = right = j;
+                    }
+//                    vars[i].removeVal(j, this, false);
                 }
             }
+            vars[i].removeInterval(left, right, this, false);
         }
 
 

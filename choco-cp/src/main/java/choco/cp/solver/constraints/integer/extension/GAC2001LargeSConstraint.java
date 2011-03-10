@@ -85,48 +85,37 @@ public final class GAC2001LargeSConstraint extends CspLargeSConstraint {
         if (allboolean)
             valcheck = new FastBooleanValidityChecker(size, vars);
         else
-            valcheck = new FastValidityChecker(size, vars);        
+            valcheck = new FastValidityChecker(size, vars);
     }
 
     public int getFilteredEventMask(int idx) {
         return IntVarEvent.INSTINT_MASK + IntVarEvent.REMVAL_MASK;
     }
 
-    /**
-     * initialize the supports of each value of indexVar
-     *
-     * @param indexVar
-     * @throws ContradictionException
-     */
-    public void initializeSupports(int indexVar) throws ContradictionException {
-        int[] currentSupport;
-        IntDomain dom = vars[indexVar].getDomain();
-        int val;
-            for (val = vars[indexVar].getInf(); val <= vars[indexVar].getSup(); val = dom.getNextValue(val)) {
-                currentSupport = seekNextSupport(indexVar, val, true);
-                if (currentSupport != null) {
-                    setSupport(indexVar, val, currentSupport);
-                } else {
-                    vars[indexVar].removeVal(val, this, false);
-                }
-            }
-    }
-
 
     // updates the support for all values in the domain of variable
     // and remove unsupported values for variable
-    public void reviseVar(int indexVar) throws ContradictionException {
+    public void reviseVar(int indexVar, boolean fromScratch) throws ContradictionException {
         int[] currentSupport;
         IntDomain dom = vars[indexVar].getDomain();
+        int left = Integer.MIN_VALUE;
+        int right = left;
         int val;
-            for (val = vars[indexVar].getInf(); val <= vars[indexVar].getSup(); val = dom.getNextValue(val)) {
-                currentSupport = seekNextSupport(indexVar, val, false);
-                if (currentSupport != null) {
-                    setSupport(indexVar, val, currentSupport);
+        for (val = vars[indexVar].getInf(); val <= vars[indexVar].getSup(); val = dom.getNextValue(val)) {
+            currentSupport = seekNextSupport(indexVar, val, fromScratch);
+            if (currentSupport != null) {
+                setSupport(indexVar, val, currentSupport);
+            } else {
+                if (val == right + 1) {
+                    right = val;
                 } else {
-                    vars[indexVar].removeVal(val, this, false);
+                    vars[indexVar].removeInterval(left, right, this, false);
+                    left = right = val;
                 }
+//                vars[indexVar].removeVal(val, this, false);
             }
+        }
+        vars[indexVar].removeInterval(left, right, this, false);
     }
 
     // Store Last(x_i, val) = support
@@ -151,6 +140,7 @@ public final class GAC2001LargeSConstraint extends CspLargeSConstraint {
     public int[] lastSupport(int indexVar, int value) {
         return getSupport(indexVar, value);
     }
+
     /**
      * seek a new support for (variable, value), the smallest tuple greater than currentSupport
      * the search is made through valid tuples until and allowed one is found.
@@ -201,6 +191,7 @@ public final class GAC2001LargeSConstraint extends CspLargeSConstraint {
     /**
      * t is a consistent tuple not valid anymore, we need to go to the first valid tuple
      * greater than t before searching among the valid tuples
+     *
      * @param t
      * @param indexVar
      * @return
@@ -208,10 +199,10 @@ public final class GAC2001LargeSConstraint extends CspLargeSConstraint {
     public int[] getFirstValidTupleFrom(int[] t, int indexVar) {
         int k = 0;
         while (k < vars.length) {
-            if (k == indexVar) k++;            
+            if (k == indexVar) k++;
             if (k < vars.length) {
                 if (!vars[k].getDomain().hasNextValue(t[k])) {
-                   t[k] = vars[k].getInf();
+                    t[k] = vars[k].getInf();
                     k++;
                 } else {
                     t[k] = vars[k].getDomain().getNextValue(t[k]);
@@ -227,7 +218,7 @@ public final class GAC2001LargeSConstraint extends CspLargeSConstraint {
 
     public void awake() throws ContradictionException {
         for (int i = 0; i < vars.length; i++) {
-            initializeSupports(i);
+            reviseVar(i, true);
         }
         propagate();
     }
@@ -235,11 +226,11 @@ public final class GAC2001LargeSConstraint extends CspLargeSConstraint {
 
     public void propagate() throws ContradictionException {
         for (int i = 0; i < size; i++)
-            reviseVar(i);
+            reviseVar(i, false);
     }
 
 
-     public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
+    public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
         filter(idx);
     }
 
@@ -268,12 +259,12 @@ public final class GAC2001LargeSConstraint extends CspLargeSConstraint {
         //sort variables regarding domain sizes to speedup the check !
         valcheck.sortvars();
         if (vars[idx].hasEnumeratedDomain()) {
-        for (int i = 0; i < size; i++)
-            if (idx != valcheck.position[i])
-               reviseVar(valcheck.position[i]);
+            for (int i = 0; i < size; i++)
+                if (idx != valcheck.position[i])
+                    reviseVar(valcheck.position[i], false);
         } else {
             for (int i = 0; i < size; i++)
-               reviseVar(valcheck.position[i]);            
+                reviseVar(valcheck.position[i], false);
         }
     }
 

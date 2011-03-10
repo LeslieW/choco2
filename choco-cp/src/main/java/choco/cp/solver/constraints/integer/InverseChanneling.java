@@ -36,19 +36,19 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 
 public final class InverseChanneling extends AbstractLargeIntSConstraint {
 
-  protected int n;
+    protected int n;
 
     private int min;
 
     /**
-   * link x and y so that x[i] = j <=> y[j] = i
-   * It is used to maintain both model on permutation problems
-   */
-  public InverseChanneling(IntDomainVar[] allVars, int n) {
-    super(ConstraintEvent.CUBIC, allVars);
-    this.min = allVars[0].getInf();
-    this.n = n;
-  }
+     * link x and y so that x[i] = j <=> y[j] = i
+     * It is used to maintain both model on permutation problems
+     */
+    public InverseChanneling(IntDomainVar[] allVars, int n) {
+        super(ConstraintEvent.CUBIC, allVars);
+        this.min = allVars[0].getInf();
+        this.n = n;
+    }
 
 
     @Override
@@ -60,96 +60,132 @@ public final class InverseChanneling extends AbstractLargeIntSConstraint {
         }
     }
 
-  public void propagate() throws ContradictionException {
-    for (int idx = 0; idx < vars.length; idx++) {
-      for (int i = 0; i < n; i++) {
-        if (idx < n && !vars[idx].canBeInstantiatedTo(i + min)) {
-          vars[i + n].removeVal(idx + min, this, false);
-        } else if (!vars[idx].canBeInstantiatedTo(i + min)) {
-          vars[i].removeVal(idx - n + min, this, false);
+    public void propagate() throws ContradictionException {
+//      for (int idx = 0; idx < vars.length; idx++) {
+//          for (int i = 0; i < n; i++) {
+//              if (idx < n && !vars[idx].canBeInstantiatedTo(i + min)) {
+//                  vars[i + n].removeVal(idx + min, this, false);
+//              } else if (!vars[idx].canBeInstantiatedTo(i + min)) {
+//                  vars[i].removeVal(idx - n + min, this, false);
+//              }
+//          }
+//      }
+
+        int left = Integer.MIN_VALUE;
+        int right = left;
+        for (int i = 0; i < n; i++) {
+            int val = i + min;
+            for (int idx = 0; idx < n; idx++) {
+                if (!vars[idx].canBeInstantiatedTo(val)) {
+                    if (val == right + 1) {
+                        right = val;
+                    } else {
+                        vars[i + n].removeInterval(left, right, this, false);
+                        left = val;
+                        right = val;
+                    }
+//                    vars[i + n].removeVal(idx + min, this, false);
+                }
+            }
+            vars[i + n].removeInterval(left, right, this, false);
         }
-      }
-    }
-  }
-
-
-  public void awakeOnInf(int idx) throws ContradictionException {
-    int val = vars[idx].getInf() - min;
-    if (idx < n) {
-      for (int i = 0; i < val; i++) {
-        vars[i + n].removeVal(idx + min, this, false);
-      }
-    } else {
-      for (int i = 0; i < val; i++) {
-        vars[i].removeVal(idx - n + min, this, false);
-      }
-    }
-  }
-
-  public void awakeOnSup(int idx) throws ContradictionException {
-    int val = vars[idx].getSup() + 1 - min;
-    if (idx < n) {
-      for (int i = val; i < n; i++) {
-        vars[i + n].removeVal(idx + min, this, false);
-      }
-    } else {
-      for (int i = val; i < n; i++) {
-        vars[i].removeVal(idx - n + min, this, false);
-      }
-    }    //To change body of overridden methods use File | Settings | File Templates.
-  }
-
-  public void awakeOnInst(int idx) throws ContradictionException {
-    int val = vars[idx].getVal() - min;
-    if (idx < n) {
-      vars[val + n].instantiate(idx + min, this, false);
-      for (int i = 0; i < n; i++) {
-        if (i != idx) {
-          vars[i].removeVal(val + min, this, false);
+        right = left = Integer.MIN_VALUE;
+        for (int i = 0; i < n; i++) {
+            for (int idx = n; idx < vars.length; idx++) {
+                int val = idx - n + min;
+                if (!vars[idx].canBeInstantiatedTo(i + min)) {
+                    if (val == right + 1) {
+                        right = val;
+                    } else {
+                        vars[i].removeInterval(left, right, this, false);
+                        left = val;
+                        right = val;
+                    }
+//                    vars[i].removeVal(idx - n + min, this, false);
+                }
+            }
+            vars[i].removeInterval(left, right, this, false);
         }
-      }
-    } else {
-      vars[val].instantiate(idx - n + min, this, false);
-      for (int i = n; i < 2 * n; i++) {
-        if (i != idx) {
-          vars[i].removeVal(val + min, this, false);
+    }
+
+
+    public void awakeOnInf(int idx) throws ContradictionException {
+        int val = vars[idx].getInf() - min;
+        if (idx < n) {
+            for (int i = 0; i < val; i++) {
+                vars[i + n].removeVal(idx + min, this, false);
+            }
+        } else {
+            for (int i = 0; i < val; i++) {
+                vars[i].removeVal(idx - n + min, this, false);
+            }
         }
-      }
     }
-  }
 
-  public void awakeOnRem(int idx, int x) throws ContradictionException {
-    if (idx < n) {
-      vars[x - min + n].removeVal(idx + min, this, false);
-    } else {
-      vars[x - min].removeVal(idx - n + min, this, false);
+    public void awakeOnSup(int idx) throws ContradictionException {
+        int val = vars[idx].getSup() + 1 - min;
+        if (idx < n) {
+            for (int i = val; i < n; i++) {
+                vars[i + n].removeVal(idx + min, this, false);
+            }
+        } else {
+            for (int i = val; i < n; i++) {
+                vars[i].removeVal(idx - n + min, this, false);
+            }
+        }    //To change body of overridden methods use File | Settings | File Templates.
     }
-  }
+
+    public void awakeOnInst(int idx) throws ContradictionException {
+        int val = vars[idx].getVal() - min;
+        if (idx < n) {
+            vars[val + n].instantiate(idx + min, this, false);
+            for (int i = 0; i < n; i++) {
+                if (i != idx) {
+                    vars[i].removeVal(val + min, this, false);
+                }
+            }
+        } else {
+            vars[val].instantiate(idx - n + min, this, false);
+            for (int i = n; i < 2 * n; i++) {
+                if (i != idx) {
+                    vars[i].removeVal(val + min, this, false);
+                }
+            }
+        }
+    }
+
+    public void awakeOnRem(int idx, int x) throws ContradictionException {
+        if (idx < n) {
+            vars[x - min + n].removeVal(idx + min, this, false);
+        } else {
+            vars[x - min].removeVal(idx - n + min, this, false);
+        }
+    }
 
 
-  public boolean isSatisfied(int[] tuple) {
-    for (int i = 0; i < n; i++) {
-      int x = tuple[i];
-      if (tuple[x - min + n] != i+ min) return false;
+    public boolean isSatisfied(int[] tuple) {
+        for (int i = 0; i < n; i++) {
+            int x = tuple[i];
+            if (tuple[x - min + n] != i + min) return false;
+        }
+        return true;
     }
-    return true;
-  }
 
-  public String pretty() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("InverseChanneling({");
-    for (int i = 0; i <n; i++) {
-      if (i > 0) sb.append(", ");
-      IntDomainVar var = vars[i];
-      sb.append(var.pretty());
+    public String pretty() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("InverseChanneling({");
+        for (int i = 0; i < n; i++) {
+            if (i > 0) sb.append(", ");
+            IntDomainVar var = vars[i];
+            sb.append(var.pretty());
+        }
+        sb.append("}, {");
+        for (int i = 0; i < n; i++) {
+            if (i > 0) sb.append(", ");
+            IntDomainVar var = vars[n + i];
+            sb.append(var.pretty());
+        }
+        sb.append("})");
+        return sb.toString();
     }
-    sb.append("}, {");
-    for (int i = 0; i < n; i++) {
-      if (i > 0) sb.append(", ");
-      IntDomainVar var = vars[n + i];
-      sb.append(var.pretty());
-    }
-    sb.append("})");
-    return sb.toString();
-  }
 }

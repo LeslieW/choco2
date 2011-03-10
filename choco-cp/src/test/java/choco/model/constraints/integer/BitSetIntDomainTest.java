@@ -313,4 +313,34 @@ public class BitSetIntDomainTest {
         Assert.assertEquals("141398765410", st.toString());
     }
 
+    @Test
+    public void testLimitOneWordSBitSet64Test() {
+        IEnvironment env = new EnvironmentTrailing();
+        OneWordSBitSet64 bit;
+        for(int b = 0; b < 64; b++){
+            bit = new OneWordSBitSet64(env, b);
+            bit.set(0, b);
+            int nbbits = 0;
+            for (int i = bit.nextSetBit(0); i >= 0 && nbbits < 70; i = bit.nextSetBit(i + 1)) {
+                nbbits++;
+            }
+            Assert.assertEquals(b, nbbits);
+        }
+    }
+
+    @Test
+    public void testLimitOneWordSBitSet32Test() {
+        IEnvironment env = new EnvironmentTrailing();
+        OneWordSBitSet32 bit;
+        for(int b = 0; b < 32; b++){
+            bit = new OneWordSBitSet32(env, b);
+            bit.set(0, b);
+            int nbbits = 0;
+            for (int i = bit.nextSetBit(0); i >= 0 && nbbits < 35; i = bit.nextSetBit(i + 1)) {
+                nbbits++;
+            }
+            Assert.assertEquals(b, nbbits);
+        }
+    }
+
 }

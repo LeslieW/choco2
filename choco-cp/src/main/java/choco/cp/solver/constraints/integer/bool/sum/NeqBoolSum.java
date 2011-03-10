@@ -48,6 +48,18 @@ public final class NeqBoolSum extends AbstractBoolSum {
 		boolSumS.awakeOnNeq();
 	}
 
+    @Override
+    public void awake() throws ContradictionException {
+        int min = boolSumS.computeLbFromScratch();
+        int max = boolSumS.computeUbFromScratch();
+        int val = boolSumS.bValue;
+        if(val < min || max < val){
+            this.setEntailed();
+        }else if(val == min && val == max){
+            this.fail();
+        }
+        this.propagate();
+    }
 
 	@Override
 	public boolean isSatisfied(int[] tuple) {

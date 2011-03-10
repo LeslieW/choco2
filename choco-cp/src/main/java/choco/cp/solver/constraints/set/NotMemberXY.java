@@ -107,11 +107,22 @@ public final class NotMemberXY extends AbstractBinSetIntSConstraint {
         if (varIdx == 0)
             v1.remFromEnveloppe(v0.getVal(), this, false);
         else {
+            int left = Integer.MIN_VALUE;
+            int right = left;
             final DisposableIntIterator it = v1.getDomain().getKernelIterator();
             try {
                 while (it.hasNext()) {
-                    v0.removeVal(it.next(), this, false);
+                    int val = it.next();
+                    if (val == right + 1) {
+                        right = val;
+                    } else {
+                        v0.removeInterval(left, right, this, false);
+                        left = val;
+                        right = val;
+                    }
+//                    v0.removeVal(it.next(), this, false);
                 }
+                v0.removeInterval(left, right, this, false);
             } finally {
                 it.dispose();
             }
@@ -121,11 +132,22 @@ public final class NotMemberXY extends AbstractBinSetIntSConstraint {
 
 
     public void propagate() throws ContradictionException {
+        int left = Integer.MIN_VALUE;
+        int right = left;
         final DisposableIntIterator it = v1.getDomain().getKernelIterator();
         try {
             while (it.hasNext()) {
-                v0.removeVal(it.next(), this, false);
+                int val = it.next();
+                if (val == right + 1) {
+                    right = val;
+                } else {
+                    v0.removeInterval(left, right, this, false);
+                    left = val;
+                    right = val;
+                }
+//                v0.removeVal(it.next(), this, false);
             }
+            v0.removeInterval(left, right, this, false);
         } finally {
             it.dispose();
         }

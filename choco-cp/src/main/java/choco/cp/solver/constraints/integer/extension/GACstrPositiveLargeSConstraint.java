@@ -149,14 +149,23 @@ public final class GACstrPositiveLargeSConstraint extends CspLargeSConstraint {
             int vIdx = itf.next();
             IntDomainVar v = vars[vIdx];
             DisposableIntIterator it3 = v.getDomain().getIterator();
-            try{
+            int left = Integer.MIN_VALUE;
+            int right = left;
+            try {
                 while (it3.hasNext()) {
                     int val = it3.next();
                     if (!gacValues[vIdx].get(val - offsets[vIdx])) {
-                        v.removeVal(val, this, false);
+                        if (val == right + 1) {
+                            right = val;
+                        } else {
+                            v.removeInterval(left, right, this, false);
+                            left = right = val;
+                        }
+//                        v.removeVal(val, this, false);
                     }
                 }
-            }finally {
+                v.removeInterval(left, right, this, false);
+            } finally {
                 it3.dispose();
             }
         }
@@ -301,7 +310,7 @@ public final class GACstrPositiveLargeSConstraint extends CspLargeSConstraint {
     }
 
 
-       //<hca> implementation not efficient at all because
+    //<hca> implementation not efficient at all because
     //this constraint never "check" tuples but iterate over them and check the domains.
     //this should only be called in the restore solution
     @Override

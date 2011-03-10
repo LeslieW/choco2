@@ -59,10 +59,23 @@ public final class NotMemberEnum extends AbstractUnIntSConstraint {
      */
     @Override
     public void propagate() throws ContradictionException {
+        int left = Integer.MIN_VALUE;
+        int right = left;
+        boolean rall = true;
         for (int val : values) {
-            v0.removeVal(val, this, false);
+            if (val == right + 1) {
+                right = val;
+            } else {
+                rall &= v0.removeInterval(left, right, this, false);
+                left = val;
+                right = val;
+            }
+//            v0.removeVal(val, this, false);
         }
-        this.setEntailed();
+        rall &= v0.removeInterval(left, right, this, false);
+        if (rall) {
+            this.setEntailed();
+        }
     }
 
 
@@ -127,13 +140,13 @@ public final class NotMemberEnum extends AbstractUnIntSConstraint {
     @Override
     public Boolean isEntailed() {
         int nb = 0;
-        for(int val : values){
-            if(v0.canBeInstantiatedTo(val)){
+        for (int val : values) {
+            if (v0.canBeInstantiatedTo(val)) {
                 nb++;
             }
         }
-        if(nb == 0)return true;
-        else if(nb == v0.getDomainSize())return false;
+        if (nb == 0) return true;
+        else if (nb == v0.getDomainSize()) return false;
         return null;
     }
 }

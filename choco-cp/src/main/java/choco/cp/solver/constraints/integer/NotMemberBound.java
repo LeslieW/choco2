@@ -60,10 +60,8 @@ public final class NotMemberBound extends AbstractUnIntSConstraint {
      */
     @Override
     public void propagate() throws ContradictionException {
-        for (int i = lower; i <= upper; i++) {
-            v0.removeVal(i, this, false);
-        }
-        if (v0.getDomain().isEnumerated()) {
+        if(v0.removeInterval(lower, upper, this, false)){
+//        if (v0.hasEnumeratedDomain()) {
             this.setEntailed();
         }
     }

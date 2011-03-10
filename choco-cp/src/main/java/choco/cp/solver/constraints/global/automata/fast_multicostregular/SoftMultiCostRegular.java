@@ -625,16 +625,25 @@ public void awake() throws ContradictionException
 
         initGraph();
         makePathFinder();
+        int left, right;
         for (int i  = 0 ; i < x.length ; i++)
         {
+                left = right = Integer.MIN_VALUE;
                 for (int j = x[i].getInf() ; j <= x[i].getSup() ; j = x[i].getNextDomainValue(j))
                 {
                         StoredIndexedBipartiteSet sup = graph.getSupport(i,j);
                         if (sup == null || sup.isEmpty())
                         {
-                                x[i].removeVal(j, this, false);
+                            if (j == right + 1) {
+                                right = j;
+                            } else {
+                                x[i].removeInterval(left, right, this, false);
+                                left = right = j;
+                            }
+//                                x[i].removeVal(j, this, false);
                         }
                 }
+                x[i].removeInterval(left, right, this, false);
         }
         propagate();
 

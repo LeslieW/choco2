@@ -27,7 +27,6 @@
 
 package choco.cp.solver.constraints.global;
 
-import choco.kernel.common.util.objects.Pair;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.propagation.event.ConstraintEvent;
@@ -44,8 +43,9 @@ import java.util.List;
  *
  * GCCAT:
  * NVAR is the number of variables of the collection VARIABLES that take their value in VALUES.
- * {@link http://www.emn.fr/x-info/sdemasse/gccat/Cexactly.html}
- *
+ * <br/>
+ * <a href="http://www.emn.fr/x-info/sdemasse/gccat/Cexactly.html">gccat exactly</a>
+ * <br/>
  * Propagator :
  * C. Bessière, E. Hebrard, B. Hnich, Z. K?z?ltan, T. Walsh,
  * Among, common and disjoint Constraints
@@ -61,7 +61,7 @@ public final class Exactly extends AbstractLargeIntSConstraint {
     private final int value;
     private final int nb_vars;
     private final int N;
-    private final List<Pair<IntDomainVar, Integer>> BOTH = new ArrayList<Pair<IntDomainVar, Integer>>();
+    private final List<IntDomainVar> BOTH;
 
     /**
      * Constructs a constraint with the specified priority.
@@ -77,6 +77,7 @@ public final class Exactly extends AbstractLargeIntSConstraint {
         nb_vars = vars.length;
         this.value = value;
         this.N = N;
+        BOTH  = new ArrayList<IntDomainVar>(nb_vars);
     }
 
     /**
@@ -97,7 +98,7 @@ public final class Exactly extends AbstractLargeIntSConstraint {
                 if(var.isInstantiatedTo(value)){
                     lb++;
                 }else{
-                    BOTH.add(new Pair<IntDomainVar, Integer>(var,cIndices[i]));
+                    BOTH.add(var);
                 }
             }else{
                 ub--;
@@ -109,40 +110,18 @@ public final class Exactly extends AbstractLargeIntSConstraint {
         if(max < min) this.fail();
 
         if(lb == min && lb == max){
-            for(Pair<IntDomainVar, Integer> pair : BOTH){
-                removeOnlyValues(pair.fst, pair.snd);
+            for(IntDomainVar var : BOTH){
+                var.removeVal(value, this, false);
             }
             setEntailed();
         }
 
         if(ub == min && ub == max){
-            for(Pair<IntDomainVar, Integer> pair : BOTH){
-                removeButValues(pair.fst, pair.snd);
+            for(IntDomainVar var : BOTH){
+                var.instantiate(value, this, false);
             }
             setEntailed();
         }
-    }
-
-
-
-    /**
-     * Remove from {@code v} every values contained in {@code values}.
-     * @param v variable
-     * @param cidx index of {@code v} in the constraint
-     * @throws choco.kernel.solver.ContradictionException if contradiction occurs.
-     */
-    private void removeOnlyValues(IntDomainVar v, int cidx) throws ContradictionException {
-        v.removeVal(value, this, false);
-    }
-
-    /**
-     * Remove from {@code v} each value but {@code values}.
-     * @param v variable
-     * @param cidx index of {@code v} in the constraint
-     * @throws choco.kernel.solver.ContradictionException if contradiction occurs.
-     */
-    private void removeButValues(IntDomainVar v, int cidx) throws ContradictionException {
-        v.instantiate(value, this, false);
     }
 
     /**

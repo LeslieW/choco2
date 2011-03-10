@@ -27,16 +27,6 @@
 
 package choco.cp.solver.constraints.global.pack;
 
-import static choco.Options.C_PACK_AR;
-import static choco.Options.C_PACK_DLB;
-import static choco.Options.C_PACK_FB;
-import static choco.Options.C_PACK_LBE;
-import gnu.trove.TIntArrayList;
-import gnu.trove.TIntProcedure;
-
-import java.util.Arrays;
-import java.util.List;
-
 import choco.kernel.common.opres.nosum.NoSumList;
 import choco.kernel.common.opres.pack.LowerBoundFactory;
 import choco.kernel.common.util.bitmask.BitMask;
@@ -50,6 +40,13 @@ import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.set.AbstractLargeSetIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetVar;
+import gnu.trove.TIntArrayList;
+import gnu.trove.TIntProcedure;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static choco.Options.*;
 
 /**
  * <b>{@link Pack} which maintains a primal-dual packing model.</b><br>
@@ -60,14 +57,14 @@ import choco.kernel.solver.variables.set.SetVar;
  * @version 2.1.0</br>
  */
 public class PackSConstraint extends AbstractLargeSetIntSConstraint implements IPackSConstraint {
-	
+
 	public final static StringMask ADDITIONAL_RULES = new StringMask(C_PACK_AR,1);
 	public final static StringMask DYNAMIC_LB = new StringMask(C_PACK_DLB,1 << 2);
 	public final static StringMask FILL_BIN = new StringMask(C_PACK_FB,1 << 3);
 	public final static StringMask LAST_BINS_EMPTY = new StringMask(C_PACK_LBE,1 << 4);
-	
+
 	public final BitMask flags = new BitMask();
-	
+
 	public final PackFiltering filtering;
 
 	protected final BoundNumberOfBins bounds;
@@ -97,11 +94,11 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 		reuseStatus = new NoSumList(this.sizes);
 		//Pas de MaskgetFilteredEventMask(idx)
 	}
-	
+
 	public void readOptions(final List<String> options) {
 		flags.read(options, PackSConstraint.ADDITIONAL_RULES, PackSConstraint.DYNAMIC_LB, PackSConstraint.FILL_BIN, PackSConstraint.LAST_BINS_EMPTY);
 	}
-	
+
 	public final boolean isEmpty(int bin) {
 		return svars[bin].getKernelDomainSize()==0;
 	}
@@ -241,7 +238,7 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 		final int idx = ivars.length-1;
 		//LOGGER.info(min+ " "+max + " -> "+ivars[idx].pretty());
 		ivars[idx].updateInf( min, this, false);
-		final int oldSup = ivars[idx].getSup(); 
+		final int oldSup = ivars[idx].getSup();
 		if( ivars[idx].updateSup(max, this, false)
 				&& flags.contains(PackSConstraint.LAST_BINS_EMPTY)) {
 			for (int b = max; b < oldSup; b++) {
@@ -297,6 +294,7 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 	public void awake() throws ContradictionException {
 		//initial channeling
 		checkEnveloppes();
+        int left, right;
 		for (int item = 0; item < bins.length; item++) {
 			checkBounds(item);
 			if(bins[item].isInstantiated()) {
@@ -310,6 +308,7 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 					svars[b].remFromEnveloppe(item, this, false);
 				}
 			}else {
+                left = right = Integer.MIN_VALUE;
 				for (int bin = 0; bin < svars.length; bin++) {
 					if(svars[bin].isInDomainEnveloppe(item)) {
 						//item could be packed here
@@ -323,9 +322,16 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 						//channeling ok enveloppe-domain
 					}else {
 						//otherwise remove from domain
-						bins[item].removeVal(bin, this, false);
+                        if (bin == right + 1) {
+                                right = bin;
+                            } else {
+                                bins[item].removeInterval(left, right, this, false);
+                                left = right = bin;
+                            }
+//						bins[item].removeVal(bin, this, false);
 					}
 				}
+                bins[item].removeInterval(left, right, this, false);
 			}
 		}
 		super.awake();
@@ -423,7 +429,7 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 			}
 		}
 	}
-	
+
 	@Override
 	public void awakeOnKer(int varIdx, int x) throws ContradictionException {
 		pack(x,varIdx);
@@ -618,7 +624,7 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 		}
 
 		/**
-		 * 
+		 *
 		 * @param useDDFF do we use advanced and costly bounding procedure for a feaasibility test.
 		 * @return <code>false</code>  if the current state is infeasible.
 		 */
@@ -628,7 +634,7 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 			handleItems();
 			handleBins();
 			if( ! itemsMLB.isEmpty() ) {
-				//if( sizeMLB < maximumNumberOfNewBins.get() ) maximumNumberOfNewBins.set(sizeMLB); 
+				//if( sizeMLB < maximumNumberOfNewBins.get() ) maximumNumberOfNewBins.set(sizeMLB);
 				//there is unpacked items
 				//handleBins();
 				if( totalSizeCLB > 0) {
@@ -637,8 +643,8 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 					computeMinimumNumberOfNewBins();
 				}
 				if( getMinimumNumberOfBins() > ivars[ivars.length - 1].getSup()) return false; //the continous bound prove infeasibility
-				if( useDDFF) {	
-					createFakeItems(); 
+				if( useDDFF) {
+					createFakeItems();
 					return LowerBoundFactory.consistencyTestLDFF(itemsMLB, capacityMLB, binsMLB.size());
 					//					int[] items = getItems();
 					//					final int ub=new BestFit1BP(items,capacityMLB,AbstractHeurisic1BP.SORT).computeUB();

@@ -39,230 +39,245 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  */
 public final class BoolSumStructure {
 
-	protected final IntDomainVar[] vars;
+    protected final IntDomainVar[] vars;
 
-	protected final AbstractSConstraint<?> cstr;
-	/**
-	 * The number of variables instantiated to zero in the sum
-	 */
-	public final IStateInt nbz;
+    protected final AbstractSConstraint<?> cstr;
+    /**
+     * The number of variables instantiated to zero in the sum
+     */
+    public final IStateInt nbz;
 
-	/**
-	 * The number of variables instantiated to one in the sum
-	 */
-	public final IStateInt nbo;
+    /**
+     * The number of variables instantiated to one in the sum
+     */
+    public final IStateInt nbo;
 
-	public final int bGap;
+    public final int bGap;
 
-	public final int bValue;
+    public final int bValue;
 
-	public BoolSumStructure(IEnvironment environment, AbstractSConstraint<?> cstr, IntDomainVar[] vars, int bValue) {
-		super();
-		this.cstr = cstr;
-		for (IntDomainVar var : vars) {
-			if( ! var.hasBooleanDomain() ) throw new SolverException("BoolSum takes only boolean variables: "+var.pretty());
-		}
-		this.vars = vars;
-		this.bValue = bValue;
-		this.bGap = vars.length - bValue;
-		nbz = environment.makeInt(0);
-		nbo = environment.makeInt(0);
-	}
-
-
-	public final IntDomainVar[] getBoolVars() {
-		return vars;
-	}
+    public BoolSumStructure(IEnvironment environment, AbstractSConstraint<?> cstr, IntDomainVar[] vars, int bValue) {
+        super();
+        this.cstr = cstr;
+        for (IntDomainVar var : vars) {
+            if (!var.hasBooleanDomain())
+                throw new SolverException("BoolSum takes only boolean variables: " + var.pretty());
+        }
+        this.vars = vars;
+        this.bValue = bValue;
+        this.bGap = vars.length - bValue;
+        nbz = environment.makeInt(0);
+        nbo = environment.makeInt(0);
+    }
 
 
-	public final IStateInt getNbZero() {
-		return nbz;
-	}
+    public final IntDomainVar[] getBoolVars() {
+        return vars;
+    }
 
 
-	public final IStateInt getNbOne() {
-		return nbo;
-	}
+    public final IStateInt getNbZero() {
+        return nbz;
+    }
 
 
-	public final int getbGap() {
-		return bGap;
-	}
+    public final IStateInt getNbOne() {
+        return nbo;
+    }
 
 
-	public final int getbValue() {
-		return bValue;
-	}
+    public final int getbGap() {
+        return bGap;
+    }
 
 
-	public final void reset() {
-		nbz.set(0);
-		nbo.set(0);
-	}
-
-	public final boolean filterLeq() throws ContradictionException {
-		if(bValue == 0) {
-			putAllZero();
-			return false;
-		}
-		return true;
-	}
-
-	public final boolean filterGeq() throws ContradictionException {
-		if(bValue == vars.length) {
-			putAllOne();
-			return false;
-		}
-		return true;
-	}
-
-	public final void putAllZero() throws ContradictionException {
-		for (int i = 0; i < vars.length; i++) {
-			if (!vars[i].isInstantiated()) {
-				vars[i].instantiate(0, cstr, false);
-			}
-		}
-	}
-
-	public final void putAllOne() throws ContradictionException {
-		for (int i = 0; i < vars.length; i++) {
-			if (!vars[i].isInstantiated()) {
-				vars[i].instantiate(1, cstr, false);
-			}
-		}
-	}
+    public final int getbValue() {
+        return bValue;
+    }
 
 
-	public final void addOne() {
-		nbo.add(1);
-	}
+    public final void reset() {
+        nbz.set(0);
+        nbo.set(0);
+    }
 
-	public final void addZero() {
-		nbz.add(1);
-	}
+    public final boolean filterLeq() throws ContradictionException {
+        if (bValue == 0) {
+            //putAllZero();
+            forceAllZero();
+            return false;
+        }
+        return true;
+    }
 
-	public void awakeOnEq() throws ContradictionException {
-		if (nbo.get() > bValue || nbz.get() > bGap) {
-			cstr.fail();
-		} else if (nbo.get() == bValue) {
-			putAllZero();
-		} else if (nbz.get() == bGap) {
-			putAllOne();
-		}
-	}
+    public final boolean filterGeq() throws ContradictionException {
+        if (bValue == vars.length) {
+            //putAllOne();
+            forceAllOne();
+            return false;
+        }
+        return true;
+    }
 
-	public void awakeOnGeq() throws ContradictionException {
-		if (nbo.get() >= bValue) {
-			cstr.setEntailed();
-		} else if (nbz.get() > bGap) {
-			cstr.fail();
-		} else if (nbz.get() == bGap) {
-			putAllOne();
-		}
-	}
+    public final void putAllZero() throws ContradictionException {
+        for (int i = 0; i < vars.length; i++) {
+            if (!vars[i].isInstantiated()) {
+                vars[i].instantiate(0, cstr, false);
+            }
+        }
+    }
 
-	public void awakeOnLeq() throws ContradictionException {
-		if (nbz.get() >= bGap) {
-			cstr.setEntailed();
-		} else if (nbo.get() > bValue) {
-			cstr.fail();
-		} else if (nbo.get() == bValue) {
-			putAllZero();
-		}
-	}
+    public final void forceAllZero() throws ContradictionException {
+        for (int i = 0; i < vars.length; i++) {
+            vars[i].instantiate(0, cstr, false);
+        }
+    }
 
-	public void awakeOnNeq() throws ContradictionException {
-		if (nbo.get() > bValue || nbz.get() > bGap) {
-			cstr.setEntailed();
-		} else if (nbo.get() == bValue) {
-			if(nbz.get() == bGap - 1) putAllOne();
-			else if( nbz.get() == bGap) cstr.fail();
-		} else if (nbz.get() == bGap) {
-			if(nbo.get() == bValue - 1) putAllZero();
-			else if( nbo.get() == bValue) cstr.fail();
-		}
-	}
-	/**
-	 * Computes an upper bound estimate of a linear combination of variables.
-	 *
-	 * @return the new upper bound value
-	 */
-	public final int computeUbFromScratch() {
-		int s = 0;
-		for (int i = 0; i < vars.length; i++) {
-			s += vars[i].getSup();
-		}
-		return s;
-	}
+    public final void putAllOne() throws ContradictionException {
+        for (int i = 0; i < vars.length; i++) {
+            if (!vars[i].isInstantiated()) {
+                vars[i].instantiate(1, cstr, false);
+            }
+        }
+    }
 
-	/**
-	 * Computes a lower bound estimate of a linear combination of variables.
-	 *
-	 * @return the new lower bound value
-	 */
-	public final int computeLbFromScratch() {
-		int s = 0;
-		for (int i = 0; i < vars.length; i++) {
-			s += vars[i].getInf();
-		}
-		return s;
-	}
-
-	public Boolean isEntailedEq() {
-		final int lb = computeLbFromScratch();
-		final int ub = computeUbFromScratch();
-		if (lb > bValue || ub < bValue) {
-			return Boolean.FALSE;
-		} else if (lb == ub && bValue == lb) {
-			return Boolean.TRUE;
-		} else {
-			return null;
-		}
-	}
-
-	public Boolean isEntailedGeq() {
-		if( computeLbFromScratch() >= bValue) {
-			return Boolean.TRUE;
-		} else if (computeUbFromScratch() < bValue) {
-			return Boolean.FALSE;
-		} else {
-			return null;
-		}
-	}
-
-	public Boolean isEntailedLeq() {
-		if (computeUbFromScratch() <= bValue) {
-			return Boolean.TRUE;
-		} else if (computeLbFromScratch() > bValue) {
-			return Boolean.FALSE;
-		} else {
-			return null;
-		}
-	}
-
-	public Boolean isEntailedNeq() {
-		final int lb = computeLbFromScratch();
-		final int ub = computeUbFromScratch();
-		if (lb > bValue || ub < bValue) {
-			return Boolean.TRUE;
-		} else if (lb == ub && bValue == lb) {
-			return Boolean.FALSE;
-		} else {
-			return null;
-		}
-	}
+    public final void forceAllOne() throws ContradictionException {
+        for (int i = 0; i < vars.length; i++) {
+            vars[i].instantiate(1, cstr, false);
+        }
+    }
 
 
-	public String pretty(String operator) {
-		StringBuilder b = new StringBuilder();
-		for (int i = 0; i < vars.length; i++) {
-			b.append(vars[i]).append(" + ");
-		}
-		b.delete(b.length()-2, b.length());
-		b.append(operator).append(' ').append(bValue);
-		return b.toString();
-	}
+    public final void addOne() {
+        nbo.add(1);
+    }
 
+    public final void addZero() {
+        nbz.add(1);
+    }
+
+    public void awakeOnEq() throws ContradictionException {
+        if (nbo.get() > bValue || nbz.get() > bGap) {
+            cstr.fail();
+        } else if (nbo.get() == bValue) {
+            putAllZero();
+        } else if (nbz.get() == bGap) {
+            putAllOne();
+        }
+    }
+
+    public void awakeOnGeq() throws ContradictionException {
+        if (nbo.get() >= bValue) {
+            cstr.setEntailed();
+        } else if (nbz.get() > bGap) {
+            cstr.fail();
+        } else if (nbz.get() == bGap) {
+            putAllOne();
+        }
+    }
+
+    public void awakeOnLeq() throws ContradictionException {
+        if (nbz.get() >= bGap) {
+            cstr.setEntailed();
+        } else if (nbo.get() > bValue) {
+            cstr.fail();
+        } else if (nbo.get() == bValue) {
+            putAllZero();
+        }
+    }
+
+    public void awakeOnNeq() throws ContradictionException {
+        if (nbo.get() > bValue || nbz.get() > bGap) {
+            cstr.setEntailed();
+        } else if (nbo.get() == bValue) {
+            if (nbz.get() == bGap - 1) putAllOne();
+            else if (nbz.get() == bGap) cstr.fail();
+        } else if (nbz.get() == bGap) {
+            if (nbo.get() == bValue - 1) putAllZero();
+            else if (nbo.get() == bValue) cstr.fail();
+        }
+    }
+
+    /**
+     * Computes an upper bound estimate of a linear combination of variables.
+     *
+     * @return the new upper bound value
+     */
+    public final int computeUbFromScratch() {
+        int s = 0;
+        for (int i = 0; i < vars.length; i++) {
+            s += vars[i].getSup();
+        }
+        return s;
+    }
+
+    /**
+     * Computes a lower bound estimate of a linear combination of variables.
+     *
+     * @return the new lower bound value
+     */
+    public final int computeLbFromScratch() {
+        int s = 0;
+        for (int i = 0; i < vars.length; i++) {
+            s += vars[i].getInf();
+        }
+        return s;
+    }
+
+    public Boolean isEntailedEq() {
+        final int lb = computeLbFromScratch();
+        final int ub = computeUbFromScratch();
+        if (lb > bValue || ub < bValue) {
+            return Boolean.FALSE;
+        } else if (lb == ub && bValue == lb) {
+            return Boolean.TRUE;
+        } else {
+            return null;
+        }
+    }
+
+    public Boolean isEntailedGeq() {
+        if (computeLbFromScratch() >= bValue) {
+            return Boolean.TRUE;
+        } else if (computeUbFromScratch() < bValue) {
+            return Boolean.FALSE;
+        } else {
+            return null;
+        }
+    }
+
+    public Boolean isEntailedLeq() {
+        if (computeUbFromScratch() <= bValue) {
+            return Boolean.TRUE;
+        } else if (computeLbFromScratch() > bValue) {
+            return Boolean.FALSE;
+        } else {
+            return null;
+        }
+    }
+
+    public Boolean isEntailedNeq() {
+        final int lb = computeLbFromScratch();
+        final int ub = computeUbFromScratch();
+        if (lb > bValue || ub < bValue) {
+            return Boolean.TRUE;
+        } else if (lb == ub && bValue == lb) {
+            return Boolean.FALSE;
+        } else {
+            return null;
+        }
+    }
+
+
+    public String pretty(String operator) {
+        StringBuilder b = new StringBuilder();
+        for (int i = 0; i < vars.length; i++) {
+            b.append(vars[i]).append(" + ");
+        }
+        b.delete(b.length() - 2, b.length());
+        b.append(operator).append(' ').append(bValue);
+        return b.toString();
+    }
 
 
 }
