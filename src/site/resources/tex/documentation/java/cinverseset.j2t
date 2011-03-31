@@ -1,3 +1,5 @@
+        % integer version
+
         int i = 4;
         int j = 2;
         Model m = new CPModel();
@@ -8,3 +10,15 @@
         Solver s = new CPSolver();
         s.read(m);
         s.solveAll();
+
+
+        % set version
+
+         Model m = new CPModel();
+         SetVariable[] x = makeSetVarArray("x", 2, 0, 2);
+         SetVariable[] y = makeSetVarArray("y", 2, 0, 1, Options.V_NO_DECISION);
+         m.addConstraint (inverseSet(x,y);
+         Solver s = new CPSolver();
+         s.read(m);
+         s.solveAll(); % 16 solutions
+
