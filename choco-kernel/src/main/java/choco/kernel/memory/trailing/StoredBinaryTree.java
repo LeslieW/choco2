@@ -28,7 +28,7 @@
 package choco.kernel.memory.trailing;
 
 
-import choco.kernel.common.util.disposable.Disposable;
+import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateBinaryTree;
 import choco.kernel.memory.trailing.trail.StoredBinaryTreeTrail;
@@ -39,7 +39,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
 
 /**
  * Created by IntelliJ IDEA.
@@ -437,31 +436,20 @@ public final class StoredBinaryTree implements IStateBinaryTree {
     }
 
     protected static final class TreeIterator extends DisposableIntIterator {
-        /**
-         * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
-         * than the moment that getInstance() is called.
-         * Thus, this solution is thread-safe without requiring special language constructs.
-         * see http://en.wikipedia.org/wiki/Singleton_pattern
-         */
-        private static final class Holder {
 
-            private Holder() {
-            }
-
-            private static final Queue<TreeIterator> container = Disposable.createContainer();
-
-        }
+        private static final ThreadLocal<PoolManager<TreeIterator>> manager = new ThreadLocal<PoolManager<TreeIterator>>();
 
         @SuppressWarnings({"unchecked"})
         public static TreeIterator getIterator(final StoredBinaryTree tree) {
-            TreeIterator it;
-            synchronized (Holder.container){
-            if(Holder.container.isEmpty()){
-                it = build();
-            }else{
-                it = Holder.container.remove();
+            PoolManager<TreeIterator> tmanager = manager.get();
+            if (tmanager == null) {
+                tmanager = new PoolManager<TreeIterator>();
+                manager.set(tmanager);
             }
-        }
+            TreeIterator it = tmanager.getE();
+            if (it == null) {
+                it = new TreeIterator();
+            }
             it.init(tree);
             return it;
         }
@@ -471,12 +459,7 @@ public final class StoredBinaryTree implements IStateBinaryTree {
         private Node currentNode;
         private Node lastNode;
 
-        private static TreeIterator build() {
-            return new TreeIterator();
-        }
-
         public void init(final StoredBinaryTree tree) {
-            init();
             this.tree = tree;
             currentValue = Integer.MIN_VALUE;
             currentNode = tree.getFirstNode();
@@ -507,14 +490,9 @@ public final class StoredBinaryTree implements IStateBinaryTree {
 
         }
 
-        /**
-         * Get the containerof disposable objects where free ones are available
-         *
-         * @return a {@link java.util.Deque}
-         */
         @Override
-        public Queue getContainer() {
-            return Holder.container;
+        public void dispose() {
+            manager.get().returnE(this);
         }
     }
 

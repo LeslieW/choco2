@@ -27,24 +27,11 @@
 
 package choco.kernel.common.util.iterators;
 
-import choco.kernel.common.util.disposable.Disposable;
-
-import java.util.Queue;
+import choco.kernel.common.util.disposable.PoolManager;
 
 public final class ArrayIterator<E> extends DisposableIterator<E> {
 
-    /**
-     * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
-     * than the moment that getInstance() is called.
-     * Thus, this solution is thread-safe without requiring special language constructs.
-     * see http://en.wikipedia.org/wiki/Singleton_pattern
-     */
-    private static final class Holder {
-        private Holder() {
-        }
-
-        private static final Queue<ArrayIterator> container = Disposable.createContainer();
-    }
+    private static final ThreadLocal<PoolManager<ArrayIterator>> manager = new ThreadLocal<PoolManager<ArrayIterator>>();
 
     private E[] elements;
 
@@ -55,19 +42,16 @@ public final class ArrayIterator<E> extends DisposableIterator<E> {
     private ArrayIterator() {
     }
 
-    private static ArrayIterator build() {
-        return new ArrayIterator();
-    }
-
     @SuppressWarnings({"unchecked"})
     public static <E> ArrayIterator<E> getIterator(final E[] elements, final int size) {
-        ArrayIterator<E> it;
-        synchronized (Holder.container) {
-            if (Holder.container.isEmpty()) {
-                it = build();
-            } else {
-                it = Holder.container.remove();
-            }
+        PoolManager<ArrayIterator> tmanager = manager.get();
+        if (tmanager == null) {
+            tmanager = new PoolManager<ArrayIterator>();
+            manager.set(tmanager);
+        }
+        ArrayIterator it = tmanager.getE();
+        if (it == null) {
+            it = new ArrayIterator();
         }
         it.init(elements, size);
         return it;
@@ -75,13 +59,14 @@ public final class ArrayIterator<E> extends DisposableIterator<E> {
 
     @SuppressWarnings({"unchecked"})
     public static <E> ArrayIterator<E> getIterator(final E[] elements) {
-        ArrayIterator<E> it;
-        synchronized (Holder.container) {
-            if (Holder.container.isEmpty()) {
-                it = build();
-            } else {
-                it = Holder.container.remove();
-            }
+        PoolManager<ArrayIterator> tmanager = manager.get();
+        if (tmanager == null) {
+            tmanager = new PoolManager<ArrayIterator>();
+            manager.set(tmanager);
+        }
+        ArrayIterator it = tmanager.getE();
+        if (it == null) {
+            it = new ArrayIterator();
         }
         it.init(elements, elements.length);
         return it;
@@ -91,7 +76,6 @@ public final class ArrayIterator<E> extends DisposableIterator<E> {
      * Freeze the iterator, cannot be reused.
      */
     private void init(final E[] someElements, final int aSize) {
-        init();
         this.elements = someElements;
         this.size = aSize;
         cursor = 0;
@@ -121,12 +105,8 @@ public final class ArrayIterator<E> extends DisposableIterator<E> {
         return elements[cursor++];
     }
 
-    /**
-     * Get the containerof disposable objects where free ones are available
-     *
-     * @return a {@link java.util.Deque}
-     */
-    public Queue getContainer() {
-        return Holder.container;
+    @Override
+    public void dispose() {
+        manager.get().returnE(this);
     }
 }

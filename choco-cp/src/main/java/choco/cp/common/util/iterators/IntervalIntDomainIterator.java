@@ -28,10 +28,8 @@
 package choco.cp.common.util.iterators;
 
 import choco.cp.solver.variables.integer.IntervalIntDomain;
-import choco.kernel.common.util.disposable.Disposable;
+import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-
-import java.util.Queue;
 
 /**
  * User : cprudhom<br/>
@@ -41,18 +39,7 @@ import java.util.Queue;
  */
 public final class IntervalIntDomainIterator extends DisposableIntIterator {
 
-    /**
-     * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
-     * than the moment that getInstance() is called.
-     * Thus, this solution is thread-safe without requiring special language constructs.
-     * see http://en.wikipedia.org/wiki/Singleton_pattern
-     */
-    private static final class Holder {
-        private Holder() {
-        }
-
-        private static final Queue<IntervalIntDomainIterator> container = Disposable.createContainer();
-    }
+    private static final ThreadLocal<PoolManager<IntervalIntDomainIterator>> manager = new ThreadLocal<PoolManager<IntervalIntDomainIterator>>();
 
     private IntervalIntDomain domain;
     private int value;
@@ -60,19 +47,16 @@ public final class IntervalIntDomainIterator extends DisposableIntIterator {
     private IntervalIntDomainIterator() {
     }
 
-    private static IntervalIntDomainIterator build() {
-        return new IntervalIntDomainIterator();
-    }
-
     @SuppressWarnings({"unchecked"})
     public static IntervalIntDomainIterator getIterator(final IntervalIntDomain aDomain) {
-        IntervalIntDomainIterator it;
-        synchronized (Holder.container) {
-            if (Holder.container.isEmpty()) {
-                it = build();
-            } else {
-                it = Holder.container.remove();
-            }
+        PoolManager<IntervalIntDomainIterator> tmanager = manager.get();
+        if (tmanager == null) {
+            tmanager = new PoolManager<IntervalIntDomainIterator>();
+            manager.set(tmanager);
+        }
+        IntervalIntDomainIterator it = tmanager.getE();
+        if (it == null) {
+            it = new IntervalIntDomainIterator();
         }
         it.init(aDomain);
         return it;
@@ -82,7 +66,6 @@ public final class IntervalIntDomainIterator extends DisposableIntIterator {
      * Freeze the iterator, cannot be reused.
      */
     public void init(final IntervalIntDomain aDomain) {
-        init();
         this.domain = aDomain;
         value = aDomain.getInf() - 1;
     }
@@ -112,13 +95,8 @@ public final class IntervalIntDomainIterator extends DisposableIntIterator {
     }
 
 
-    /**
-     * Get the containerof disposable objects where free ones are available
-     *
-     * @return a {@link java.util.Deque}
-     */
     @Override
-    public Queue getContainer() {
-        return Holder.container;
+    public void dispose() {
+        manager.get().returnE(this);
     }
 }

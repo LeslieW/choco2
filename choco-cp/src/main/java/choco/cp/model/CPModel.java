@@ -379,7 +379,7 @@ public class CPModel implements Model {
         if (hs != null) {
             return TIHIterator.getIterator(hs, constraints);
         }
-        return EmptyIterator.getIterator();
+        return EmptyIterator.get();
     }
 
     public int getNbConstraintByType(final ConstraintType t) {

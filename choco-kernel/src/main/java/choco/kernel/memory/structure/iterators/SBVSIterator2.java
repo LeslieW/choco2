@@ -27,11 +27,9 @@
 
 package choco.kernel.memory.structure.iterators;
 
-import choco.kernel.common.util.disposable.Disposable;
+import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.solver.variables.Var;
-
-import java.util.Queue;
 
 /**
  * User : cprudhom<br/>
@@ -41,39 +39,26 @@ import java.util.Queue;
  */
 public final class SBVSIterator2<E extends Var> extends DisposableIterator<E> {
 
-    /**
-     * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
-     * than the moment that getInstance() is called.
-     * Thus, this solution is thread-safe without requiring special language constructs.
-     * see http://en.wikipedia.org/wiki/Singleton_pattern
-     */
-    private static final class Holder {
-        private Holder() {
-        }
-
-        private static final Queue<SBVSIterator2> container = Disposable.createContainer();
-    }
+    private static final ThreadLocal<PoolManager<SBVSIterator2>> manager = new ThreadLocal<PoolManager<SBVSIterator2>>();
 
     private int i = -1;
     private E[] elements;
     private int size;
 
-    private SBVSIterator2() {}
-
-    private static SBVSIterator2 build(){
-        return new SBVSIterator2();
+    private SBVSIterator2() {
     }
 
     @SuppressWarnings({"unchecked"})
     public static <E extends Var> SBVSIterator2 getIterator(
             final E[] someElements, final int last) {
-        SBVSIterator2 it;
-        synchronized (Holder.container){
-            if(Holder.container.isEmpty()){
-                it = build();
-            }else{
-                it = Holder.container.remove();
-            }
+        PoolManager<SBVSIterator2> tmanager = manager.get();
+        if (tmanager == null) {
+            tmanager = new PoolManager<SBVSIterator2>();
+            manager.set(tmanager);
+        }
+        SBVSIterator2 it = tmanager.getE();
+        if (it == null) {
+            it = new SBVSIterator2();
         }
         it.init(someElements, last);
         return it;
@@ -97,8 +82,8 @@ public final class SBVSIterator2<E extends Var> extends DisposableIterator<E> {
      */
     @Override
     public boolean hasNext() {
-        i ++ ;
-        while(i < size && !elements[i].isInstantiated()){
+        i++;
+        while (i < size && !elements[i].isInstantiated()) {
             i++;
         }
         return i < size;
@@ -116,13 +101,8 @@ public final class SBVSIterator2<E extends Var> extends DisposableIterator<E> {
         return elements[i];
     }
 
-    /**
-     * Get the containerof disposable objects where free ones are available
-     *
-     * @return a {@link java.util.Deque}
-     */
     @Override
-    public Queue getContainer() {
-        return Holder.container;
+    public void dispose() {
+        manager.get().returnE(this);
     }
 }

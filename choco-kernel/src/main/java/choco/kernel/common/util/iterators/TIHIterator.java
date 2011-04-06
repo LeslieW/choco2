@@ -28,11 +28,9 @@
 package choco.kernel.common.util.iterators;
 
 import choco.kernel.common.IIndex;
-import choco.kernel.common.util.disposable.Disposable;
+import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.objects.DeterministicIndicedList;
 import gnu.trove.TIntHashSet;
-
-import java.util.Queue;
 
 /**
  * User : cprudhom<br/>
@@ -42,18 +40,7 @@ import java.util.Queue;
  */
 public final class TIHIterator<E extends IIndex> extends DisposableIterator<E> {
 
-    /**
-     * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
-     * than the moment that getInstance() is called.
-     * Thus, this solution is thread-safe without requiring special language constructs.
-     * see http://en.wikipedia.org/wiki/Singleton_pattern
-     */
-    private static final class Holder {
-        private Holder() {
-        }
-
-        private static final Queue<TIHIterator> container = Disposable.createContainer();
-    }
+    private static final ThreadLocal<PoolManager<TIHIterator>> manager = new ThreadLocal<PoolManager<TIHIterator>>();
 
     private int current;
     private int[] indices;
@@ -62,20 +49,17 @@ public final class TIHIterator<E extends IIndex> extends DisposableIterator<E> {
     private TIHIterator() {
     }
 
-    private static TIHIterator build() {
-        return new TIHIterator();
-    }
-
     @SuppressWarnings({"unchecked"})
     public static <E extends IIndex> TIHIterator<E> getIterator(final TIntHashSet indices,
-                                                                             final DeterministicIndicedList<E> elements) {
-        TIHIterator it;
-        synchronized (Holder.container){
-            if(Holder.container.isEmpty()){
-                it = build();
-            }else{
-                it = Holder.container.remove();
-            }
+                                                                final DeterministicIndicedList<E> elements) {
+        PoolManager<TIHIterator> tmanager = manager.get();
+        if (tmanager == null) {
+            tmanager = new PoolManager<TIHIterator>();
+            manager.set(tmanager);
+        }
+        TIHIterator it = tmanager.getE();
+        if (it == null) {
+            it = new TIHIterator();
         }
         it.init(indices, elements);
         return it;
@@ -85,7 +69,6 @@ public final class TIHIterator<E extends IIndex> extends DisposableIterator<E> {
      * Freeze the iterator, cannot be reused.
      */
     public void init(final TIntHashSet theIndices, final DeterministicIndicedList<E> theElements) {
-        init();
         current = 0;
         indices = theIndices.toArray();
         elements = theElements;
@@ -116,13 +99,8 @@ public final class TIHIterator<E extends IIndex> extends DisposableIterator<E> {
     }
 
 
-    /**
-     * Get the containerof disposable objects where free ones are available
-     *
-     * @return a {@link java.util.Deque}
-     */
     @Override
-    public Queue getContainer() {
-        return Holder.container;
+    public void dispose() {
+        manager.get().returnE(this);
     }
 }

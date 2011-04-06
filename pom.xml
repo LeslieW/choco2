@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>choco</groupId>
     <artifactId>choco</artifactId>
@@ -232,6 +233,19 @@
         </plugins>
     </reporting>
     <developers>
+
+        <developer>
+            <name>Charles Prud'homme</name>
+            <email>charles.prudhomme@emn.fr</email>
+            <organization>EMN Constraint</organization>
+            <organizationUrl>
+                http://www.emn.fr/x-info/ppc/
+            </organizationUrl>
+            <roles>
+                <role>administrator</role>
+            </roles>
+        </developer>
+
         <developer>
             <name>Francois Laburthe</name>
             <email>francois.laburthe@amadeus.com</email>
@@ -240,7 +254,7 @@
                 http://www.amadeus.com/amadeus/amadeus.html
             </organizationUrl>
             <roles>
-                <role>Director, operations research and innovation</role>
+                <role>steering committee</role>
             </roles>
         </developer>
 
@@ -253,21 +267,10 @@
                 http://www.emn.fr/x-info/ppc/
             </organizationUrl>
             <roles>
-                <role>Professor</role>
-                <role>Head of Computer Science department</role>
+                <role>steering committee</role>
             </roles>
         </developer>
-        <developer>
-            <name>Guillaume Rochart</name>
-            <email>GROCHART@bouygues.com</email>
-            <organization>Bouygues SA</organization>
-            <organizationUrl>
-                http://e-lab.bouygues.com/
-            </organizationUrl>
-            <roles>
-                <role>Engineer</role>
-            </roles>
-        </developer>
+
         <developer>
             <name>Hadrien Cambazard</name>
             <email>h.cambazard@4c.ucc.ie</email>
@@ -277,20 +280,10 @@
                 http://4c.ucc.ie/web/index.jsp
             </organizationUrl>
             <roles>
-                <role>Research staff</role>
+                <role>steering committee</role>
             </roles>
         </developer>
-        <developer>
-            <name>Charles Prud'homme</name>
-            <email>charles.prudhomme@emn.fr</email>
-            <organization>EMN Constraint</organization>
-            <organizationUrl>
-                http://www.emn.fr/x-info/ppc/
-            </organizationUrl>
-            <roles>
-                <role>Engineer</role>
-            </roles>
-        </developer>
+
         <developer>
             <name>Arnaud Malapert</name>
             <email>arnaud.malapert@emn.fr</email>
@@ -300,9 +293,48 @@
                 http://www.sciences.univ-nantes.fr/lina/fr/
             </organizationUrl>
             <roles>
-                <role>Ph.D Student</role>
+                <role>steering committee</role>
             </roles>
         </developer>
+
+        <developer>
+            <name>Guillaume Rochart</name>
+            <email>grochart@bouygues.com</email>
+            <organization>Bouygues SA</organization>
+            <organizationUrl>
+                http://e-lab.bouygues.com/
+            </organizationUrl>
+            <roles>
+                <role>steering committee</role>
+            </roles>
+        </developer>
+
+        <developer>
+            <name>Sophie Demassey</name>
+            <email>sophie.demassey@emn.fr</email>
+            <url>http://www.emn.fr/x-info/sdemasse/</url>
+            <organization>EMN Constraint</organization>
+            <organizationUrl>
+                http://www.emn.fr/x-info/ppc/
+            </organizationUrl>
+            <roles>
+                <role>committer</role>
+            </roles>
+        </developer>
+
+        <developer>
+            <name>Xavier Lorca</name>
+            <email>xavier.lorca@emn.fr</email>
+            <url>http://www.emn.fr/x-info/xlorca/</url>
+            <organization>EMN Constraint</organization>
+            <organizationUrl>
+                http://www.emn.fr/x-info/ppc/
+            </organizationUrl>
+            <roles>
+                <role>committer</role>
+            </roles>
+        </developer>
+
         <developer>
             <name>Julien Menana</name>
             <email>julien.menana@emn.fr</email>
@@ -312,36 +344,11 @@
                 http://www.emn.fr/x-info/ppc/
             </organizationUrl>
             <roles>
-                <role>Ph.D Student</role>
+                <role>committer</role>
             </roles>
         </developer>
-    </developers>
-    <contributors>
-        <contributor>
-            <name>Sophie Demassey</name>
-            <email>sophie.demassey@emn.fr</email>
-            <url>http://www.emn.fr/x-info/sdemasse/</url>
-            <organization>EMN Constraint</organization>
-            <organizationUrl>
-                http://www.emn.fr/x-info/ppc/
-            </organizationUrl>
-            <roles>
-                <role>Ass. Prof.</role>
-            </roles>
-        </contributor>
-        <contributor>
-            <name>Xavier Lorca</name>
-            <email>xavier.lorca@emn.fr</email>
-            <url>http://www.emn.fr/x-info/xlorca/</url>
-            <organization>EMN Constraint</organization>
-            <organizationUrl>
-                http://www.emn.fr/x-info/ppc/
-            </organizationUrl>
-            <roles>
-                <role>Ass. Prof.</role>
-            </roles>
-        </contributor>
-        <contributor>
+
+        <developer>
             <name>Thierry Petit</name>
             <email>thierry.petit@emn.fr</email>
             <url>http://www.emn.fr/x-info/tpetit/</url>
@@ -350,10 +357,11 @@
                 http://www.emn.fr/x-info/ppc/
             </organizationUrl>
             <roles>
-                <role>Ass. Prof.</role>
+                <role>committer</role>
             </roles>
-        </contributor>
-        <contributor>
+        </developer>
+
+        <developer>
             <name>Guillaume Richaud</name>
             <email>guillaume.richaud@emn.fr</email>
             <organization>EMN Constraint</organization>
@@ -361,32 +369,26 @@
                 http://www.emn.fr/x-info/ppc/
             </organizationUrl>
             <roles>
-                <role>Phd. Student</role>
+                <role>committer</role>
             </roles>
-        </contributor>
+        </developer>
+
+    </developers>
+
+    <contributors>
+
         <contributor>
-            <name>Julien Vion</name>
-            <email>julien.vion@gmail.com</email>
-            <url>http://vion.free.fr/perso/index.html</url>
+            <name>Nicolas Beldiceanu</name>
+            <email>nicolas.beldiceanu@mines-nantes.fr</email>
             <organization>EMN Constraint</organization>
             <organizationUrl>
                 http://www.emn.fr/x-info/ppc/
             </organizationUrl>
             <roles>
-                <role>Research staff</role>
+                <role>suggestion</role>
             </roles>
         </contributor>
-        <contributor>
-            <name>Stephane Zampelli</name>
-            <email>stephane.zampelli@emn.fr</email>
-            <organization>EMN Constraint</organization>
-            <organizationUrl>
-                http://www.emn.fr/x-info/ppc/
-            </organizationUrl>
-            <roles>
-                <role>Research staff</role>
-            </roles>
-        </contributor>
+
         <contributor>
             <name>Fabien Hermenier</name>
             <email>fabien.hermenier@emn.fr</email>
@@ -396,8 +398,34 @@
                 http://www.inria.fr/recherche/equipes/ascola.fr.html
             </organizationUrl>
             <roles>
-                <role>Research staff</role>
+                <role>patch</role>
             </roles>
         </contributor>
+
+        <contributor>
+            <name>Julien Vion</name>
+            <email>julien.vion@gmail.com</email>
+            <url>http://vion.free.fr/perso/index.html</url>
+            <organization>EMN Constraint</organization>
+            <organizationUrl>
+                http://www.emn.fr/x-info/ppc/
+            </organizationUrl>
+            <roles>
+                <role>patch</role>
+            </roles>
+        </contributor>
+
+        <contributor>
+            <name>Stephane Zampelli</name>
+            <email>stephane.zampelli@emn.fr</email>
+            <organization>EMN Constraint</organization>
+            <organizationUrl>
+                http://www.emn.fr/x-info/ppc/
+            </organizationUrl>
+            <roles>
+                <role>patch</role>
+            </roles>
+        </contributor>
+
     </contributors>
 </project>

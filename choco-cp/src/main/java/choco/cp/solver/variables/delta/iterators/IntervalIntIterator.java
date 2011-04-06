@@ -27,10 +27,8 @@
 
 package choco.cp.solver.variables.delta.iterators;
 
-import choco.kernel.common.util.disposable.Disposable;
+import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-
-import java.util.Queue;
 
 /**
  * User : cprudhom<br/>
@@ -40,38 +38,24 @@ import java.util.Queue;
  */
 public final class IntervalIntIterator extends DisposableIntIterator {
 
-    /**
-     * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
-     * than the moment that getInstance() is called.
-     * Thus, this solution is thread-safe without requiring special language constructs.
-     * see http://en.wikipedia.org/wiki/Singleton_pattern
-     */
-    private static final class Holder {
-        private Holder() {
-        }
-
-        private static final Queue<IntervalIntIterator> container = Disposable.createContainer();
-    }
+    private static final ThreadLocal<PoolManager<IntervalIntIterator>> manager = new ThreadLocal<PoolManager<IntervalIntIterator>>();
 
     private int current, currentInfPropagated, currentSupPropagated, lastSupPropagated;
 
     private IntervalIntIterator() {
     }
 
-    private static IntervalIntIterator build() {
-        return new IntervalIntIterator();
-    }
-
     @SuppressWarnings({"unchecked"})
     public static IntervalIntIterator getIterator(final int theCurrentInfPropagated, final int theCurrentSupPropagated,
-                                                               final int theLastIntPropagated, final int theLastSupPropagated) {
-        IntervalIntIterator it;
-        synchronized (Holder.container) {
-            if (Holder.container.isEmpty()) {
-                it = build();
-            } else {
-                it = Holder.container.remove();
-            }
+                                                  final int theLastIntPropagated, final int theLastSupPropagated) {
+        PoolManager<IntervalIntIterator> tmanager = manager.get();
+        if (tmanager == null) {
+            tmanager = new PoolManager<IntervalIntIterator>();
+            manager.set(tmanager);
+        }
+        IntervalIntIterator it = tmanager.getE();
+        if (it == null) {
+            it = new IntervalIntIterator();
         }
         it.init(theCurrentInfPropagated, theCurrentSupPropagated, theLastIntPropagated, theLastSupPropagated);
         return it;
@@ -119,13 +103,8 @@ public final class IntervalIntIterator extends DisposableIntIterator {
     }
 
 
-    /**
-     * Get the containerof disposable objects where free ones are available
-     *
-     * @return a {@link java.util.Deque}
-     */
     @Override
-    public Queue getContainer() {
-        return Holder.container;
+    public void dispose() {
+        manager.get().returnE(this);
     }
 }

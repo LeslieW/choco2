@@ -28,7 +28,6 @@
 package choco.kernel.common.util.tools;
 
 import choco.kernel.common.IIndex;
-import choco.kernel.common.util.disposable.Disposable;
 import gnu.trove.TIntArrayList;
 import gnu.trove.TLongHashSet;
 
@@ -43,6 +42,9 @@ import java.util.*;
  */
 
 public final class ArrayUtils {
+
+    static ThreadLocal<TLongHashSet> hashset = new ThreadLocal<TLongHashSet>();
+    static ThreadLocal<ArrayList> arraylist = new ThreadLocal<ArrayList>();
 
     private ArrayUtils() {
         super();
@@ -218,7 +220,7 @@ public final class ArrayUtils {
 
     }
 
-    public static  int[][] transpose(int[][] matrix) {
+    public static int[][] transpose(int[][] matrix) {
         int[][] ret = (int[][]) java.lang.reflect.Array.newInstance(matrix.getClass().getComponentType(), matrix[0].length);
         for (int i = 0; i < ret.length; i++) {
             ret[i] = (int[]) java.lang.reflect.Array.newInstance(matrix[0].getClass().getComponentType(), matrix.length);
@@ -297,52 +299,59 @@ public final class ArrayUtils {
 
     @SuppressWarnings({"unchecked"})
     public static <V extends IIndex> V[] getNonRedundantObjects(V[] all) {
-        final DLongHashSet hashSet = DLongHashSet.getHashSet();
-        final DArrayList list = DArrayList.getArrayList();
-        final TLongHashSet thashset = hashSet.get();
-        final ArrayList alist = list.get();
-        try {
-            for (V v : all) {
-                if (!thashset.contains(v.getIndex())) {
-                    alist.add(v);
-                    thashset.add(v.getIndex());
-                }
-            }
-            if (alist.size() != all.length) {
-                V[] a = (V[]) java.lang.reflect.Array.newInstance((Class<? extends V[]>) all.getClass().getComponentType(), alist.size());
-                alist.toArray(a);
-                return a;
-            }
-            return all;
-        } finally {
-            hashSet.dispose();
-            list.dispose();
+        TLongHashSet thashset = hashset.get();
+        if (thashset == null) {
+            thashset = new TLongHashSet();
+            hashset.set(thashset);
         }
+        thashset.clear();
+        ArrayList alist = arraylist.get();
+        if (alist == null) {
+            alist = new ArrayList();
+            arraylist.set(alist);
+        }
+        alist.clear();
+        for (V v : all) {
+            if (!thashset.contains(v.getIndex())) {
+                alist.add(v);
+                thashset.add(v.getIndex());
+            }
+        }
+        if (alist.size() != all.length) {
+            V[] a = (V[]) java.lang.reflect.Array.newInstance((Class<? extends V[]>) all.getClass().getComponentType(), alist.size());
+            alist.toArray(a);
+            return a;
+        }
+        return all;
     }
 
     @SuppressWarnings({"unchecked"})
     public static <V extends IIndex> V[] getNonRedundantObjects(Class classe, V[] all) {
-        final DLongHashSet hashSet = DLongHashSet.getHashSet();
-        final DArrayList list = DArrayList.getArrayList();
-        final TLongHashSet thashset = hashSet.get();
-        final ArrayList alist = list.get();
-        try {
-            for (V v : all) {
-                if (!thashset.contains(v.getIndex())) {
-                    alist.add(v);
-                    thashset.add(v.getIndex());
-                }
-            }
-            if (alist.size() != all.length) {
-                V[] a = (V[]) java.lang.reflect.Array.newInstance(classe, alist.size());
-                alist.toArray(a);
-                return a;
-            }
-            return all;
-        } finally {
-            hashSet.dispose();
-            list.dispose();
+        TLongHashSet thashset = hashset.get();
+        if (thashset == null) {
+            thashset = new TLongHashSet();
+            hashset.set(thashset);
         }
+        thashset.clear();
+        ArrayList alist = arraylist.get();
+        if (alist == null) {
+            alist = new ArrayList();
+            arraylist.set(alist);
+        }
+        alist.clear();
+        for (V v : all) {
+            if (!thashset.contains(v.getIndex())) {
+                alist.add(v);
+                thashset.add(v.getIndex());
+            }
+        }
+        if (alist.size() != all.length) {
+            V[] a = (V[]) java.lang.reflect.Array.newInstance(classe, alist.size());
+            alist.toArray(a);
+            return a;
+        }
+        return all;
+
     }
 
     @SuppressWarnings("unchecked")
@@ -414,105 +423,5 @@ public final class ArrayUtils {
 
         return ret;
 
-    }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    private static final class DLongHashSet extends Disposable {
-        private static class Holder {
-            private Holder() {
-            }
-
-            private static final Queue<DLongHashSet> container = Disposable.createContainer();
-        }
-
-        private final TLongHashSet hashset;
-
-        public static DLongHashSet getHashSet() {
-            DLongHashSet it;
-            synchronized (Holder.container) {
-                if (Holder.container.isEmpty()) {
-                    it = build();
-                } else {
-                    it = Holder.container.remove();
-                }
-            }
-            it.init();
-            return it;
-        }
-
-        private static DLongHashSet build() {
-            return new DLongHashSet();
-        }
-
-        private DLongHashSet() {
-            super();
-            hashset = new TLongHashSet();
-        }
-
-        @Override
-        public void init() {
-            super.init();
-            hashset.clear();
-        }
-
-        public TLongHashSet get() {
-            return hashset;
-        }
-
-        @Override
-        public Queue getContainer() {
-            return Holder.container;
-        }
-    }
-
-    private static final class DArrayList extends Disposable {
-        private static class Holder {
-            private Holder() {
-            }
-
-            private static final Queue<DArrayList> container = Disposable.createContainer();
-        }
-
-        private final ArrayList<Object> arrayList;
-
-        public static DArrayList getArrayList() {
-            DArrayList it;
-            synchronized (Holder.container) {
-                if (Holder.container.isEmpty()) {
-                    it = build();
-                } else {
-                    it = Holder.container.remove();
-                }
-            }
-            it.init();
-            return it;
-        }
-
-        private static DArrayList build() {
-            return new DArrayList();
-        }
-
-        private DArrayList() {
-            super();
-            arrayList = new ArrayList<Object>(16);
-        }
-
-        @Override
-        public void init() {
-            super.init();
-            arrayList.clear();
-        }
-
-        public ArrayList<Object> get() {
-            return arrayList;
-        }
-
-        @Override
-        public Queue getContainer() {
-            return Holder.container;
-        }
     }
 }

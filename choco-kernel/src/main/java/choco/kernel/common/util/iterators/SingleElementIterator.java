@@ -27,24 +27,11 @@
 
 package choco.kernel.common.util.iterators;
 
-import choco.kernel.common.util.disposable.Disposable;
-
-import java.util.Queue;
+import choco.kernel.common.util.disposable.PoolManager;
 
 public final class SingleElementIterator<E> extends DisposableIterator<E> {
 
-    /**
-     * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
-     * than the moment that getInstance() is called.
-     * Thus, this solution is thread-safe without requiring special language constructs.
-     * see http://en.wikipedia.org/wiki/Singleton_pattern
-     */
-    private static final class Holder {
-        private Holder() {
-        }
-
-        private static final Queue<SingleElementIterator> container = Disposable.createContainer();
-    }
+    private static final ThreadLocal<PoolManager<SingleElementIterator>> manager = new ThreadLocal<PoolManager<SingleElementIterator>>();
 
 
     private E elem;
@@ -54,19 +41,16 @@ public final class SingleElementIterator<E> extends DisposableIterator<E> {
     private SingleElementIterator() {
     }
 
-    private static SingleElementIterator build() {
-        return new SingleElementIterator();
-    }
-
     @SuppressWarnings({"unchecked"})
     public static <E> SingleElementIterator getIterator(final E element) {
-        SingleElementIterator<E> it;
-        synchronized (Holder.container) {
-            if (Holder.container.isEmpty()) {
-                it = build();
-            } else {
-                it = Holder.container.remove();
-            }
+        PoolManager<SingleElementIterator> tmanager = manager.get();
+        if (tmanager == null) {
+            tmanager = new PoolManager<SingleElementIterator>();
+            manager.set(tmanager);
+        }
+        SingleElementIterator it = tmanager.getE();
+        if (it == null) {
+            it = new SingleElementIterator();
         }
         it.init(element);
         return it;
@@ -76,7 +60,6 @@ public final class SingleElementIterator<E> extends DisposableIterator<E> {
      * Freeze the iterator, cannot be reused.
      */
     public void init(final E anElement) {
-        init();
         this.elem = anElement;
         hnext = true;
     }
@@ -92,14 +75,9 @@ public final class SingleElementIterator<E> extends DisposableIterator<E> {
         return elem;
     }
 
-    /**
-     * Get the containerof disposable objects where free ones are available
-     *
-     * @return a {@link java.util.Deque}
-     */
     @Override
-    public Queue getContainer() {
-        return Holder.container;
+    public void dispose() {
+        manager.get().returnE(this);
     }
 }
 

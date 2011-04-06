@@ -27,11 +27,9 @@
 
 package choco.cp.common.util.iterators;
 
-import choco.kernel.common.util.disposable.Disposable;
+import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateBitSet;
-
-import java.util.Queue;
 
 /**
  * User : cprudhom<br/>
@@ -41,18 +39,7 @@ import java.util.Queue;
  */
 public final class BitSetIntDomainIterator extends DisposableIntIterator {
 
-    /**
-     * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
-     * than the moment that getInstance() is called.
-     * Thus, this solution is thread-safe without requiring special language constructs.
-     * see http://en.wikipedia.org/wiki/Singleton_pattern
-     */
-    private static final class Holder {
-        private Holder() {
-        }
-
-        private static final Queue<BitSetIntDomainIterator> container = Disposable.createContainer();
-    }
+    private static final ThreadLocal<PoolManager<BitSetIntDomainIterator>> manager = new ThreadLocal<PoolManager<BitSetIntDomainIterator>>();
 
     private int nextValue;
     private int offset;
@@ -61,20 +48,17 @@ public final class BitSetIntDomainIterator extends DisposableIntIterator {
     private BitSetIntDomainIterator() {
     }
 
-    private static BitSetIntDomainIterator build() {
-        return new BitSetIntDomainIterator();
-    }
-
     @SuppressWarnings({"unchecked"})
     public static BitSetIntDomainIterator getIterator(final int theOffset,
-                                                                   final IStateBitSet theContents) {
-        BitSetIntDomainIterator it;
-        synchronized (Holder.container){
-            if(Holder.container.isEmpty()){
-                it = build();
-            }else{
-                it = Holder.container.remove();
-            }
+                                                      final IStateBitSet theContents) {
+        PoolManager<BitSetIntDomainIterator> tmanager = manager.get();
+        if (tmanager == null) {
+            tmanager = new PoolManager<BitSetIntDomainIterator>();
+            manager.set(tmanager);
+        }
+        BitSetIntDomainIterator it = tmanager.getE();
+        if (it == null) {
+            it = new BitSetIntDomainIterator();
         }
         it.init(theOffset, theContents);
         return it;
@@ -84,7 +68,6 @@ public final class BitSetIntDomainIterator extends DisposableIntIterator {
      * Freeze the iterator, cannot be reused.
      */
     public void init(final int theOffset, final IStateBitSet theContents) {
-        init();
         this.contents = theContents;
         this.offset = theOffset;
         nextValue = theContents.nextSetBit(0);
@@ -116,13 +99,8 @@ public final class BitSetIntDomainIterator extends DisposableIntIterator {
         return v + offset;
     }
 
-/**
-     * Get the containerof disposable objects where free ones are available
-     *
-     * @return a {@link java.util.Deque}
-     */
     @Override
-    public Queue getContainer() {
-        return Holder.container;
+    public void dispose() {
+        manager.get().returnE(this);
     }
 }

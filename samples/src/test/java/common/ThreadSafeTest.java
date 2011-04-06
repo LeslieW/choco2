@@ -30,8 +30,8 @@ package common;
 import choco.kernel.common.logging.ChocoLogging;
 import junit.framework.Assert;
 import org.junit.Test;
+import samples.tutorials.CycloHexan;
 import samples.tutorials.PatternExample;
-import samples.tutorials.continuous.CycloHexan;
 import samples.tutorials.trunk.Queen;
 import samples.tutorials.trunk.SteinerSystem;
 
@@ -74,11 +74,11 @@ public class ThreadSafeTest {
     }
 
     public ThreadSafeTest() throws InterruptedException {
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 20; i++) {
             new ThreadProblem(new Queen()).start();
-            Thread.sleep(2);
+//            Thread.sleep(2);
             new ThreadProblem(new SteinerSystem()).start();
-            Thread.sleep(1);
+//            Thread.sleep(1);
             new ThreadProblem(new CycloHexan()).start();
         }
     }

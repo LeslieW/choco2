@@ -28,7 +28,6 @@
 package choco.kernel.common.util.iterators;
 
 import java.util.Iterator;
-import java.util.Queue;
 
 public class AppendIterator<E> extends DisposableIterator<E> {
 
@@ -71,16 +70,6 @@ public class AppendIterator<E> extends DisposableIterator<E> {
 		}
 		return slave.next();
 	}
-
-    /**
-     * Get the containerof disposable objects where free ones are available
-     *
-     * @return a {@link java.util.Deque}
-     */
-    @Override
-    public Queue getContainer() {
-        return null;
-    }
 
     /**
      * This method allows to declare that an object is not used anymore. It

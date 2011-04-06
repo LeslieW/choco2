@@ -1,5 +1,5 @@
 /**
- *  Copyright (c) 1999-2010, Ecole des Mines de Nantes
+ *  Copyright (c) 1999-2011, Ecole des Mines de Nantes
  *  All rights reserved.
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are met:
@@ -24,53 +24,39 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package choco.kernel.common.util.disposable;
 
-package choco.kernel.common.util.iterators;
-
-import java.util.NoSuchElementException;
+import java.io.Serializable;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 /**
- * User : cprudhom
- * Mail : cprudhom(a)emn.fr
- * Date : 28 janv. 2010
- * Since : Choco 2.1.1
+ * <br/>
+ *
+ * @author Charles Prud'homme
+ * @since 17/02/11
  */
-public final class EmptyIterator extends DisposableIterator<Object> {
+public class PoolManager<E> implements Serializable {
 
-    public static EmptyIterator singleton = new EmptyIterator();
+    Deque<E> elements;
 
-    public static <T> DisposableIterator<T> get() {
-        return (DisposableIterator<T>) singleton;
+    public PoolManager() {
+        this(16);
     }
 
-    private EmptyIterator() {
+    public PoolManager(int initialSize) {
+        elements = new ArrayDeque<E>(initialSize);
     }
 
-    /**
-     * Returns <tt>true</tt> if the iteration has more elements. (In other
-     * words, returns <tt>true</tt> if <tt>next</tt> would return an element
-     * rather than throwing an exception.)
-     *
-     * @return <tt>true</tt> if the iterator has more elements.
-     */
-    @Override
-    public boolean hasNext() {
-        return false;
+    public E getE() {
+        if (elements.isEmpty()) {
+            return null;
+        } else {
+            return elements.remove();
+        }
     }
 
-    /**
-     * Returns the next element in the iteration.
-     *
-     * @return the next element in the iteration.
-     * @throws java.util.NoSuchElementException
-     *          iteration has no more elements.
-     */
-    @Override
-    public Object next() {
-        throw new NoSuchElementException();
-    }
-
-    @Override
-    public void dispose() {
+    public void returnE(E element) {
+        elements.add(element);
     }
 }

@@ -27,10 +27,8 @@
 
 package choco.cp.common.util.iterators;
 
-import choco.kernel.common.util.disposable.Disposable;
+import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-
-import java.util.Queue;
 
 /**
  * User : cprudhom<br/>
@@ -40,18 +38,7 @@ import java.util.Queue;
  */
 public final class BipartiteIntDomainIterator extends DisposableIntIterator {
 
-    /**
-     * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
-     * than the moment that getInstance() is called.
-     * Thus, this solution is thread-safe without requiring special language constructs.
-     * see http://en.wikipedia.org/wiki/Singleton_pattern
-     */
-    private static final class Holder {
-        private Holder() {
-        }
-
-        private static final Queue<BipartiteIntDomainIterator> container = Disposable.createContainer();
-    }
+    private static final ThreadLocal<PoolManager<BipartiteIntDomainIterator>> manager = new ThreadLocal<PoolManager<BipartiteIntDomainIterator>>();
 
     private int nextIdx;
     private int[] values;
@@ -59,19 +46,16 @@ public final class BipartiteIntDomainIterator extends DisposableIntIterator {
     private BipartiteIntDomainIterator() {
     }
 
-    private static BipartiteIntDomainIterator build() {
-        return new BipartiteIntDomainIterator();
-    }
-
     @SuppressWarnings({"unchecked"})
     public static BipartiteIntDomainIterator getIterator(final int firstIdx, final int[] someValues) {
-        BipartiteIntDomainIterator it;
-        synchronized (Holder.container) {
-            if (Holder.container.isEmpty()) {
-                it = build();
-            } else {
-                it = Holder.container.remove();
-            }
+        PoolManager<BipartiteIntDomainIterator> tmanager = manager.get();
+        if (tmanager == null) {
+            tmanager = new PoolManager<BipartiteIntDomainIterator>();
+            manager.set(tmanager);
+        }
+        BipartiteIntDomainIterator it = tmanager.getE();
+        if (it == null) {
+            it = new BipartiteIntDomainIterator();
         }
         it.init(firstIdx, someValues);
         return it;
@@ -81,7 +65,6 @@ public final class BipartiteIntDomainIterator extends DisposableIntIterator {
      * Freeze the iterator, cannot be reused.
      */
     public void init(final int firstIdx, final int[] someValues) {
-        init();
         nextIdx = firstIdx;
         this.values = someValues;
     }
@@ -112,14 +95,9 @@ public final class BipartiteIntDomainIterator extends DisposableIntIterator {
         return values[v];
     }
 
-    /**
-     * Get the containerof disposable objects where free ones are available
-     *
-     * @return a {@link java.util.Deque}
-     */
     @Override
-    public Queue getContainer() {
-        return Holder.container;
+    public void dispose() {
+        manager.get().returnE(this);
     }
 
 }

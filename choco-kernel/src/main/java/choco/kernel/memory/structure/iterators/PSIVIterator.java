@@ -27,11 +27,9 @@
 
 package choco.kernel.memory.structure.iterators;
 
-import choco.kernel.common.util.disposable.Disposable;
+import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateInt;
-
-import java.util.Queue;
 
 import static choco.kernel.common.Constant.STORED_OFFSET;
 
@@ -43,18 +41,7 @@ import static choco.kernel.common.Constant.STORED_OFFSET;
  */
 public final class PSIVIterator extends DisposableIntIterator {
 
-    /**
-     * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
-     * than the moment that getInstance() is called.
-     * Thus, this solution is thread-safe without requiring special language constructs.
-     * see http://en.wikipedia.org/wiki/Singleton_pattern
-     */
-    private static final class Holder {
-        private Holder() {
-        }
-
-        private static final Queue<PSIVIterator> container = Disposable.createContainer();
-    }
+    private static final ThreadLocal<PoolManager<PSIVIterator>> manager = new ThreadLocal<PoolManager<PSIVIterator>>();
 
     private int nStaticInts;
 
@@ -66,22 +53,16 @@ public final class PSIVIterator extends DisposableIntIterator {
 
     private boolean storeds;
 
-    private PSIVIterator() {
-    }
-
-    private static PSIVIterator build() {
-        return new PSIVIterator();
-    }
-
     @SuppressWarnings({"unchecked"})
     public static PSIVIterator getIterator(final int theNStaticInts, final IStateInt theNStoredInts) {
-        PSIVIterator it;
-        synchronized (Holder.container){
-            if(Holder.container.isEmpty()){
-                it = build();
-            }else{
-                it = Holder.container.remove();
-            }
+        PoolManager<PSIVIterator> tmanager = manager.get();
+        if (tmanager == null) {
+            tmanager = new PoolManager<PSIVIterator>();
+            manager.set(tmanager);
+        }
+        PSIVIterator it = tmanager.getE();
+        if (it == null) {
+            it = new PSIVIterator();
         }
         it.init(theNStaticInts, theNStoredInts);
         return it;
@@ -91,10 +72,9 @@ public final class PSIVIterator extends DisposableIntIterator {
      * Freeze the iterator, cannot be reused.
      */
     public void init(final int theNStaticInts, final IStateInt theNStoredInts) {
-        init();
         this.nStaticInts = theNStaticInts;
         this.nStoredInts = theNStoredInts.get();
-        stats = (nStaticInts> 0);
+        stats = (nStaticInts > 0);
         storeds = (nStoredInts > 0);
         idx = -1;
     }
@@ -133,14 +113,8 @@ public final class PSIVIterator extends DisposableIntIterator {
         return idx;
     }
 
-
-    /**
-     * Get the containerof disposable objects where free ones are available
-     *
-     * @return a {@link java.util.Deque}
-     */
     @Override
-    public Queue getContainer() {
-        return Holder.container;
+    public void dispose() {
+        manager.get().returnE(this);
     }
 }

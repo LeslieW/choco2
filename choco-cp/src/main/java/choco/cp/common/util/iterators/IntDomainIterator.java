@@ -28,10 +28,8 @@
 package choco.cp.common.util.iterators;
 
 import choco.cp.solver.variables.integer.AbstractIntDomain;
-import choco.kernel.common.util.disposable.Disposable;
+import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-
-import java.util.Queue;
 
 /**
  * User : cprudhom<br/>
@@ -41,18 +39,7 @@ import java.util.Queue;
  */
 public final class IntDomainIterator extends DisposableIntIterator {
 
-    /**
-     * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
-     * than the moment that getInstance() is called.
-     * Thus, this solution is thread-safe without requiring special language constructs.
-     * see http://en.wikipedia.org/wiki/Singleton_pattern
-     */
-    private static final class Holder {
-        private Holder() {
-        }
-
-        private static final Queue<IntDomainIterator> container = Disposable.createContainer();
-    }
+    private static final ThreadLocal<PoolManager<IntDomainIterator>> manager = new ThreadLocal<PoolManager<IntDomainIterator>>();
 
     private AbstractIntDomain domain;
     private int nextValue;
@@ -61,19 +48,16 @@ public final class IntDomainIterator extends DisposableIntIterator {
     private IntDomainIterator() {
     }
 
-    private static IntDomainIterator build() {
-        return new IntDomainIterator();
-    }
-
     @SuppressWarnings({"unchecked"})
     public static IntDomainIterator getIterator(final AbstractIntDomain aDomain) {
-        IntDomainIterator it;
-        synchronized (Holder.container) {
-            if (Holder.container.isEmpty()) {
-                it = build();
-            } else {
-                it = Holder.container.remove();
-            }
+        PoolManager<IntDomainIterator> tmanager = manager.get();
+        if (tmanager == null) {
+            tmanager = new PoolManager<IntDomainIterator>();
+            manager.set(tmanager);
+        }
+        IntDomainIterator it = tmanager.getE();
+        if (it == null) {
+            it = new IntDomainIterator();
         }
         it.init(aDomain);
         return it;
@@ -83,7 +67,6 @@ public final class IntDomainIterator extends DisposableIntIterator {
      * Freeze the iterator, cannot be reused.
      */
     public void init(final AbstractIntDomain dom) {
-        init();
         domain = dom;
         if (domain.getSize() >= 1) {
             nextValue = domain.getInf();
@@ -122,14 +105,9 @@ public final class IntDomainIterator extends DisposableIntIterator {
     }
 
 
-    /**
-     * Get the containerof disposable objects where free ones are available
-     *
-     * @return a {@link java.util.Deque}
-     */
     @Override
-    public Queue getContainer() {
-        return Holder.container;
+    public void dispose() {
+        manager.get().returnE(this);
     }
 
 }

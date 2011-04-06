@@ -27,10 +27,9 @@
 
 package choco.common;
 
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.iterators.ArrayIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
-import choco.kernel.common.util.disposable.Disposable;
-import choco.kernel.common.logging.ChocoLogging;
 import junit.framework.Assert;
 import org.junit.Test;
 
@@ -45,7 +44,7 @@ import java.util.logging.Logger;
  */
 public class ThreadSafeIteratorTest {
 
-    private static final Logger LOGGER  = ChocoLogging.getTestLogger();
+    private static final Logger LOGGER = ChocoLogging.getTestLogger();
 
     private class ThreadArray<E> extends Thread {
         private final E[] toiterate;
@@ -71,7 +70,7 @@ public class ThreadSafeIteratorTest {
         @Override
         public void run() {
             DisposableIterator<E> it = ArrayIterator.getIterator(toiterate, size);
-            while(it.hasNext()){
+            while (it.hasNext()) {
                 it.next();
                 try {
                     sleep(1);
@@ -84,35 +83,35 @@ public class ThreadSafeIteratorTest {
     }
 
 
-    private static void test1(){
+    private static void test1() {
         long t = -System.currentTimeMillis();
         for (int i = 0; i < 400000; i++) {
             Integer[] array = new Integer[1000];
             Arrays.fill(array, i);
             DisposableIterator<Integer> it = ArrayIterator.getIterator(array, array.length);
-            while(it.hasNext()){
+            while (it.hasNext()) {
                 it.next();
             }
             it.dispose();
         }
-        t+= System.currentTimeMillis();
-        LOGGER.info("SEQ t:"+t);
+        t += System.currentTimeMillis();
+        LOGGER.info("SEQ t:" + t);
         ChocoLogging.flushLogs();
     }
 
-    private static void test2(){
+    private static void test2() {
         long t = -System.currentTimeMillis();
         for (int i = 0; i < 1000; i++) {
             Integer[] array = new Integer[100];
             Arrays.fill(array, i);
             DisposableIterator<Integer> it = ArrayIterator.getIterator(array, array.length);
-            while(it.hasNext()){
+            while (it.hasNext()) {
                 it.next();
                 for (int j = 0; j < 400; j++) {
                     Integer[] array2 = new Integer[10];
                     Arrays.fill(array2, j);
                     DisposableIterator<Integer> it2 = ArrayIterator.getIterator(array2, array2.length);
-                    while(it2.hasNext()){
+                    while (it2.hasNext()) {
                         it2.next();
                     }
                     it2.dispose();
@@ -120,8 +119,8 @@ public class ThreadSafeIteratorTest {
             }
             it.dispose();
         }
-        t+= System.currentTimeMillis();
-        LOGGER.info("SEQ t:"+t);
+        t += System.currentTimeMillis();
+        LOGGER.info("SEQ t:" + t);
         ChocoLogging.flushLogs();
     }
 
@@ -133,8 +132,8 @@ public class ThreadSafeIteratorTest {
             new ThreadArray<Integer>(array).start();
             Thread.sleep(1);
         }
-        t+= System.currentTimeMillis();
-        LOGGER.info("PAR t:"+t);
+        t += System.currentTimeMillis();
+        LOGGER.info("PAR t:" + t);
         ChocoLogging.flushLogs();
     }
 
@@ -142,7 +141,6 @@ public class ThreadSafeIteratorTest {
         test1();
         test2();
         test3();
-        Disposable.flush();
     }
 
     public static void main(String[] args) throws InterruptedException {
@@ -150,7 +148,7 @@ public class ThreadSafeIteratorTest {
     }
 
     @Test
-    public void noTest(){
+    public void noTest() {
         Assert.assertTrue(true);
     }
 }
