@@ -27,10 +27,7 @@
 
 package choco.kernel.common.util.iterators;
 
-import choco.kernel.common.util.disposable.Disposable;
-
 import java.util.NoSuchElementException;
-import java.util.Queue;
 
 /*
 * User : charles
@@ -42,38 +39,15 @@ import java.util.Queue;
 
 public final class EmptyIntIterator extends DisposableIntIterator {
 
-    /**
-     * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
-     * than the moment that getInstance() is called.
-     * Thus, this solution is thread-safe without requiring special language constructs.
-     * see http://en.wikipedia.org/wiki/Singleton_pattern
-     */
-    private static final class Holder {
-        private Holder() {
-        }
-
-        private static final Queue<EmptyIntIterator> container = Disposable.createContainer();
-    }
+    private static final EmptyIntIterator singleton = new EmptyIntIterator();
 
     private EmptyIntIterator() {
     }
 
-    private static EmptyIntIterator build() {
-        return new EmptyIntIterator();
-    }
 
     @SuppressWarnings({"unchecked"})
     public static EmptyIntIterator getIterator() {
-        EmptyIntIterator it;
-        synchronized (Holder.container) {
-            if (Holder.container.isEmpty()) {
-                it = build();
-            } else {
-                it = Holder.container.remove();
-            }
-        }
-        it.init();
-        return it;
+        return singleton;
     }
 
     /**
@@ -100,13 +74,8 @@ public final class EmptyIntIterator extends DisposableIntIterator {
         throw new NoSuchElementException();
     }
 
-    /**
-     * Get the containerof disposable objects where free ones are available
-     *
-     * @return a {@link java.util.Deque}
-     */
     @Override
-    public Queue getContainer() {
-        return Holder.container;
+    public void dispose() {
     }
+
 }

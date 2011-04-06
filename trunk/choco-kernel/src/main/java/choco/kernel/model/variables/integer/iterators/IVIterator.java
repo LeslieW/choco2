@@ -27,10 +27,8 @@
 
 package choco.kernel.model.variables.integer.iterators;
 
-import choco.kernel.common.util.disposable.Disposable;
+import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-
-import java.util.Queue;
 
 /**
  * User : cprudhom<br/>
@@ -40,18 +38,7 @@ import java.util.Queue;
  */
 public final class IVIterator extends DisposableIntIterator {
 
-    /**
-     * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
-     * than the moment that getInstance() is called.
-     * Thus, this solution is thread-safe without requiring special language constructs.
-     * see http://en.wikipedia.org/wiki/Singleton_pattern
-     */
-    private static final class Holder {
-        private Holder() {
-        }
-
-        private static final Queue<IVIterator> container = Disposable.createContainer();
-    }
+    private static final ThreadLocal<PoolManager<IVIterator>> manager = new ThreadLocal<PoolManager<IVIterator>>();
 
     private int upp;
     private int value;
@@ -60,19 +47,16 @@ public final class IVIterator extends DisposableIntIterator {
     private IVIterator() {
     }
 
-    private static IVIterator build() {
-        return new IVIterator();
-    }
-
     @SuppressWarnings({"unchecked"})
     public static IVIterator getIterator(final int theLow, final int theUpp, final int[] theValues) {
-        IVIterator it;
-        synchronized (Holder.container) {
-            if (Holder.container.isEmpty()) {
-                it = build();
-            } else {
-                it = Holder.container.remove();
-            }
+        PoolManager<IVIterator> tmanager = manager.get();
+        if (tmanager == null) {
+            tmanager = new PoolManager<IVIterator>();
+            manager.set(tmanager);
+        }
+        IVIterator it = tmanager.getE();
+        if (it == null) {
+            it = new IVIterator();
         }
         it.init(theLow, theUpp, theValues);
         return it;
@@ -82,7 +66,6 @@ public final class IVIterator extends DisposableIntIterator {
      * Freeze the iterator, cannot be reused.
      */
     public void init(final int theLow, final int theUpp, final int[] theValues) {
-        init();
         this.upp = theUpp;
         this.values = theValues;
         if (values != null) {
@@ -124,14 +107,9 @@ public final class IVIterator extends DisposableIntIterator {
         }
     }
 
-
-    /**
-     * Get the containerof disposable objects where free ones are available
-     *
-     * @return a {@link java.util.Deque}
-     */
     @Override
-    public Queue getContainer() {
-        return Holder.container;
+    public void dispose() {
+        manager.get().returnE(this);
     }
+
 }

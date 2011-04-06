@@ -27,9 +27,7 @@
 
 package choco.kernel.common.util.iterators;
 
-import choco.kernel.common.util.disposable.Disposable;
-
-import java.util.Queue;
+import choco.kernel.common.util.disposable.PoolManager;
 
 /*
 * User : charles
@@ -41,18 +39,7 @@ import java.util.Queue;
 
 public final class OneValueIterator extends DisposableIntIterator {
 
-    /**
-     * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
-     * than the moment that getInstance() is called.
-     * Thus, this solution is thread-safe without requiring special language constructs.
-     * see http://en.wikipedia.org/wiki/Singleton_pattern
-     */
-    private static final class Holder {
-        private Holder() {
-        }
-
-        private static final Queue<OneValueIterator> container = Disposable.createContainer();
-    }
+    private static final ThreadLocal<PoolManager<OneValueIterator>> manager = new ThreadLocal<PoolManager<OneValueIterator>>();
 
     private int value;
     private boolean next;
@@ -60,19 +47,16 @@ public final class OneValueIterator extends DisposableIntIterator {
     private OneValueIterator() {
     }
 
-    private static OneValueIterator build() {
-        return new OneValueIterator();
-    }
-
     @SuppressWarnings({"unchecked"})
     public static OneValueIterator getIterator(final int aValue) {
-        OneValueIterator it;
-        synchronized (Holder.container) {
-            if (Holder.container.isEmpty()) {
-                it = build();
-            } else {
-                it = Holder.container.remove();
-            }
+        PoolManager<OneValueIterator> tmanager = manager.get();
+        if (tmanager == null) {
+            tmanager = new PoolManager<OneValueIterator>();
+            manager.set(tmanager);
+        }
+        OneValueIterator it = tmanager.getE();
+        if (it == null) {
+            it = new OneValueIterator();
         }
         it.init(aValue);
         return it;
@@ -82,7 +66,6 @@ public final class OneValueIterator extends DisposableIntIterator {
      * Freeze the iterator, cannot be reused.
      */
     public void init(final int aValue) {
-        init();
         this.value = aValue;
         next = true;
     }
@@ -113,13 +96,8 @@ public final class OneValueIterator extends DisposableIntIterator {
     }
 
 
-    /**
-     * Get the containerof disposable objects where free ones are available
-     *
-     * @return a {@link java.util.Deque}
-     */
     @Override
-    public Queue getContainer() {
-        return Holder.container;
+    public void dispose() {
+        manager.get().returnE(this);
     }
 }

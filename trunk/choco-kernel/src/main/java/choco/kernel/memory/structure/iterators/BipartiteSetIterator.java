@@ -27,12 +27,10 @@
 
 package choco.kernel.memory.structure.iterators;
 
-import choco.kernel.common.util.disposable.Disposable;
+import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.structure.IndexedObject;
-
-import java.util.Queue;
 
 /**
  * User : cprudhom<br/>
@@ -42,18 +40,7 @@ import java.util.Queue;
  */
 public final class BipartiteSetIterator extends DisposableIntIterator {
 
-    /**
-     * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
-     * than the moment that getInstance() is called.
-     * Thus, this solution is thread-safe without requiring special language constructs.
-     * see http://en.wikipedia.org/wiki/Singleton_pattern
-     */
-    private static final class Holder {
-        private Holder() {
-        }
-
-        private static final Queue<BipartiteSetIterator> container = Disposable.createContainer();
-    }
+    private static final ThreadLocal<PoolManager<BipartiteSetIterator>> manager = new ThreadLocal<PoolManager<BipartiteSetIterator>>();
 
     private int[] list;
 
@@ -68,20 +55,17 @@ public final class BipartiteSetIterator extends DisposableIntIterator {
     private BipartiteSetIterator() {
     }
 
-    private static BipartiteSetIterator build() {
-        return new BipartiteSetIterator();
-    }
-
     @SuppressWarnings({"unchecked"})
     public static BipartiteSetIterator getIterator(final int[] aList, final int[] aPosition,
-                                                                final IStateInt aLast, final IndexedObject[] idxToObjects) {
-        BipartiteSetIterator it;
-        synchronized (Holder.container) {
-            if (Holder.container.isEmpty()) {
-                it = build();
-            } else {
-                it = Holder.container.remove();
-            }
+                                                   final IStateInt aLast, final IndexedObject[] idxToObjects) {
+        PoolManager<BipartiteSetIterator> tmanager = manager.get();
+        if (tmanager == null) {
+            tmanager = new PoolManager<BipartiteSetIterator>();
+            manager.set(tmanager);
+        }
+        BipartiteSetIterator it = tmanager.getE();
+        if (it == null) {
+            it = new BipartiteSetIterator();
         }
         it.init(aList, aPosition, aLast, idxToObjects);
         return it;
@@ -91,7 +75,6 @@ public final class BipartiteSetIterator extends DisposableIntIterator {
      * Freeze the iterator, cannot be reused.
      */
     public void init(final int[] aList, final int[] aPosition, final IStateInt aLast, final IndexedObject[] anIdxToObjects) {
-        init();
         idx = 0;
         list = aList;
         position = aPosition;
@@ -161,13 +144,8 @@ public final class BipartiteSetIterator extends DisposableIntIterator {
         }
     }
 
-    /**
-     * Get the containerof disposable objects where free ones are available
-     *
-     * @return a {@link java.util.Deque}
-     */
     @Override
-    public Queue getContainer() {
-        return Holder.container;
+    public void dispose() {
+        manager.get().returnE(this);
     }
 }

@@ -27,22 +27,19 @@
 
 package choco.kernel.common.util.tools;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Queue;
-
 import choco.IPretty;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.common.util.iterators.EmptyIterator;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
-import choco.kernel.model.variables.MultipleVariables;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
-import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.search.limit.Limit;
 import choco.kernel.solver.search.measure.ISearchMeasures;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.ITask;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Queue;
 
 /*
  * User : charles
@@ -124,7 +121,7 @@ public class StringUtils {
                 public void dispose() {}
             };
 		} else {
-			return EmptyIterator.getIterator();
+			return EmptyIterator.get();
 		}
 
 	}

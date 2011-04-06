@@ -27,11 +27,9 @@
 
 package choco.kernel.memory.structure.iterators;
 
-import choco.kernel.common.util.disposable.Disposable;
+import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateInt;
-
-import java.util.Queue;
 
 /**
  * User : cprudhom<br/>
@@ -41,18 +39,7 @@ import java.util.Queue;
  */
 public final class BipartiteListIterator extends DisposableIntIterator {
 
-    /**
-     * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
-     * than the moment that getInstance() is called.
-     * Thus, this solution is thread-safe without requiring special language constructs.
-     * see http://en.wikipedia.org/wiki/Singleton_pattern
-     */
-    private static final class Holder {
-        private Holder() {
-        }
-
-        private static final Queue<BipartiteListIterator> container = Disposable.createContainer();
-    }
+    private static final ThreadLocal<PoolManager<BipartiteListIterator>> manager = new ThreadLocal<PoolManager<BipartiteListIterator>>();
 
     private int[] list;
 
@@ -65,19 +52,16 @@ public final class BipartiteListIterator extends DisposableIntIterator {
     private BipartiteListIterator() {
     }
 
-    private static BipartiteListIterator build() {
-        return new BipartiteListIterator();
-    }
-
     @SuppressWarnings({"unchecked"})
     public static BipartiteListIterator getIterator(final int[] aList, final IStateInt aLast) {
-        BipartiteListIterator it;
-        synchronized (Holder.container){
-            if(Holder.container.isEmpty()){
-                it = build();
-            }else{
-                it = Holder.container.remove();
-            }
+        PoolManager<BipartiteListIterator> tmanager = manager.get();
+        if (tmanager == null) {
+            tmanager = new PoolManager<BipartiteListIterator>();
+            manager.set(tmanager);
+        }
+        BipartiteListIterator it = tmanager.getE();
+        if (it == null) {
+            it = new BipartiteListIterator();
         }
         it.init(aList, aLast);
         return it;
@@ -87,7 +71,6 @@ public final class BipartiteListIterator extends DisposableIntIterator {
      * Freeze the iterator, cannot be reused.
      */
     public void init(final int[] aList, final IStateInt aLast) {
-        init();
         this.list = aList;
         this.last = aLast;
         this.nlast = aLast.get();
@@ -142,13 +125,8 @@ public final class BipartiteListIterator extends DisposableIntIterator {
         nlast--;
     }
 
-    /**
-     * Get the containerof disposable objects where free ones are available
-     *
-     * @return a {@link java.util.Deque}
-     */
     @Override
-    public Queue getContainer() {
-        return Holder.container;
+    public void dispose() {
+        manager.get().returnE(this);
     }
 }

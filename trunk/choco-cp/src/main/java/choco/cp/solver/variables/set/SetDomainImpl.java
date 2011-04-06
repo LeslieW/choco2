@@ -27,7 +27,7 @@
 
 package choco.cp.solver.variables.set;
 
-import choco.kernel.common.util.disposable.Disposable;
+import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.solver.ContradictionException;
@@ -38,7 +38,6 @@ import choco.kernel.solver.variables.set.SetSubDomain;
 import choco.kernel.solver.variables.set.SetVar;
 
 import java.util.Arrays;
-import java.util.Queue;
 
 /**
  * Created by IntelliJ IDEA.
@@ -292,28 +291,18 @@ public final class SetDomainImpl implements SetDomain {
 
     protected static final class SetOpenDomainIterator extends DisposableIntIterator {
 
-        /**
-         * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
-         * than the moment that getInstance() is called.
-         * Thus, this solution is thread-safe without requiring special language constructs.
-         * see http://en.wikipedia.org/wiki/Singleton_pattern
-         */
-        private static final class Holder {
-            private Holder() {
-            }
-
-            private static final Queue<SetOpenDomainIterator> container = Disposable.createContainer();
-        }
+        private static final ThreadLocal<PoolManager<SetOpenDomainIterator>> manager = new ThreadLocal<PoolManager<SetOpenDomainIterator>>();
 
         @SuppressWarnings({"unchecked"})
         public static SetOpenDomainIterator getIterator(final BitSetEnumeratedDomain dom1, final BitSetEnumeratedDomain dom2) {
-            SetOpenDomainIterator it;
-            synchronized (Holder.container) {
-                if (Holder.container.isEmpty()) {
-                    it = build();
-                } else {
-                    it = Holder.container.remove();
-                }
+            PoolManager<SetOpenDomainIterator> tmanager = manager.get();
+            if (tmanager == null) {
+                tmanager = new PoolManager<SetOpenDomainIterator>();
+                manager.set(tmanager);
+            }
+            SetOpenDomainIterator it = tmanager.getE();
+            if (it == null) {
+                it = new SetOpenDomainIterator();
             }
             it.init(dom1, dom2);
             return it;
@@ -324,15 +313,10 @@ public final class SetDomainImpl implements SetDomain {
         private int currentValue = Integer.MIN_VALUE;
         private int nbValueToBeIterated = Integer.MAX_VALUE;
 
-        private static SetOpenDomainIterator build() {
-            return new SetOpenDomainIterator();
-        }
-
         private SetOpenDomainIterator() {
         }
 
         public void init(final BitSetEnumeratedDomain dom1, final BitSetEnumeratedDomain dom2) {
-            init();
             envdomain = dom1;
             kerdomain = dom2;
             currentValue = Integer.MIN_VALUE;
@@ -363,14 +347,9 @@ public final class SetDomainImpl implements SetDomain {
             }
         }
 
-        /**
-         * Get the containerof disposable objects where free ones are available
-         *
-         * @return a {@link java.util.Deque}
-         */
         @Override
-        public Queue getContainer() {
-            return Holder.container;
+        public void dispose() {
+            manager.get().returnE(this);
         }
     }
 }

@@ -27,15 +27,13 @@
 
 package choco.kernel.memory.structure.iterators;
 
-import choco.kernel.common.util.disposable.Disposable;
+import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.structure.Couple;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.memory.structure.PartiallyStoredVector;
 import choco.kernel.solver.constraints.AbstractSConstraint;
-
-import java.util.Queue;
 
 /**
  * User : cprudhom<br/>
@@ -45,19 +43,7 @@ import java.util.Queue;
  */
 public final class PSCLEIterator<C extends AbstractSConstraint> extends DisposableIterator<Couple<C>> {
 
-
-    /**
-     * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
-     * than the moment that getInstance() is called.
-     * Thus, this solution is thread-safe without requiring special language constructs.
-     * see http://en.wikipedia.org/wiki/Singleton_pattern
-     */
-    private static final class Holder {
-        private Holder() {
-        }
-
-        private static final Queue<PSCLEIterator> container = Disposable.createContainer();
-    }
+    private static final ThreadLocal<PoolManager<PSCLEIterator>> manager = new ThreadLocal<PoolManager<PSCLEIterator>>();
 
     private C cstrCause;
 
@@ -71,26 +57,19 @@ public final class PSCLEIterator<C extends AbstractSConstraint> extends Disposab
 
     private final Couple<C> cc = new Couple<C>();
 
-    private PSCLEIterator() {
-    }
-
-    private static PSCLEIterator build() {
-        return new PSCLEIterator();
-    }
-
     @SuppressWarnings({"unchecked"})
     public static <C extends AbstractSConstraint> PSCLEIterator getIterator(
             final PartiallyStoredIntVector event, final C cstrCause,
             final PartiallyStoredVector<C> elements,
-            final PartiallyStoredIntVector indices
-    ) {
-        PSCLEIterator it;
-        synchronized (Holder.container) {
-            if (Holder.container.isEmpty()) {
-                it = build();
-            } else {
-                it = Holder.container.remove();
-            }
+            final PartiallyStoredIntVector indices) {
+        PoolManager<PSCLEIterator> tmanager = manager.get();
+        if (tmanager == null) {
+            tmanager = new PoolManager<PSCLEIterator>();
+            manager.set(tmanager);
+        }
+        PSCLEIterator it = tmanager.getE();
+        if (it == null) {
+            it = new PSCLEIterator();
         }
         it.init(cstrCause, event, elements, indices);
         return it;
@@ -98,22 +77,11 @@ public final class PSCLEIterator<C extends AbstractSConstraint> extends Disposab
 
     private void init(final C aCause, final PartiallyStoredIntVector anEvent,
                       final PartiallyStoredVector<C> someElements, final PartiallyStoredIntVector someIndices) {
-        init();
         this.event = anEvent;
         this.cit = this.event.getIndexIterator();
         this.cstrCause = aCause;
         this.elements = someElements;
         this.indices = someIndices;
-    }
-
-    /**
-     * This method allows to declare that the iterator is not usefull anymoure. It
-     * can be reused by another object.
-     */
-    @Override
-    public void dispose() {
-        cit.dispose();
-        super.dispose();
     }
 
     /**
@@ -167,13 +135,10 @@ public final class PSCLEIterator<C extends AbstractSConstraint> extends Disposab
         cit.remove();
     }
 
-    /**
-     * Get the containerof disposable objects where free ones are available
-     *
-     * @return a {@link java.util.Deque}
-     */
+
     @Override
-    public Queue getContainer() {
-        return Holder.container;
+    public void dispose() {
+        cit.dispose();
+        manager.get().returnE(this);
     }
 }

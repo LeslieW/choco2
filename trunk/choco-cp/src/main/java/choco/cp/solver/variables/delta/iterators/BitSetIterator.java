@@ -27,11 +27,10 @@
 
 package choco.cp.solver.variables.delta.iterators;
 
-import choco.kernel.common.util.disposable.Disposable;
+import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 
 import java.util.BitSet;
-import java.util.Queue;
 
 /**
  * User : cprudhom<br/>
@@ -41,18 +40,7 @@ import java.util.Queue;
  */
 public class BitSetIterator extends DisposableIntIterator {
 
-    /**
-     * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
-     * than the moment that getInstance() is called.
-     * Thus, this solution is thread-safe without requiring special language constructs.
-     * see http://en.wikipedia.org/wiki/Singleton_pattern
-     */
-    private static final class Holder {
-        private Holder() {
-        }
-
-        private static final Queue<BitSetIterator> container = Disposable.createContainer();
-    }
+    private static final ThreadLocal<PoolManager<BitSetIterator>> manager = new ThreadLocal<PoolManager<BitSetIterator>>();
 
     private int nextValue;
     private int offset;
@@ -61,22 +49,18 @@ public class BitSetIterator extends DisposableIntIterator {
     private BitSetIterator() {
     }
 
-    private static int count;
 
-    private static BitSetIterator build() {
-        return new BitSetIterator();
-    }
-
-   @SuppressWarnings({"unchecked"})
+    @SuppressWarnings({"unchecked"})
     public static BitSetIterator getIterator(final int theOffset,
                                              final BitSet theContents) {
-        BitSetIterator it;
-        synchronized (Holder.container){
-            if(Holder.container.isEmpty()){
-                it = build();
-            }else{
-                it = Holder.container.remove();
-            }
+        PoolManager<BitSetIterator> tmanager = manager.get();
+        if (tmanager == null) {
+            tmanager = new PoolManager<BitSetIterator>();
+            manager.set(tmanager);
+        }
+        BitSetIterator it = tmanager.getE();
+        if (it == null) {
+            it = new BitSetIterator();
         }
         it.init(theOffset, theContents);
         return it;
@@ -86,7 +70,6 @@ public class BitSetIterator extends DisposableIntIterator {
      * Freeze the iterator, cannot be reused.
      */
     public void init(final int theOffset, final BitSet theContents) {
-        super.init();
         this.contents = theContents;
         this.offset = theOffset;
         nextValue = theContents.nextSetBit(0);
@@ -119,13 +102,8 @@ public class BitSetIterator extends DisposableIntIterator {
     }
 
 
-    /**
-     * Get the containerof disposable objects where free ones are available
-     *
-     * @return a {@link java.util.Deque}
-     */
     @Override
-    public Queue getContainer() {
-        return Holder.container;
+    public void dispose() {
+        manager.get().returnE(this);
     }
 }

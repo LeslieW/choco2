@@ -27,9 +27,7 @@
 
 package choco.kernel.common.util.iterators;
 
-import choco.kernel.common.util.disposable.Disposable;
-
-import java.util.Queue;
+import choco.kernel.common.util.disposable.PoolManager;
 
 /**
  * User : cprudhom<br/>
@@ -39,28 +37,13 @@ import java.util.Queue;
  */
 public final class IntArrayIterator extends DisposableIntIterator {
 
-    /**
-     * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
-     * than the moment that getInstance() is called.
-     * Thus, this solution is thread-safe without requiring special language constructs.
-     * see http://en.wikipedia.org/wiki/Singleton_pattern
-     */
-    private static final class Holder {
-        private Holder() {
-        }
-
-        private static final Queue<IntArrayIterator> container = Disposable.createContainer();
-    }
+    private static final ThreadLocal<PoolManager<IntArrayIterator>> manager = new ThreadLocal<PoolManager<IntArrayIterator>>();
 
     private int[] elements;
     private int endIdx;
     private int curentIdx;
 
     private IntArrayIterator() {
-    }
-
-    private static IntArrayIterator build() {
-        return new IntArrayIterator();
     }
 
     /**
@@ -73,13 +56,14 @@ public final class IntArrayIterator extends DisposableIntIterator {
      */
     @SuppressWarnings({"unchecked"})
     public static IntArrayIterator getIterator(final int[] someElements, final int from, final int to) {
-        IntArrayIterator it;
-        synchronized (Holder.container) {
-            if (Holder.container.isEmpty()) {
-                it = build();
-            } else {
-                it = Holder.container.remove();
-            }
+        PoolManager<IntArrayIterator> tmanager = manager.get();
+        if (tmanager == null) {
+            tmanager = new PoolManager<IntArrayIterator>();
+            manager.set(tmanager);
+        }
+        IntArrayIterator it = tmanager.getE();
+        if (it == null) {
+            it = new IntArrayIterator();
         }
         it.init(someElements, from, to);
         return it;
@@ -89,7 +73,6 @@ public final class IntArrayIterator extends DisposableIntIterator {
      * Freeze the iterator, cannot be reused.
      */
     public void init(final int[] someElements, final int from, final int to) {
-        init();
         this.elements = someElements;
         this.endIdx = to;
         curentIdx = from;
@@ -120,13 +103,8 @@ public final class IntArrayIterator extends DisposableIntIterator {
     }
 
 
-    /**
-     * Get the containerof disposable objects where free ones are available
-     *
-     * @return a {@link java.util.Deque}
-     */
     @Override
-    public Queue getContainer() {
-        return Holder.container;
+    public void dispose() {
+        manager.get().returnE(this);
     }
 }

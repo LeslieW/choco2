@@ -27,11 +27,9 @@
 
 package choco.kernel.memory.structure.iterators;
 
-import choco.kernel.common.util.disposable.Disposable;
+import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateInt;
-
-import java.util.Queue;
 
 import static choco.kernel.common.Constant.STORED_OFFSET;
 
@@ -43,18 +41,7 @@ import static choco.kernel.common.Constant.STORED_OFFSET;
  */
 public final class PSVIndexIterator<E> extends DisposableIntIterator {
 
-    /**
-     * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
-     * than the moment that getInstance() is called.
-     * Thus, this solution is thread-safe without requiring special language constructs.
-     * see http://en.wikipedia.org/wiki/Singleton_pattern
-     */
-    private static final class Holder {
-        private Holder() {
-        }
-
-        private static final Queue<PSVIndexIterator> container = Disposable.createContainer();
-    }
+    private static final ThreadLocal<PoolManager<PSVIndexIterator>> manager = new ThreadLocal<PoolManager<PSVIndexIterator>>();
 
     private int nStaticObjects;
 
@@ -67,20 +54,17 @@ public final class PSVIndexIterator<E> extends DisposableIntIterator {
     private PSVIndexIterator() {
     }
 
-    private static PSVIndexIterator build() {
-        return new PSVIndexIterator();
-    }
-
     @SuppressWarnings({"unchecked"})
     public static <E> PSVIndexIterator getIterator(final int theNStaticObjects, final E[] theStaticObjects,
-                                                            final IStateInt theNStoredObjects) {
-        PSVIndexIterator it;
-        synchronized (Holder.container){
-            if(Holder.container.isEmpty()){
-                it = build();
-            }else{
-                it = Holder.container.remove();
-            }
+                                                   final IStateInt theNStoredObjects) {
+        PoolManager<PSVIndexIterator> tmanager = manager.get();
+        if (tmanager == null) {
+            tmanager = new PoolManager<PSVIndexIterator>();
+            manager.set(tmanager);
+        }
+        PSVIndexIterator it = tmanager.getE();
+        if (it == null) {
+            it = new PSVIndexIterator();
         }
         it.init(theNStaticObjects, theStaticObjects, theNStoredObjects);
         return it;
@@ -90,7 +74,6 @@ public final class PSVIndexIterator<E> extends DisposableIntIterator {
      * Freeze the iterator, cannot be reused.
      */
     public void init(final int theNStaticObjects, final E[] theStaticObjects, final IStateInt theNStoredObjects) {
-        init();
         idx = -1;
         this.nStaticObjects = theNStaticObjects;
         this.staticObjects = theStaticObjects;
@@ -140,13 +123,8 @@ public final class PSVIndexIterator<E> extends DisposableIntIterator {
     }
 
 
-    /**
-     * Get the containerof disposable objects where free ones are available
-     *
-     * @return a {@link java.util.Deque}
-     */
     @Override
-    public Queue getContainer() {
-        return Holder.container;
+    public void dispose() {
+        manager.get().returnE(this);
     }
 }

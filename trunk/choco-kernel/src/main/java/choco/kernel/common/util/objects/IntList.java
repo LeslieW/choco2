@@ -27,10 +27,8 @@
 
 package choco.kernel.common.util.objects;
 
-import choco.kernel.common.util.disposable.Disposable;
+import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-
-import java.util.Queue;
 
 
 /**
@@ -101,28 +99,18 @@ public class IntList {
 
     protected static class IntListIterator extends DisposableIntIterator {
 
-        /**
-         * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
-         * than the moment that getInstance() is called.
-         * Thus, this solution is thread-safe without requiring special language constructs.
-         * see http://en.wikipedia.org/wiki/Singleton_pattern
-         */
-        private static final class Holder {
-            private Holder() {
-            }
-
-            private static final Queue<IntListIterator> container = Disposable.createContainer();
-        }
+        private static final ThreadLocal<PoolManager<IntListIterator>> manager = new ThreadLocal<PoolManager<IntListIterator>>();
 
         @SuppressWarnings({"unchecked"})
         public static IntListIterator getIterator(final IntList list) {
-            IntListIterator it;
-            synchronized (Holder.container) {
-                if (Holder.container.isEmpty()) {
-                    it = build();
-                } else {
-                    it = Holder.container.remove();
-                }
+            PoolManager<IntListIterator> tmanager = manager.get();
+            if (tmanager == null) {
+                tmanager = new PoolManager<IntListIterator>();
+                manager.set(tmanager);
+            }
+            IntListIterator it = tmanager.getE();
+            if (it == null) {
+                it = new IntListIterator();
             }
             it.init(list);
             return it;
@@ -133,15 +121,7 @@ public class IntList {
 
         IntList list;
 
-        private static IntListIterator build() {
-            return new IntListIterator();
-        }
-
-        private IntListIterator() {
-        }
-
         public void init(final IntList list) {
-            init();
             this.list = list;
             currentIdx = 0;
         }
@@ -169,14 +149,9 @@ public class IntList {
             return list.content[currentIdx];
         }
 
-        /**
-         * Get the containerof disposable objects where free ones are available
-         *
-         * @return a {@link java.util.Deque}
-         */
         @Override
-        public Queue getContainer() {
-            return Holder.container;
+        public void dispose() {
+            manager.get().returnE(this);
         }
     }
 }

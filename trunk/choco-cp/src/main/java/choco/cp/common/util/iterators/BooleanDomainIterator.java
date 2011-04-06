@@ -28,10 +28,8 @@
 package choco.cp.common.util.iterators;
 
 import choco.cp.solver.variables.integer.BooleanDomain;
-import choco.kernel.common.util.disposable.Disposable;
+import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-
-import java.util.Queue;
 
 /**
  * User : cprudhom<br/>
@@ -41,18 +39,7 @@ import java.util.Queue;
  */
 public final class BooleanDomainIterator extends DisposableIntIterator {
 
-    /**
-     * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
-     * than the moment that getInstance() is called.
-     * Thus, this solution is thread-safe without requiring special language constructs.
-     * see http://en.wikipedia.org/wiki/Singleton_pattern
-     */
-    private static final class Holder {
-        private Holder() {
-        }
-
-        private static final Queue<BooleanDomainIterator> container = Disposable.createContainer();
-    }
+    private static final ThreadLocal<PoolManager<BooleanDomainIterator>> manager = new ThreadLocal<PoolManager<BooleanDomainIterator>>();
 
     private BooleanDomain domain;
     private int nextValue;
@@ -61,19 +48,16 @@ public final class BooleanDomainIterator extends DisposableIntIterator {
     private BooleanDomainIterator() {
     }
 
-    private static BooleanDomainIterator build() {
-        return new BooleanDomainIterator();
-    }
-
     @SuppressWarnings({"unchecked"})
     public static BooleanDomainIterator getIterator(final BooleanDomain aDomain) {
-        BooleanDomainIterator it;
-        synchronized (Holder.container){
-            if(Holder.container.isEmpty()){
-                it = build();
-            }else{
-                it = Holder.container.remove();
-            }
+        PoolManager<BooleanDomainIterator> tmanager = manager.get();
+        if (tmanager == null) {
+            tmanager = new PoolManager<BooleanDomainIterator>();
+            manager.set(tmanager);
+        }
+        BooleanDomainIterator it = tmanager.getE();
+        if (it == null) {
+            it = new BooleanDomainIterator();
         }
         it.init(aDomain);
         return it;
@@ -83,7 +67,6 @@ public final class BooleanDomainIterator extends DisposableIntIterator {
      * Freeze the iterator, cannot be reused.
      */
     public void init(final BooleanDomain aDomain) {
-        init();
         this.domain = aDomain;
         nextValue = aDomain.getInf();
     }
@@ -110,22 +93,17 @@ public final class BooleanDomainIterator extends DisposableIntIterator {
     @Override
     public int next() {
         final int v = nextValue;
-        if (v == 0 && domain.contains(1)){
+        if (v == 0 && domain.contains(1)) {
             nextValue = 1;
-        }
-        else {
+        } else {
             nextValue = 2;
         }
         return v;
     }
 
 
-    /**
-     * Get the containerof disposable objects where free ones are available
-     *
-     * @return a {@link java.util.Deque}
-     */
-    public Queue getContainer() {
-        return Holder.container;
+    @Override
+    public void dispose() {
+        manager.get().returnE(this);
     }
 }
