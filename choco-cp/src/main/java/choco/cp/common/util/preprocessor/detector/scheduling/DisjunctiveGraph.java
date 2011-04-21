@@ -140,10 +140,6 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 		return storedConstraints.contains(getKey(i, j));
 	}
 	
-	public final boolean containsArcConstraint(int i, int j) {
-		return containsConstraint(i, j) || containsArcConstraint(i, j);
-	}
-
 	public final E getConstraint(int i, int j) {
 		return storedConstraints.get(getKey(i, j));
 	}
@@ -182,16 +178,15 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 		return s.toString();
 	}
 
-
 	protected final String getArcLabel(int i, int j) {
 		final int st = setupTime(i, j);
 		return st > 0 ? "label=\""+st+'\"' : null;
 	}
-		
+	
 	protected final String getEdgeLabel(int i, int j) {
 		final int st1 = setupTime(i, j);
 		final int st2 = setupTime(j, i);
-		return st1 > 0 || st2 > 0 ? '('+st1+", "+st2+')' : null;
+		return st1 > 0 || st2 > 0 ? "label=\"("+st1+", "+st2+")\"" : null;
 
 			
 	}
@@ -204,7 +199,8 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 	protected final static String STY_DOTTED = "style=dotted";
 	protected final static String STY_BOLD = "style=bold";
 	protected final static String ARROW_DOT = "arrowhead=dot";
-	protected final static String DIR_BWD = "dir=backward";
+	protected final static String ARROW_BIG = "arrowsize=1.5";
+	protected final static String DIR_BWD = "dir=back";
 	
 	protected void writeAttributes(StringBuilder b, String...options) {
 		b.append(" [");
@@ -214,58 +210,49 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 		}
 		final int l2 = b.length();
 		if(l2 > l1) b.replace(l2 -1, l2, "];\n");
-		else b.delete(0, l1);
+		else b.deleteCharAt(l1 - 1); 
 	}
 	
 	
 	protected void writeArcAttributes(StringBuilder b, int i, int j) {
-		writeAttributes(b, ARC_COLOR);
+		writeAttributes(b, ARC_COLOR, getArcLabel(i, j));
+	}
+
+	protected void writeEdge(StringBuilder b, E rel, int i, int j) {
+		if(rel.IsFixed() && rel.getDirVal() == ITemporalRelation.BWD) writeArc(b, j, i);
+		else writeArc(b, i, j);
 	}
 	
-	protected void writeEdgeAttributes(StringBuilder b, int i, int j) {
-		writeAttributes(b, EDGE_COLOR);
+	protected void writeEdgeAttributes(StringBuilder b, E rel, int i, int j) {
+		if(rel.IsFixed()) {
+			writeAttributes(b, EDGE_COLOR, STY_BOLD, ARROW_BIG, 
+					(rel.getDirVal() == ITemporalRelation.FWD ? getArcLabel(i, j) : getArcLabel(j, i)));
+		} else {
+			writeAttributes(b, EDGE_COLOR, ARROW_DOT, getEdgeLabel(i, j));
+		}
+		
 	}
 
+	
+	protected StringBuilder toDottyNodes() {
+		return new StringBuilder();
+	}
+	
 	@Override
-	public String toDotty() {
-		final StringBuilder  b = new StringBuilder();
+	public final String toDotty() {
+		final StringBuilder  b = toDottyNodes();
 		for (int i = 0; i < nbNodes; i++) {
 			for (int j = precGraph[i].nextSetBit(0); j >= 0; j = precGraph[i]
-			                                                               .nextSetBit(j + 1)) {
+			                                                              .nextSetBit(j + 1)) {
 				writeArc(b, i, j);
 				writeArcAttributes(b, i, j);
-//				b.append(" [");
-//				b.append("color=forestgreen");
-//				if(containsConstraint(i, j)) {
-//					writeArcLabel(b, i, j);
-//				}else {
-//					b.append(", style=dotted");
-//				}
-//				b.append("];\n");
 			}
-
 			for (int j = disjGraph[i].nextSetBit(0); j >= 0; j = disjGraph[i]
 			                                                               .nextSetBit(j + 1)) {
 				E rel = storedConstraints.get(getKey(i, j) );
 				if( rel != null) {
-					writeArc(b, i, j);
-					writeEdgeAttributes(b, i, j);
-//					b.append(" [");
-//					b.append("color=royalblue");
-//					if(rel.IsFixed()) {
-//						if(rel.canBeBackward()) {
-//							b.append(", dir=backward");
-//							writeArcLabel(b, j, i);
-//						} else writeArcLabel(b, i, j);
-//					} else {
-//						b.append(", style=bold, arrowhead=dot");
-//						final int st1 = setupTime(i, j);
-//						final int st2 = setupTime(j, i);
-//						if( st1 > 0 || st2 > 0) {
-//							b.append("label=\"(").append(st1).append(", ").append(st2).append(")\"");
-//						}
-//					}
-//					b.append("];\n");
+					writeEdge(b, rel, i, j); //TODO change to writeEdge pour SModel
+					writeEdgeAttributes(b,rel, i, j);
 				}
 			}
 		}

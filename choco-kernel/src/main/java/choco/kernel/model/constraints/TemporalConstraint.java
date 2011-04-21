@@ -72,10 +72,7 @@ public class TemporalConstraint extends ComponentConstraint implements ITemporal
 		return (IntegerVariable) getVariable(1);
 	}
 
-
-	/* (non-Javadoc)
-	 * @see choco.kernel.model.constraints.ITemporalRelation#forwardSetup()
-	 */
+	@Override
 	public final int forwardSetup() {
 		return getForwardSetup().getLowB();
 	}
@@ -84,9 +81,7 @@ public class TemporalConstraint extends ComponentConstraint implements ITemporal
 		replaceByConstantAt(1, val);
 	}
 
-	/* (non-Javadoc)
-	 * @see choco.kernel.model.constraints.ITemporalRelation#getDestination()
-	 */
+	@Override
 	public final TaskVariable getDestination() {
 		return (TaskVariable) getVariable(2);
 	}
@@ -99,9 +94,8 @@ public class TemporalConstraint extends ComponentConstraint implements ITemporal
 		return (IntegerVariable) getVariable(3);
 	}
 
-	/* (non-Javadoc)
-	 * @see choco.kernel.model.constraints.ITemporalRelation#backwardSetup()
-	 */
+	
+	@Override
 	public final int backwardSetup() {
 		return getBackwardSetup().getLowB();
 	}
@@ -110,27 +104,19 @@ public class TemporalConstraint extends ComponentConstraint implements ITemporal
 		replaceByConstantAt(3, val);
 	}
 
-	/* (non-Javadoc)
-	 * @see choco.kernel.model.constraints.ITemporalRelation#getDirection()
-	 */
+	@Override
 	public final IntegerVariable getDirection() {
 		return (IntegerVariable) getVariable(4);
 	}
 	
-	
-	@Override
-	public final boolean canBeBackward() {
-		return getDirection().canBeEqualTo(0);
-	}
-
 	@Override
 	public final boolean IsFixed() {
 		return getDirection().isConstant();
 	}
 
 	@Override
-	public final boolean canBeForward() {
-		return getDirection().canBeEqualTo(1);
+	public int getDirVal() {
+		return getDirection().getLowB();
 	}
 
 	@Override

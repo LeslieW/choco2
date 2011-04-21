@@ -68,7 +68,7 @@ public class DisjunctiveSModel extends DisjunctiveGraph<ITemporalSRelation> {
 			int o = hookToIndexM.get(i);
 			for (int j = dmod.precGraph[i].nextSetBit(0); j >= 0; j = dmod.precGraph[i].nextSetBit(j + 1)) {
 				final int d = hookToIndexM.get(j);
-				if(dmod.containsArcConstraint(i, j)) addArc(o, d, dmod.setupTime(i, j));
+				if(dmod.containsConstraint(i, j)) addArc(o, d, dmod.setupTime(i, j));
 			}
 			for (int j = dmod.disjGraph[i].nextSetBit(0); j >= 0; j = dmod.disjGraph[i].nextSetBit(j + 1)) {
 				if(dmod.containsConstraint(i, j)) {
@@ -86,32 +86,16 @@ public class DisjunctiveSModel extends DisjunctiveGraph<ITemporalSRelation> {
 
 
 	@Override
-	public String toDotty() {
+	protected StringBuilder toDottyNodes() {
 		final StringBuilder  b = new StringBuilder();
 		final DisposableIterator<TaskVar> iter = solver.getTaskVarIterator();
 		while(iter.hasNext()) {
 			b.append(iter.next().toDotty()).append('\n');
 		}
 		iter.dispose();
-		b.append(super.toDotty());
-		return b.toString();
+		return b;
 	}
 
 
-	public static void main(String[] args) {
-		TIntObjectHashMap<String> map = new TIntObjectHashMap<String>();
-		String str = "test";
-		map.put(2, str);
-		map.put(3, str);
-		map.forEachEntry(new TIntObjectProcedure<String>() {
-			
-			@Override
-			public boolean execute(int arg0, String arg1) {
-				System.out.println(arg1);
-				return true;
-			}
-		});
-		System.out.println(Arrays.toString(map.getValues()));
-	}
 
 }

@@ -130,21 +130,21 @@ public class PreProcessConfiguration extends Configuration {
 	@Default(value = VALUE_FALSE)
 	public static final String DISJUNCTIVE_FROM_CUMULATIVE_DETECTION= "ppcp.detection.scheduling.cumulative.disjunctive";
 	
-	public static String getPreProcessMsg(Configuration conf) {
+	public final static String getPreProcessMsg(Configuration conf) {
 		final StringBuilder b = new StringBuilder(18);
 		if( conf.readBoolean(RESTART_MODE)) b.append(" RESTART    ");
 		return new String(b);
 	}
 
-	public static void cancelPreProcess(Solver solver) {
-		cancelPreProcess(solver.getConfiguration());
+	
+	public final static void cancelSchedulingPreProcess(Configuration conf) {
+		conf.putFalse(DISJUNCTIVE_MODEL_DETECTION);
+		conf.putFalse(DMD_USE_TIME_WINDOWS);
+		conf.putFalse(DMD_REMOVE_DISJUNCTIVE);
+		conf.putFalse(DISJUNCTIVE_FROM_CUMULATIVE_DETECTION);
 	}
 	
-	public static void keepSchedulingPreProcess(Solver solver) {
-		keepSchedulingPreProcess(solver.getConfiguration());
-	}	
-	
-	public static void keepSchedulingPreProcess(Configuration conf) {
+	public final static void cancelNonSchedulingPreProcess(Configuration conf) {
 		conf.putFalse(RESTART_MODE);
 		conf.putFalse(INT_EQUALITY_DETECTION);
 		conf.putFalse(TASK_EQUALITY_DETECTION);
@@ -154,12 +154,19 @@ public class PreProcessConfiguration extends Configuration {
 		conf.putFalse(SYMETRIE_BREAKING_DETECTION);
 	}
 	
-	public static void cancelPreProcess(Configuration conf) {
-		keepSchedulingPreProcess(conf);
-		conf.putFalse(DISJUNCTIVE_MODEL_DETECTION);
-		conf.putFalse(DMD_USE_TIME_WINDOWS);
-		conf.putFalse(DMD_REMOVE_DISJUNCTIVE);
-		conf.putFalse(DISJUNCTIVE_FROM_CUMULATIVE_DETECTION);
+
+	public final static void keepSchedulingPreProcess(Solver solver) {
+		cancelNonSchedulingPreProcess(solver.getConfiguration());
+	}	
+
+	public final static void cancelPreProcess(Configuration conf) {
+		cancelNonSchedulingPreProcess(conf);
+		cancelSchedulingPreProcess(conf);
 	}
+	
+	public final static void cancelPreProcess(Solver solver) {
+		cancelPreProcess(solver.getConfiguration());
+	}
+	
 
 }

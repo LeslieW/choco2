@@ -113,16 +113,17 @@ public class TaskVariable extends MultipleVariables implements ITaskVariable<Int
 		return buffer.toString();
 	}
 
-	
+
 	@Override
 	public String toDotty() {
 		final StringBuilder b = new StringBuilder(); 	
 		b.append(getHook()).append("[ shape=record,");
-		b.append("label=\"{").append(getName());
-		b.append("|{").append(start().getLowB());
+		b.append("label=\"{");
+		b.append("{").append(start().getLowB());
 		b.append("|").append(StringUtils.format(duration()));
 		b.append("|").append(end().getUppB());
-		b.append("}}\"];");
+		b.append("}|").append(getName());
+		b.append("}\"];");
 		return b.toString();
 	}
 

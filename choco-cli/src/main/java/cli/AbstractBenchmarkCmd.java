@@ -114,7 +114,7 @@ public abstract class AbstractBenchmarkCmd extends AbstractCmdLine implements Fi
 	@Override
 	protected void checkData() throws CmdLineException {
 		if( !inputFile.exists() || !inputFile.canRead() ) {
-			throw new CmdLineException(inputFile + "is not a readable file.");
+			throw new CmdLineException(inputFile + " is not a readable file.");
 		}
 		if( outputDirectory != null && ! outputDirectory.isDirectory()) {
 			throw new CmdLineException(outputDirectory+" is not a directory");

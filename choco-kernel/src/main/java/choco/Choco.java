@@ -3308,16 +3308,6 @@ public class Choco {
 
 
     /**
-     * @return Constraint[]
-     * @see Reformulation#disjunctive(TaskVariable[], String...)
-     */
-    @Deprecated
-    public static Constraint[] precedenceDisjoint(TaskVariable[] clique, String... boolvarOptions) {
-        return Reformulation.disjunctive(clique, boolvarOptions);
-    }
-
-
-    /**
      * represents a reidied precedence:
      * <ul>
      * <li> b = 1 => x1 + k1 <= x2

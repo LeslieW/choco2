@@ -52,39 +52,47 @@ public final class StrategyFactory {
 	private StrategyFactory() {
 		super();
 	}
-
-	public static boolean isOptimize(Configuration conf) {
-        final ResolutionPolicy policy = conf.readEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.class);
-        return ! ResolutionPolicy.SATISFACTION.equals(policy);
+	
+	public static void setNoStopAtFirstSolution(Solver solver) {
+		solver.getConfiguration().putFalse(Configuration.STOP_AT_FIRST_SOLUTION);
 	}
 	
+	public static void setStopAtFirstSolution(Solver solver) {
+		solver.getConfiguration().putTrue(Configuration.STOP_AT_FIRST_SOLUTION);
+	}
 	
+	public static boolean isOptimize(Configuration conf) {
+		final ResolutionPolicy policy = conf.readEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.class);
+		return ! ResolutionPolicy.SATISFACTION.equals(policy);
+	}
+
+
 	public static void setDoOptimize(Solver solver, boolean maximize) {
 		if(maximize) solver.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MAXIMIZE);
 		else solver.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
-    
+
 	}
-	
+
 	public static boolean doMaximize(Solver solver) {
 		final Configuration conf = solver.getConfiguration();
-        final ResolutionPolicy policy = conf.readEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.class);
+		final ResolutionPolicy policy = conf.readEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.class);
 		return ! ResolutionPolicy.SATISFACTION.equals(policy) && ResolutionPolicy.MAXIMIZE.equals(policy);
 	}
-	
+
 	public static Boolean doMaximize(Configuration conf) {
 		final ResolutionPolicy policy = conf.readEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.class);
-        switch (policy) {
-            case MAXIMIZE:
-                return Boolean.TRUE;
-            case MINIMIZE:
-                return Boolean.FALSE;
-            case SATISFACTION:
-            default:
-                return null;
-        }
+		switch (policy) {
+		case MAXIMIZE:
+			return Boolean.TRUE;
+		case MINIMIZE:
+			return Boolean.FALSE;
+		case SATISFACTION:
+		default:
+			return null;
+		}
 	}
-	
-	
+
+
 
 	public static int getRecomputationGap(Solver solver) {
 		return solver.getConfiguration().readInt(RECOMPUTATION_GAP);
@@ -106,8 +114,8 @@ public final class StrategyFactory {
 			return new RealBranchAndBound(solver, (RealVar) var, doMaximize(solver));
 		}else throw new SolverException("invalid objective: "+var.pretty());
 	}
-	
-	
+
+
 	public static IKickRestart createKickRestart(AbstractGlobalSearchStrategy strategy) {
 		return strategy.solver.getConfiguration().readBoolean(NOGOOD_RECORDING_FROM_RESTART) ?
 				new NogoodKickRestart(strategy) : new BasicKickRestart(strategy);
@@ -130,14 +138,14 @@ public final class StrategyFactory {
 	public static ISolutionPool createSolutionPool(AbstractGlobalSearchStrategy strategy) {
 		return SolutionPoolFactory.makeDefaultSolutionPool(strategy, strategy.solver.getConfiguration().readInt(Configuration.SOLUTION_POOL_CAPACITY));
 	}
-	
+
 	public static boolean isUsingShavingTools(Solver solver) {
 		final Configuration conf = solver.getConfiguration();
 		return conf.readBoolean(INIT_SHAVING) ||
 		conf.readBoolean(INIT_DESTRUCTIVE_LOWER_BOUND) ||
 		conf.readBoolean(BOTTOM_UP);
 	}
-	
+
 	public static ShavingTools createShavingTools(Solver solver) {
 		if( isUsingShavingTools(solver) ) {
 			final Configuration conf = solver.getConfiguration();
@@ -150,6 +158,6 @@ public final class StrategyFactory {
 		}
 		return null;
 	}
-	
+
 
 }

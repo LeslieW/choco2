@@ -41,39 +41,49 @@ import static choco.Choco.sum;
 import static choco.Options.NO_OPTION;
 import static choco.Options.V_BOUND;
 import static choco.Options.V_OBJECTIVE;
+import static choco.visu.components.chart.ChocoChartFactory.createAndShowGUI;
+import static choco.visu.components.chart.ChocoChartFactory.createCumulativeChart;
 
+import java.rmi.server.ExportException;
 import java.util.Arrays;
 import java.util.logging.Level;
 
 import samples.tutorials.PatternExample;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.configure.StrategyFactory;
+import choco.cp.solver.search.BranchingFactory;
+import choco.cp.solver.search.integer.valselector.MaxVal;
+import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.visu.components.chart.ChocoChartFactory;
 
 
 public class CumulativeScheduling extends PatternExample {
-
-	protected final static int NT = 11, NF = 3, N =  NT + NF;
-
-	private final static int[] HEIGHTS =  new int[]{2, 1, 4, 2, 3, 1, 5, 6, 2, 1, 3, 1, 1, 2};
-
+	//Data
+	protected final static int  NF = 3, NT = 11, N =  NF + NT;
+	
 	private final static int[] DURATIONS =  new int[]{1, 1, 1, 2, 1, 3, 1, 1, 3, 4, 2, 3, 1, 1};
-
 	private final static int HORIZON = 6;
-
+	
+	private final static int[] HEIGHTS =  new int[]{2, 1, 4, 2, 3, 1, 5, 6, 2, 1, 3, 1, 1, 2};
 	private final static int CAPACITY = 7;
 
-	private boolean useAlternativeResource;
-
+	//Variables
+	
+	private TaskVariable[] tasks;
+	
 	private IntegerVariable[] usages, heights;
 
-	private TaskVariable[] tasks;
-
+	private IntegerVariable objective;
+	
 	private Constraint cumulative;
 
+	private boolean useAlternativeResource;
+	
 	@Override
 	public void setUp(Object parameters) {
 		if (parameters instanceof Boolean) {
@@ -86,18 +96,20 @@ public class CumulativeScheduling extends PatternExample {
 
 	@Override
 	public void buildModel() {
-		//the fake tasks to establish the profile capacity of the ressource are the NF firsts.
-		tasks = makeTaskVarArray("t", 0, HORIZON, DURATIONS, V_BOUND);
 		model = new CPModel();
+		//the fake tasks to establish the profile capacity of the ressource are the NF firsts.
+		tasks = makeTaskVarArray("T", 0, HORIZON, DURATIONS, V_BOUND);
+		usages = makeBooleanVarArray("U", NT);
+		objective = makeIntVar("obj", 0, NT, V_BOUND, V_OBJECTIVE);
+		
 		//set fake tasks to establish the profile capacity
 		model.addConstraints(
 				startsAt(tasks[0], 1),
 				startsAt(tasks[1], 2),
 				startsAt(tasks[2], 3)
 		);
-		usages = makeBooleanVarArray("U", NT);
 		//state the objective function
-		model.addConstraint(eq( sum(usages), makeIntVar("obj", 0, NT, V_BOUND, V_OBJECTIVE)));
+		model.addConstraint(eq( sum(usages), objective));
 		if(useAlternativeResource) {
 			heights = constantArray(HEIGHTS);
 			cumulative = cumulativeMax("alt-cumulative", tasks, heights, usages, constant(CAPACITY),NO_OPTION);
@@ -111,7 +123,7 @@ public class CumulativeScheduling extends PatternExample {
 				heights[i] =  makeIntVar("H_" + i, new int[]{0, HEIGHTS[i]});
 				model.addConstraint(boolChanneling(usages[i- NF], heights[i], HEIGHTS[i]));
 			}
-			cumulative =cumulativeMax("cumulative", tasks, heights, constant(CAPACITY), "");
+			cumulative =cumulativeMax("cumulative", tasks, heights, constant(CAPACITY), NO_OPTION);
 		}
 		model.addConstraint(cumulative);
 	}
@@ -119,7 +131,14 @@ public class CumulativeScheduling extends PatternExample {
 	@Override
 	public void buildSolver() {
 		solver = new CPSolver();
+		StrategyFactory.setNoStopAtFirstSolution(solver);
+		StrategyFactory.setDoOptimize(solver, true); //maximize
 		solver.read(model);
+//		solver.clearGoals();
+//		solver.addGoal(BranchingFactory.lexicographic(solver, solver.getVar(usages), new MaxVal()));
+//		IntDomainVar[] starts = VariableUtils.getStartVars(solver.getVar(tasks));
+//		solver.addGoal(BranchingFactory.minDomMinVal(solver, starts));	
+		solver.generateSearchStrategy();
 	}
 
 	@Override
@@ -127,16 +146,16 @@ public class CumulativeScheduling extends PatternExample {
 		if(LOGGER.isLoggable(Level.INFO)) {
 			LOGGER.info((useAlternativeResource ? "Alternative Resource" : "Channeling Constraints")+" Model: \n");
 			if(solver.existsSolution()) {
-				LOGGER.info("makespan: "+solver.getObjectiveValue()+"\n"+Arrays.toString(usages));
+				LOGGER.info("number of scheduled tasks: "+solver.getObjectiveValue()+"\n"+Arrays.toString(solver.getVar(usages)));
 				final String title = "Cumulative Packing Constraint Visualization";
-				ChocoChartFactory.createAndShowGUI(title, ChocoChartFactory.createCumulativeChart(title, (CPSolver) solver, cumulative, true));
+				//createAndShowGUI(title, createCumulativeChart(title, (CPSolver) solver, cumulative, true));
 			}
 		}
 	}
 
 	@Override
 	public void solve() {
-		solver.maximize(false);
+		solver.launch();
 	}
 
 	@Override

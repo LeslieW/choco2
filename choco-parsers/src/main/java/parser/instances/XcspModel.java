@@ -97,6 +97,7 @@ public class XcspModel extends AbstractInstanceModel {
 
 	public XcspModel() {
 		this(new XcspSettings());
+		PreProcessConfiguration.cancelSchedulingPreProcess(getConfiguration());
 	}
 
 

@@ -80,9 +80,13 @@ public final class PackModel {
 	public final int maxCapacity;
 
 	public PackModel(int[] sizes, int nbBins, int capacity) {
-		this(StringUtils.randomName()+'-', constantArray(sizes), nbBins, capacity);
+		this(StringUtils.randomName(),sizes, nbBins, capacity);
 	}
-			
+	
+	public PackModel(String name, int[] sizes, int nbBins, int capacity) {
+		this(name, constantArray(sizes), nbBins, capacity);
+	}
+	
 	public PackModel(String prefix, IntegerConstantVariable[] sizes, int nbBins, int capacity) {
 		super();
 		this.bins = makeIntVarArray(prefix+"B", sizes.length, 0, nbBins-1,V_ENUM);
