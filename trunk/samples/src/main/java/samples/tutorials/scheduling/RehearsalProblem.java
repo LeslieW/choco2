@@ -29,6 +29,7 @@ package samples.tutorials.scheduling;
 
 import choco.Choco;
 import choco.Options;
+import choco.Reformulation;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.util.tools.StringUtils;
@@ -145,7 +146,7 @@ public class RehearsalProblem extends PatternExample {
 			model.addConstraint(Choco.disjunctive(musicPieces));
 		}else {
 			//define all possible precedence between tasks
-			model.addConstraints( Choco.precedenceDisjoint(musicPieces, isPrecOnlyDecision ? Options.NO_OPTION : Options.V_NO_DECISION));
+			model.addConstraints( Reformulation.disjunctive(musicPieces, isPrecOnlyDecision ? Options.NO_OPTION : Options.V_NO_DECISION));
 		}
 	}
 

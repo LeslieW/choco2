@@ -33,7 +33,7 @@ import parser.instance.AbstractMinimizeModel;
 import parser.instance.IHeuristicAlgorithm;
 import parser.instances.BasicSettings;
 import choco.Choco;
-import choco.Options;
+import static choco.Options.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.constraints.global.pack.PackSConstraint;
 import choco.cp.solver.search.BranchingFactory;
@@ -94,14 +94,14 @@ public class BinPackingModel extends AbstractMinimizeModel {
 	public Model buildModel() {
 		CPModel m = new CPModel();
 		final BinPackingFileParser pr = (BinPackingFileParser) parser;
-		modeler = new PackModel(pr.sizes, nbBins, pr.capacity);
-		pack = Choco.pack(modeler, Options.C_PACK_AR, Options.C_PACK_DLB);
+		modeler = new PackModel("", pr.sizes, nbBins, pr.capacity);
+		pack = Choco.pack(modeler, C_PACK_AR, C_PACK_DLB, C_PACK_LBE);
 		m.addConstraint(pack);
 		if( ! defaultConf.readBoolean(BasicSettings.LIGHT_MODEL) ) {
-			pack.addOption(Options.C_PACK_FB);
+			pack.addOption(C_PACK_FB);
 			m.addConstraints(modeler.packLargeItems()); // best symmetry breaking ? 
 		}
-		modeler.nbNonEmpty.addOption(Options.V_OBJECTIVE);
+		modeler.nbNonEmpty.addOption(V_OBJECTIVE);
 		return m;
 	}
 
@@ -109,14 +109,12 @@ public class BinPackingModel extends AbstractMinimizeModel {
 	public Solver buildSolver() {
 		Solver s = super.buildSolver(); // create the solver
 		s.read(model);  //read the model
+		s.clearGoals();
 		if(defaultConf.readBoolean(BasicSettings.LIGHT_MODEL) ) {
-			s.clearGoals();
 			s.addGoal(BranchingFactory.lexicographic(s, s.getVar(modeler.getBins())));
 		}else {
-			s.clearGoals();
 			final PackSConstraint ct = (PackSConstraint) s.getCstr(pack);
-			//value selection : First-Fit ~ MinVal
-			s.addGoal(new PackDynRemovals(new StaticVarOrder(s, s.getVar(modeler.getBins())), new BestFit(ct), ct));
+			s.addGoal(BranchingFactory.completeDecreasingBestFit(s, ct));
 		}
 		s.generateSearchStrategy();
 		return s;
@@ -134,5 +132,5 @@ public class BinPackingModel extends AbstractMinimizeModel {
 		return solver != null && solver.existsSolution() ?
 				ChocoChartFactory.createPackChart(getInstanceName()+" : "+getStatus(), (PackSConstraint) solver.getCstr(pack)) : null;
 	}
-	
+		
 }

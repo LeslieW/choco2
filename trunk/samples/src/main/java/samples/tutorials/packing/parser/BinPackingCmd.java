@@ -43,16 +43,16 @@ import java.util.Random;
  *
  * <br/>
  *
- * @author Charles Prud'homme
+ * @author Charles Prud'homme - Arnaud Malapert
  * @since 8 juil. 2010
  */
 public class BinPackingCmd extends AbstractBenchmarkCmd {
 
 	/**
-	 * the branching strategy
+	 * the type of model
 	 */
-	@Option(name="-l",aliases={"--light"},usage="activate global constraints decomposition")
-	protected Boolean lightModel;
+	@Option(name="-l",aliases={"--light"},usage="set the light model")
+	protected boolean lightModel;
 	
 	
     public BinPackingCmd() {
@@ -69,7 +69,7 @@ public class BinPackingCmd extends AbstractBenchmarkCmd {
 		super.checkData();
 		seeder =  new Random(seed);
 		//check for Boolean, if null then keep default setting (property file)
-		if(lightModel != null) settings.putTrue(BasicSettings.LIGHT_MODEL);
+		if(lightModel) settings.putTrue(BasicSettings.LIGHT_MODEL);
 		//load status checkers
 		SCheckFactory.load("/bin-packing-tut/bin-packing-tut.properties");
     }

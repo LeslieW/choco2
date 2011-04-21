@@ -53,9 +53,9 @@ import java.util.Queue;
  *
  */
 public class StringUtils {
-    private StringUtils() {}
+	private StringUtils() {}
 
-    /**
+	/**
 	 * Pads out a string upto padlen with pad chars
 	 *
 	 * @param str    string to be padded
@@ -64,7 +64,7 @@ public class StringUtils {
 	 * @return padded string
 	 */
 	public static String pad(String str, int padlen, String pad) {
-        final StringBuilder padding = new StringBuilder(32);
+		final StringBuilder padding = new StringBuilder(32);
 		final int len = Math.abs(padlen) - str.length();
 		if (len < 1) {
 			return str;
@@ -95,7 +95,7 @@ public class StringUtils {
 
 				@Override
 				public String next() {
-                    return options.substring(b, e);
+					return options.substring(b, e);
 				}
 
 				@Override
@@ -104,28 +104,28 @@ public class StringUtils {
 				}
 
 
-                /**
-                 * Get the containerof disposable objects where free ones are available
-                 *
-                 * @return a {@link java.util.Deque}
-                 */
-                public Queue getContainer() {
-                    return null;
-                }
+				/**
+				 * Get the containerof disposable objects where free ones are available
+				 *
+				 * @return a {@link java.util.Deque}
+				 */
+				public Queue getContainer() {
+					return null;
+				}
 
-                /**
-                 * This method allows to declare that an object is not used anymore. It
-                 * can be reused by another object.
-                 */
-                @Override
-                public void dispose() {}
-            };
+				/**
+				 * This method allows to declare that an object is not used anymore. It
+				 * can be reused by another object.
+				 */
+				@Override
+				public void dispose() {}
+			};
 		} else {
 			return EmptyIterator.get();
 		}
 
 	}
-	
+
 	//*****************************************************************//
 	//*******************  Pretty  ********************************//
 	//***************************************************************//
@@ -179,7 +179,7 @@ public class StringUtils {
 	}
 
 	public static String pretty(int[] lval) {
-        StringBuilder sb = new StringBuilder(32);
+		StringBuilder sb = new StringBuilder(32);
 		sb.append('{');
 		for (int i = 0; i < lval.length - 1; i++) {
 			sb.append(lval[i]);
@@ -191,7 +191,7 @@ public class StringUtils {
 	}
 
 	public static String pretty(int[][] lvals) {
-        StringBuilder sb = new StringBuilder(32);
+		StringBuilder sb = new StringBuilder(32);
 		sb.append('{');
 		for (int i = 0; i < lvals.length; i++) {
 			if (i > 0) sb.append(", ");
@@ -250,7 +250,7 @@ public class StringUtils {
 	 * @return a char regexp
 	 */
 	public static String toCharExp(String strRegExp) {
-        StringBuilder b = new StringBuilder(32);
+		StringBuilder b = new StringBuilder(32);
 		for (int i =0 ;i < strRegExp.length() ;i++)
 		{
 			char c = strRegExp.charAt(i);
@@ -266,14 +266,14 @@ public class StringUtils {
 				b.append(FiniteAutomaton.getCharFromInt(Character.getNumericValue(c)));
 
 			}
-            else if (c == '{')
-            {
-                int out = strRegExp.indexOf('}',i+1);
-                b.append(c);
-                for (int d = i+1; d <= out ; d++)
-                    b.append(strRegExp.charAt(d));
-                i = out;
-            }
+			else if (c == '{')
+			{
+				int out = strRegExp.indexOf('}',i+1);
+				b.append(c);
+				for (int d = i+1; d <= out ; d++)
+					b.append(strRegExp.charAt(d));
+				i = out;
+			}
 			else
 			{
 				b.append(c);
@@ -291,7 +291,7 @@ public class StringUtils {
 	 */
 	public static String toIntExp (String charExp)
 	{
-        StringBuilder b = new StringBuilder(32);
+		StringBuilder b = new StringBuilder(32);
 		for (int i = 0 ; i < charExp.length() ; i++)
 		{
 			char c = charExp.charAt(i);
@@ -312,8 +312,8 @@ public class StringUtils {
 	}
 
 	private static long next;
-	
-	
+
+
 	/**
 	 * Return a generated short, random string
 	 * @return String
@@ -321,7 +321,7 @@ public class StringUtils {
 	public static String randomName(){
 		return "TMP_" + next++ ;
 	}
-	
+
 	public static String format(int lb, int ub) {
 		return lb == ub ? String.valueOf(lb) : lb + ".."+ub ;	
 	}
@@ -342,7 +342,7 @@ public class StringUtils {
 		b.append(format(t.getECT(), t.getLCT())).append(']');
 		return new String(b);
 	}
-	
+
 	/**
 	 * convert a task into .dot format.
 	 * @param label  information appended to the default label
@@ -384,8 +384,15 @@ public class StringUtils {
 
 
 
-	
+	public static String dirName(String n1, String n2){
+		return "dir" +
+		( 
+				( n1 != null && n2 != null && ! n1.isEmpty() && ! n2.isEmpty() ) ?
+						"-" + n1 + "-" + n2 : ""
+		);
+	}
+
 	public static String dirRandomName(String n1, String n2){
-		return randomName()+"-dir-" + n1 + "-" + n2 ;
+		return randomName()+"-"+dirName(n1, n2);
 	}
 }

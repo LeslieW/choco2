@@ -25,14 +25,14 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package samples.tutorials.scheduling.pack.binpacking;
+package samples.tutorials.packing;
 
 
 /**
  * @author Arnaud Malapert
  *
  */
-public class BinPackingExample {
+public class BinPackingInstances {
 
 	public final static int OPT_C=23;
 
@@ -82,7 +82,7 @@ public class BinPackingExample {
 		25, 25, 25, 25, 24, 24, 22, 21, 20};
 
 	/**
-	 * optimal==heuristic : error or bug !
+	 * optimal==heuristic 
 	 */
 
 	public final static int[] N2C2W1_S={99, 98, 97, 96, 95, 94, 93, 93, 91, 90, 89, 88, 87, 87, 86, 86, 85, 84, 83, 82, 79, 79, 78, 77, 77,

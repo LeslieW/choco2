@@ -37,7 +37,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 
 public abstract class AbstractPrecedenceSConstraint extends AbstractLargeIntSConstraint 
-implements ITemporalRelation<TaskVar<?>, IntDomainVar> {
+implements ITemporalSRelation {
 
 	protected final static int BIDX = 0;
 
@@ -62,19 +62,30 @@ implements ITemporalRelation<TaskVar<?>, IntDomainVar> {
 	//TODO record tasks in the constraint list ? 
 	//In this case, change the postRedundantTaskConstraint
 
+	@Override
 	public final TaskVar getOrigin() {
 		return task1;
 	}
 
+	@Override
 	public final TaskVar getDestination() {
 		return task2;
 	}
 
-	@Deprecated
-	public final IntDomainVar getDirectionVar() {
+	@Override
+	public IntDomainVar getDirection() {
 		return vars[BIDX];
 	}
-	
+		
+	@Override
+	public final boolean IsFixed() {
+		return vars[BIDX].isInstantiated();
+	}
+
+	@Override
+	public int getDirVal() {
+		return vars[BIDX].getVal();
+	}
 
 	@Override
 	public final int backwardSetup() {
@@ -86,10 +97,7 @@ implements ITemporalRelation<TaskVar<?>, IntDomainVar> {
 		throw new UnsupportedOperationException("not yet implemented");
 	}
 
-	@Override
-	public IntDomainVar getDirection() {
-		return vars[BIDX];
-	}
+	
 
 	/**
 	 * propagate vars[idx1] <= vars[idx2]
@@ -155,7 +163,7 @@ implements ITemporalRelation<TaskVar<?>, IntDomainVar> {
 	@Override
 	public void awakeOnInst(int idx) throws ContradictionException {
 		if (idx == 0) {        // booleen de decision
-			if (vars[BIDX].getVal() == 1) propagateP1();
+			if (vars[BIDX].getVal() == FWD) propagateP1();
 			else propagateP2();
 		} else {
 			filterOnP1P2TowardsB();
@@ -185,16 +193,16 @@ implements ITemporalRelation<TaskVar<?>, IntDomainVar> {
 		//		        }
 		reuseBool = isP1Entailed();
 		if (reuseBool == Boolean.TRUE) {
-			vars[BIDX].instantiate(1, this, false);
+			vars[BIDX].instantiate(FWD, this, false);
 		} else if(reuseBool == Boolean.FALSE){
-			vars[BIDX].instantiate(0, this, false);
+			vars[BIDX].instantiate(BWD, this, false);
 			propagateP2();
 		}else {
 			reuseBool = isP2Entailed();
 			if (reuseBool == Boolean.TRUE) { 
-				vars[BIDX].instantiate(0, this, false);
+				vars[BIDX].instantiate(BWD, this, false);
 			} else if(reuseBool == Boolean.FALSE) {
-				vars[BIDX].instantiate(1, this, false);
+				vars[BIDX].instantiate(FWD, this, false);
 				propagateP1();
 			}
 		}
@@ -221,6 +229,7 @@ implements ITemporalRelation<TaskVar<?>, IntDomainVar> {
 		propagate();
 	}
 
+	@Override
 	public void propagate() throws ContradictionException {
 		if (vars[BIDX].isInstantiatedTo(0))
 			propagateP2();
@@ -243,25 +252,31 @@ implements ITemporalRelation<TaskVar<?>, IntDomainVar> {
 	}
 
 	
+	
 	@Override
-	public final boolean canBeBackward() {
-		return vars[BIDX].isInstantiatedTo(0);
+	public int getTotalSlack() {
+		//FIXME
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 	@Override
-	public final boolean IsFixed() {
-		return vars[BIDX].isInstantiated();
+	public double getForwardPreserved() {
+		//FIXME
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 	@Override
-	public final boolean canBeForward() {
-		return vars[BIDX].isInstantiatedTo(1);
+	public double getBackwardPreserved() {
+		//FIXME
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 	@Override
 	public String toString() {
 		return pretty();
 	}
-
 
 }

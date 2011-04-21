@@ -33,6 +33,7 @@ import choco.Choco;
 import choco.kernel.common.IDotty;
 import choco.kernel.model.Model;
 import choco.kernel.model.ModelException;
+import choco.kernel.model.constraints.ITemporalRelation;
 import choco.kernel.model.constraints.TemporalConstraint;
 import choco.kernel.model.variables.MultipleVariables;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -52,6 +53,23 @@ public class DisjunctiveModel extends DisjunctiveGraph<TemporalConstraint> {
 		return model;
 	}
 
+	public final int setupTime(TaskVariable i, TaskVariable j) {
+		return setupTime(i.getHook(), j.getHook());
+	}
+
+	public final boolean containsArc(TaskVariable i, TaskVariable j) {
+		return containsArc(i.getHook(), j.getHook());
+	}
+
+	public final boolean containsEdge(TaskVariable i, TaskVariable j) {
+		return containsEdge(i.getHook(), j.getHook());
+	}
+	
+	public final boolean containsRelation(TaskVariable i, TaskVariable j) {
+		return containsRelation(i.getHook(), j.getHook());
+	}
+
+	
 	public final void safeAddArc(TaskVariable i, TaskVariable j) {
 		safeAddArc(i.getHook(), j.getHook(), j.start().getLowB() - i.end().getUppB());
 	}
@@ -82,10 +100,10 @@ public class DisjunctiveModel extends DisjunctiveGraph<TemporalConstraint> {
 	 * @return deleteC
 	 */
 	public boolean safeAddArc(TemporalConstraint c) {
+		assert c.IsFixed();
 		final int i = c.getOHook();
 		final int j = c.getDHook();
-		assert c.IsFixed();
-		if(c.canBeBackward()) {
+		if(c.getDirVal() == ITemporalRelation.BWD) {
 			//add backward arc
 			if(containsArc(j, i)) return mergeArc(j, i, c.backwardSetup(), c); 
 			else addArc(j, i, c.backwardSetup(), c);
@@ -163,45 +181,20 @@ public class DisjunctiveModel extends DisjunctiveGraph<TemporalConstraint> {
 		}
 	}
 	
-	
-	public final int setupTime(TaskVariable i, TaskVariable j) {
-		return setupTime(i.getHook(), j.getHook());
-	}
-
-	public final boolean containsArc(TaskVariable i, TaskVariable j) {
-		return containsArc(i.getHook(), j.getHook());
-	}
-
-	
-	public final boolean containsEdge(TaskVariable i, TaskVariable j) {
-		return containsEdge(i.getHook(), j.getHook());
-	}
-	
-	public final boolean containsRelation(TaskVariable i, TaskVariable j) {
-		return containsRelation(i.getHook(), j.getHook());
-	}
-
-	
 	@Override
 	protected void writeArcAttributes(StringBuilder b, int i, int j) {
-		if(containsArcConstraint(i, j)) writeAttributes(b, ARC_COLOR, getArcLabel(i, j));
-		else writeAttributes(b, ARC_COLOR, "style=dotted");
+		if(containsConstraint(i, j)) super.writeArcAttributes(b, i, j);
+		else writeAttributes(b, ARC_COLOR, STY_DOTTED);
 	}
 
 	@Override
-	protected void writeEdgeAttributes(StringBuilder b, int i, int j) {
-		 writeAttributes(b, EDGE_COLOR, getEdgeLabel(i, j));
-	}
-
-	@Override
-	public final String toDotty() {
+	protected final StringBuilder toDottyNodes() {
 		final StringBuilder  b = new StringBuilder();
 		Iterator<MultipleVariables> iter = model.getMultipleVarIterator();
 		while(iter.hasNext()) {
 			final MultipleVariables mv = iter.next();
 			if (mv instanceof IDotty) b.append(((IDotty) mv).toDotty()).append('\n');
 		}
-		b.append(super.toDotty());
-		return b.toString();
+		return b;
 	}
 }

@@ -35,7 +35,6 @@ import choco.cp.solver.CPSolver;
 import choco.kernel.model.constraints.pack.PackModel;
 import choco.visu.components.chart.ChocoChartFactory;
 import samples.tutorials.PatternExample;
-import samples.tutorials.scheduling.pack.binpacking.BinPackingExample;
 
 public class PackVisu extends PatternExample {
 
@@ -44,8 +43,8 @@ public class PackVisu extends PatternExample {
 	@Override
 	public void buildModel() {
 		model =new CPModel();
-		pm1 = new PackModel(BinPackingExample.N1C1W1_N,BinPackingExample.OPT_N+2,BinPackingExample.CAPACITY_N);
-		pm2 = new PackModel(BinPackingExample.N2C2W1_H,BinPackingExample.OPT_H+4,BinPackingExample.CAPACITY);
+		pm1 = new PackModel(BinPackingInstances.N1C1W1_N,BinPackingInstances.OPT_N+2,BinPackingInstances.CAPACITY_N);
+		pm2 = new PackModel(BinPackingInstances.N2C2W1_H,BinPackingInstances.OPT_H+4,BinPackingInstances.CAPACITY);
 		model.addConstraints( Choco.pack(pm1), Choco.pack(pm2));
 	}
 

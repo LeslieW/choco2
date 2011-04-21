@@ -31,6 +31,9 @@ import choco.kernel.model.variables.scheduling.ITaskVariable;
 
 public interface ITemporalRelation<T extends ITaskVariable<V>, V> { //extends IDotty { 
 
+	public final static int BWD = 0;
+	public final static int FWD = 1;
+	
 	T getOrigin();
 
 	T getDestination();
@@ -38,12 +41,10 @@ public interface ITemporalRelation<T extends ITaskVariable<V>, V> { //extends ID
 	V getDirection();
 	
 	boolean IsFixed();
-
-	boolean canBeBackward();
-
-	int backwardSetup();
 	
-	boolean canBeForward();
+	int getDirVal();
+	
+	int backwardSetup();
 	
 	int forwardSetup();
 

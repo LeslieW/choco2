@@ -39,14 +39,17 @@ import static choco.kernel.common.util.tools.VariableUtils.getTaskVars;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import choco.cp.solver.constraints.global.pack.PackSConstraint;
 import choco.cp.solver.constraints.global.scheduling.precedence.ITemporalSRelation;
 import choco.cp.solver.search.integer.branching.AssignOrForbidIntVarVal;
 import choco.cp.solver.search.integer.branching.AssignOrForbidIntVarValPair;
 import choco.cp.solver.search.integer.branching.AssignVar;
+import choco.cp.solver.search.integer.branching.PackDynRemovals;
 import choco.cp.solver.search.integer.branching.domwdeg.DomOverWDegBinBranchingNew;
 import choco.cp.solver.search.integer.branching.domwdeg.DomOverWDegBranchingNew;
 import choco.cp.solver.search.integer.branching.domwdeg.TaskOverWDegBinBranching;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
+import choco.cp.solver.search.integer.valselector.BestFit;
 import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.MinDomain;
@@ -82,6 +85,7 @@ import choco.kernel.solver.variables.set.SetVar;
 
 public final class BranchingFactory {
 
+	//FIXME add Javadoc
 	private BranchingFactory() {
 		super();
 	}
@@ -96,9 +100,9 @@ public final class BranchingFactory {
 		return minDomMinVal(s, s.getIntDecisionVars());
 	}
 
-    //*************************************************************************//
+	//*************************************************************************//
 
-    public static AssignVar minDomIncDom(Solver s, IntDomainVar[] vars) {
+	public static AssignVar minDomIncDom(Solver s, IntDomainVar[] vars) {
 		return new AssignVar( new MinDomain(s, vars), new IncreasingDomain());
 	}
 
@@ -109,7 +113,11 @@ public final class BranchingFactory {
 	//*************************************************************************//
 
 	public static AssignVar lexicographic(Solver solver, IntDomainVar[] vars) {
-		return new AssignVar( new StaticVarOrder(solver, vars), new MinVal());
+		return lexicographic(solver, vars, new MinVal());
+	}
+	
+	public static AssignVar lexicographic(Solver solver, IntDomainVar[] vars, ValSelector<IntDomainVar> valSel) {
+		return new AssignVar( new StaticVarOrder(solver, vars), valSel);
 	}
 
 	public static AssignSetVar lexicographic(Solver solver, SetVar[] vars) {
@@ -297,7 +305,7 @@ public final class BranchingFactory {
 	}
 
 	public static AssignVar domWDeg(Solver solver, IntDomainVar[] vars, ValSelector valSel, long seed) {
-		return new AssignVar( domWDegSel(solver, vars, seed), valSel);
+		return new AssignVar(domWDegSel(solver, vars, seed), valSel);
 	}
 
 	//*****************************************************************//
@@ -404,24 +412,43 @@ public final class BranchingFactory {
 		final RandMaxRatioSelector varSel = new RandMaxRatioSelector(solver, ratios, seed);
 		return new AssignOrForbidIntVarValPair(new CompositePrecValSelector(ratios, varSel, valSel));
 	}
-
 	
-	//*************************************************************************//
+	//*****************************************************************//
+	//************************* SetTimes *****************************//
+	//***************************************************************//
 
 	public static SetTimes setTimes(final Solver solver) {
 		final TaskVar[] tasks = getTaskVars(solver);
 		Arrays.sort(tasks,TaskComparators.makeRMinDurationCmp()); 
 		return new SetTimes(solver,Arrays.asList(tasks) , TaskComparators.makeEarliestStartingTimeCmp(), false);
 	}
-	
+
 	public static SetTimes setTimes(final Solver solver, final Comparator<ITask> comparator, final boolean randomized) {
 		return setTimes(solver,getTaskVars(solver), comparator, randomized);
 	}
-	//FIXME set array in constructor
+
 	public static SetTimes setTimes(final Solver solver, final TaskVar[] tasks, final Comparator<ITask> comparator, final boolean randomized) {
+		//FIXME set array in constructor
 		return new SetTimes(solver, Arrays.asList(tasks), comparator, randomized);
 	}
 
+	//*****************************************************************//
+	//******************** Complete Decreasing ***********************//
+	//***************************************************************//
 
+	public static AssignVar completeDecreasing(Solver solver, PackSConstraint ct, boolean bestFit, boolean dynRem) {
+		final StaticVarOrder varSel = new StaticVarOrder(solver, ct.getBins());
+		//value selection : First-Fit ~ MinVal
+		final ValSelector<IntDomainVar> valSel = bestFit ? new BestFit(ct) : new MinVal();
+		return dynRem ? new PackDynRemovals(varSel, valSel, ct) : new AssignVar(varSel, valSel);
+	}
+
+	public static AssignVar completeDecreasingFirstFit(Solver solver, PackSConstraint ct) {
+		return completeDecreasing(solver, ct, false, true);
+	}
 	
+	public static AssignVar completeDecreasingBestFit(Solver solver, PackSConstraint ct) {
+		return completeDecreasing(solver, ct, true, true);
+	}
+
 }

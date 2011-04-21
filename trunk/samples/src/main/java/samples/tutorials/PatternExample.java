@@ -46,12 +46,9 @@ public abstract class PatternExample implements Example {
 
 	public Solver solver;
     
+	public void setUp(Object parameters){}
 
-	public void setUp(Object parameters){
-	}
-
-    public void printDescription(){
-    } 
+    public void printDescription(){} 
 
 	public abstract void buildModel();
 

@@ -27,8 +27,8 @@
 
 package samples.tutorials.scheduling;
 
-import static choco.Choco.constantArray;
-import static choco.Choco.makeTaskVar;
+import static choco.kernel.common.VisuFactory.*;
+import static choco.Choco.*;
 import static choco.Choco.startsAfterEnd;
 
 import java.util.logging.Level;
@@ -41,6 +41,7 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.preprocessor.PreProcessCPSolver;
 import choco.cp.solver.preprocessor.PreProcessConfiguration;
 import choco.kernel.common.VisuFactory;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
@@ -67,6 +68,8 @@ public class PertCPM extends PatternExample {
 	private TaskVariable masonry, carpentry, plumbing, ceiling, 
 	roofing, painting, windows,facade, garden, moving;
 
+	private IntegerVariable direction;
+	
 	public PertCPM() {
 		this(29);
 	}
@@ -81,7 +84,8 @@ public class PertCPM extends PatternExample {
 	@Override
 	public void buildModel() {
 		model = new CPModel();
-		masonry=makeTaskVar("masonry",horizon, 7,Options.V_BOUND);
+		//build tasks
+		masonry=makeTaskVar("masonry",horizon, 7);
 		carpentry=makeTaskVar("carpentry",horizon, 3);
 		plumbing=makeTaskVar("plumbing",horizon, 8);
 		ceiling=makeTaskVar("ceiling",horizon, 3);
@@ -91,8 +95,7 @@ public class PertCPM extends PatternExample {
 		facade=makeTaskVar("facade",horizon, 2);
 		garden=makeTaskVar("garden",horizon, 1);
 		moving=makeTaskVar("moving",horizon, 1);
-		
-		//add temporal constraints
+		//add precedence constraints
 		model.addConstraints(
 				startsAfterEnd(carpentry,masonry),
 				startsAfterEnd(plumbing,masonry),
@@ -102,43 +105,60 @@ public class PertCPM extends PatternExample {
 				startsAfterEnd(windows,roofing),
 				startsAfterEnd(painting,windows),
 				startsAfterEnd(facade,roofing),
-				startsAfterEnd(facade,plumbing),
+				//startsAfterEnd(facade,plumbing), //old version
 				startsAfterEnd(garden,roofing),
 				startsAfterEnd(garden,plumbing),
 				startsAfterEnd(moving,facade),
 				startsAfterEnd(moving,garden),
 				startsAfterEnd(moving,painting)
 		);
+		//add a single disjonction
+		direction = makeBooleanVar(StringUtils.dirName(facade.getName(), plumbing.getName()));
+		model.addConstraint(
+				precedenceDisjoint(facade, plumbing, direction, 1, 3)
+		);
 	}
 
 
 	@Override
 	public void buildSolver() {
-		solver = new PreProcessCPSolver();
-		PreProcessConfiguration.keepSchedulingPreProcess(solver);
-		((CPSolver) solver).createMakespan();
-		solver.read(model);
-		VisuFactory.createAndShowGUI(((PreProcessCPSolver) solver).getDisjMod());
+		PreProcessCPSolver s = new PreProcessCPSolver();
+		solver = s;
+		PreProcessConfiguration.keepSchedulingPreProcess(s);
+		s.createMakespan();
+		s.read(model);
+		createAndShowGUI(s.getDisjMod());
 	}
 
 	@Override
 	public void solve() {
+		final IntDomainVar dir = solver.getVar(direction);
+		final IntDomainVar makespan = solver.getMakespan();
+		final DisjunctiveSModel disjSMod = new DisjunctiveSModel((PreProcessCPSolver) solver);
 		try {
 			solver.propagate();
-		} catch (ContradictionException e) {
-			LOGGER.log(Level.SEVERE, "Infeasible Pert Problem", e);
-		}
-		try {
-			//then we instantiate the makespan variable and compute slack times
-			final IntDomainVar makespan = solver.getMakespan();
-			makespan.instantiate(makespan.getInf(), null, true);
+			createAndShowGUI(disjSMod);
+			
+			solver.worldPush();
+						
+			dir.instantiate(1, null, true); //set forward
 			solver.propagate();
+			makespan.instantiate(makespan.getInf(), null, true); //instantiate makespan 
+			solver.propagate(); //compute slack times
+			createAndShowGUI(disjSMod);
+			
+			solver.worldPop();
+			
+			dir.instantiate(0, null, true); //set backward
+			solver.propagate();
+			makespan.instantiate(makespan.getInf(), null, true); //instantiate makespan and compute slack times
+			solver.propagate();
+			createAndShowGUI(disjSMod);
+			
 		} catch (ContradictionException e) {
-			LOGGER.log(Level.SEVERE, "CPM should not lead to a contradiction", e);
+			LOGGER.log(Level.SEVERE, "Pert/CPM should not raise a contradiction !", e);
 		}
-		//VizFactory.toDotty( new DisjunctiveSModel((PreProcessCPSolver) solver));
 	}
-
 
 
 	@Override
@@ -147,6 +167,7 @@ public class PertCPM extends PatternExample {
 	}
 
 	public static void main(String[] args) {
+		//ChocoLogging.toVerbose();
 		(new PertCPM()).execute();
 	}
 }
