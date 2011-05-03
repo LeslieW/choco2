@@ -90,7 +90,7 @@ public class StrategyTest {
 
     private void loadGolombRulerModel() {
         pe = new GolombRuler();
-        pe.readArgs("-s", "6", "-allDiff");
+        pe.readArgs("-s", "4");
         createModel();
     }
 
