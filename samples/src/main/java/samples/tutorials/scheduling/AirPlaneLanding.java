@@ -25,18 +25,16 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package samples.tutorials.to_sort.scheduling;
+package samples.tutorials.scheduling;
 
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.preprocessor.PreProcessCPSolver;
 import choco.cp.solver.preprocessor.PreProcessConfiguration;
+import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import samples.tutorials.PatternExample;
-
-import java.util.Arrays;
-import java.util.logging.Level;
 
 import static choco.Choco.*;
 import static choco.Options.*;
@@ -48,8 +46,8 @@ import static choco.Options.*;
  * the objective is to minimize the weighted sum of tardiness.
  *
  * @author Arnaud Malapert
- *
- * TODO: refaire cet exemple pour qu'il colle au specifications de la OR lib
+ *         <p/>
+ *         TODO: refaire cet exemple pour qu'il colle au specifications de la OR lib
  */
 public class AirPlaneLanding extends PatternExample {
 
@@ -62,8 +60,8 @@ public class AirPlaneLanding extends PatternExample {
     private int[] arrivalTimes = {
             0, 0, 2, 4, 8,
             8, 12, 12, 12, 12,
-            16, 18/*, 22, 24, 28,
-			32, 32, 35, 35, 40*/
+            16, 18, 22, 24, 28,
+            32, 32, 35, 35, 40
     };
 
     /**
@@ -72,9 +70,9 @@ public class AirPlaneLanding extends PatternExample {
     private int[] deadlines = {
             16, 18, 14, 18, 21,
             25, 26, 27, 29, 32,
-            34, 35/*, 35, 37, 38/*,
-			40, 40, 43, 46,
-			48, 46, 46, 48, 48*/
+            34, 35, 35, 37, 38,
+            40, 40, 43, 46,
+            48, 46, 46, 48, 48
     };
 
     /**
@@ -83,8 +81,8 @@ public class AirPlaneLanding extends PatternExample {
     private int[] landingDurations = {
             2, 3, 2, 1, 3,
             3, 2, 1, 3, 2,
-            1, 3/*, 2, 4, 2/*,
-			3, 2, 2, 1, 2*/
+            1, 3, 2, 4, 2,
+            3, 2, 2, 1, 2
     };
 
     /**
@@ -93,8 +91,8 @@ public class AirPlaneLanding extends PatternExample {
     private int[] numberOfPassengers = {
             200, 400, 250, 125, 450,
             500, 250, 150, 500, 220,
-            125, 400/*, 200, 800, 175/*,
-			400, 250, 175, 80, 250*/
+            125, 400, 200, 800, 175,
+            400, 250, 175, 80, 250
     };
 
     private int maxTardiness;
@@ -119,6 +117,14 @@ public class AirPlaneLanding extends PatternExample {
 
 
     @Override
+    public void printDescription() {
+        LOGGER.info("n planes must land on a landing strip.");
+        LOGGER.info("Each plane has an arrival time, a landing duration time and a number of passengers.");
+        LOGGER.info("We want to prioritize planes according to the number of passengers.");
+        LOGGER.info("the objective is to minimize the weighted sum of tardiness.\n");
+    }
+
+    @Override
     public void buildModel() {
         model = new CPModel();
 
@@ -137,7 +143,7 @@ public class AirPlaneLanding extends PatternExample {
             model.addConstraint(eq(tardiness[i], minus(planes[i].start(), arrivalTimes[i])));
         }
         //create objective
-        weightedSumOfCompletionTimes = makeIntVar("objective", 0, 10441/*planes.length* maxTardiness * MathUtils.max(numberOfPassengers)*/, V_BOUND, V_OBJECTIVE, V_NO_DECISION);
+        weightedSumOfCompletionTimes = makeIntVar("objective", 0, planes.length * maxTardiness * MathUtils.max(numberOfPassengers), V_BOUND, V_OBJECTIVE, V_NO_DECISION);
         model.addConstraint(eq(weightedSumOfCompletionTimes, scalar(numberOfPassengers, tardiness)));
     }
 
@@ -165,14 +171,12 @@ public class AirPlaneLanding extends PatternExample {
 
     @Override
     public void prettyOut() {
-        if (LOGGER.isLoggable(Level.INFO)) {
-            LOGGER.info((useDisjMod ? "Disjunctive" : "Simple") + " Model: ");
-            if (solver.existsSolution()) {
-                LOGGER.info("cost: " + solver.getObjectiveValue() + "\n" + Arrays.toString(solver.getVar(planes)));
-                final String title = "Landing Strip Visualization";
-//				ChocoChartFactory.createAndShowGUI(title, ChocoChartFactory.createUnaryVChart(title, solver));
-            }
+        LOGGER.info("\nSolution");
+        for (int i = 0; i < planes.length; i++) {
+            int diff = solver.getVar(planes[i].start()).getVal() - arrivalTimes[i];
+            LOGGER.info("landing time for plane " + i + " :" + arrivalTimes[i] + " " + (diff == 0 ? "" :"+"+ Math.abs(diff)));
         }
+        LOGGER.info("Penalty :" + solver.getVar(weightedSumOfCompletionTimes).getVal());
     }
 
 
