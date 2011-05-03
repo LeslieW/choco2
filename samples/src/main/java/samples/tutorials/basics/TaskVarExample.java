@@ -33,6 +33,7 @@ import choco.cp.solver.CPSolver;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
+import org.kohsuke.args4j.Option;
 import samples.tutorials.PatternExample;
 
 import java.text.MessageFormat;
@@ -44,38 +45,26 @@ import java.text.MessageFormat;
  * Time: 22:53:03
  * To change this template use File | Settings | File Templates.
  */
-public class TaskVarExample extends PatternExample{
+public class TaskVarExample extends PatternExample {
 
-    int n, m; // n jobs, m machines
-    int[][] durations;
+
+    @Option(name = "-j", usage = "Number of jobs", required = false)
+    int n = 3;
+    @Option(name = "-j", usage = "Number of machines", required = false)
+    int m = 3;
+    @Option(name = "-d", usage = "Durations", required = false)
+    int[][] durations = {
+            {1, 5, 5},
+            {2, 8, 6},
+            {3, 5, 4}
+    };
     TaskVariable[][] tasks;
     IntegerVariable makespan;
 
-    @Override
-    public void setUp(Object parameters) {
-        super.setUp(parameters);
-        if (parameters instanceof int[][]) {
-            durations = (int[][]) parameters;
-            n = durations.length;
-            m = durations[0].length;
-
-        }
-        else if (parameters instanceof int[]) {
-            n = ((int[]) parameters)[0];
-            m = ((int[]) parameters)[1];
-            generateRandomDurations(n, m);
-
-        } else {
-            n = 3;
-            m = 3;
-            generateRandomDurations(n, m);
-        }
-    }
-
     private void generateRandomDurations(int n, int m) {
         durations = new int[n][m];
-        for (int i = 0; i < n ; i++) {
-            for (int j = 0 ; j < m ; j++) {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
                 durations[i][j] = 1 + (int) Math.round(Math.random() * 9);
             }
         }
@@ -99,12 +88,12 @@ public class TaskVarExample extends PatternExample{
 
         StringBuffer aff = new StringBuffer();
 
-        for (int i = 0; i < n ; i++) {
+        for (int i = 0; i < n; i++) {
             aff.append(MessageFormat.format("JOB {0}: durations ", i));
-            for (int j = 0 ; j < m - 1 ; j++) {
+            for (int j = 0; j < m - 1; j++) {
                 aff.append(MessageFormat.format("{0} - ", durations[i][j]));
             }
-            aff.append(MessageFormat.format("{0}\n", durations[i][m-1]));
+            aff.append(MessageFormat.format("{0}\n", durations[i][m - 1]));
         }
         LOGGER.info(aff.toString());
 
@@ -119,19 +108,19 @@ public class TaskVarExample extends PatternExample{
         makespan = Choco.makeIntVar("makespan", 0, computeUB(durations));
 
         // setting up constraints
-        for (int i = 0; i < n ; i++) {
+        for (int i = 0; i < n; i++) {
             for (int j = 0; j < m - 1; j++) {
                 // the flow constraints ... all jobs are sequences on machine 1, then 2, etc.
-                model.addConstraint(Choco.startsAfterEnd(tasks[i][j+1], tasks[i][j]));
+                model.addConstraint(Choco.startsAfterEnd(tasks[i][j + 1], tasks[i][j]));
             }
             // computing the makespan
-            model.addConstraint(Choco.leq(tasks[i][m-1].end(), makespan));
+            model.addConstraint(Choco.leq(tasks[i][m - 1].end(), makespan));
 
         }
 
-        for (int j = 0 ; j < m ; j++){
+        for (int j = 0; j < m; j++) {
             // the machine constraint - one job at a time on each machine
-            model.addConstraint(Choco.disjunctive(ArrayUtils.getColumn(tasks,j)));
+            model.addConstraint(Choco.disjunctive(ArrayUtils.getColumn(tasks, j)));
         }
 
     }
@@ -139,11 +128,11 @@ public class TaskVarExample extends PatternExample{
     private int computeUB(int[][] durations) {
         int lb = 0;
         for (int i = 0; i < durations.length; i++) {
-            for (int j = 0; j < durations[i].length; j++){
+            for (int j = 0; j < durations[i].length; j++) {
                 lb += durations[i][j];
             }
         }
-        return lb; 
+        return lb;
     }
 
     @Override
@@ -157,7 +146,7 @@ public class TaskVarExample extends PatternExample{
     public void solve() {
         solver.minimize(solver.getVar(makespan), false);
 
-        solver.pretty(); 
+        solver.pretty();
     }
 
     @Override
@@ -172,20 +161,20 @@ public class TaskVarExample extends PatternExample{
     private void printSolution() {
         StringBuffer aff = new StringBuffer();
 
-        for (int i = 0 ; i < n ; i ++) {
+        for (int i = 0; i < n; i++) {
             aff.append(MessageFormat.format("JOB {0}: ", i));
-            for (int j = 0; j < m ; j++) {
-                aff.append(MessageFormat.format("{0} ",solver.getVar(tasks[i][j]).pretty()) );
+            for (int j = 0; j < m; j++) {
+                aff.append(MessageFormat.format("{0} ", solver.getVar(tasks[i][j]).pretty()));
             }
             aff.append("\n");
         }
 
         aff.append("\n");
 
-        for (int j = 0 ; j < m ; j ++) {
+        for (int j = 0; j < m; j++) {
             aff.append(MessageFormat.format("MACHINE {0}: ", j));
-            for (int i = 0; i < n ; i++) {
-                aff.append(MessageFormat.format("{0} ",solver.getVar(tasks[i][j]).pretty()) );
+            for (int i = 0; i < n; i++) {
+                aff.append(MessageFormat.format("{0} ", solver.getVar(tasks[i][j]).pretty()));
             }
             aff.append("\n");
         }
@@ -195,6 +184,6 @@ public class TaskVarExample extends PatternExample{
     }
 
     public static void main(String[] args) {
-		new TaskVarExample().execute();
-	}
+        new TaskVarExample().execute(args);
+    }
 }

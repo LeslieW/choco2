@@ -35,9 +35,7 @@ public interface Example {
 
 	public final static Logger LOGGER = ChocoLogging.getMainLogger();
 	
-	void execute();
-	
-	void execute(Object parameters);
+	void execute(String... args);
     
 		
 }

@@ -27,23 +27,22 @@
 
 package common;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
+import samples.tutorials.to_sort.scheduling.CumulativeScheduling;
 
-import samples.tutorials.scheduling.CumulativeScheduling;
+import static org.junit.Assert.assertEquals;
 
 public class TestResource {
 
 
-	@Test
-	public void testCumulativeScheduling() {
-		final CumulativeScheduling cwe = new CumulativeScheduling();
-		cwe.execute(Boolean.FALSE);
-		final Number obj = cwe.solver.getOptimumValue();
-		cwe.execute(Boolean.TRUE);
-		assertEquals("Cumulative Website Example",obj, cwe.solver.getOptimumValue());
-	}
+    @Test
+    public void testCumulativeScheduling() {
+        final CumulativeScheduling cwe = new CumulativeScheduling();
+        cwe.execute();
+        final Number obj = cwe.solver.getOptimumValue();
+        cwe.execute("-alt");
+        assertEquals("Cumulative Website Example", obj, cwe.solver.getOptimumValue());
+    }
 
 
 }

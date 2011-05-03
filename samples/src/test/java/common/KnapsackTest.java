@@ -150,9 +150,9 @@ public class KnapsackTest {
 //        System.out.printf("%s\n", s.pretty());
         ChocoLogging.setEveryXNodes(Integer.MAX_VALUE);
 //        ChocoLogging.toVerbose();
-        if(opt){
+        if (opt) {
             s.maximize(s.getVar(power), false);
-        }else{
+        } else {
             s.solveAll();
         }
         times.add(s.getTimeCount());
@@ -189,14 +189,14 @@ public class KnapsackTest {
     @Test
     public void testALL10() throws IOException {
         KnapsackTest ks = new KnapsackTest();
-        for(int i = 0; i < 10; i++){
+        for (int i = 0; i < 10; i++) {
             ks.parse("../files/knapsack.13-1.txt", 13);
             ks.modelIt(true);
             ChocoLogging.flushLogs();
         }
 
         long[] t = StatisticUtils.prepare(times.toNativeArray());
-        
+
         System.out.printf("std : %f", StatisticUtils.mean(t));
         System.out.printf("std : %f", StatisticUtils.standarddeviation(t));
 
@@ -212,6 +212,39 @@ public class KnapsackTest {
 //        System.out.printf("i:%d, r:%d, l:%d, u:%d\n", AbstractIntDomain.instE, AbstractIntDomain.remE,
 //                AbstractIntDomain.lowE, AbstractIntDomain.uppE);
 //        Assert.assertTrue(s.getSearchLoop().getTimeCount() < 15000, "time spent > 15000 ms" );
+    }
+
+    @Test
+    public void test100() {
+        Model model = new CPModel();
+        Random rand = new Random(0);
+        int n = 300;
+        int m = 300;
+
+        int[] weights = new int[n];
+        int[] costs = new int[n];
+
+        for (int i = 0; i < n; i++) {
+            int value = rand.nextInt(100) + 1;
+            costs[i] = weights[i] = value;
+        }
+
+        IntegerVariable[] items = Choco.makeIntVarArray("items", weights.length, 0, 1);
+        IntegerVariable sommePoids = Choco.makeIntVar("sommePoids", 0, m, Options.V_BOUND);
+        int maxSommeValue = 0;
+        for (int value : costs) {
+            maxSommeValue += value;
+        }
+        IntegerVariable sommeProfit = Choco.makeIntVar("sommeValue", 0, maxSommeValue, Options.V_OBJECTIVE);
+        model.addConstraint(Choco.knapsackProblem(sommePoids, sommeProfit, items, weights, costs));
+
+        CPSolver solver = new CPSolver();
+        solver.read(model);
+        solver.setTimeLimit(240000);
+//        ChocoLogging.toSolution();
+        solver.maximize(true);
+
+
     }
 
 }

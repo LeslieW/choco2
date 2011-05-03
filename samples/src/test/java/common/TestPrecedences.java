@@ -27,14 +27,12 @@
 
 package common;
 
-import java.util.Random;
-
-import junit.framework.Assert;
-
-import org.junit.Test;
-
-import samples.tutorials.scheduling.PertCPM;
 import choco.cp.solver.CPSolver;
+import junit.framework.Assert;
+import org.junit.Test;
+import samples.tutorials.to_sort.scheduling.PertCPM;
+
+import java.util.Random;
 
 /**
  * User : cprudhom<br/>

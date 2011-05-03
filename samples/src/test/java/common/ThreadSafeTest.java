@@ -30,10 +30,10 @@ package common;
 import choco.kernel.common.logging.ChocoLogging;
 import junit.framework.Assert;
 import org.junit.Test;
-import samples.tutorials.CycloHexan;
 import samples.tutorials.PatternExample;
-import samples.tutorials.trunk.Queen;
-import samples.tutorials.trunk.SteinerSystem;
+import samples.tutorials.continuous.CycloHexan;
+import samples.tutorials.puzzles.Queen;
+import samples.tutorials.set.SteinerSystem;
 
 import java.util.logging.Logger;
 

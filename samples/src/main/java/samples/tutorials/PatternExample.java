@@ -30,6 +30,8 @@ package samples.tutorials;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.solver.Solver;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
 
 import java.util.logging.Level;
 
@@ -42,50 +44,60 @@ import java.util.logging.Level;
  */
 public abstract class PatternExample implements Example {
 
-	public Model model;
+    public Model model;
 
-	public Solver solver;
-    
-	public void setUp(Object parameters){}
+    public Solver solver;
 
-    public void printDescription(){} 
+    public void printDescription() {
+    }
 
-	public abstract void buildModel();
+    public abstract void buildModel();
 
-	public abstract void buildSolver();
+    public abstract void buildSolver();
 
-	public abstract void solve();
+    public abstract void solve();
 
-	public abstract void prettyOut();
+    public abstract void prettyOut();
 
-	public final void execute(Object parameters){
-	    LOGGER.log(Level.INFO, ChocoLogging.START_MESSAGE);
-		LOGGER.log(Level.INFO,"* Sample library: executing {0}.java ... \n", getClass().getName());
+    public final void readArgs(String... args) {
+        CmdLineParser parser = new CmdLineParser(this);
+        parser.setUsageWidth(160);
+        try {
+            parser.parseArgument(args);
+        } catch (CmdLineException e) {
+            System.err.println(e.getMessage());
+            System.err.println("java " + this.getClass() + " [options...]");
+            parser.printUsage(System.err);
+            System.err.println();
+            System.exit(-1);
+        }
+    }
 
-     	this.setUp(parameters);
+    public final void execute(String... args) {
+        this.readArgs(args);
+
+        LOGGER.log(Level.INFO, ChocoLogging.START_MESSAGE);
+        LOGGER.log(Level.INFO, "* Sample library: executing {0}.java ... \n", getClass().getName());
         this.printDescription();
-		this.buildModel();
-		this.buildSolver();
-		this.solve();
-		this.prettyOut();
+        this.buildModel();
+        this.buildSolver();
+        this.solve();
+        this.prettyOut();
 
         LOGGER.log(Level.INFO, "* Choco usage statistics");
-     	if(LOGGER.isLoggable(Level.INFO)) {
-			if( solver == null) {
-				LOGGER.info(" - solver object is null. No statistics available.");
-			}else {
-                LOGGER.log(Level.INFO, " - #sol : {0}\n - {1}", new Object[]{ solver.getSolutionCount(), solver.runtimeStatistics()});
-			}
-     		ChocoLogging.flushLogs();
-		}
-	}
+        if (LOGGER.isLoggable(Level.INFO)) {
+            if (solver == null) {
+                LOGGER.info(" - solver object is null. No statistics available.");
+            } else {
+                LOGGER.log(Level.INFO, " - #sol : {0}\n - {1}", new Object[]{solver.getSolutionCount(), solver.runtimeStatistics()});
+            }
+            ChocoLogging.flushLogs();
+        }
+    }
 
+    public final void execute() {
+        this.execute(new String[0]);
+    }
 
-	@Override
-	public void execute() {
-		execute(null);		
-	}
-	
-	
 
 }
