@@ -40,9 +40,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import samples.tutorials.PatternExample;
-import samples.tutorials.trunk.GolombRuler;
-import samples.tutorials.trunk.MagicSquare;
-import samples.tutorials.trunk.Queen;
+import samples.tutorials.puzzles.GolombRuler;
+import samples.tutorials.puzzles.MagicSquare;
+import samples.tutorials.puzzles.Queen;
 import shaker.tools.search.IntBranchingFactory;
 
 import java.util.Random;
@@ -62,50 +62,50 @@ public class StrategyTest {
     CPSolver s;
     PatternExample pe;
     static Random random;
-    boolean print=false;
+    boolean print = false;
 
     @Before
-    public void before(){
+    public void before() {
         s = new CPSolver();
     }
 
-    private void createModel(){
+    private void createModel() {
         pe.buildModel();
         pe.solver = new CPSolver();
-		pe.solver.read(pe.model);
+        pe.solver.read(pe.model);
         pe.solver.solveAll();
     }
 
     private void loadQueenModel() {
         pe = new Queen();
-        pe.setUp(8);
+        pe.readArgs("-n", "8");
         createModel();
     }
 
     private void loadMagicSquareModel() {
         pe = new MagicSquare();
-        pe.setUp(3);
+        pe.readArgs("-n", "3");
         createModel();
     }
 
     private void loadGolombRulerModel() {
         pe = new GolombRuler();
-        pe.setUp(new Object[]{6,18, true});
+        pe.readArgs("-s", "6", "-allDiff");
         createModel();
     }
 
     @After
-    public void after(){
+    public void after() {
         s = null;
-        pe=  null;
+        pe = null;
     }
 
 
     @Test
     public void testStrategyQ() {
         loadQueenModel();
-        for(int i = 0; i < 100; i++){
-            LOGGER.info("seed:"+i);
+        for (int i = 0; i < 100; i++) {
+            LOGGER.info("seed:" + i);
             random = new Random(i);
 
             s = new CPSolver();
@@ -122,8 +122,8 @@ public class StrategyTest {
     @Test
     public void testStrategyMS() {
         loadMagicSquareModel();
-        for(int i = 0; i < 100; i++){
-            LOGGER.info("seed:"+i);
+        for (int i = 0; i < 100; i++) {
+            LOGGER.info("seed:" + i);
             random = new Random(i);
 
             s = new CPSolver();
@@ -140,8 +140,8 @@ public class StrategyTest {
     @Test
     public void testStrategyGR() {
         loadGolombRulerModel();
-        for(int i = 0; i < 100; i++){
-            LOGGER.info("seed:"+i);
+        for (int i = 0; i < 100; i++) {
+            LOGGER.info("seed:" + i);
             random = new Random(i);
 
             s = new CPSolver();
@@ -156,7 +156,7 @@ public class StrategyTest {
     }
 
     private void checker() {
-    	s.solveAll(); //checkSolution enbaled by assertion
+        s.solveAll(); //checkSolution enbaled by assertion
 //        s.solve();
 //        if(Boolean.TRUE.equals(s.isFeasible())){
 //            do{

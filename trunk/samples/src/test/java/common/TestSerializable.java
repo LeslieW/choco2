@@ -27,17 +27,16 @@
 
 package common;
 
+import choco.cp.model.CPModel;
+import choco.kernel.common.logging.ChocoLogging;
+import org.junit.Assert;
+import org.junit.Test;
+import samples.tutorials.continuous.CycloHexan;
+import samples.tutorials.puzzles.Queen;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
-
-import org.junit.Assert;
-import org.junit.Test;
-
-import samples.tutorials.continuous.CycloHexan;
-import samples.tutorials.trunk.Queen;
-import choco.cp.model.CPModel;
-import choco.kernel.common.logging.ChocoLogging;
 
 /**
  * User : cprudhom<br/>

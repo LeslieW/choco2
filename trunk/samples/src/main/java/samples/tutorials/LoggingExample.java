@@ -29,38 +29,36 @@ package samples.tutorials;
 
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
-import samples.tutorials.trunk.Queen;
+import samples.tutorials.puzzles.Queen;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public final class LoggingExample  implements Example {
+public final class LoggingExample implements Example {
 
 
-	
-	@Override
-	public void execute() {
-		for (Verbosity v : Verbosity.values()) {
-			execute(v);
-		}
-	}
-	
-	@Override
-	public void execute(Object parameters) {
-		Verbosity verb = (Verbosity) parameters;
-		ChocoLogging.flushLogs();
-		ChocoLogging.setVerbosity(verb);
-		ChocoLogging.getMainLogger().log(Level.SEVERE,"verbosity: {0}",verb);
-		new Queen().execute();
-		for (Logger logger : ChocoLogging.CHOCO_LOGGERS) {
-			final Level l = logger.getLevel();
-			logger.log(l, "{1}: {2}", new Object[]{-1, logger.getName(), l});
-		}
-		
-	}
+    @Override
+    public void execute(String... args) {
+        if (args.length == 0) {
+            for (Verbosity v : Verbosity.values()) {
+                execute(v.toString());
+            }
+        } else {
+            Verbosity verb = Verbosity.valueOf(args[0]);
+            ChocoLogging.flushLogs();
+            ChocoLogging.setVerbosity(verb);
+            ChocoLogging.getMainLogger().log(Level.SEVERE, "verbosity: {0}", verb);
+            new Queen().execute();
+            for (Logger logger : ChocoLogging.CHOCO_LOGGERS) {
+                final Level l = logger.getLevel();
+                logger.log(l, "{1}: {2}", new Object[]{-1, logger.getName(), l});
+            }
+        }
 
-	public static void main(String[] args) {
-		new LoggingExample().execute();
-	}
+    }
+
+    public static void main(String[] args) {
+        new LoggingExample().execute(args);
+    }
 
 }

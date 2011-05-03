@@ -26,13 +26,14 @@
  */
 
 package common;
+
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.kernel.solver.Configuration;
 import choco.kernel.solver.ResolutionPolicy;
 import org.junit.Assert;
 import org.junit.Test;
-import samples.tutorials.trunk.MinimumEdgeDeletion;
+import samples.tutorials.to_sort.MinimumEdgeDeletion;
 
 /**
  * User : cprudhom<br/>
@@ -60,11 +61,10 @@ public class SearchTest {
         }
 
         @Override
-        public void execute() {
-            super.execute();
+        public void solve() {
+            super.solve();
             Assert.assertEquals(Math.min(capa, solver.getNbSolutions()), solver.getSearchStrategy().getSolutionPool().size());
         }
-
     }
 
     @Test

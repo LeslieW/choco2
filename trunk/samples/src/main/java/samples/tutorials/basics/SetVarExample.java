@@ -35,51 +35,54 @@ import choco.kernel.model.variables.set.SetVariable;
 import samples.tutorials.PatternExample;
 
 import java.text.MessageFormat;
+import java.util.Arrays;
 
 /**
  * Created by IntelliJ IDEA.
  * User: njussien
  * Date: 8 mai 2010
  * Time: 13:15:02
- *
+ * <p/>
  * //TODO : does not work
  */
 public class SetVarExample extends PatternExample {
 
-    int[][] whoknowswho;  // incidence matrix
-    int n ;               // size of the instance
+    int[][] whoknowswho =  // incidence matrix
+            {
+                    {0, 1, 2, 7, 8, 9},
+                    {0, 1, 2, 8, 9},
+                    {2, 8, 9},
+                    {1, 2, 3, 4, 5, 8, 9},
+                    {2, 3, 4, 5, 8, 9},
+                    {2, 3, 4, 5, 6, 7, 8, 9},
+                    {2, 5, 6, 7, 8, 9},
+                    {2, 5, 6, 7, 8, 9},
+                    {9},
+                    {2, 8, 9}
+            };
+    int n;               // size of the instance
 
-    SetVariable celebs ;  // what we are looking for 
-
-
+    SetVariable celebs;  // what we are looking for
 
 
     public String prettyArray(int[] vals) {
         StringBuffer ret = new StringBuffer();
-        for (int i = 0; i < vals.length ; i++){
+        for (int i = 0; i < vals.length; i++) {
             ret.append(vals[i]);
             ret.append(" ");
         }
         return ret.toString();
     }
 
-    public void printInstance(){
+    public void printInstance() {
         StringBuffer ret = new StringBuffer();
 
-        for (int i = 0; i < n ; i++) {
+        for (int i = 0; i < n; i++) {
             ret.append(MessageFormat.format("\nP{0} knows {1}", i, prettyArray(whoknowswho[i])));
         }
 
-      
-		LOGGER.info(ret.toString());
-    }
 
-    @Override
-    public void setUp(Object parameters) {
-       if (parameters instanceof int[][]) {
-        whoknowswho = (int[][]) parameters;
-        n = whoknowswho.length;
-       }
+        LOGGER.info(ret.toString());
     }
 
     @Override
@@ -91,14 +94,14 @@ public class SetVarExample extends PatternExample {
         LOGGER.info("the celebrities at the party. A celebrity is a person that");
         LOGGER.info("everybody knows but that only knows celebrities. At least one");
         LOGGER.info("celebrity is present at the party.");
-       
+
         printInstance();
     }
 
     @Override
     public void buildModel() {
         model = new CPModel();
-
+        n = whoknowswho.length;
         // create the variables
         SetVariable[] party = new SetVariable[n];
 
@@ -106,7 +109,7 @@ public class SetVarExample extends PatternExample {
         celebs = Choco.makeSetVar("celebs", 1, n);
         // the people at the party (the set represents the set of people they know)
 
-        for (int i = 0; i < n ; i++){
+        for (int i = 0; i < n; i++) {
             party[i] = Choco.makeSetVar("P" + i, whoknowswho[i]);
 
         }
@@ -117,7 +120,7 @@ public class SetVarExample extends PatternExample {
         // there is at least one celeb here
         model.addConstraint(Choco.geq(celebs.getCard(), 1));
 
-        for (int i = 0; i < n; i++){
+        for (int i = 0; i < n; i++) {
             // everybody knows the celebs
             model.addConstraint(Choco.isIncluded(celebs, party[i]));
 
@@ -126,7 +129,7 @@ public class SetVarExample extends PatternExample {
             IntegerVariable b2 = Choco.makeIntVar("b2", 0, 1);
             model.addConstraint(Choco.reifiedConstraint(b1, Choco.member(celebs, i)));
             model.addConstraint(Choco.reifiedConstraint(b2, Choco.isIncluded(party[i], celebs)));
-            model.addConstraint(Choco.implies(Choco.eq(b1,1), Choco.eq(b2,1)));
+            model.addConstraint(Choco.implies(Choco.eq(b1, 1), Choco.eq(b2, 1)));
         }
 
     }
@@ -146,38 +149,20 @@ public class SetVarExample extends PatternExample {
     public void prettyOut() {
         StringBuffer ret = new StringBuffer();
 
-        ret.append(MessageFormat.format("\nThe celebs are {0}", solver.getVar(celebs)));
+        ret.append(MessageFormat.format("\nThe celebs are {0}", Arrays.toString(
+                solver.getVar(celebs).getValue())));
 
         ret.append("\n");
 
-		LOGGER.info(ret.toString());
+        LOGGER.info(ret.toString());
 
     }
-
-
-    @Override
-    public void execute() {
-       // a 5 people instance
-       //execute(new int[][]{new int[]{0, 1, 2, 3, 4}, new int[]{0, 1,  3, 4}, new int[]{2, 3, 4}, new int[]{3, 4}, new int[]{3, 4} });
-       // a 10 people instance
-       execute( new int[][] {
-
-           new int []{0, 1, 2, 7, 8, 9},
-           new int []{0, 1, 2, 8, 9},
-           new int []{2, 8, 9},
-           new int []{1, 2, 3, 4, 5, 8, 9},
-           new int []{2, 3, 4, 5, 8, 9},
-           new int []{2, 3, 4, 5, 6, 7, 8, 9},
-           new int []{2, 5, 6, 7, 8, 9},
-           new int []{2, 5, 6, 7, 8, 9},
-           new int []{9},
-           new int []{2, 8 ,9}
-       });
-    }
-
 
 
     public static void main(String[] args) {
-		new SetVarExample().execute();
-	}
+        new SetVarExample().execute(args);
+    }
+
+    ////////////////////////////////////////////////////
+
 }
