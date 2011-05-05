@@ -40,6 +40,9 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * User: hcambaza
  * Date: 23 avr. 2008
  * Time: 15:30:18
+ *
+ *
+ * [BUG 3297805]: fix
  */
 public final class MultNode extends INode implements ArithmNode {
 
@@ -55,12 +58,21 @@ public final class MultNode extends INode implements ArithmNode {
         IntDomainVar v1 = subtrees[0].extractResult(s);
         IntDomainVar v2 = subtrees[1].extractResult(s);
         IntDomainVar v3;
-        int a = v1.getInf() * v2.getInf();
-        int b = v1.getInf() * v2.getSup();
-        int c = v1.getSup() * v2.getInf();
-        int d = v1.getSup() * v2.getSup();
-        int lb = Math.min(Math.min(Math.min(a, b), c), d);
-        int ub = Math.max(Math.max(Math.max(a, b), c), d);
+
+        long i1 =(long)v1.getInf();
+        long s1 = (long)v1.getSup();
+        long i2 =(long)v2.getInf();
+        long s2 = (long)v2.getSup();
+
+
+        long a = i1 * i2;
+        long b = i1 * s2;
+        long c = s1 * i2;
+        long d = s1 * s2;
+        long _lb = Math.min(Math.min(Math.min(a, b), c), d);
+        long _ub = Math.max(Math.max(Math.max(a, b), c), d);
+        int lb = (int)Math.max(_lb, Integer.MIN_VALUE);
+        int ub = (int)Math.min(_ub, Integer.MAX_VALUE);
         if(lb==0 && ub == 1){
             v3 = s.createBooleanVar(StringUtils.randomName());
         }else

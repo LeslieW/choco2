@@ -33,6 +33,7 @@ import java.io.*;
 import java.security.AccessControlException;
 import java.util.Properties;
 import java.util.logging.*;
+
 import static java.util.logging.Logger.getLogger;
 
 
@@ -47,7 +48,7 @@ public final class ChocoLogging {
 
 	public final static String START_MESSAGE =
 		"** CHOCO : Constraint Programming Solver\n"+
-		"** CHOCO v2.1.1 (April, 2010), Copyleft (c) 1999-2010";
+		"** CHOCO v2.1.1 (May, 2011), Copyleft (c) 1999-2011";
 
 	public final static Formatter LIGHT_FORMATTER = new LightFormatter();
 
