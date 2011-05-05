@@ -59,9 +59,7 @@ import choco.cp.solver.search.real.AssignInterval;
 import choco.cp.solver.search.real.CyclicRealVarSelector;
 import choco.cp.solver.search.real.RealIncreasingDomain;
 import choco.cp.solver.search.set.*;
-import choco.cp.solver.variables.integer.BooleanVarImpl;
-import choco.cp.solver.variables.integer.IntDomainVarImpl;
-import choco.cp.solver.variables.integer.IntTerm;
+import choco.cp.solver.variables.integer.*;
 import choco.cp.solver.variables.real.RealVarImpl;
 import choco.cp.solver.variables.set.SetVarImpl;
 import choco.kernel.common.IndexFactory;
@@ -2517,19 +2515,19 @@ public class CPSolver implements Solver {
         return v;
     }
 
-//    public IntDomainVar createIntVarAddCste(String name, IntDomainVar variable, int constant) {
-//        IntDomainVar v = new IntDomainVarAddCste(this, name, variable, constant);
-//        intVars.add(v);
-//        intDecisionVars.add(v);
-//        return v;
-//    }
-//
-//    public IntDomainVar createIntVarTimeCste(String name, IntDomainVar variable, int constant) {
-//        IntDomainVar v = new IntDomainVarTimePosCste(this, name, variable, constant);
-//        intVars.add(v);
-//        intDecisionVars.add(v);
-//        return v;
-//    }
+    public IntDomainVar createIntVarAddCste(String name, IntDomainVar variable, int constant) {
+        IntDomainVar v = new IntDomainVarAddCste(this, name, variable, constant);
+        intVars.add(v);
+        intDecisionVars.add(v);
+        return v;
+    }
+
+    public IntDomainVar createIntVarTimeCste(String name, IntDomainVar variable, int constant) {
+        IntDomainVar v = new IntDomainVarTimePosCste(this, name, variable, constant);
+        intVars.add(v);
+        intDecisionVars.add(v);
+        return v;
+    }
 
     public IntDomainVar createBinTreeIntVar(String name, int min, int max) {
         IntDomainVar v = new IntDomainVarImpl(this, name,

@@ -28,10 +28,10 @@
 package choco.model.variables.integer;
 
 import choco.Choco;
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.constraints.integer.TimesXYZ;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.cp.solver.variables.integer.IntervalIntDomain;
 import choco.kernel.common.logging.ChocoLogging;
@@ -40,12 +40,16 @@ import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.Random;
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -235,9 +239,9 @@ public class IntegerVariableTest {
 
     }
 
-    public static void pbBoundAllDifferent(int type, IntegerVariable... vars){
+    public static void pbBoundAllDifferent(int type, IntegerVariable... vars) {
         Model m = new CPModel();
-        Constraint c  = allDifferent(vars);
+        Constraint c = allDifferent(vars);
         m.addConstraint(Options.C_ALLDIFFERENT_CLIQUE, c);
 
         Solver s = new CPSolver();
@@ -266,24 +270,183 @@ public class IntegerVariableTest {
         s.solve();
 
         Assert.assertEquals(s.getNbSolutions(), 0);
-        LOGGER.info("-------------\n" + typeList.get(type) + ":"+s.runtimeStatistics());
+        LOGGER.info("-------------\n" + typeList.get(type) + ":" + s.runtimeStatistics());
 
     }
 
     @Test
-    public void testOnUndefinedVariable(){
+    public void testOnUndefinedVariable() {
         Model m = new CPModel();
         IntegerVariable v = Choco.makeIntVar("v", Integer.MIN_VALUE, Integer.MAX_VALUE);
         IntegerVariable w = Choco.makeIntVar("w");
         m.addVariables(v, w);
         Solver s = new CPSolver();
-        try{
+        try {
             s.read(m);
-        }catch (OutOfMemoryError e){
+        } catch (OutOfMemoryError e) {
             Assert.fail("OutOfMemoryError...");
         }
         Assert.assertEquals("w wrong type", IntervalIntDomain.class, s.getVar(w).getDomain().getClass());
 
     }
+
+    @Test
+    public void testAddCste1() {
+        CPSolver solver = new CPSolver();
+        IntDomainVar x = solver.createEnumIntVar("X", 1, 3);
+        IntDomainVar y = solver.createIntVarAddCste("y", x, 2);
+
+        solver.post(solver.neq(y, 4));
+        solver.solveAll();
+        Assert.assertEquals(2, solver.getSolutionCount());
+
+
+    }
+
+    @Test
+    public void testAddCste2() {
+        CPSolver solver = new CPSolver();
+        IntDomainVar x = solver.createEnumIntVar("X", 1, 4);
+        IntDomainVar y = solver.createIntVarAddCste("y", x, 3);
+
+        solver.post(solver.neq(y, 2));
+        solver.solveAll();
+        Assert.assertEquals(4, solver.getSolutionCount());
+
+    }
+
+    private Solver bijectiveAdd(int low, int upp, int coeff) {
+        CPSolver solver = new CPSolver();
+        IntDomainVar x = solver.createEnumIntVar("X", low, upp);
+        IntDomainVar y = solver.createIntVarAddCste("y", x, coeff);
+
+        solver.post(solver.geq(y, low + coeff - 1));
+        solver.post(solver.leq(y, upp - coeff - 1));
+
+        return solver;
+    }
+
+    private Solver constraintAdd(int low, int upp, int coeff) {
+        CPSolver solver = new CPSolver();
+        IntDomainVar x = solver.createEnumIntVar("X", low, upp);
+        IntDomainVar y = solver.createEnumIntVar("y", low + coeff, upp + coeff);
+
+        solver.post(solver.geq(y, low + coeff - 1));
+        solver.post(solver.leq(y, upp - coeff - 1));
+        solver.post(solver.eq(y, solver.plus(x, coeff)));
+
+        return solver;
+    }
+
+    @Test
+    public void testRandom1() {
+        Random rand = new Random();
+        for (int i = 0; i < 1000; i++) {
+            rand.setSeed(i);
+            int low = rand.nextInt(10);
+            int upp = low + rand.nextInt(1000);
+            int coeff = rand.nextInt(50);
+
+            Solver sb = bijectiveAdd(low, upp, coeff);
+            Solver sc = constraintAdd(low, upp, coeff);
+            sb.solveAll();
+            sc.solveAll();
+            Assert.assertEquals(sc.getSolutionCount(), sb.getSolutionCount());
+            Assert.assertEquals(sc.getNodeCount(), sb.getNodeCount());
+
+        }
+    }
+
+    @Test
+    public void testRandom2() {
+        Solver sb = bijectiveAdd(1, 9999, 3);
+        Solver sc = constraintAdd(1, 9999, 3);
+//        ChocoLogging.toVerbose();
+        sb.solveAll();
+        sc.solveAll();
+        Assert.assertEquals(sc.getSolutionCount(), sb.getSolutionCount());
+        Assert.assertEquals(sc.getNodeCount(), sb.getNodeCount());
+
+    }
+
+    @Test
+    public void testRandom3() {
+        int N = 4999;
+        for (int i = 1; i < 10; i++) {
+            Solver sb = bijectiveAdd(1, N, 3);
+            Solver sc = constraintAdd(1, N, 3);
+            sb.solveAll();
+            sc.solveAll();
+            System.out.printf("%dms vs %dms\n", sb.getTimeCount(), sc.getTimeCount());
+            Assert.assertEquals(sc.getSolutionCount(), sb.getSolutionCount());
+            Assert.assertEquals(sc.getNodeCount(), sb.getNodeCount());
+        }
+
+    }
+
+    private Solver bijectiveTime(int low, int upp, int coeff) {
+        CPSolver solver = new CPSolver();
+        IntDomainVar x = solver.createEnumIntVar("X", low, upp);
+        IntDomainVar y = solver.createIntVarAddCste("y", x, coeff);
+        return solver;
+    }
+
+    private Solver constraintTime(int low, int upp, int coeff) {
+        CPSolver solver = new CPSolver();
+        IntDomainVar x = solver.createEnumIntVar("X", low, upp);
+        IntDomainVar y = solver.createEnumIntVar("y", low * coeff, upp * coeff);
+        IntDomainVar c = solver.createEnumIntVar("c", coeff, coeff);
+
+        solver.post(new TimesXYZ(x, c, y));
+
+        return solver;
+    }
+
+    @Test
+    public void testRandom11() {
+        Random rand = new Random();
+        for (int i = 0; i < 1000; i++) {
+            rand.setSeed(i);
+            int low = rand.nextInt(10);
+            int upp = low + rand.nextInt(1000);
+            int coeff = rand.nextInt(50);
+
+            Solver sb = bijectiveTime(low, upp, coeff);
+            Solver sc = constraintTime(low, upp, coeff);
+            sb.solveAll();
+            sc.solveAll();
+            Assert.assertEquals(sc.getSolutionCount(), sb.getSolutionCount());
+            Assert.assertEquals(sc.getNodeCount(), sb.getNodeCount());
+
+        }
+    }
+
+    @Test
+    public void testRandom22() {
+        Solver sb = bijectiveTime(1, 9999, 3);
+        Solver sc = constraintTime(1, 9999, 3);
+//        ChocoLogging.toVerbose();
+        sb.solveAll();
+        sc.solveAll();
+        Assert.assertEquals(sc.getSolutionCount(), sb.getSolutionCount());
+        Assert.assertEquals(sc.getNodeCount(), sb.getNodeCount());
+
+    }
+
+    @Test
+    public void testRandom33() {
+        int N = 4999;
+        for (int i = 1; i < 10; i++) {
+            Solver sb = bijectiveTime(1, N, 3);
+            Solver sc = constraintTime(1, N, 3);
+            sb.solveAll();
+            sc.solveAll();
+            System.out.printf("%dms vs %dms\n", sb.getTimeCount(), sc.getTimeCount());
+            Assert.assertEquals(sc.getSolutionCount(), sb.getSolutionCount());
+            Assert.assertEquals(sc.getNodeCount(), sb.getNodeCount());
+        }
+
+    }
+
 
 }
