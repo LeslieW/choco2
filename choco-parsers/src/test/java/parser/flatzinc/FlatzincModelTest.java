@@ -165,6 +165,11 @@ public class FlatzincModelTest {
     }
 
     @Test
+    public void test10b() throws URISyntaxException {
+        tester("2DLevelPacking11.fzn", false, 2, "objective", 0);
+    }
+
+    @Test
     public void test11() {
         fzn.instance =
                 "array[1 .. 3] of var 1 .. 10: vars;\n" +

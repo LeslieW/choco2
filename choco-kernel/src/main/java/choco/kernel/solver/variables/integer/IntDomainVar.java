@@ -29,9 +29,6 @@ package choco.kernel.solver.variables.integer;
 
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.SConstraint;
-/** History:
- * 2007-12-07 : FR_1873619 CPRU: DomOverDeg+DomOverWDeg
- * */
 /**
  * An interface for all implementations of search valued domain variables
  */
@@ -80,12 +77,6 @@ public interface IntDomainVar extends IntVar {
 	public static int BOOLEAN = 5;
 
     public static int ONE_VALUE = 6;
-
-	/**
-	 * <b>Public user API:</b>
-	 * 2007-12-07 FR_1873619 CPRU: DomOverDeg+DomOverWDeg
-	 */
-	public static int WEIGHT = 1;
 
 
 	/**
@@ -198,19 +189,6 @@ public interface IntDomainVar extends IntVar {
 	 */
 
 	public boolean canBeEqualTo(IntDomainVar x);
-
-
-	/**
-	 * <b>Public user API:</b>
-	 * <i>Domains :</i> testing whether one value among a list is present in
-	 * the domain.
-	 *
-	 * @param sortedValList the list of values. Must be sorted in increasing order.
-	 * @param nVals         the size of the list of values
-	 * @return wether one value among a list is present in the domain
-	 */
-
-	public boolean canBeInstantiatedIn(int[] sortedValList, int nVals);
 
 
 	/**

@@ -1054,16 +1054,18 @@ public class CPSolver implements Solver {
 
     /**
      * Get the time spent in reading the model
+     *
      * @return
      */
     @Override
     public int getReadingTimeCount() {
-        return model == null ? 0 : (int)readingTime;
+        return model == null ? 0 : (int) readingTime;
     }
 
 
     /**
      * Get the time spent in the initial propagation
+     *
      * @return
      */
     @Override
@@ -1886,9 +1888,11 @@ public class CPSolver implements Solver {
      * @param exp expressions constraint
      */
     protected void decisionOnExpression(ExpressionSConstraint exp) {
-        Boolean decomp = exp.isDecomposeExp();
-        if (decomp != null) {
-            if (decomp && exp.checkDecompositionIsPossible()) {
+        Boolean forceDecomp = exp.isDecomposeExp();
+        boolean canBeDecomp = exp.checkDecompositionIsPossible();
+
+        if (forceDecomp != null) {
+            if (forceDecomp && canBeDecomp) {
                 this.post(exp.getDecomposition(this));
             } else {
                 this.post(exp.getExtensionnal(this));
@@ -1901,8 +1905,10 @@ public class CPSolver implements Solver {
                 } else {
                     this.post(FALSE);
                 }
-            } else {
-                // todo: put the right default test
+            } else
+            if(canBeDecomp){
+                this.post(exp.getDecomposition(this));
+            }else{
                 this.post(exp.getExtensionnal(this));
             }
     }
@@ -2487,14 +2493,6 @@ public class CPSolver implements Solver {
         return v;
     }
 
-    public IntDomainVar createEnumIntVar(String name, int min, int max) {
-        IntDomainVar v = new IntDomainVarImpl(this, name, IntDomainVar.BITSET,
-                min, max);
-        intVars.add(v);
-        intDecisionVars.add(v);
-        return v;
-    }
-
     public IntDomainVar createBoundIntVar(String name, int min, int max) {
         IntDomainVar v = new IntDomainVarImpl(this, name, IntDomainVar.BOUNDS,
                 min, max);
@@ -2503,9 +2501,47 @@ public class CPSolver implements Solver {
         return v;
     }
 
+    public IntDomainVar createEnumIntVar(String name, int min, int max) {
+        IntDomainVar v = new IntDomainVarImpl(this, name, IntDomainVar.BITSET,
+                min, max);
+        intVars.add(v);
+        intDecisionVars.add(v);
+        return v;
+    }
+
+    public IntDomainVar createEnumIntVar(String name, int[] sortedValues) {
+        IntDomainVar v = new IntDomainVarImpl(this, name, IntDomainVar.BITSET,
+                sortedValues);
+        intVars.add(v);
+        intDecisionVars.add(v);
+        return v;
+    }
+
+//    public IntDomainVar createIntVarAddCste(String name, IntDomainVar variable, int constant) {
+//        IntDomainVar v = new IntDomainVarAddCste(this, name, variable, constant);
+//        intVars.add(v);
+//        intDecisionVars.add(v);
+//        return v;
+//    }
+//
+//    public IntDomainVar createIntVarTimeCste(String name, IntDomainVar variable, int constant) {
+//        IntDomainVar v = new IntDomainVarTimePosCste(this, name, variable, constant);
+//        intVars.add(v);
+//        intDecisionVars.add(v);
+//        return v;
+//    }
+
     public IntDomainVar createBinTreeIntVar(String name, int min, int max) {
         IntDomainVar v = new IntDomainVarImpl(this, name,
                 IntDomainVar.BINARYTREE, min, max);
+        intVars.add(v);
+        intDecisionVars.add(v);
+        return v;
+    }
+
+    public IntDomainVar createBinTreeIntVar(String name, int[] sortedValues) {
+        IntDomainVar v = new IntDomainVarImpl(this, name,
+                IntDomainVar.BINARYTREE, sortedValues);
         intVars.add(v);
         intDecisionVars.add(v);
         return v;
@@ -2522,22 +2558,6 @@ public class CPSolver implements Solver {
     public IntDomainVar createListIntVar(String name, int[] sortedValues) {
         IntDomainVar v = new IntDomainVarImpl(this, name,
                 IntDomainVar.LINKEDLIST, sortedValues);
-        intVars.add(v);
-        intDecisionVars.add(v);
-        return v;
-    }
-
-    public IntDomainVar createEnumIntVar(String name, int[] sortedValues) {
-        IntDomainVar v = new IntDomainVarImpl(this, name, IntDomainVar.BITSET,
-                sortedValues);
-        intVars.add(v);
-        intDecisionVars.add(v);
-        return v;
-    }
-
-    public IntDomainVar createBinTreeIntVar(String name, int[] sortedValues) {
-        IntDomainVar v = new IntDomainVarImpl(this, name,
-                IntDomainVar.BINARYTREE, sortedValues);
         intVars.add(v);
         intDecisionVars.add(v);
         return v;

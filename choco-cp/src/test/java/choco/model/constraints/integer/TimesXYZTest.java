@@ -27,11 +27,12 @@
 
 package choco.model.constraints.integer;
 
-import static choco.Choco.*;
+import choco.Choco;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.preprocessor.PreProcessCPSolver;
+import choco.cp.solver.search.BranchingFactory;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
@@ -39,13 +40,16 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
 import junit.framework.Assert;
 import org.junit.After;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
+import static org.junit.Assert.*;
 
 public class TimesXYZTest {
 	private final static Logger LOGGER = ChocoLogging.getTestLogger();
@@ -252,5 +256,107 @@ public class TimesXYZTest {
             Assert.fail();
         }
     }
+
+    @Test
+    public void testJoost() {
+		System.out.println("start test");
+		CPModel model = new CPModel();
+        //model.setDefaultExpressionDecomposition(true);
+		Solver solver = new CPSolver();
+
+		//int max = 100 // finds a solution in 37ms
+		int max = 1000; // 30871ms
+
+		IntegerVariable v1 = Choco.makeIntVar("v1", 0, max);
+		IntegerVariable v2 = Choco.makeIntVar("v2", 0, max);
+		IntegerVariable v3 = Choco.makeIntVar("v3", 0, max);
+		model.addVariable(v1);
+		model.addVariable(v2);
+		model.addVariable(v2);
+
+		//model.addConstraint(Choco.eq(v1, Choco.plus(v2,v3)));
+		model.addConstraint(Choco.eq(v1, Choco.mult(v2,v3)));
+		solver.read(model);
+
+		System.out.println("start solving");
+		solver.solve();
+		Assert.assertEquals(Boolean.TRUE, solver.checkSolution());
+	}
+
+    @Test
+    public void testJoost2() {
+		System.out.println("start test");
+		CPModel model = new CPModel();
+        //model.setDefaultExpressionDecomposition(true);
+		Solver solver = new CPSolver();
+
+		//int max = 100 // finds a solution in 37ms
+		int max = 569448; // 30871ms
+
+		IntegerVariable v1 = Choco.makeIntVar("v1", 1,1);
+		IntegerVariable v2 = Choco.makeIntVar("v2", 0, max, Options.V_BOUND);
+		IntegerVariable v3 = Choco.makeIntVar("v3", 0, max, Options.V_BOUND);
+		model.addVariable(v1);
+		model.addVariable(v2);
+		model.addVariable(v2);
+
+		//model.addConstraint(Choco.eq(v1, Choco.plus(v2,v3)));
+		model.addConstraint(Choco.eq(v1, Choco.mult(v2,v3)));
+		solver.read(model);
+
+		System.out.println("start solving");
+        ChocoLogging.toSolution();
+		solver.solve();
+		Assert.assertEquals(Boolean.TRUE, solver.checkSolution());
+	}
+
+    @Test
+    public void testJoost3() {
+		System.out.println("start test");
+		CPModel model = new CPModel();
+        //model.setDefaultExpressionDecomposition(true);
+		Solver solver = new CPSolver();
+
+		//int max = 100 // finds a solution in 37ms
+		int max = Integer.MAX_VALUE; // 30871ms
+
+		IntegerVariable v1 = Choco.makeIntVar("v1", 0,max, Options.V_BOUND);
+		IntegerVariable v2 = Choco.makeIntVar("v2", 0, max, Options.V_BOUND);
+		IntegerVariable v3 = Choco.makeIntVar("v3", 0, max, Options.V_BOUND);
+
+		//model.addConstraint(Choco.eq(v1, Choco.plus(v2,v3)));
+		model.addConstraint(times(v2, v3, v1));
+		solver.read(model);
+        solver.addGoal(BranchingFactory.minDomIncDom(solver));
+		System.out.println("start solving");
+        ChocoLogging.toSolution();
+		solver.solve();
+		Assert.assertEquals(Boolean.TRUE, solver.checkSolution());
+	}
+
+    @Test
+    public void testJoost4() {
+		System.out.println("start test");
+		CPModel model = new CPModel();
+        //model.setDefaultExpressionDecomposition(true);
+		Solver solver = new CPSolver();
+
+		//int max = 100 // finds a solution in 37ms
+		int min = Integer.MIN_VALUE; // 30871ms
+        int max = Integer.MAX_VALUE; // 30871ms
+
+		IntegerVariable v1 = Choco.makeIntVar("v1", min,max, Options.V_BOUND);
+		IntegerVariable v2 = Choco.makeIntVar("v2", min, max, Options.V_BOUND);
+		IntegerVariable v3 = Choco.makeIntVar("v3", min, max, Options.V_BOUND);
+
+		//model.addConstraint(Choco.eq(v1, Choco.plus(v2,v3)));
+		model.addConstraint(times(v2, v3, v1));
+		solver.read(model);
+        solver.addGoal(BranchingFactory.minDomIncDom(solver));
+		System.out.println("start solving");
+        ChocoLogging.toSolution();
+		solver.solve();
+		Assert.assertEquals(Boolean.TRUE, solver.checkSolution());
+	}
 
 }
