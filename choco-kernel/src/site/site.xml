@@ -27,8 +27,6 @@
       <item name="What is choco-kernel?" href="index.html"/>
     </menu>
 
-    <!--${reports}-->
-    <menu ref="parent" />
     <menu ref="reports" />
   
   </body>

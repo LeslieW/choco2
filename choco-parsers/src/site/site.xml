@@ -26,9 +26,6 @@
     <menu name="About choco-parsers">
       <item name="What is choco-parsers?" href="index.html"/>
     </menu>
-
-    <!--${reports}-->
-    <menu ref="parent" />
     <menu ref="reports" />
 
   

@@ -43,7 +43,7 @@ public class Mzn2fznTest {
 
     @Test
     public void testNoArgs() throws IOException, InterruptedException, URISyntaxException {
-        Mzn2fznHelper.main(new String[]{""});
+        Mzn2fzn.main(new String[]{""});
     }
 
     @Test
@@ -53,19 +53,19 @@ public class Mzn2fznTest {
                 "-m", "/home/charles/Bureau/minizinc-rotd-2009-11-02/benchmarks/alpha/alpha.mzn",
                 "-o", "/tmp/alpha.fzn"
         };
-        Mzn2fznHelper.main(args);
+        Mzn2fzn.main(args);
     }
 
     @Test
     public void testData() throws IOException, InterruptedException, URISyntaxException {
         String[] args = new String[]{
-                "--mzn-dir", "/home/charles/Bureau/minizinc-rotd-2009-11-02",
+                "--mzn-dir", "/Users/cprudhom/Documents/Projects/_Librairies/minizinc-1.2.2",
                 "-lib", "/home/charles/Choco/sources/choco/trunk/choco-tools/choco-parsers/src/main/resources/std_lib",
                 "-m", "/home/charles/Bureau/minizinc-rotd-2009-11-02/benchmarks/queens/queens.mzn",
                 "-d", "/home/charles/Bureau/minizinc-rotd-2009-11-02/benchmarks/queens/004.dzn",
                 "-o", "/tmp/queens_004.fzn"
         };
-        Mzn2fznHelper.main(args);
+        Mzn2fzn.main(args);
     }
 
 }

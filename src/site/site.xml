@@ -63,10 +63,7 @@
             <item name="Samples" href="samples/index.html"/>
         </menu>
 
-        <!--${modules}-->
-        <!--<menu ref="modules" />-->
-        ${reports}
-        <!--<menu ref="reports" />-->
+        <menu ref="reports" />
 
     </body>
 </project>
