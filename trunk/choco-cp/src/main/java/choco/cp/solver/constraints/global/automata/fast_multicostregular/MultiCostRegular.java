@@ -484,7 +484,7 @@ public void initGraph()
 /**
  * Performs a lagrangian relaxation to compute a new Upper bound of the underlying RCSPP problem
  * Each built subproblem is a longest path one can use to perform cost based filtering
- * @th*rows ContradictionException if a domain becomes empty
+ * @throws ContradictionException if a domain becomes empty
  */
 protected void updateUpperBound() throws ContradictionException
 {

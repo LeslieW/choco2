@@ -4366,10 +4366,10 @@ public class Choco {
      */
     public static Constraint equation(IntegerVariable z, IntegerVariable[] vars, int[] coeffs) {
         IntegerVariable[] v = new IntegerVariable[vars.length + 1];
-        System.arraycopy(v, 0, vars, 0, vars.length);
+        System.arraycopy(vars, 0, v, 0, vars.length);
         v[vars.length] = z;
         int[] c = new int[coeffs.length + 1];
-        System.arraycopy(c, 0, coeffs, 0, coeffs.length);
+        System.arraycopy(coeffs, 0, c, 0, coeffs.length);
         c[coeffs.length] = -1;
         return Choco.equation(0, v, c);
     }

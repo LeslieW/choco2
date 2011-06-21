@@ -830,13 +830,13 @@ public class CPSolver implements Solver {
     protected void generateDefaultGoal() {
         boolean first = true;
         if (getNbSetVars() > 0 && !setDecisionVars.isEmpty()) {
-            attachGoal(generateSetDefaultGoal());
+            addGoal(generateSetDefaultGoal());
             first = false;
         }
 
         if (getNbIntVars() > 0 && !intDecisionVars.isEmpty()) {
             if (first) {
-                attachGoal(generateDefaultIntGoal());
+                addGoal(generateDefaultIntGoal());
                 first = false;
             } else {
                 addGoal(generateDefaultIntGoal());
@@ -845,7 +845,7 @@ public class CPSolver implements Solver {
 
         if (getNbRealVars() > 0 && !floatDecisionVars.isEmpty()) {
             if (first) {
-                attachGoal(generateDefaultRealGoal());
+                addGoal(generateDefaultRealGoal());
             } else {
                 addGoal(generateDefaultRealGoal());
             }

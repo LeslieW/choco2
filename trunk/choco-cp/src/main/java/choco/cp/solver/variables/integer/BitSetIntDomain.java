@@ -232,9 +232,12 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
         final int xi = x - offset;
         for (int i = contents.nextSetBit(0); i >= 0; i = contents.nextSetBit(i + 1)) {
             if (i != xi) {
-                removeIndex(i); // BEWARE: this is mandatory to feed the dela domain
+                deltaDom.remove(i + offset);
             }
         }
+        contents.clear();
+        contents.set(xi);
+        size.set(1);
         sup.set(x);
         inf.set(x);
     }

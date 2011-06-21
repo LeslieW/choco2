@@ -278,10 +278,6 @@ public class FastRegular extends AbstractLargeIntSConstraint {
             }
 
         }
-        System.out.print("");
-
-
-
     }
 
 
