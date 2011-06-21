@@ -26,9 +26,6 @@
     <menu name="About choco-visu">
       <item name="What is choco-visu?" href="index.html"/>
     </menu>
-
-    <!--${reports}-->
-    <menu ref="parent" />
     <menu ref="reports" />
   
   </body>

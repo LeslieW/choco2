@@ -3,7 +3,7 @@
 %-----------------------------------------------------------------------------%
 
 predicate element_int(var int: i, array[int] of var int: x, var int: y) =
-    global_elementInt(i, x, y);
+    global_element(i, x, y);
 
 %-----------------------------------------------------------------------------%
 

@@ -8,7 +8,7 @@
 
     <bannerRight>
         <name>CHOCO</name>
-        <src>images/logo.png</src>
+        <src>../images/logo.png</src>
         <href>index.html</href>
     </bannerRight>
 
@@ -31,7 +31,6 @@
             <item name="kernel" href="../choco-kernel/index.html"/>
             <item name="CP" href="../choco-cp/index.html"/>
         </menu>
-        <menu ref="reports"/>
 
     </body>
 </project>

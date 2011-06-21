@@ -26,9 +26,6 @@
     <menu name="About cpvisu-tracer">
       <item name="What is cpvisu-tracer module for?" href="index.html"/>
     </menu>
-
-    <!--${reports}-->
-    <menu ref="parent" />
     <menu ref="reports" />
 
   </body>

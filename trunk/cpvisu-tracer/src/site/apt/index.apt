@@ -1,11 +1,11 @@
  ------
- DADCOP-tracer
+ CPVISU-tracer
  ------
  CHOCO development team
  ------
  ------
 
-Welcome to DADCOP-tracer module
+Welcome to CPVISU-tracer module
 
  CPVisu tracer is an a AOP (Aspect-Oriented Programming) module producing XML files.
  These files log informations about the resolution phase into 3 data files: the tree search and
