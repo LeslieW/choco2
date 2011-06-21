@@ -28,7 +28,6 @@
 package choco.cp.solver.constraints.integer;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
@@ -82,13 +81,10 @@ public final class Element extends AbstractBinIntSConstraint {
     protected void updateValueFromIndex() throws ContradictionException {
         int minVal = Integer.MAX_VALUE;
         int maxVal = Integer.MIN_VALUE;
-        DisposableIntIterator iter = this.v0.getDomain().getIterator();
-        for (; iter.hasNext();) {
-            int index = iter.next();
+        for (int index = v0.getInf(); index <= v0.getSup(); index = v0.getNextDomainValue(index)) {
             if (minVal > this.lval[index - cste]) minVal = this.lval[index - cste];
             if (maxVal < this.lval[index - cste]) maxVal = this.lval[index - cste];
         }
-        iter.dispose();
         this.v1.updateInf(minVal, this, false);
         this.v1.updateSup(maxVal, this, false);
 
@@ -97,9 +93,9 @@ public final class Element extends AbstractBinIntSConstraint {
 
     protected void updateIndexFromValue() throws ContradictionException {
         int minFeasibleIndex = Math.max(0 + cste, this.v0.getInf());
-        int maxFeasibleIndex = Math.min(this.v0.getSup(), lval.length -1 + cste);
+        int maxFeasibleIndex = Math.min(this.v0.getSup(), lval.length - 1 + cste);
 
-        if(minFeasibleIndex>maxFeasibleIndex){
+        if (minFeasibleIndex > maxFeasibleIndex) {
             this.fail();
         }
 
@@ -129,8 +125,10 @@ public final class Element extends AbstractBinIntSConstraint {
     }
 
     public void awakeOnInst(int i) throws ContradictionException {
-        if (i == 0)
+        if (i == 0){
             this.v1.instantiate(this.lval[this.v0.getVal() - this.cste], this, false);
+        }
+
 //    else
 //      this.updateIndexFromValue();
     }
@@ -146,29 +144,23 @@ public final class Element extends AbstractBinIntSConstraint {
         if (this.v1.isInstantiated()) {
             boolean allVal = true;
             boolean oneVal = false;
-            DisposableIntIterator iter = this.v0.getDomain().getIterator();
-            for (; iter.hasNext();) {
-                int val = iter.next();
+            for (int val = v0.getInf(); val <= v0.getSup(); val = v0.getNextDomainValue(val)) {
                 boolean b = (val - this.cste) >= 0
                         && (val - this.cste) < this.lval.length
                         && this.lval[val - this.cste] == this.v1.getVal();
                 allVal &= b;
                 oneVal |= b;
             }
-            iter.dispose();
             if (allVal) return Boolean.TRUE;
             if (oneVal) return null;
         } else {
             boolean b = false;
-            DisposableIntIterator iter = this.v0.getDomain().getIterator();
-            while (iter.hasNext() && !b) {
-                int val = iter.next();
+            for (int val = v0.getInf(); val <= v0.getSup() && !b; val = v0.getNextDomainValue(val)) {
                 if ((val - this.cste) >= 0 &&
                         (val - this.cste) < this.lval.length) {
-                    b |= this.v1.canBeInstantiatedTo(this.lval[val - this.cste]);
+                    b = this.v1.canBeInstantiatedTo(this.lval[val - this.cste]);
                 }
             }
-            iter.dispose();
             if (b) return null;
         }
         return Boolean.FALSE;
@@ -176,7 +168,7 @@ public final class Element extends AbstractBinIntSConstraint {
 
     public boolean isSatisfied(int[] tuple) {
         if (tuple[0] - this.cste >= lval.length ||
-            tuple[0] - this.cste < 0) return false;
+                tuple[0] - this.cste < 0) return false;
         return this.lval[tuple[0] - this.cste] == tuple[1];
     }
 }

@@ -27,7 +27,6 @@
 
 package choco.model.constraints.global;
 
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -41,13 +40,15 @@ import choco.kernel.model.constraints.automaton.FA.utils.CounterState;
 import choco.kernel.model.constraints.automaton.FA.utils.ICounter;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import org.junit.After;
-import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by IntelliJ IDEA.
@@ -401,7 +402,7 @@ public class CostRegularTest {
         s.setVarIntSelector(new StaticVarOrder(s, s.getVar(ArrayUtils.append(new IntegerVariable[]{z},vars))));
 
         s.solveAll();
-
+         assertEquals(149456,s.getNbSolutions());
 
     }
 
