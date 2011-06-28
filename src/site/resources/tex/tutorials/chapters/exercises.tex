@@ -1,3 +1,4 @@
+%!TEX root = ../content-tut.tex
 %\part{exercises}
 \label{exercises}
 \hypertarget{exercises}{}
@@ -126,8 +127,6 @@ Can $n$ objects of a given size fit in $m$ bins of capacity $C$ ? The problem is
 
 Take a look at the following exercise in the old version of Choco and try to transpose it on new version of Choco.
 
-Here is \textbf{the complete code in Choco1} : \href{media/zip/binpackingv1.zip}{BinPackingv1.zip}.
-
 \begin{lstlisting}
 	int[] instance = getRandomPackingPb(n, capaBin, seed); 
 	QuickSort sort = new QuickSort(instance); //Sort objects in increasing order
@@ -203,8 +202,6 @@ You can test your model with the parameters $(w, s, g)$ set to: $\{(11, 6, 2), (
 	\end{tabular}
 \caption{A valid configuration with 4 groups of 3 golfers on 3 weeks.}
 \end{table}
-
-Here is \textbf{the complete code in Choco1} : \href{media/zip/socialgolferv1.zip}{SocialGolferv1.zip}
 
 \begin{lstlisting}
   Problem pb = new Problem();

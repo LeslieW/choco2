@@ -2417,6 +2417,19 @@ public class Choco {
         return occurrence(occurrence, variables, value);
     }
 
+    /**
+     * A sum constraint with increasing variables
+     * <br/> s = x_0 + x_1 + ... + x_(n-1)
+     * <br/>and x_0 <= x_1 <= ... <= x_(n-1)
+     * <p/>Bounds-consistency algorithm linear in n (the number of variables)
+     *
+     * @param variables collection of variables
+     * @param sum resulting variable
+     * @return Constraint
+     */
+    public static Constraint increasingSum(IntegerVariable[] variables, IntegerVariable sum){
+        return new ComponentConstraint(ConstraintType.INCREASINGSUM, null, ArrayUtils.append(variables, new IntegerVariable[]{sum}));
+    }
 
     /**
      * subscript constraint: accessing an array with a variable index
@@ -2561,7 +2574,8 @@ public class Choco {
      * @return Constraint
      */
     public static Constraint boolChanneling(IntegerVariable b, IntegerVariable x, int j) {
-        return new ComponentConstraint(ConstraintType.CHANNELING, ConstraintType.CHANNELING, new IntegerVariable[]{b, x, constant(j)});
+        return new ComponentConstraint(ConstraintType.CHANNELING,
+                new Object[]{ConstraintType.CHANNELING}, new IntegerVariable[]{b, x, constant(j)});
     }
 
     /**
@@ -2576,7 +2590,27 @@ public class Choco {
         if (y.length != x.length) {
             throw new ModelException("not a valid inverse channeling constraint with two arrays of different sizes");
         }
-        return new ComponentConstraint(ConstraintType.INVERSECHANNELING, ConstraintType.INVERSECHANNELING, ArrayUtils.append(x, y));
+        return new ComponentConstraint(ConstraintType.INVERSECHANNELING,
+                new Object[]{ConstraintType.INVERSECHANNELING}, ArrayUtils.append(x, y));
+    }
+
+    /**
+     * State a channeling bewteen two arrays of integer variables x and y with the same domain which enforces:<br/>
+     * - if the ith variable of the collection X is assigned to j and if j is less than or equal
+     * to the number of items of the collection Y then the jth variable of the collection Y is assigned to i.
+     * <br/>- Conversely, if the jth variable of the collection Y is assigned to i and if i is less than or equal
+     * to the number of items of the collection X then the ith variable of the collection X is assigned to j.
+     *
+     * <p/>
+     * See <a href="http://www.emn.fr/z-info/sdemasse/gccat/Cinverse_within_range.html">inverse_within_range</a>
+     *
+     * @param x the first array of variables
+     * @param y the second array of variables
+     * @return Constraint
+     */
+    public static Constraint inverseChannelingWithinRange(IntegerVariable[] x, IntegerVariable[] y) {
+        return new ComponentConstraint(ConstraintType.INVERSECHANNELINGWITHINRANGE,
+                new Object[]{ConstraintType.INVERSECHANNELINGWITHINRANGE, x.length}, ArrayUtils.append(x, y));
     }
 
     /**
@@ -2589,7 +2623,8 @@ public class Choco {
      */
     public static Constraint domainChanneling(IntegerVariable x, IntegerVariable[] b) {
         return new ComponentConstraint(
-                ConstraintType.DOMAIN_CHANNELING, ConstraintType.DOMAIN_CHANNELING,
+                ConstraintType.DOMAIN_CHANNELING,
+                new Object[]{ConstraintType.DOMAIN_CHANNELING},
                 ArrayUtils.append(b, new IntegerVariable[]{x}));
     }
 
@@ -2605,7 +2640,8 @@ public class Choco {
     @Deprecated
     public static Constraint domainConstraint(IntegerVariable x, IntegerVariable[] b) {
         return new ComponentConstraint(
-                ConstraintType.DOMAIN_CHANNELING, ConstraintType.DOMAIN_CHANNELING,
+                ConstraintType.DOMAIN_CHANNELING,
+                new Object[]{ConstraintType.DOMAIN_CHANNELING},
                 ArrayUtils.append(b, new IntegerVariable[]{x}));
     }
 

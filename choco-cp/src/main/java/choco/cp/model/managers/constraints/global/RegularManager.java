@@ -40,6 +40,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -54,6 +55,7 @@ import java.util.List;
  *    \
  *    |
  */
+
 /**
  * A manager to build new regular constraint
  */
@@ -90,20 +92,18 @@ public final class RegularManager extends IntConstraintManager {
     private int nID;
 
     /**
-     * @param bools Boolean variables
-     * @param goal  Sum
-     * @param A     An array Containing the coefficients
+     * @param vars   Boolean variables
+     * @param goal   Sum
+     * @param coeffs An array Containing the coefficients
      * @return
      */
-    public SConstraint knapsack(Solver s, IntegerVariable[] bools, int goal, int[] A) {
-        int[] temp = new int[A.length + 1];
-        System.arraycopy(A, 0, temp, 1, A.length);
+    public SConstraint knapsack(Solver s, IntegerVariable[] vars, int goal, int[] coeffs) {
+        int[] temp = new int[coeffs.length + 1];
+        System.arraycopy(coeffs, 0, temp, 1, coeffs.length);
         temp[0] = 0;
-        A = temp;
-        int U = goal;
-        int L = goal;
-        int[][] P = new int[A.length][U + 1];
-        int[][] G = new int[A.length][U + 1];
+        coeffs = temp;
+        int[][] P = new int[coeffs.length][goal + 1];
+        int[][] G = new int[coeffs.length][goal + 1]; // table containing minimum solution paths
 
         for (int i = 0; i < P.length; ++i)
             for (int j = 0; j < P[0].length; ++j)
@@ -112,33 +112,33 @@ public final class RegularManager extends IntConstraintManager {
         P[0][0] = 1;
 
         for (int i = 1; i < P.length; ++i)
-            for (int b = 0; b < P[0].length; ++b)
+            for (int b = 0; b < goal + 1; ++b)
                 if (P[i - 1][b] == 1) {
-                    DisposableIntIterator it = bools[i - 1].getDomainIterator();
+                    DisposableIntIterator it = vars[i - 1].getDomainIterator();
                     while (it.hasNext()) {
-                        int x = it.next();
+                        int value = it.next();
                         //for (int x = bools[i - 1].getLowB(); x <= bools[i - 1].getUppB(); ++x)
-                        if (b + A[i] * x <= U)
-                            P[i][b + A[i] * x] = 1;
+                        if (b + coeffs[i] * value <= goal)
+                            P[i][b + coeffs[i] * value] = 1;
                     }
                     it.dispose();
                 }
 
         boolean sat = false;
-        for (int i = U; i >= L; --i)
-            sat |= (P[P.length - 1][U] == 1);
+        for (int i = goal; i >= goal; --i)
+            sat |= (P[P.length - 1][goal] == 1);
 
-        G[G.length - 1][U] = 1;
+        G[G.length - 1][goal] = 1;
         if (sat) {
             for (int i = G.length - 2; i >= 0; --i)
                 for (int b = 0; b < G[0].length; b++)
                     if (G[i + 1][b] == 1) {
-                        DisposableIntIterator it = bools[i].getDomainIterator();
+                        DisposableIntIterator it = vars[i].getDomainIterator();
                         while (it.hasNext()) {
                             int x = it.next();
                             //for (int x = bools[i].getLowB(); x <= bools[i].getUppB(); ++x)
-                            if (b - A[i + 1] * x >= 0 && P[i][b - A[i + 1] * x] == 1)
-                                G[i][b - A[i + 1] * x] = 1;
+                            if (b - coeffs[i + 1] * x >= 0 && P[i][b - coeffs[i + 1] * x] == 1)
+                                G[i][b - coeffs[i + 1] * x] = 1;
                         }
                         it.dispose();
                     }
@@ -146,16 +146,16 @@ public final class RegularManager extends IntConstraintManager {
             List<Transition> t = new LinkedList<Transition>();
             List<Integer> ints = new LinkedList<Integer>();
             nID = 0;
-            int[][] labels = new int[G.length][G[0].length];
-            for (int i = 0; i < labels.length; ++i)
-                for (int j = 0; j < labels[0].length; ++j)
-                    labels[i][j] = -1;
-            generateTransitionList(0, 0, t, labels, A, G, bools);
-            for (int i = 0; i <= (L - U); ++i) {
+            int[][] labels = new int[coeffs.length][goal + 1];
+            for (int i = 0; i < labels.length; ++i) {
+                Arrays.fill(labels[i], -1);
+            }
+            generateTransitionList(0, 0, t, labels, coeffs, G, vars);
+            for (int i = 0; i <= 0; ++i) {
                 ints.add(G.length + i - 1);
             }
             DFA dfa = new DFA(t, ints, ints.get(0));
-            return new Regular(dfa, s.getVar(bools), s.getEnvironment());
+            return new Regular(dfa, s.getVar(vars), s.getEnvironment());
         } else {
             return Constant.FALSE;// not satisfiable
         }

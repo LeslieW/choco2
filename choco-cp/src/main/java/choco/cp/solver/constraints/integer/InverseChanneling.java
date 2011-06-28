@@ -45,7 +45,7 @@ public final class InverseChanneling extends AbstractLargeIntSConstraint {
      * It is used to maintain both model on permutation problems
      */
     public InverseChanneling(IntDomainVar[] allVars, int n) {
-        super(ConstraintEvent.CUBIC, allVars);
+        super(ConstraintEvent.LINEAR, allVars);
 
         this.min = Integer.MAX_VALUE; // <nj> was <bug> allVars[0].getInf();
         for (IntDomainVar var : allVars) {

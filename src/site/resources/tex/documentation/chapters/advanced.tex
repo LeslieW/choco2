@@ -9,7 +9,7 @@
 
 Environment is a central object of the backtracking system. It defines the notion of \textit{world}. A world contains values of storable objects or operations that permit to \textit{backtrack} to its state. The environment \textit{pushes} and \textit{pops} worlds.
 
-There are \textit{primitive} data types (\mylst{IstateBitSet, IStateBool, IStateDouble, IStateInt, IStateLong}) and \textit{objects} data types (\mylst{IStateBinarytree, IStateIntInterval, IStateIntProcedure, IStateIntVector, IStateObject, IStateVector}).
+There are \textit{primitive} data types (\mylst{IStateBitSet, IStateBool, IStateDouble, IStateInt, IStateLong}) and \textit{objects} data types (\mylst{IStateBinarytree, IStateIntInterval, IStateIntProcedure, IStateIntVector, IStateObject, IStateVector}).
 
 There are two different environments: \textit{EnvironmentTrailing} and \textit{EnvironmentCopying}.
 
@@ -19,10 +19,171 @@ In that environment, each data type is defined by a value (primitive or object) 
 \subsection{Trailing}\label{advanced:trailing}\hypertarget{advanced:trailing}{}
 In that environment, data types are defined by its value. Every operation applied to a data type is pushed in a \textit{trailer}. When a world is pushed, the indice of the last operation is stored. When a world is popped, these operations are popped and \textit{unapplied} until reaching the last operation of the previous world.\\\textit{Default one in CPSolver}
 
+\subsection{Backtrackable structures}\label{advanced:backtrackablestructures}\hypertarget{advanced:backtrackablestructures}{}
+\todo{to complete}
+\section{How does the propagation engine work ?}
+
+Once the \mylst{Model} and \mylst{Solver} have been defined, the resolution can start. It is based on decisions and filtering orders, this is the propagation engine. In this part, we're going to present how the resolution is guided in Choco. 
+
+A resolution instruction (\mylst{solve()}, \mylst{solveAll()}, \mylst{maximize(...)} or \mylst{minimize(...)}) always starts by setting options based on resolution policy, then generates the search strategies and ends by running the search loop. 
+
+\subsection{How does a search loop work ?}\label{advanced:howdoesasearchloopwork}\hypertarget{advanced:howdoesasearchloopwork}{}
+The search loop is the \textit{conductor} of the engine. It goes down and up in the branches in order to cover the tree search, call the filtering algorithm, etc.
+Here is the organigram of the search loop. 
+
+%\insertGraphique{0.8\linewidth}{media/searchloop.pdf}{Organigram of the search loop}
+
+\begin{figure}[!htp]
+	\centerline{\Graph{media/searchloop.pdf}{width=1\linewidth}}
+	\caption[]{Organigram of the search loop}\label{fig:media/searchloop.pdf}
+\end{figure}
+
+Basically, the search loop is divided in 5 steps: \mylst{INITIAL PROPAGATION} (highlighted in red), \mylst{OPEN NODE} (highlighted in green), \mylst{DOWN BRANCH} (highlighted in violet), \mylst{UP BRANCH} (highlighted in orange) and \mylst{RESTART} (highlighted in blue). 
+
+\subsection{Propagate}\label{advanced:propagate}\hypertarget{advanced:propagate}{}
+
+%% fix point A fix point is reached when there is no more event to treat
+\newglossaryentry{fix point}{name={fix point},description={definition of a fix point}}
+
+The main and unique \mylst{PropagationEngine} of Choco is \mylst{ChocoEngine}. This engine stores events occurring on variables, \textit{variable events}, and specific calls to constraint filtering algorithm, \textit{constraint events}, in order to reach a \gls{fix point} or to detect contradictions. Events are stored in queues (FIFO).  
+
+On a call to \mylst{Solver.propagate()} or during a resolution step, the consistency of a model is computed: stored events are popped and propagated (apply side-effects). The propagation of a single event can create new ones, feeding the system until fix point or contradiction. 
+
+
+
+\begin{figure}[!htp]
+	\centerline{\Graph{media/propagationloop.pdf}{width=0.5\linewidth}}
+	\caption[]{Organigram of the propagation loop}\label{fig:media/propagationloop.pdf}
+\end{figure}
+
+ 
+If the propagation of an event leads to a contradiction, the propagation engine stop the process. In both case, the search loop take up with the new state.
+
+\subsubsection{Seven priorities}
+
+Before going further, it is important to know that events declare a parameter named \textit{priority}. The priority of a constraint's event depends on the constraint priority (required in the super class constructor). And the priority of a variable's event is given by the maximum priority of the variable's constraints. 
+
+To each priority corresponds a \textit{rank}. In the propagation engine, there are as many queues as ranks. 
+During the propagation loop, the rank is used to push the event on the corresponding queue. Events are \underline{always} popped from the smallest ranked queue to the largest ranked queue.
+
+There are seven priorities :  \mylst{UNARY}, \mylst{BINARY}, \mylst{TERNARY}, \mylst{LINEAR}, \mylst{QUADRATIC}, \mylst{CUBIC} and \mylst{VERY_SLOW}, each of these qualifies the "cost" of a constraint (related to its internal filtering algorithm). 
+
+By default, priorities and ranks are defined as follow:
+\begin{tabular}{|l|r|}
+\hline
+Priority & Rank \\
+\hline
+unary & 1\\
+binary & 2\\
+ternary & 3\\
+linear & 4\\
+quadratic & 5\\
+cubic & 6\\
+very slow & 7\\
+\hline
+\end{tabular}
+\vspace{0.2cm}
+
+Although the priority of a constraint cannot be changed, the rank of priority can be reconsider by setting another value to \mylst{Configuration.VEQ_ORDER} or \mylst{Configuration.CEQ_ORDER}. 
+
+\vspace{0.5cm}
+
+\begin{lstlisting}
+Configuration conf = new Configuration();
+conf.putInt(Configuration.VEQ_ORDER, 7654321); // default value is 1234567
+conf.putInt(Configuration.CEQ_ORDER, 1111744); // default value is 1234567
+Solver solver = new CPSolver(conf);
+\end{lstlisting}
+
+In that example, priorities ranks are reversed for the variable queues, and totally rearranged for the constraint queue.
+
+
+\subsubsection{Constraint event}
+
+At the very beginning of resolution, when constraint filtering algorithms have not been called once, a call to the \mylst{awake()} method is planned by posting constraint event to the propagation engine. For some \textit{expensive} constraints (like \hyperlink{geost:geostconstraint}{Geost}), a call to the main filtering algorithm (described in \mylst{propagate()}) can be added during the resolution by posting a constraint event to the propagation engine, in that case a call to the \mylst{propagate()} method is planned. 
+This event is added to the list of constraint events to be treated by the propagation engine.
+
+\subsubsection{Variable event}
+
+The resolution goal is to instantiate variables in order to find solutions. Instantiation of a variable is done applying modification on its domain. 
+Each time a modification is applied on a domain, an event is posted, storing informations about the action done (event type, variable, values, etc.). This event will be given to the related constraints of the modified variable, to check consistency and propagate this new information to the other variables.
+
+Depending on the type of domain, events existing in Choco are:
+
+\noindent\begin{tabular}{lp{.6\linewidth}}
+\hline
+Event &  description \\
+\hline
+\multicolumn{2}{l}{Integer variable \mylst{IntDomainVar}}\\
+  \hline
+  \mylst{REMVAL} & Remove a single value from the domain.\\
+  \mylst{INCINF} &  Increase the lower bound of the domain. \\
+  \mylst{DECSUP} &  Decrease the upper bound of the domain. \\
+  \mylst{INSTINT} &  Instantiate the domain, i.e. reduce it to a single value. \\   
+\hline
+\multicolumn{2}{l}{Set variable \mylst{SetVar}}\\
+\hline
+  \mylst{REMENV} & Remove a single value from the envelope domain \\
+  \mylst{ADDKER} &  Add a single value to the kernel domain\\
+  \mylst{INSTSET} &  Instantiate the domain, i.e. set values to both kernel and envelope domain. \\   
+\hline  
+\multicolumn{2}{l}{Real variable \mylst{RealVar}}\\
+\hline
+  \mylst{INCINF} &  Increase the lower bound of the domain\\
+  \mylst{DECSUP} &  Decrease the upper bound of the domain\\
+\hline  
+\end{tabular}
+
+An event given as a parameter to the engine is then pushed into a unique queue, waiting to be treated. There are seven different queues where an event can be pushed, it depends on the priority of the event.
+   
+
+Beware, an event is not automatically pushed in a queue: if an other event based on the same variable is already present in the queue, the two events are merged into one. 
+\begin{note}
+Due to promotion, variables' events can be treated in a different order than creation one!
+
+Let X and Y, two integer variables with priorities of the same rank. During the propagation of a constraint, the lower bound of a integer variable X is updated to 3 (this event is added to the queue Q), then Y is instantiated to 4 (this other event is added to the same queue Q) and finally the upper bound of X is updated to 4 (the already pushed event on X is updated with this new information). At that point, there are only 2 events in the queue Q: one on X and one on Y. 
+As X and Y have the same rank, events will be treated by creation order: event on X first ant event on Y then. But the event on X contains 2 informations, one on the lower bound modification and another on the upper bound modification. So, although the instantiation of Y has been created first, the treatment of the upper bound modification of X will be treated first.
+\end{note}
+
+
+\begin{note}
+Original event can be \textit{promoted}: for example removing the last but one value of an integer variable is promoted to instantiation.
+
+Promotion are:
+
+\noindent\begin{tabular}{lp{.6\linewidth}}
+\hline
+Original event &  can be promoted to \\
+\hline
+\multicolumn{2}{l}{Integer variable \mylst{IntDomainVar}}\\
+  \hline
+  \mylst{REMVAL} & \mylst{INCINF} or \mylst{DECSUP} or \mylst{INSTINT}\\
+  \mylst{INCINF} &  \mylst{INSTINT}\\
+  \mylst{DECSUP} &  \mylst{INSTINT} \\
+  \mylst{INSTINT} &  \textit{none} \\   
+\hline
+\multicolumn{2}{l}{Set variable \mylst{SetVar}}\\
+\hline
+  \mylst{REMENV} & \mylst{INSTSET} \\
+  \mylst{ADDKER} &  \mylst{INSTSET}\\
+  \mylst{INSTSET} &  \textit{none} \\   
+\hline  
+\multicolumn{2}{l}{Real variable \mylst{RealVar}}\\
+\hline
+  \mylst{INCINF} &  \textit{none}\\
+  \mylst{DECSUP} &  \textit{none}\\
+\hline  
+\end{tabular}
+
+ \end{note}
+
+
 \section{Define your own search strategy}\label{advanced:defineyourownsearchstrategy}\hypertarget{advanced:defineyourownsearchstrategy}{}
 %A key ingredient of any constraint approach is a clever branching strategy. The construction of the search tree is done according to a series of Branching objects (that plays the role of achieving intermediate goals in logic programming). The user may specify the sequence of branching objects to be used to build the search tree. 
 Section~\hyperlink{solver:searchstrategy}{Search strategy} presented the default branching strategies available in Choco and showed how to post them or to compose them as goals.
 In this section, we will start with a very simple and common way to branch by choosing values for variables and specially how to define its own variable/value selection strategy. We will then focus on more complex branching such as dichotomic or n-ary choices. Finally we will show how to control the search space in more details with well known strategy such as LDS (Limited discrepancy search).
+
+Reminder : \hyperlink{advanced:howdoesasearchloopwork}{How does the search loop work?}
 
 For integer variables, the variable and value selection strategy objects are based on the following interfaces:
 \begin{itemize}
@@ -33,20 +194,6 @@ For integer variables, the variable and value selection strategy objects are bas
 \end{itemize}
 
 Concrete examples of these interfaces are respectively,  \hyperlink{assignvar:assignvarbranchstrat}{AssignVar}, \hyperlink{mindomain:mindomainvarselector}{MinDomain}, \hyperlink{increasingdomain:increasingdomainvaliterator}{IncreasingDomain}, \hyperlink{maxval:maxvalvalselector}{MaxVal}.
-
-
-\subsection{How does a search loop work ?}\label{advanced:howdoesasearchloopwork}\hypertarget{advanced:howdoesasearchloopwork}{}
-To understand search strategy, it is good to know how it is invoked. This is done in the search loop. It goes down and up in the branches in order to cover the tree search.
-Here is the organigram of the search loop. 
-
-%\insertGraphique{0.8\linewidth}{media/searchloop.pdf}{Organigram of the search loop}
-
-\begin{figure}[!htp]
-	\centerline{\Graph{media/searchloop.pdf}{width=0.8\linewidth}}
-	\caption[]{Organigram of the search loop}\label{fig:media/searchloop.pdf}
-\end{figure}
-
-Basically, the search loop is divided in 4 steps: \mylst{INITIAL PROPAGATION} (highlighted in red), \mylst{OPEN NODE} (highlighted in green), \mylst{DOWN BRANCH} (highlighted in violet) and \mylst{UP BRANCH} (highlighted in orange). 
 
 \subsection{How to define your own Branching object}\label{advanced:beyondvariable/valueselection,howtodefineyourownbranchingobject}\hypertarget{advanced:beyondvariable/valueselection,howtodefineyourownbranchingobject}{}
 
@@ -370,7 +517,7 @@ public class IncreasingDomain implements ValIterator<IntDomainVar> {
 
 You can add your value iterator as a part of a search strategy, using \mylst{solver.addGoal()}.
 
-\todo{under development} See \href{http://choco-solver.net/index.phptitle=userguide:beyondvariable.2fvalueselection.2chowtodefineyourownbranchingobject}{old version}
+%\todo{under development} See \href{http://choco-solver.net/index.phptitle=userguide:beyondvariable.2fvalueselection.2chowtodefineyourownbranchingobject}{old version}
 
 \section{Define your own limit search space}\label{advanced:defineyourownlimitsearchspace}\hypertarget{advanced:defineyourownlimitsearchspace}{}
 
@@ -515,6 +662,66 @@ A simple way to implement its own constraint is to:
 \end{itemize}
 
 \end{note}
+
+\subsubsection{Interact with variables}\label{advanced:interactwithvariables}\hypertarget{advanced:interactwithvariables}{}
+
+One of the constraint function is to remove forbidden values from domain variable (\textit{filtering}). \mylst{Variable}s provide services to allow constraint to interact with their domain.
+
+\vspace{0.5cm}
+\textbf{IntDomainVar}
+
+\begin{description}
+\item[ ] \mylst{boolean removeVal(int x, final SConstraint cause, final boolean forceAwake)}
+
+Update the domain of the integer variable by removing \mylst{x} from the domain. \mylst{cause} is the constraint at the origin of the event, \mylst{forceAwake} indicates wether or not the \mylst{cause} constraint must be informed of this event. The result of such call can be \mylst{true}, the value has been removed without any trouble, \mylst{false} the value was not present in the domain. A \mylst{ContradictionException} is thrown if it empties the domain of the variable
+
+\item[ ] \mylst{boolean removeInterval(int a, int b, final SConstraint cause, final boolean forceAwake)}
+
+Update the domain of the integer variable by removing all values contained in the interval $[a,b]$ from the domain. \mylst{cause} is the constraint at the origin of the event, \mylst{forceAwake} indicates wether or not the \mylst{cause} constraint must be informed of this event. The result of such call can be \mylst{true}, the values has been removed without any trouble, \mylst{false} if the intersection of the current domain and $[a,b]$ was empty. A \mylst{ContradictionException} is thrown if it empties the domain of the variable.
+
+\item[ ] \mylst{boolean updateInf(int x, final SConstraint cause, final boolean forceAwake)} 
+
+Update the domain of the integer variable by removing all values strictly below \mylst{x} from the domain. \mylst{cause} is the constraint at the origin of the event, \mylst{forceAwake} indicates wether or not the \mylst{cause} constraint must be informed of this event. The result of such call can be \mylst{true}, the lower bound has been updated without any trouble, \mylst{false} the new lower bound was smaller or equal to the actual one. A \mylst{ContradictionException} is thrown if it empties the domain of the variable.
+
+\item[ ] \mylst{boolean updateSup(int x, final SConstraint cause, final boolean forceAwake)} 
+
+Update the domain of the integer variable by removing all values strictly above \mylst{x} from the domain. \mylst{cause} is the constraint at the origin of the event, \mylst{forceAwake} indicates wether or not the \mylst{cause} constraint must be informed of this event. The result of such call can be \mylst{true}, the upper bound has been updated without any trouble, \mylst{false} the new upper bound was greater or equal to the actual one. A \mylst{ContradictionException} is thrown if it empties the domain of the variable. 
+
+\item[ ] \mylst{boolean instantiate(int x, final SConstraint cause, final boolean forceAwake)} 
+
+Update the domain of the integer variable by removing all values but \mylst{x} from the domain. \mylst{cause} is the constraint at the origin of the event, \mylst{forceAwake} indicates wether or not the \mylst{cause} constraint must be informed of this event. The result of such call can be \mylst{true}, the domain has been reduced to a singleton without any trouble, \mylst{false} the domain was already instantiated to the same value . A \mylst{ContradictionException} is thrown if \mylst{x} is out of the domain or if the domain was already instantiated to another value.
+
+\end{description}
+
+\vspace{0.5cm}
+\textbf{SetVar}
+
+\begin{description}
+\item[ ] \mylst{boolean remFromEnveloppe(int x, final SConstraint cause, final boolean forceAwake)}
+
+Update the domain of the set variable by removing \mylst{x} from the envelope's domain. \mylst{cause} is the constraint at the origin of the event, \mylst{forceAwake} indicates wether or not the \mylst{cause} constraint must be informed of this event. The result of such call can be \mylst{true}, the value has been removed without any trouble, \mylst{false} the value was not present in the envelope. A \mylst{ContradictionException} is thrown if \mylst{x} is present in the kernel's domain.
+
+\item[ ] \mylst{boolean addToKernel(int x, final SConstraint cause, final boolean forceAwake)}
+
+Update the domain of the set variable by adding \mylst{x} into the kernel's domain. \mylst{cause} is the constraint at the origin of the event, \mylst{forceAwake} indicates wether or not the \mylst{cause} constraint must be informed of this event. The result of such call can be \mylst{true}, the value has been added without any trouble, \mylst{false} the value was already present in the kernel. A \mylst{ContradictionException} is thrown if \mylst{x} is not present in the envelope's domain.
+
+\item[ ] \mylst{boolean instantiate(int[] xs, final SConstraint cause, final boolean forceAwake)} 
+
+Update the domain of the set variable by removing every values but those in \mylst{xs} from the envelope's domain and by adding every values of \mylst{xs} into the kernel's domain. A set variable is known as \textit{instantiated} when $E \cap K \ne \emptyset $ and $E \bigtriangleup K = \emptyset$. 
+\mylst{cause} is the constraint at the origin of the event, \mylst{forceAwake} indicates wether or not the \mylst{cause} constraint must be informed of this event. The result of such call can be \mylst{true}, the envelope or the kernel have been updated without trouble, \mylst{false} the envelope and the kernel were already equal to \mylst{xs} . A \mylst{ContradictionException} is thrown if the at least one value from \mylst{xs} is not present in the kernel's domain or in the envelope's domain.
+ 
+\end{description}
+
+\vspace{0.5cm}
+\textbf{RealVar}
+
+\begin{description}
+\item[ ] \mylst{void intersect(RealInterval interval)}
+
+Update the domain of the real variable by intersecting the domain with \mylst{interval} (define at least by two doubles, known as lower and upper bound). A \mylst{ContradictionException} is thrown the resulting interval is incoherent (the new lower bound is greater than the new upper bound).
+
+\end{description}
+
 
 \subsubsection{How do I add my constraint to the Model ?}\label{advanced:howdoiaddmyconstrainttothemodel}\hypertarget{advanced:howdoiaddmyconstrainttothemodel}{}
 
@@ -668,7 +875,7 @@ A constraint can choose not to react to fine grained events such as the removal 
 To do that, you can use \texttt{constAwake(false)} that tells the solver that you want this constraint to be called only once the variables events queue is empty. This is done so that heavy propagators can delay their action after the fast one to avoid doing a heavy processing at each single little modification of domains.
 
 \section{Define your own operator}\label{advanced:defineyourownoperator}\hypertarget{advanced:defineyourownoperator}{}
-\todo{to complete}
+%\todo{to complete}
 
 %%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%
@@ -808,138 +1015,79 @@ Keep in mind that you can not define operators for set and real.
 
 \section{Define your own variable}\label{advanced:defineyourownvariable}\hypertarget{advanced:defineyourownvariable}{}
 \todo{to complete}
-\section{Backtrackable structures}\label{advanced:backtrackablestructures}\hypertarget{advanced:backtrackablestructures}{}
+
+\section{Model and Solver detectors}\label{advanced:detectors}\hypertarget{advanced:detectors}{}
+
+Sometimes, on automatic code generation or during benchmarking, it could be useful to apply generic rules to analyze a \mylst{Model} and detect lacks of modeling and apply patchs. With Choco, this is possible using \mylst{ModelDetectorFactory} and \mylst{PreProcessCPSolver}.
+
+\subsection{Model detector}\label{advanced:modeldetector}\hypertarget{advanced:modeldetector}{}
+
+The analysis of a \mylst{Model} is done using the \mylst{ModelDetectorFactory}. First one declares the list of rules to apply, then they are applied to a specific model. 
+This is done by using the follwing API:
+\begin{lstlisting}
+ModelDetectorFactory.run(CPModel model, AbstractDetector... detectors)
+\end{lstlisting}
+An \mylst{AbstractDetector} object describes the pattern to detect within the model and rules to apply. Applying a rule is commonly to refactor a given model, by adding or removing variables and constraints. 
+
+\begin{note}
+Calling \mylst{ModelDetectorFactory.run(..)} will produce a modified copy of the current model. 
+Very few \mylst{AbstractDetector} just analyze the model, without any side effects.
+\end{note}
+
+\textbf{Detectors}
+
+
+\begin{itemize}
+\item[] \mylst{AbstractDetector analysis(CPModel m)}
+\item[] \mylst{AbstractDetector intVarEqDet(CPModel m)}
+\item[] \mylst{AbstractDetector taskVarEqDet(CPModel m)}
+\item[] \mylst{AbstractDetector cliqueDetector(CPModel m, boolean breakSymetries)}
+\item[] \mylst{AbstractDetector disjFromCumulDetector(CPModel m)}
+\item[] \mylst{AbstractDetector precFromImpliedDetector(CPModel m, DisjunctiveModel disjMod)}
+\item[] \mylst{AbstractDetector precFromReifiedDetector(CPModel m, DisjunctiveModel disjMod)}
+\item[] \mylst{AbstractDetector precFromTimeWindowDetector(CPModel m, DisjunctiveModel disjMod)}
+\item[] \mylst{AbstractDetector precFromDisjointDetector(CPModel m, DisjunctiveModel disjMod)}
+\item[] \mylst{AbstractDetector disjointDetector(CPModel m, DisjunctiveModel disjMod)}
+\item[] \mylst{AbstractDetector disjointFromDisjDetector(CPModel m, DisjunctiveModel disjMod)}
+\item[] \mylst{AbstractDetector disjointFromCumulDetector(CPModel m, DisjunctiveModel disjMod)}
+\item[] \mylst{AbstractDetector rmDisjDetector(final CPModel m)}
+\item[] \mylst{AbstractDetector[] disjunctiveModelDetectors(CPModel m, DisjunctiveModel disjMod)}
+\item[] \mylst{AbstractDetector[] schedulingModelDetectors(final CPModel m, DisjunctiveModel disjMod)}
+\end{itemize}
+
+
+
+\begin{note}
+Analysing a \mylst{Model} can be time consuming. It should be used carefully.
+\end{note}
+ 
+ 
+
 \todo{to complete}
 
-\section{Logging System}\label{advanced:loggingsystem}\hypertarget{advanced:loggingsystem}{}
 
-Choco logging system is based on the \texttt{java.util.logging} package and located in the package \texttt{common.logging}.
-Most Choco abstract classes or interfaces propose a static field \texttt{LOGGER}.
-The following figures present the architecture of the logging system with the default verbosity.
+\subsection{Preprocess solver}\label{advanced:preprocesssolver}\hypertarget{advanced:preprocesssolver}{}
 
-\insertGraphique{.3\linewidth}{media/logger-default.png}{Logger Tree with the default verbosity}
+One may want to keep the \mylst{Model} unchanged but apply detection directly on the \mylst{Solver}. This can be done during the \textit{reading} step: the model is analyses on the fly and the rules are applied directly on the solver. 
 
-The shape of the node depicts the type of logger:
-\begin{itemize}
-	\item The \emph{house} loggers represent private loggers. Do not use directly these loggers because their level are low and all messages would always be displayed.
-	\item The \emph{octagon} loggers represent critical loggers. These loggers are provided in the variables, constraints and search classes and could have a huge impact on the global performances.
-	\item The \emph{box} loggers are provided for dev and users.
-\end{itemize}
-The color of the node gives its logging level with DEFAULT verbosity:
-\texttt{Level.FINEST} (\textcolor{yellow}{gold}),
-\texttt{Level.INFO} (\textcolor{orange}{orange}),
-\texttt{Level.WARNING} (\textcolor{red}{red}).
-
-\subsubsection{Verbosity and messages.}\label{advanced:verbosityandmessages}\hypertarget{advanced:verbosityandmessages}{}
-The following table summarizes the verbosities available in choco: 
-
-\begin{itemize}
-	\item \textbf{OFF -- level 0:} Disable logging.
-	\item \textbf{SILENT -- level 1:} Display only severe messages.
-	\item \textbf{DEFAULT -- level 2:} Display informations on final search state.
-		\begin{itemize}
-			\item ON START
-				\lstset{language={sh},columns=fixed}
+To do that, simply replaced the \mylst{CPSolver} declaration by:
 \begin{lstlisting}
- ** CHOCO : Constraint Programming Solver
- ** CHOCO v2.1.1 (April, 2009), Copyleft (c) 1999-2010
- \end{lstlisting}
-			\item ON COMPLETE SEARCH:
-				\begin{lstlisting}
-- Search completed -
- [Maximize		: {0},]
- [Minimize		: {1},]
-  Solutions		: {2},
-  Times (ms)	: {3},
-  Nodes			: {4},
-  Backtracks	: {5},
-  Restarts		: {6}.
-  \end{lstlisting}
-	brackets [\textit{line}] indicate \textit{line} is optionnal,\\
- 	\texttt{Maximize} --resp. \texttt{Minimize}-- indicates the best known value before exiting of the objective value in \textit{maximize()} -- --resp. \textit{minimize()}-- strategy.
+Solver solver = new PreProcessCPSolver(); // new CPSolver();
+\end{lstlisting} 
 
-			\item ON COMPLETE SEARCH WITHOUT SOLUTIONS :
-				\begin{lstlisting}
-- Search completed - No solutions
- [Maximize		: {0},]
- [Minimize		: {1},]
-  Solutions		: {2},
-  Times (ms)	: {3},
-  Nodes			: {4},
-  Backtracks	: {5},
-  Restarts		: {6}.
-\end{lstlisting}
-	brackets [\textit{line}] indicate \textit{line} is optionnal,\\
- 	\texttt{Maximize} --resp. \texttt{Minimize}-- indicates the best known value before exiting of the objective value in \textit{maximize()} -- --resp. \textit{minimize()}-- strategy.
+The rules that will be applied can be selected by updating the \mylst{PreProcessConfiguration} file.
+\todo{to complete}
 
-			\item ON INCOMPLETE SEARCH:
-				\begin{lstlisting}
-- Search incompleted - Exiting on limit reached
-  Limit			: {0},
- [Maximize		: {1},]
- [Minimize		: {2},]
-  Solutions		: {3},
-  Times (ms)	: {4},
-  Nodes			: {5},
-  Backtracks	: {6},
-  Restarts		: {7}.
-  
-  \end{lstlisting}
-	brackets [\textit{line}] indicate \textit{line} is optionnal,\\
- 	\texttt{Maximize} --resp. \texttt{Minimize}-- indicates the best known value before exiting of the objective value in \textit{maximize()} -- --resp. \textit{minimize()}-- strategy.
-		\end{itemize}			
 
-	\item \textbf{VERBOSE -- level 3:} Display informations on search state.
-		\begin{itemize}
-			\item EVERY X (default=1000) NODES:
-			\begin{lstlisting}
-- Partial search - [Objective : {0}, ]{1} solutions, {2} Time (ms), {3} Nodes, {4} Backtracks, {5} Restarts.
-			\end{lstlisting}
-			\texttt{Objective} indicates the best known value.
+\section{Logging statements}\label{advanced:loggingstatements}\hypertarget{advanced:loggingstatements}{}
 
-			\item ON RESTART : 
-			\begin{lstlisting}
-- Restarting search - {0} Restarts.
-			\end{lstlisting}
-		\end{itemize}
-
-	\item \textbf{SOLUTION -- level 4:} display all solutions.
-		\begin{itemize}
-			\item AT EACH SOLUTION:
-			\begin{lstlisting}
-- Solution #{0} found. [Objective: {0}, ]{1} Solutions, {2} Time (ms), {3} Nodes, {4} Backtracks, {5} Restarts.
-  X_1:v1, x_2:v2...
-			\end{lstlisting}
-		\end{itemize}
-
-	\item \textbf{SEARCH -- level 5:} Display the search tree.
-		\begin{itemize}
-			\item AT EACH NODE, ON DOWN BRANCH:
-			\begin{lstlisting}
-...[w] down branch X==v branch b
-			\end{lstlisting}
-where \texttt{w} is the current world index, \texttt{X} the branching variable, \texttt{v} the branching value and \texttt{b} the branch index. This message can be adapted on variable type and search strategy.
-
-			\item AT EACH NODE, ON UP BRANCH:
-			\begin{lstlisting}
-...[w] up branch X==v branch b
-			\end{lstlisting}
-where \texttt{w} is the current world index, \texttt{X} the branching variable, \texttt{v} the branching value and \texttt{b} the branch index. This message can be adapted on variable type and search strategy.
-		\end{itemize}
-
-	\item \textbf{FINEST -- level 6:} display all logs.
-
-\end{itemize}
-
-More precisely, if the verbosity level is greater than DEFAULT, then the verbosity levels of the model and of the solver are increased to INFO, and the verbosity levels of the search and of the branching are slightly modified to display the solution(s) and search messages.
-
-The verbosity level can be changed as follows:
+\subsection{Define your own logger.}\label{advanced:defineyourownlogger}\hypertarget{advanced:defineyourownlogger}{}
 \begin{lstlisting}
-	ChocoLogging.setVerbosity(Verbosity.VERBOSE);
+ChocoLogging.makeUserLogger(String suffix);
 \end{lstlisting}
 
 
-\subsubsection{How to write logging statements ?}\label{advanced:howtowriteloggingstatements}\hypertarget{advanced:howtowriteloggingstatements}{}
+\subsection{How to write logging statements ?}\label{advanced:howtowriteloggingstatements}\hypertarget{advanced:howtowriteloggingstatements}{}
 
 \begin{itemize}
 	\item Critical Loggers are provided to display error or warning. Displaying too much message really \textbf{impacts the performances}.
@@ -948,18 +1096,13 @@ The verbosity level can be changed as follows:
 	\item Use the \texttt{Logger.log} function instead of building string in \texttt{Logger.info()}.
 \end{itemize}
 
-\subsubsection{Handlers.}\label{advanced:handlers}\hypertarget{advanced:handlers}{}
+\subsection{Handlers.}\label{advanced:handlers}\hypertarget{advanced:handlers}{}
 Logs are displayed on \texttt{System.out} but warnings and severe messages are also displayed on \texttt{System.err}.
 \texttt{ChocoLogging.java} also provides utility functions to easily change handlers:
 \begin{itemize}
 	\item Functions \texttt{set...Handler} remove current handlers and replace them by a new handler.
 	\item Functions \texttt{add...Handler} add new handlers but do not touch existing handlers.
 \end{itemize}
-
-\subsubsection{Define your own logger.}\label{advanced:defineyourownlogger}\hypertarget{advanced:defineyourownlogger}{}
-\begin{lstlisting}
-ChocoLogging.makeUserLogger(String suffix);
-\end{lstlisting}
 
 % \subsubsection{Figure source}\label{advanced:figuresource}\hypertarget{advanced:figuresource}{}
 % \begin{lstlisting}

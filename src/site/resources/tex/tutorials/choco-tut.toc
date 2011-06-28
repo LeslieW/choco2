@@ -34,8 +34,8 @@
 \contentsline {subsection}{\numberline {4.2.1}Solution of Exercise 2.1 (Bin packing, cumulative and search strategies)}{29}{subsection.4.2.1}
 \contentsline {subsection}{\numberline {4.2.2}Solution of Exercise 2.2 (Social golfer)}{29}{subsection.4.2.2}
 \contentsline {subsection}{\numberline {4.2.3}Solution of Exercise 2.3 (Golomb rule)}{29}{subsection.4.2.3}
-\contentsline {section}{\numberline {4.3}I know CP and Choco2.0}{30}{section.4.3}
-\contentsline {subsection}{\numberline {4.3.1}Solution of Exercise 3.1 (Hamiltonian Cycle Problem Traveling Salesman Problem)}{30}{subsection.4.3.1}
+\contentsline {section}{\numberline {4.3}I know CP and Choco2.0}{29}{section.4.3}
+\contentsline {subsection}{\numberline {4.3.1}Solution of Exercise 3.1 (Hamiltonian Cycle Problem Traveling Salesman Problem)}{29}{subsection.4.3.1}
 \contentsline {subsection}{\numberline {4.3.2}Solution of Exercise 3.2 (Shop scheduling)}{30}{subsection.4.3.2}
 \contentsline {chapter}{\numberline {5}Applications with global constraints}{31}{chapter.5}
 \contentsline {section}{\numberline {5.1}Placement and use of the Geost constraint}{31}{section.5.1}
@@ -49,7 +49,7 @@
 \contentsline {subsubsection}{Solve the problem.}{34}{section*.11}
 \contentsline {subsection}{\numberline {5.1.2}Support for Greedy Assignment within the geost Kernel}{34}{subsection.5.1.2}
 \contentsline {subsubsection}{Motivation and functionality description.}{34}{section*.12}
-\contentsline {subsubsection}{Implementation.}{36}{section*.13}
+\contentsline {subsubsection}{Implementation.}{34}{section*.13}
 \contentsline {subsubsection}{Second example.}{36}{section*.14}
 \contentsline {section}{\numberline {5.2}Scheduling and use of the cumulative constraint}{37}{section.5.2}
 \contentsline {part}{Bibliography}{41}{figure.5.6}

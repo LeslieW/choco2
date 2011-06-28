@@ -29,6 +29,7 @@
                 <artifactId>
                     maven-project-info-reports-plugin
                 </artifactId>
+                <version>2.3.1</version>
                 <reportSets>
                     <reportSet>
                         <reports>
@@ -40,6 +41,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.7</version>
                 <configuration>
                     <!--<minmemory>128m</minmemory>
                     <maxmemory>512m</maxmemory>-->
@@ -57,6 +59,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-changelog-plugin</artifactId>
+                <version>2.2</version>
             </plugin>
             <!--<plugin>
            <groupId>org.codehaus.mojo</groupId>
@@ -69,6 +72,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jxr-maven-plugin</artifactId>
+                <version>2.0-beta-1</version>
             </plugin>
         </plugins>
     </reporting>

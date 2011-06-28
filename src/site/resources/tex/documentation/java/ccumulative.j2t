@@ -19,7 +19,7 @@
         IntegerVariable obj = makeIntVar("obj", 0, n, Options.V_BOUND, Options.V_OBJECTIVE);
         //post the cumulative
         m.addConstraint(cumulative("cumulative", tasks, height, constant(0), capa,
-                SettingType.TASK_INTERVAL.getOptionName()));
+                Options.C_CUMUL_TI));
         //post the channeling to know if the task is scheduled or not
         for (int i = 0; i < n; i++) {
             m.addConstraint(boolChanneling(bool[i], height[i], heights_data[i]));
