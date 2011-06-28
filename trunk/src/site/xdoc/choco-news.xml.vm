@@ -7,6 +7,30 @@
     <body>
 
         <section name="News">
+            <subsection name="New constraints">
+                <p>
+                    Narendra Jussien, Thierry Petit - 06/28/2010
+                </p>
+                <p>
+                    We recently added two constraints to CHOCO.
+                </p>
+                <p>
+                    increasingSum(IntegerVariable[] x, IntegerVariable s):
+                    Given a sequence of variables X = x0, x1, . . . , xn−1, the increasingSum constraint imposes that
+                    &#8704; i &#8712; [0, n − 2], xi &#8804; xi+1 and xi &#8712; X xi = s,
+                    build on an O(n) bound-consistency algorithm.
+                </p>
+                <p>
+                    inverseChannelingWithinRange(IntegerVariable[] x, IntegerVariable[] y): derived from inverseChanneling(x, y),
+                    "If the i^th variable of the collection X is assigned to j and if j is less than or equal to the number of items of the collection Y
+                    then the j^th variable of the collection Y is assigned to i.
+                    Conversely, if the j^th variable of the collection Y is assigned to i and if i is less than or equal to the number of items of the collection X
+                    then the ith variable of the collection X is assigned to j."
+                    See <a href="http://www.emn.fr/z-info/sdemasse/gccat/Cinverse_within_range.html">inverse_within_range</a>.
+                </p>
+
+            </subsection>
+
             <subsection name="CNF: boolean formulas framework">
                 <p>
                     Charles Prud'homme - 12/23/2010

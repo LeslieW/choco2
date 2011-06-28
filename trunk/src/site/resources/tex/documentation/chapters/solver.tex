@@ -1,4 +1,5 @@
-?%\part{solver}
+%!TEX root = ../content-doc.tex
+%\part{solver}
 \label{solver}
 \hypertarget{solver}{}
 
@@ -9,6 +10,7 @@
 
 
 \newglossaryentry{Solver}{name={Solver},description={solver description}}
+The \mylst{Solver}, along with the \mylst{Model}, is one of the two key elements of any Choco program. The Choco \mylst{Solver} is mainly focus on resolution part: reading the \mylst{Model}, defining the search strategies and the resolution policy.  
 
 To create a \gls{Solver}, one just needs to create a new object as follow:
 \begin{lstlisting}
@@ -161,6 +163,46 @@ Once the solver variables are created when reading the model, the solver then it
 At this step, auxiliary solver variables and constraints may be generated. The created constraints are then added to the internal constraint network. 
 
 Each solver constraint encapsulates a filtering algorithm which is called, during the search, when a propagation step occurs or when an external event (e.g., value removal or bound modification) happens on some variable of the constraint.
+
+One can access to the Solver representation of a Model constraint, using the \texttt{Solver} API \mylst{getCstr(Constraint c)}.
+
+\section{Solve a problem}\label{solver:solveaproblem}\hypertarget{solver:solveaproblem}{}
+%As Solver is the second element of a Choco program, the control of the search process without using predefined tools is made on the Solver.
+
+Table below presents the different API offers by \texttt{Solver} to launch the problem resolution. All these methods return a \texttt{Boolean} object standing for the \emph{problem feasibility status} of the solver:
+$$\begin{cases}
+  \texttt{Boolean.TRUE} &\text{ if at least one feasible solution has been computed},\\
+  \texttt{Boolean.FALSE} &\text{ if the problem is proved to be infeasible},\\
+  \texttt{null} &\text{ otherwise, i.e. when a search limit has been reached before.}
+\end{cases}$$
+
+\noindent\begin{tabular}{p{.4\linewidth}p{.6\linewidth}}
+  \hline
+  \texttt{Solver} API & description \\
+  \hline
+      \mylst{solve()} or \mylst{solve(false)} &  runs backtracking until reaching \emph{a first feasible solution} (returns \mylst{Boolean.TRUE}) or the proof of infeasibility (returns \mylst{Boolean.FALSE}) or a search limit (returns \mylst{null}).\\[.3em]
+      \hline\\
+      \mylst{nextSolution()} &  Can only be called after a \texttt{solve()} or a \texttt{nextSolution()} call that has returned \mylst{Boolean.TRUE}. Runs backtracking, from the solution leaf reached by the previous \texttt{solve()} or \texttt{nextSolution()} call, until reaching \emph{a new feasible solution} (returns \mylst{Boolean.TRUE}), or proving no such new solution exists (returns \texttt{Boolean.FALSE}), or reaching a search limit (returns \mylst{null}).\\[.3em]
+      \hline\\
+      \mylst{isFeasible()} &  Returns the feasibility status of the solver.\\
+      \hline\\
+      \mylst{solveAll()} or \mylst{solve(true)} &  Runs backtracking until computing \emph{all feasible solutions}, or until proving infeasibility (returns \mylst{Boolean.FALSE}) or until reaching a search limit (returns \mylst{Boolean.TRUE} if at least one first solution was computed, and \mylst{null} otherwise). \\[.3em]
+      \hline\\
+      \mylst{maximize(Var obj, boolean restart)} &  Runs branch-and-bound until reaching \emph{a feasible solution that is proved to maximize objective} \mylst{obj},  or until proving infeasibility (returns \mylst{Boolean.FALSE}) or until reaching a search limit (returns \mylst{Boolean.TRUE} if at least one first solution was computed, and \mylst{null} otherwise). It proceeds by successive improvements of the best solution found so far: each time a feasible solution is found at a leaf of the tree search, then the search follows for a new solution with a greater objective, until it proves that no such improving solution exists.
+Parameter \texttt{restart} is a boolean indicating whether the search continues from the solution leaf with a backtrack (if set to \mylst{false}) or if it is relaunch from the root node (if set to \texttt{true}).\\
+\hline\\
+      \mylst{minimize(Var obj, boolean restart)} &  similar to \texttt{maximize} but for computing \emph{a feasible solution that is proved to minimize objective} \texttt{obj}.\\[.3em]      \hline\\
+	\end{tabular}
+
+The following  API are also useful to manipulate a \texttt{Solver} object:\\
+\noindent\begin{tabular}{p{.4\linewidth}p{.6\linewidth}}
+  \hline
+  \texttt{Solver} API & description \\
+  \hline
+      \mylst{propagate()} &  Launchs propagation by running, in turn, the domain reduction algorithms of the constraints until it reaches a fix point. Throws a \texttt{ContradictionException} when a contradiction is detected, i.e. a variable domain is emptied. This method is called at each node of the tree search constructed by the solving methods above.\\[.3em]
+      \mylst{isFeasible()} &  Returns the current feasibility status of the solver.\\
+      \hline\\
+	\end{tabular}
 
 \section{Search Strategy}\label{solver:searchstrategy}\hypertarget{solver:searchstrategy}{}
 
@@ -345,7 +387,7 @@ The second way to do it is to compute the next value at each call.
 \begin{notedef}\tt
   \begin{itemize}
   \item \hyperlink{maxval:maxvalvalselector}{MaxVal}, \hyperlink{midval:midvalvalselector}{MidVal}, \hyperlink{minval:minvalvalselector}{MinVal}
-  \item \hyperlink{bestfit:bestfitvalselector}{BestFit}, \hyperlink{costregularvalselector:costregularvalselectorvalselector}{CostRegularValSelector}, \hyperlink{fcostregularvalselector:fcostregularvalselectorvalselector}{FCostRegularValSelector}, %\hyperlink{mcrvalselector:mcrvalselectorvalselector}{MCRValSelector}, 
+  \item \hyperlink{bestfit:bestfitvalselector}{BestFit}, \hyperlink{costregularvalselector:costregularvalselectorvalselector}{CostRegularValSelector}, \hyperlink{fcostregularvalselector:fcostregularvalselectorvalselector}{FCostRegularValSelector}, \hyperlink{randomintvalselector:randomintvalselectorvalselector}{RandomIntValSelector}, %\hyperlink{mcrvalselector:mcrvalselectorvalselector}{MCRValSelector}, 
   \end{itemize}
 \end{notedef}
 \item implementing interface \texttt{ValSelector<SetVar>}:
@@ -469,69 +511,183 @@ The number of failures can be monitored using \mylst{monitorFailLimit(true)}.
 \end{description}
 \todo{Define all these notions more precisely and add an example.}
 
+\section{Logging the search}\label{solver:logs}\hypertarget{solver:logs}{}
+A logging class is instrumented in order to produce trace statements throughout search: \mylst{ChocoLogging}. 
 
-\section{Solve a problem}\label{solver:solveaproblem}\hypertarget{solver:solveaproblem}{}
-%As Solver is the second element of a Choco program, the control of the search process without using predefined tools is made on the Solver.
+\subsection{Architecture }\label{solver:logarchitecture}\hypertarget{solver:logarchitecture}{}
 
-Table below presents the different API offers by \texttt{Solver} to launch the problem resolution. All these methods return a \texttt{Boolean} object standing for the \emph{problem feasibility status} of the solver:
-$$\begin{cases}
-  \texttt{Boolean.TRUE} &\text{ if at least one feasible solution has been computed},\\
-  \texttt{Boolean.FALSE} &\text{ if the problem is proved to be infeasible},\\
-  \texttt{null} &\text{ otherwise, i.e. when a search limit has been reached before.}
-\end{cases}$$
+Choco logging system is based on the \mylst{java.util.logging} package and located in the package \mylst{common.logging}.
+Most Choco abstract classes or interfaces propose a static field \mylst{LOGGER}.
+The following figures present the architecture of the logging system with the default verbosity.
 
-\noindent\begin{tabular}{p{.4\linewidth}p{.6\linewidth}}
-  \hline
-  \texttt{Solver} API & description \\
-  \hline
-      \mylst{solve()} or \mylst{solve(false)} &  runs backtracking until reaching \emph{a first feasible solution} (returns \texttt{Boolean.TRUE}) or the proof of infeasibility (returns \texttt{Boolean.FALSE}) or a search limit (returns \texttt{null}).\\[.3em]
-      \mylst{solveAll()} or \mylst{solve(true)} &  Runs backtracking until computing \emph{all feasible solutions}, or until proving infeasibility (returns \texttt{Boolean.FALSE}) or until reaching a search limit (returns \texttt{Boolean.TRUE} if at least one first solution was computed, and \texttt{null} otherwise).\\[.3em]
-%      \mylst{propagate()} &  Computes initial propagation of the Model, and reachs the first Fix Point. It reduces variables Domain through constraints linked and other variables domain. Can throw a \texttt{ContradictionException} if the Solver detects a contradiction in the Model. \\
-      \mylst{maximize(Var obj, boolean restart)} &  Runs branch-and-bound until reaching \emph{a feasible solution that is proved to maximize objective} \texttt{obj},  or until proving infeasibility (returns \texttt{Boolean.FALSE}) or until reaching a search limit (returns \texttt{Boolean.TRUE} if at least one first solution was computed, and \texttt{null} otherwise). It proceeds by successive improvements of the best solution found so far: each time a feasible solution is found at a leaf of the tree search, then the search follows for a new solution with a greater objective, until it proves that no such improving solution exists.
-Parameter \texttt{restart} is a boolean indicating whether the search continues from the solution leaf with a backtrack (if set to \texttt{false}) or if it is relaunch from the root node (if set to \texttt{true}).
-See \hyperlink{solver:optimization}{example}.\\[.3em]
-      \mylst{minimize(Var obj, boolean restart)} &  similar to \texttt{maximize} but for computing \emph{a feasible solution that is proved to minimize objective} \texttt{obj}.\\[.3em]
-      \mylst{nextSolution()} &  Can only be called after a \texttt{solve()} or a \texttt{nextSolution()} call that has returned \texttt{Boolean.TRUE}. Runs backtracking, from the solution leaf reached by the previous \texttt{solve()} or \texttt{nextSolution()} call, until reaching \emph{a new feasible solution} (returns \texttt{Boolean.TRUE}), or proving no such new solution exists (returns \texttt{Boolean.FALSE}), or reaching a search limit (returns \texttt{null}).\\[.3em]
-      \mylst{isFeasible()} &  Returns the feasibility status of the solver.\\
-      \hline\\
-	\end{tabular}
+\insertGraphique{.3\linewidth}{media/logger-default.png}{Logger Tree with the default verbosity}
 
-The following  API are also useful to manipulate a \texttt{Solver} object:\\
-\noindent\begin{tabular}{p{.4\linewidth}p{.6\linewidth}}
-  \hline
-  \texttt{Solver} API & description \\
-  \hline
-      \mylst{propagate()} &  Launchs propagation by running, in turn, the domain reduction algorithms of the constraints until it reaches a fix point. Throws a \texttt{ContradictionException} when a contradiction is detected, i.e. a variable domain is emptied. This method is called at each node of the tree search constructed by the solving methods above.\\[.3em]
-      \mylst{isFeasible()} &  Returns the current feasibility status of the solver.\\
-      \hline\\
-	\end{tabular}
+The shape of the node depicts the type of logger:
+\begin{itemize}
+	\item The \emph{house} loggers represent private loggers. Do not use directly these loggers because their level are low and all messages would always be displayed.
+	\item The \emph{octagon} loggers represent critical loggers. These loggers are provided in the variables, constraints and search classes and could have a huge impact on the global performances.
+	\item The \emph{box} loggers are provided for dev and users.
+\end{itemize}
+The color of the node gives its logging level with DEFAULT verbosity:
+\texttt{Level.FINEST} (\textcolor{yellow}{gold}),
+\texttt{Level.INFO} (\textcolor{orange}{orange}),
+\texttt{Level.WARNING} (\textcolor{red}{red}).
 
-\subsection{Solver settings}\label{solver:solversettings}\hypertarget{solver:solversettings}{}
+\subsection{Verbosities and messages}\label{solver:verbosityandmessages}\hypertarget{solver:verbosityandmessages}{}
 
-\subsubsection{Logs}\label{solver:logs}\hypertarget{solver:logs}{}
-A logging class is instrumented in order to produce trace statements throughout search: ChocoLogging. The verbosity level of the solver can be set, by the following static method
+The verbosity level of the solver can be set, by the following static method
+
 \begin{lstlisting}
+	// Before the resolution
 	ChocoLogging.toVerbose();
-	// And after solver.solve()
+	//... resolution declaration
+	solver.solve();
+	// And after the resolution
 	ChocoLogging.flushLogs();
 \end{lstlisting}
 
-The code above ensure that messages are printed in order to describe the construction of the search tree.
 
-Six verbosity levels are available:
+The following table summarizes the verbosities available in choco: 
+\begin{itemize}
+	\item \textbf{OFF -- level 0:} Disable logging.	 
 
-\noindent\begin{tabular}{p{.4\linewidth}p{.6\linewidth}}
-  \hline
-  Level & prints... \\
-  \hline
- \texttt{ChocoLogging.toSilent()} & display only severe messages from core loggers and warning messages otherwise\\
- \ \texttt{ChocoLogging.toQuiet()} & display only severe messages from core loggers and info messages otherwise\\
- \texttt{ChocoLogging.toDefault()} & display information about initial and final state of the search\\
- \texttt{ChocoLogging.toVerbose()} & display search information at regular node intervals\\
- \texttt{ChocoLogging.toSolution()} & display all solutions\\
- \texttt{ChocoLogging.toSearch()} & display the search tree\\
-\hline\\
-\end{tabular}
+	\vspace{0.2cm} 
+	\textit{Usage} :  \mylst{ChocoLogging.setVerbosity(Verbosity.OFF)}
+	
+	\item \textbf{SILENT -- level 1:} Display only severe messages.
+	
+	\vspace{0.2cm} 
+	\textit{Usage} : 
+		\begin{itemize}
+		\item \mylst{ChocoLogging.toSilent()}
+		\item \mylst{ChocoLogging.setVerbosity(Verbosity.SILENT)}
+		\end{itemize}
+	
+	\item \textbf{DEFAULT -- level 2:} Display informations on final search state.
+		\begin{itemize}
+			\item ON START
+				\lstset{language={sh},columns=fixed}
+\begin{lstlisting}
+ ** CHOCO : Constraint Programming Solver
+ ** CHOCO v2.1.1 (April, 2009), Copyleft (c) 1999-2010
+ \end{lstlisting}
+			\item ON COMPLETE SEARCH:
+				\begin{lstlisting}
+- Search completed -
+ [Maximize		: {0},]
+ [Minimize		: {1},]
+  Solutions		: {2},
+  Times (ms)	: {3},
+  Nodes			: {4},
+  Backtracks	: {5},
+  Restarts		: {6}.
+  \end{lstlisting}
+	brackets [\textit{line}] indicate \textit{line} is optionnal,\\
+ 	\texttt{Maximize} --resp. \texttt{Minimize}-- indicates the best known value before exiting of the objective value in \textit{maximize()} -- --resp. \textit{minimize()}-- strategy.
+
+			\item ON COMPLETE SEARCH WITHOUT SOLUTIONS :
+				\begin{lstlisting}
+- Search completed - No solutions
+ [Maximize		: {0},]
+ [Minimize		: {1},]
+  Solutions		: {2},
+  Times (ms)	: {3},
+  Nodes			: {4},
+  Backtracks	: {5},
+  Restarts		: {6}.
+\end{lstlisting}
+	brackets [\textit{line}] indicate \textit{line} is optionnal,\\
+ 	\texttt{Maximize} --resp. \texttt{Minimize}-- indicates the best known value before exiting of the objective value in \textit{maximize()} -- --resp. \textit{minimize()}-- strategy.
+
+			\item ON INCOMPLETE SEARCH:
+				\begin{lstlisting}
+- Search incompleted - Exiting on limit reached
+  Limit			: {0},
+ [Maximize		: {1},]
+ [Minimize		: {2},]
+  Solutions		: {3},
+  Times (ms)	: {4},
+  Nodes			: {5},
+  Backtracks	: {6},
+  Restarts		: {7}.
+  
+  \end{lstlisting}
+	brackets [\textit{line}] indicate \textit{line} is optionnal,\\
+ 	\texttt{Maximize} --resp. \texttt{Minimize}-- indicates the best known value before exiting of the objective value in \textit{maximize()} -- --resp. \textit{minimize()}-- strategy.
+		\end{itemize}			
+
+	\textit{Usage} : 
+		\begin{itemize}
+		\item \mylst{ChocoLogging.toDefault()}
+		\item \mylst{ChocoLogging.setVerbosity(Verbosity.DEFAULT)}
+		\end{itemize}
+
+	\item \textbf{VERBOSE -- level 3:} Display informations on search state.
+		\begin{itemize}
+			\item EVERY X (default=1000) NODES:
+			\begin{lstlisting}
+- Partial search - [Objective : {0}, ]{1} solutions, {2} Time (ms), {3} Nodes, {4} Backtracks, {5} Restarts.
+			\end{lstlisting}
+			\texttt{Objective} indicates the best known value.
+
+			\item ON RESTART : 
+			\begin{lstlisting}
+- Restarting search - {0} Restarts.
+			\end{lstlisting}
+		\end{itemize}
+		
+		\textit{Usage} : 
+		\begin{itemize}
+		\item \mylst{ChocoLogging.toVerbose()}
+		\item \mylst{ChocoLogging.setVerbosity(Verbosity.VERBOSE)}
+		\end{itemize}
+
+	\item \textbf{SOLUTION -- level 4:} display all solutions.
+		\begin{itemize}
+			\item AT EACH SOLUTION:
+			\begin{lstlisting}
+- Solution #{0} found. [Objective: {0}, ]{1} Solutions, {2} Time (ms), {3} Nodes, {4} Backtracks, {5} Restarts.
+  X_1:v1, x_2:v2...
+			\end{lstlisting}
+		\end{itemize}
+		
+		\textit{Usage} : 
+		\begin{itemize}
+		\item \mylst{ChocoLogging.toSolution()}
+		\item \mylst{ChocoLogging.setVerbosity(Verbosity.SOLUTION)}
+		\end{itemize}
+
+	\item \textbf{SEARCH -- level 5:} Display the search tree.
+		\begin{itemize}
+			\item AT EACH NODE, ON DOWN BRANCH:
+			\begin{lstlisting}
+...[w] down branch X==v branch b
+			\end{lstlisting}
+where \texttt{w} is the current world index, \texttt{X} the branching variable, \texttt{v} the branching value and \texttt{b} the branch index. This message can be adapted on variable type and search strategy.
+
+			\item AT EACH NODE, ON UP BRANCH:
+			\begin{lstlisting}
+...[w] up branch X==v branch b
+			\end{lstlisting}
+where \texttt{w} is the current world index, \texttt{X} the branching variable, \texttt{v} the branching value and \texttt{b} the branch index. This message can be adapted on variable type and search strategy.
+		\end{itemize}
+		
+		\textit{Usage} : 
+		\begin{itemize}
+		\item \mylst{ChocoLogging.toSearch()}
+		\item \mylst{ChocoLogging.setVerbosity(Verbosity.SEARCH)}
+		\end{itemize}
+
+	\item \textbf{FINEST -- level 6:} display all logs.
+	
+	\vspace{0.2cm} 
+	\textit{Usage} :  \mylst{ChocoLogging.setVerbosity(Verbosity.FINEST)}
+
+\end{itemize}
+
+More precisely, if the verbosity level is greater than DEFAULT, then the verbosity levels of the model and of the solver are increased to INFO, and the verbosity levels of the search and of the branching are slightly modified to display the solution(s) and search messages.
+
+\subsection{Basic settings}\label{solver:logbasicsettings}\hypertarget{solver:logbasicsettings}{}
 
 Note that in the case of a verbosity greater or equals to \texttt{toVerbose()}, the regular search information step is set to 1000, by default. You can change this value, using:
 \begin{lstlisting}
@@ -544,25 +700,67 @@ Note that in the case of verbosity \texttt{toSearch()}, trace statements are pri
   ChocoLogging.setLoggingMaxDepth(10);
 \end{lstlisting}
 
-\subsection{Optimization}\label{solver:optimization}\hypertarget{solver:optimization}{}
-\todo{to introduce}
-\begin{lstlisting}
-  Model m = new CPModel();
-  IntegerVariable obj1 = makeEnumIntVar("obj1", 0, 7);
-  IntegerVariable obj2 = makeEnumIntVar("obj1", 0, 5);
-  IntegerVariable obj3 = makeEnumIntVar("obj1", 0, 3);
-  IntegerVariable cost = makeBoundIntVar("cout", 0, 1000000);
-  int capacity = 34;
-  int[] volumes = new int[]{7, 5, 3};
-  int[] energy = new int[]{6, 4, 2};
-  // capacity constraint
-  m.addConstraint(leq(scalar(volumes, new IntegerVariable[]{obj1, obj2, obj3}), capacity));
-	
-  // objective function
-  m.addConstraint(eq(scalar(energy, new IntegerVariable[]{obj1, obj2, obj3}), cost));
-  
-  Solver s = new CPSolver();
-  s.read(m);
-  
-  s.maximize(s.getVar(cost), false);
-\end{lstlisting}
+
+\section{Clean a Solver}\label{solver:clean}\hypertarget{solver:clean}{}
+
+Although it is simple and secure to create new instance of \mylst{Solver}, sometimes it  is more obvious and efficient to reuse a \mylst{Solver}. 
+It is recommended to reuse instance of \mylst{Solver} when a problem is being solved more than once without deep modifications between two resolutions:
+\begin{itemize}
+\item a problem is being resolved with different search strategies,
+\item a problem is being modified (by adding or removing constraints) through multiple resolutions.
+\end{itemize}
+
+\begin{note}
+Reusing a \mylst{Solver} must be prepared and well though. A backup of the initial state of the \mylst{Solver} can be necessary to recover initial domains and constraints internal structures. In the case where new constraints are created and added, this must be done manipulating \mylst{Solver} objects (SConstraint for example). So, this required knowledges in advanced uses of \mylst{Solver}.
+\end{note}
+
+
+When a \mylst{Solver} needs to be reused, there are some questions about what needed to be initialized.
+\begin{itemize}
+\item \underline{reset the search strategy :} this is done by calling \mylst{resetSearchStrategy()} on a \mylst{CPSolver}.
+A call to this method clears the defined branching strategies (removes properly previous ones) and sets the current search strategy to \mylst{null}.
+If one has overridden branching strategies, it must to be defined again.
+If one has defined a limit, it is still known and will be reset for the next search.
+
+\item \underline{cancel restarts :} this is done by calling \mylst{cancelRestarts(Solver solver} on \mylst{RestartFactory}.
+Sets the restarts parameters to the default ones. This must be done if a restart strategy has been declared.
+
+\end{itemize}
+
+\subsection{What about simply calling \mylst{solver.clear()}?}
+
+A call to \mylst{solver.clear()} will reset every internal structures of a \mylst{Solver}: it clears the variable list, the constraint list, the environment, the propagation engine, the model read, etc.
+This set the solver in the same state as it was just before its creation.
+
+\subsection{Things to know on \mylst{Solver} reusability}
+
+There are few things to know on a \mylst{Solver} reusability:
+\begin{itemize}
+\item a variable cannot be removed from a \mylst{Solver},
+\item a statically posted constraint (added using \mylst{solver.postCut(SConstraint c)}) can be removed \textit{whenever} using \mylst{void eraseConstraint(SConstraint c)},
+\item a dynamically posted constraint (added using \mylst{solver.post(SConstraint c)}) can be removed \textit{at root node} using \mylst{void eraseConstraint(SConstraint c)}.
+\end{itemize}
+
+
+%\subsection{Optimization}\label{solver:optimization}\hypertarget{solver:optimization}{}
+%\todo{to introduce}
+%\begin{lstlisting}
+%  Model m = new CPModel();
+%  IntegerVariable obj1 = makeEnumIntVar("obj1", 0, 7);
+%  IntegerVariable obj2 = makeEnumIntVar("obj1", 0, 5);
+%  IntegerVariable obj3 = makeEnumIntVar("obj1", 0, 3);
+%  IntegerVariable cost = makeBoundIntVar("cout", 0, 1000000);
+%  int capacity = 34;
+%  int[] volumes = new int[]{7, 5, 3};
+%  int[] energy = new int[]{6, 4, 2};
+%  // capacity constraint
+%  m.addConstraint(leq(scalar(volumes, new IntegerVariable[]{obj1, obj2, obj3}), capacity));
+%	
+%  // objective function
+%  m.addConstraint(eq(scalar(energy, new IntegerVariable[]{obj1, obj2, obj3}), cost));
+%  
+%  Solver s = new CPSolver();
+%  s.read(m);
+%  
+%  s.maximize(s.getVar(cost), false);
+%\end{lstlisting}

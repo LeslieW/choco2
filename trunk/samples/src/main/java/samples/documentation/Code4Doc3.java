@@ -234,6 +234,21 @@ public class Code4Doc3 {
         //totex
     }
 
+    public void cincreasingsum(){
+        //totex cincreasingsum
+        Model m = new CPModel();
+        IntegerVariable[] res = new IntegerVariable[3];
+        res[0] = makeIntVar("x0", -2, 3);
+        res[1] = makeIntVar("x1", -3, 3);
+        res[2] = makeIntVar("x2", -3, 0);
+        IntegerVariable sum = makeIntVar("s", -3, 3);
+        m.addConstraint(Choco.increasingSum(res, sum));
+        Solver s = new CPSolver();
+        s.read(m);
+        s.solve();
+        //totex
+    }
+
     public void cinfeaspairac(){
         //totex cinfeaspairac
         Model m = new CPModel();
@@ -327,6 +342,22 @@ public class Code4Doc3 {
         s.read(m);
         s.solveAll();
         //totex 
+    }
+
+    public void cinversechannelingwithinrange(){
+        //totex cinversechannelingwithinrange
+        Model m = new CPModel();
+        IntegerVariable[] X = Choco.makeIntVarArray("X", 3, 0, 9, Options.V_ENUM);
+        IntegerVariable[] Y = Choco.makeIntVarArray("Y", 4, 0, 9, Options.V_ENUM);
+
+        m.addConstraint(Choco.eq(X[0], 9));
+        m.addConstraint(Choco.eq(Y[0], 9));
+        m.addConstraint(Choco.eq(Y[2], 9));
+        m.addConstraint(inverseChannelingWithinRange(X, Y));
+        Solver s = new CPSolver();
+        s.read(m);
+        s.solve();
+        //totex
     }
 
     public void cinverseset(){

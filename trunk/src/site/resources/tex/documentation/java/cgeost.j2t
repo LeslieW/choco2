@@ -6,7 +6,7 @@
         int nbOfObj = 3;
         long seed = 0;
         //Create the Objects
-        Vector<GeostObject> obj = new Vector<GeostObject>();
+        List<GeostObject> obj = new ArrayList<GeostObject>();
         for (int i = 0; i < nbOfObj; i++) {
             IntegerVariable shapeId = Choco.makeIntVar("sid", i, i);
             IntegerVariable coords[] = new IntegerVariable[dim];
@@ -19,14 +19,14 @@
             obj.add(new GeostObject(dim, i, shapeId, coords, start, duration, end));
         }
         //Create the ShiftedBoxes and add them to corresponding shapes
-        Vector<ShiftedBox> sb = new Vector<ShiftedBox>();
+        List<ShiftedBox> sb = new ArrayList<ShiftedBox>();
         int[] t = {0, 0, 0};
         for (int d = 0; d < nbOfObj; d++) {
             int[] l = {lengths[d], heights[d], widths[d]};
             sb.add(new ShiftedBox(d, t, l));
         }
         //Create the external constraints vector
-        Vector<IExternalConstraint> ectr = new Vector<IExternalConstraint>();
+        List<IExternalConstraint> ectr = new ArrayList<IExternalConstraint>();
         //create the list of dimensions for the external constraint
         int[] ectrDim = new int[dim];
         for (int d = 0; d < dim; d++)
@@ -34,7 +34,7 @@
         //create the list of object ids for the external constraint
         int[] objOfEctr = new int[nbOfObj];
         for (int d = 0; d < nbOfObj; d++) {
-            objOfEctr[d] = obj.elementAt(d).getObjectId();
+            objOfEctr[d] = obj.get(d).getObjectId();
         }
         //create and add one external constraint of type non overlapping
         NonOverlappingModel n = new NonOverlappingModel(Constants.NON_OVERLAPPING, ectrDim, objOfEctr);

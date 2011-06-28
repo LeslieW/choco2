@@ -83,15 +83,15 @@ public abstract class ConstraintManager <V extends Variable> implements Expressi
         };
     }
     
-	protected final static boolean checkParameter(Object[] o, int idx) {
+	protected static boolean checkParameter(Object[] o, int idx) {
 		return o.length>idx && o[idx] != null;
 	}
 	
-    protected final static SConstraint fail() {
+    protected static SConstraint fail() {
     	return fail("?");
     }
 
-    protected final static SConstraint fail(String cname) {
+    protected static SConstraint fail(String cname) {
     	LOGGER.severe("Could not found an implementation of "+cname+".");
     	ChocoLogging.flushLogs();
     	return null;

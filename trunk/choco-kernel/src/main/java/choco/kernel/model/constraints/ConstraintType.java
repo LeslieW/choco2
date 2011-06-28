@@ -46,7 +46,7 @@ public enum ConstraintType {
     CLAUSES("clauses", "constraint.clauses", false),
     COMPLEMENTSET("complementSet", "constraint.complementset", false),
     CST("cst"),
-    COSTKNAPSACK("costknapsack","constraint.costknapsack", false),
+    COSTKNAPSACK("costknapsack", "constraint.costknapsack", false),
     COSTREGULAR("costregular", "constraint.costregular", false),
     CUMULATIVE("cumulative", "constraint.cumulative", false),
     DISJUNCTIVE("disjunctive", "constraint.disjunctive", false),
@@ -70,7 +70,9 @@ public enum ConstraintType {
     IFTHENELSE("ifthenelse", "constraint.ifthenelse", true),
     IMPLIES("implies", "constraint.implies", false),
     INVERSECHANNELING("inverse channeling", "constraint.channeling", false),
+    INVERSECHANNELINGWITHINRANGE("inverse_channeling_with_range", "constraint.channeling", false),
     INCREASINGNVALUE("increasing n value", "constraint.increasingnvalue", false),
+    INCREASINGSUM("increasing_sum", "constraint.increasingsum", false),
     DOMAIN_CHANNELING("domain channeling", "constraint.channeling", false),
     INVERSE_SET("inverse set", "constraint.inverseset", false),
     ISINCLUDED("isIncluded", "constraint.isIncluded", false),
@@ -121,19 +123,17 @@ public enum ConstraintType {
     SORTING("sorting", "constraint.sorting", false),
     STRETCHPATH("stretchPath", "constraint.stretchPath", false),
     TABLE("table", "constraint.table", false),
-    METATASKCONSTRAINT("Meta Task Constraint","constraint.metaTaskConstraint", false),
+    METATASKCONSTRAINT("Meta Task Constraint", "constraint.metaTaskConstraint", false),
     TIMES("times", "constraint.times", false),
     TREE("tree", "constraint.tree", false),
     TRUE("true", "constraint.true", false),
     // USE_RESOURCES("useResources", "constraint.useResources", false),
     XNOR("xnor", "constraint.xnor", true),
-    XOR("xor", "constraint.xor", true),
-    ;
+    XOR("xor", "constraint.xor", true),;
 
     public final String name;
     public final String property;
     public final boolean canContainExpression;
-
 
 
     ConstraintType(String name, String property, boolean canContainExpression) {
@@ -146,9 +146,9 @@ public enum ConstraintType {
         this(name, "", false);
     }
 
-	public final String getName() {
-		return name;
-	}
+    public final String getName() {
+        return name;
+    }
 
 
 }

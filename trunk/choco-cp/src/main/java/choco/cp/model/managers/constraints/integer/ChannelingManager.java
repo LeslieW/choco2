@@ -30,6 +30,7 @@ package choco.cp.model.managers.constraints.integer;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.InverseChanneling;
+import choco.cp.solver.constraints.integer.InverseChannelingWithinRange;
 import choco.cp.solver.constraints.integer.channeling.BooleanChanneling;
 import choco.cp.solver.constraints.integer.channeling.DomainChanneling;
 import choco.kernel.common.util.tools.VariableUtils;
@@ -44,8 +45,6 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.List;
 
-import static choco.kernel.model.constraints.ConstraintType.*;
-
 /*
  *  ______
  * (__  __)
@@ -57,6 +56,7 @@ import static choco.kernel.model.constraints.ConstraintType.*;
  *    \
  *    |
  */
+
 /**
  * A manager to build new all channeling constraints
  */
@@ -64,36 +64,41 @@ public final class ChannelingManager extends IntConstraintManager {
 
 
     public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, List<String> options) {
-        if(solver instanceof CPSolver){
-            if(parameters instanceof ConstraintType){
-                ConstraintType type = (ConstraintType)parameters;
+        if (solver instanceof CPSolver) {
+            if (parameters instanceof Object[]) {
+                Object[] params = (Object[]) parameters;
+                ConstraintType type = (ConstraintType) params[0];
                 IntDomainVar[] var;
-                if(CHANNELING.equals(type)){
-                    IntDomainVar yij = solver.getVar(variables[0]);
-                    IntDomainVar xi = solver.getVar(variables[1]);
-                    int j = ((IntegerConstantVariable)variables[2]).getValue();
-                    IntDomainVar boolv, intv;
-                    if ((yij.getInf() >= 0) && (yij.getSup() <= 1)) {
-                        boolv = yij;
-                        intv = xi;
-                    } else {
-                        boolv = xi;
-                        intv = yij;
-                    }
-                    if ((boolv.getInf() >= 0) && (boolv.getSup() <= 1)/* && (intv.canBeInstantiatedTo(j))*/) {
-                        return new BooleanChanneling(boolv, intv, j);
-                    } else {
-                        throw new SolverException(yij + " should be a boolean variable and " + j + " should belongs to the domain of " + xi);
-                    }
-                }
-                else if(INVERSECHANNELING.equals(type)){
-                    var  = solver.getVar(variables);
-                    return new InverseChanneling(var, var.length/2);
-                } else if(DOMAIN_CHANNELING.equals(type)){
-                	return new DomainChanneling(
-                			VariableUtils.getIntVar(solver, variables, 0, variables.length - 1), 
-                			solver.getVar(variables[variables.length - 1]),
-                            solver.getEnvironment());
+                switch (type) {
+                    case CHANNELING:
+                        IntDomainVar yij = solver.getVar(variables[0]);
+                        IntDomainVar xi = solver.getVar(variables[1]);
+                        int j = ((IntegerConstantVariable) variables[2]).getValue();
+                        IntDomainVar boolv, intv;
+                        if ((yij.getInf() >= 0) && (yij.getSup() <= 1)) {
+                            boolv = yij;
+                            intv = xi;
+                        } else {
+                            boolv = xi;
+                            intv = yij;
+                        }
+                        if ((boolv.getInf() >= 0) && (boolv.getSup() <= 1)/* && (intv.canBeInstantiatedTo(j))*/) {
+                            return new BooleanChanneling(boolv, intv, j);
+                        } else {
+                            throw new SolverException(yij + " should be a boolean variable and " + j + " should belongs to the domain of " + xi);
+                        }
+                    case INVERSECHANNELING:
+                        var = solver.getVar(variables);
+                        return new InverseChanneling(var, var.length / 2);
+                    case INVERSECHANNELINGWITHINRANGE:
+                        int nbx = (Integer) params[1];
+                        var = solver.getVar(variables);
+                        return new InverseChannelingWithinRange(var, nbx);
+                    case DOMAIN_CHANNELING:
+                        return new DomainChanneling(
+                                VariableUtils.getIntVar(solver, variables, 0, variables.length - 1),
+                                solver.getVar(variables[variables.length - 1]),
+                                solver.getEnvironment());
                 }
             }
         }

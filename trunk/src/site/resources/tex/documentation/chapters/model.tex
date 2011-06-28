@@ -1,3 +1,4 @@
+%!TEX root = ../content-doc.tex
 \chapter{The model}\label{doc:model}\hypertarget{doc:model}{}
 
 The {\tt Model}, along with the {\tt Solver}, is one of the two key elements of any Choco program. The Choco {\tt Model} allows to describe a problem in an easy and declarative way: it simply records the variables and the constraints defining the problem.
@@ -220,6 +221,7 @@ The following constraints allow to ensure the integrity of two redundant models 
   \item \hyperlink{boolchanneling:boolchannelingconstraint}{boolChanneling} $b_j=1 \iff x=j$, 
   \item \hyperlink{domainchanneling:domainchannelingconstraint}{domainChanneling} $b_j=1 \iff x=j$, $\forall j$, 
   \item \hyperlink{inversechanneling:inversechannelingconstraint}{inverseChanneling} $y_j=i \iff x_i=j$, $\forall i, j$, 
+  \item \hyperlink{inversechannelingwithinrange:inversechannelingconstraintwithinrange}{inverseChannelingWithinRange} $y_j=i \wedge j \le |x| \iff x_i=j \wedge i \le |y|$, $\forall i, j$, 
   \item \hyperlink{inverseset:inversesetconstraint}{inverseSet} $i\in s_j \iff x_i=j$, $\forall i,j$, 
   \end{itemize}
 \end{notedef}
@@ -400,6 +402,7 @@ See also in Global Constraint Catalog: \href{http://www.emn.fr/x-info/sdemasse/g
   \item ordering: 
 \hyperlink{sorting:sortingconstraint}{sorting},
 \hyperlink{increasingnvalue:increasingnvalueconstraint}{increasingNValue},
+\hyperlink{increasingsum:increasingsumconstraint}{increasingSum},
 \hyperlink{lex:lexconstraint}{lex}, 
 \hyperlink{lexeq:lexeqconstraint}{lexeq},
 \hyperlink{leximin:leximinconstraint}{leximin},
@@ -514,5 +517,66 @@ See also in Global Constraint Catalog: \href{http://www.emn.fr/x-info/sdemasse/g
 \hyperlink{geost:geostconstraint}{geost}, 
  \end{itemize}
 \end{notedef}
+
+\subsection{Things to know about \mylst{Model}, \mylst{Variable} and \mylst{Constraint}}
+
+It is important to know the relation between \mylst{Model}s, \mylst{Variable}s and \mylst{Constraint}s. \mylst{Variable}s and \mylst{Constraint}s are build without the help of a \mylst{Model}, so that they can be used natively in different \mylst{Model}s. That's why one need to add them to a \mylst{Model}, using \mylst{model.addVariable(Variable var)} and \mylst{model.addConstraint(Constraint cstr)}. On a variable addition, this one is added to the list of variables of the model. On a constraint addition, the constraint is added to the constraint network AND the constraint and its associated variables are linked. It means the constraint is now known from its variables, which was not the case before the addition.
+
+
+Now, let see a short example: one declares two constraints involving the two same variables, and add them to five different models. This implies the following references:
+\begin{itemize}
+\item each model points to two constraint and two variables;
+\item each constraint points the two variables;
+\item each of the variables points to ten constraints: the very same constraint is considered as different from a model to another.  
+\end{itemize}
+
+This must be kept in mind while you write your program: whatever a model is used or not, a shared variable stores references to the constraints it is involved in. 
+
+\vspace{1cm}
+\begin{notedef}
+Do not count on the garbage collector to manage this (even if the \mylst{finalize()} method was declared for a \mylst{Model}): while a variable references a constraint declared in an obsolete model, neither the model nor the constraint can be safely destroy. 
+
+A good habit to have is to delete constraints of a model when this one is not used anymore, by calling \mylst{model.removeConstraints()}. This breaks links between constraint and variable of a model, prevents from large memory consumption and can stabilize performances by reusing \mylst{Model}s.
+
+
+Consider the following code, \mylst{model2} is faster and consumes less memory than \mylst{model1} for the same result.
+\begin{lstlisting}
+public static void main(String[] args) {
+        for (int i = 0; i < 10; i++) {
+            long t = -System.currentTimeMillis();
+            model1(99999);
+            t += System.currentTimeMillis();
+            System.out.printf("%d ", t);
+            t = -System.currentTimeMillis();
+            model2(99999);
+            t += System.currentTimeMillis();
+            System.out.printf("%d\n", t);
+        }
+    }                                               
+                                                 
+private static void model1(int i) {              
+    IntegerVariable v1 = makeIntVar("v1", 0, 10);
+    IntegerVariable v2 = makeIntVar("v2", 0, 10);
+    for (int j = 0; j < i; j++) {                
+        CPModel m1 = new CPModel();              
+        m1.addConstraint(eq(v1, v2));            
+    }                                            
+}                                                
+                                                 
+private static void model2(int i) {              
+    IntegerVariable v1 = makeIntVar("v1", 0, 10);
+    IntegerVariable v2 = makeIntVar("v2", 0, 10);
+    CPModel m1 = new CPModel();                  
+    for (int j = 0; j < i; j++) {                
+        m1.addConstraint(eq(v1, v2));            
+        m1.removeConstraints();                  
+    }                                            
+}                                                
+\end{lstlisting}
+
+\end{notedef}
+
+
+
 
 % java ToTex ../../../../../../samples/src/main/java/samples/documentation/ ../../documentation/java/
