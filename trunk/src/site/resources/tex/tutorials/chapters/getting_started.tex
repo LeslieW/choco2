@@ -51,14 +51,9 @@ We have the definition, let see how to add some Choco in it.
 
 \section{First, the model}\label{gettingstarted:first,themodel}\hypertarget{gettingstarted:first,themodel}{}
 To define our problem, we need to create a Model object. As we want to solve our problem with constraint programming (of course, we do), we need to create a CPModel.
-\begin{lstlisting}
-	//constants of the problem:
-	int n = 3;
-	int M = n*(n*n+1)/2;
-	
-	// Our model
-	Model m = new CPModel();
-\end{lstlisting}
+% ref. samples.documentation.Code4Tut1#tgettingstarted()
+\lstinputlisting{java/tgetstar1.j2t}
+
 These objects require to import the following classes:
 \begin{lstlisting}
 	import choco.cp.model.CPModel;
@@ -74,43 +69,26 @@ A variable is an object defined by a name, a type and a domain. We know that our
 \mylst{IntegerVariable cell = Choco.makeIntVar("aCell", 1, n*n);}
 which means that \emph{aCell} is an integer variable, and its domain is defined from \emph{1} to \emph{n*n}.
 But we need $n^2$ variables, so the easiest way to define them is:
-\begin{lstlisting}
-	IntegerVariable[][] cells = new IntegerVariable[n][n];
-	for(int i = 0; i < n; i++){
-	   for(int j = 0; j < n; j++){
-	      cells[i][j] = Choco.makeIntVar("cell"+j, 1, n*n); 
-	      m.addVariables(cells[i][j]);
-	   }
-	}
-\end{lstlisting}
+\lstinputlisting{java/tgetstar2.j2t}
+
 This code requires to import the following classes:
 \begin{lstlisting}
 	import choco.kernel.model.variables.integer.IntegerVariable;
 	import choco.Choco;
 \end{lstlisting}
-We add each variables to our model:
-\mylst{m.addVariables(cells[i][j]);}\\
+
 Now that our variables are defined, we have to define the constraints between variables.
 \item
 \textbf{Constraints over the rows}\label{gettingstarted:constraintsovertherows}\hypertarget{gettingstarted:constraintsovertherows}{}
 The sum of ach rows is equal to a constant $M$.
 So we need a sum operator and and equality constraint. The both are provides by the \texttt{Choco.java} class.
-\begin{lstlisting}
-	//Constraints
-	// ... over rows
-	Constraint[] rows = new Constraint[n];
-	for(int i = 0; i < n; i++){
-	   rows[i] = Choco.eq(Choco.sum(cells[i]), M);
-	}
-\end{lstlisting}
+\lstinputlisting{java/tgetstar3.j2t}
 This part of code requires the following import:
 \begin{lstlisting}
   import choco.kernel.model.constraints.Constraint;
 \end{lstlisting}
 After the creation of the constraints, we need to add them to the model:
-\begin{lstlisting}
-  m.addConstraints(rows);
-\end{lstlisting}
+\lstinputlisting{java/tgetstar4.j2t}
 \item
 \textbf{Constraints over the columns}\label{gettingstarted:constraintsoverthecolumns}\hypertarget{gettingstarted:constraintsoverthecolumns}{}
 Now, we need to declare the equality between the sum of each column and $M$.
@@ -118,66 +96,28 @@ But, the way we have declare our variables matrix does not allow us to deal easi
 \begin{note}
 We do not introduce new variables. We just reorder the matrix to see the \emph{column point of view}.
 \end{note}
-\begin{lstlisting}
-	//... over columns
-	// first, get the columns, with a temporary array
-	IntegerVariable[][] cellsDual = new IntegerVariable[n][n];
-	for(int i = 0; i < n; i++){
-	   for(int j = 0; j < n; j++){
-	      cellsDual[i][j] = cells[j][i];
-	   }
-	}
-\end{lstlisting}
-Now, we can declare the constraints as before:
-\begin{lstlisting}
-	Constraint[] cols = new Constraint[n];
-	for(int i = 0; i < n; i++){
-	   cols[i] = Choco.eq(Choco.sum(cellsDual[i]), M);
-	}
-\end{lstlisting}
-And we add them to the model:
-\begin{lstlisting}
-  m.addConstraints(cols);
-\end{lstlisting}
+\lstinputlisting{java/tgetstar5.j2t}
+Now, we can declare the constraints as before, and add them to the model:
+\lstinputlisting{java/tgetstar6.j2t}
 \item
 \textbf{Constraints over the diagonals}\label{gettingstarted:constraintsoverthediagonals}\hypertarget{gettingstarted:constraintsoverthediagonals}{}
 Now, we get the two diagonals array \emph{diags}, reordering the required \emph{cells} variables, like in the previous step.
-\begin{lstlisting}
-	//... over diagonals                                  
-	IntegerVariable[][] diags = new IntegerVariable[2][n];
-	for(int i = 0; i < n; i++){                           
-	    diags[0][i] = cells[i][i];                        
-	    diags[1][i] = cells[i][(n-1)-i];                  
-	}
-\end{lstlisting} 
+\lstinputlisting{java/tgetstar7.j2t}
+
 And we add the constraints to the model (in one step this time).
-\begin{lstlisting}
-	m.addConstraint(Choco.eq(Choco.sum(diags[0]), M));    
-	m.addConstraint(Choco.eq(Choco.sum(diags[1]), M));
-\end{lstlisting}
+\lstinputlisting{java/tgetstar8.j2t}
+
 \item
 \textbf{Constraints of variables AllDifferent}\label{gettingstarted:constraintsofvariablesalldifferent}\hypertarget{gettingstarted:constraintsofvariablesalldifferent}{}
 Finally, we add the AllDifferent constraints, stating that each \emph{cells} variables takes a unique value. 
 One more time, we have to reorder the variables, introducing temporary array.
-\begin{lstlisting}
-	//All cells are differents from each other           
-	IntegerVariable[] allVars = new IntegerVariable[n*n];
-	for(int i = 0; i < n; i++){                          
-	    for(int j = 0; j < n; j++){                      
-	        allVars[i*n+j] = cells[i][j];                
-	    }                                                
-	}                                                    
-	m.addConstraint(Choco.allDifferent(allVars));
-\end{lstlisting}
+\lstinputlisting{java/tgetstar9.j2t}
 \end{itemize}
 
 \section{Then, the solver}\label{gettingstarted:then,thesolver}\hypertarget{gettingstarted:then,thesolver}{}
 Our model is established, it does not require any other information, we can focus on the way to solve it.
 The first step is to create a Solver;
-\begin{lstlisting}
-	//Our solver              
-	Solver s = new CPSolver();
-\end{lstlisting}
+\lstinputlisting{java/tgetstar10.j2t}
 This part requires the following imports:
 \begin{lstlisting}
 	import choco.kernel.solver.Solver;
@@ -185,26 +125,19 @@ This part requires the following imports:
 \end{lstlisting}
 
 After that, the model and the solver have to be linked, thus the solver \emph{read} the model, to extract informations:
-\begin{lstlisting}
-	//read the model
-	s.read(m);
-\end{lstlisting}
+\lstinputlisting{java/tgetstar11.j2t}
 
 Once it is done, we just need to solve it:
-\begin{lstlisting}
-	//solve the problem
-	s.solve();
-\end{lstlisting}
+\lstinputlisting{java/tgetstar12.j2t}
 And print the information
-\begin{lstlisting}
-	//Print the values                                           
-	for(int i = 0; i < n; i++){                                  
-	    for(int j = 0; j < n; j++){                              
-	        System.out.print(s.getVar(cells[i][j]).getVal()+" ");
-	    }                                                        
-	    System.out.println();                                    
-	}
-\end{lstlisting}
+\lstinputlisting{java/tgetstar13.j2t}
+
+\section{The entire code}\label{gettingstarted:thecode}\hypertarget{gettingstarted:thecode}{}
+The entire code looks like:
+\newpage
+\lstinputlisting{java/tgetstar.j2t}
 
 \section{Conclusion}\label{gettingstarted:conclusion}\hypertarget{gettingstarted:conclusion}{}
-We have seen, in a few steps, how to solve a basic problem using constraint programming and Choco. Now, you are ready to solve your own problem, and if you need more tries, please take a look at the \hyperlink{exercises}{exercises}. %and \hyperlink{examples}{examples}. 
+We saw, in a few steps, how to modelize and to solve a basic problem using constraint programming and Choco.
+We think a main clue to efficiency is to strongly distinguish the modeling part from the resolution part. 
+That's why, from now on, we will first introduce the modeling elements and then focus on the solving tools.   

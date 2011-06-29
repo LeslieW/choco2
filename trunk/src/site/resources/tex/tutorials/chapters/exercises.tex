@@ -25,41 +25,10 @@ Algorithm 1 (below) describes a problem which fits the minimum choco syntax requ
 	\item[Question 1] describe the constraint network modelled in Algorithm 1.
 	\item[Question 2] give the variable domains after constraint propagation.
 \end{description}
-
-\begin{lstlisting}[language={java}, title={\textbf{Algorithm 1} Mysterious model.}]
-	// Build a model
-	Model m = new CPModel() ;
-	
-	// Build enumerated domain variables
-	IntegerVariable x1 = makeIntVar("var1", 0, 5);
-	IntegerVariable x2 = makeIntVar("var2", 0, 5);
-	IntegerVariable x3 = makeIntVar("var3", 0, 5);
-	
-	// Build the constraints
-	Constraint C1 = gt(x1, x2) ;
-	Constraint C2 = neq(x1, x3) ;
-	Constraint C3 = gt(x2, x3) ;
-	
-	// Add the constraints to the Choco model
-	m.addConstraint(C1) ;
-	m.addConstraint(C2) ;
-	m.addConstraint(C3) ;
-	
-	// Build a solver
-	Solver s = new CPSolver();
-	
-	// Read the model
-	s.read(m);
-	
-	// Solve the problem
-	s.solve() ;
-	
-	// Print the variable domains
-	System.out.println("var1 =" + s.getVar(x1) .getVal()) ;
-	System.out.println("var2 =" + s.getVar(x2) .getVal()) ;
-	System.out.println("var3 =" + s.getVar(x3) .getVal()) ;
-\end{lstlisting}
-
+\begin{center}
+\textbf{Algorithm 1:} Mysterious model.
+\lstinputlisting{java/tmysterious.j2t}
+\end{center}
 (\hyperlink{solutions:solutionofexercise1.1}{Solution})
 
 \subsection{Exercise 1.2 (DONALD +  GERALD = ROBERT)}\label{exercises:exercise1.2}\hypertarget{exercises:exercise1.2}{}
