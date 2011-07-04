@@ -7,9 +7,36 @@
     <body>
 
         <section name="News">
+            <subsection name="Refactoring">
+                <p>
+                    Charles Prud'homme - July 07th 2011
+                </p>
+                <p>
+                    We are currently working on the new version of Choco, version 3.
+                </p>
+                <p>
+                    This includes separation in modules of Model and Solver, restructuration of constraints, etc.
+                    But the main goal is to refactor of the propagation engine.
+                </p>
+                <p>
+                    During this summer, we are going to prepare the new version, in three steps:
+                    <u>
+                        <li>releasing the current version of the trunk (v2.1.2);</li>
+                        <li>distinguishing, in different modules, the Solver (main module) and the Modeler.
+                            We tend to reduce to the minimum, the user impact;</li>
+                        <li>closing the current version, with up-to-date documentation (v2.2.0)</li>
+                    </u>
+                </p>
+
+                <p>
+                    If you have any suggestions, please let us know.
+                </p>
+
+            </subsection>
+
             <subsection name="New constraints">
                 <p>
-                    Narendra Jussien, Thierry Petit - 06/28/2010
+                    Narendra Jussien, Thierry Petit - June 28th 2011
                 </p>
                 <p>
                     We recently added two constraints to CHOCO.
@@ -33,7 +60,7 @@
 
             <subsection name="CNF: boolean formulas framework">
                 <p>
-                    Charles Prud'homme - 12/23/2010
+                    Charles Prud'homme - December 23th 2010
                 </p>
                 <p>
                     The actual way to define boolean formulas was a little bit obscure to us.
@@ -74,7 +101,7 @@ s.solveAll();
             </subsection>
             <subsection name="CP-VIZ: An Open Source Visualization Platform for CP">
                 <p>
-                    Charles Prud'homme - 12/13/2010
+                    Charles Prud'homme - December  13th 2010
                 </p>
                 <p>
                     We currently have the pleasure to welcome Helmut Simonis at Ecole des Mines. As part of the
