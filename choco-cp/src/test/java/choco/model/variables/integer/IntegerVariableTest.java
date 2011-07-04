@@ -32,6 +32,7 @@ import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.TimesXYZ;
+import choco.cp.solver.constraints.integer.bool.sat.ClauseStore;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.cp.solver.variables.integer.IntervalIntDomain;
 import choco.kernel.common.logging.ChocoLogging;
@@ -448,5 +449,32 @@ public class IntegerVariableTest {
 
     }
 
+    @Test
+    public void testNotBoolVar(){
+        CPSolver solver = new CPSolver();
+        IntDomainVar move = solver.createBooleanVar("move");
+        IntDomainVar stay = solver.createNotBooleanVar("stay", move);
+        solver.solveAll();
+        Assert.assertEquals(2, solver.getSolutionCount());
+    }
+
+    @Test
+    public void testNotBoolVar2(){
+        Random random = new Random();
+        for(int seed = 0; seed < 20; seed ++){
+            random.setSeed(seed);
+            CPSolver solver1  = new CPSolver();
+            int n = random.nextInt(20);
+            IntDomainVar[] bvars = new IntDomainVar[n*2];
+            for(int i = 0; i < n; i++){
+                bvars[i] = solver1.createBooleanVar(String.format("b_%s", i));
+            }
+            for(int i = 0; i < n; i++){
+                bvars[i+n] = solver1.createNotBooleanVar(String.format("nb_%s", i), bvars[i]);
+            }
+            solver1.post(new ClauseStore(bvars, solver1.getEnvironment()));
+            Assert.assertEquals(0, solver1.getSolutionCount());
+        }
+    }
 
 }

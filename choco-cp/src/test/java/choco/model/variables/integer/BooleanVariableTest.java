@@ -33,10 +33,8 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import static java.text.MessageFormat.format;
 import java.util.logging.Logger;
 
 /*
@@ -187,49 +185,134 @@ public class BooleanVariableTest {
         }
     }
 
-
-
-    private static int solve1(int type, int SIZE) throws ContradictionException {
-        int K = 5;
-        int time = 0;
-        IntDomainVar[] bool;
-        CPSolver s;
-        for(int k = 0; k < K; k++){
-            s = new CPSolver();
-
-            bool = new IntDomainVar[SIZE];
-
-            for (int i = 0; i < SIZE; i++) {
-                switch (type) {
-                    case 0:
-                        bool[i] = s.createBooleanVar("bool_" + i);
-                        break;
-                    case 1:
-                        bool[i] = s.createEnumIntVar("bool_" + i, 0, 1);
-                        break;
-                }
-            }
-
-            for (int i = 0; i < SIZE - 1; i++) {
-                s.post(s.eq(bool[i], bool[i + 1]));
-            }
-            s.post(s.eq(SIZE - 1, s.sum(bool)));
-            s.solve();
-            time += s.getTimeCount();
-        }
-        return time/K;
-    }
-
     @Test
-    @Ignore
     public void test2() throws ContradictionException {
-        for(int val = 1024; val < 64*512*6; val*=2){
-            System.gc();
-            int enu = solve1(1, val);
-            System.gc();
-            int boo = solve1(0, val);
-            LOGGER.info(format("{0} > {1} val:{2}", enu, boo, val));
-            Assert.assertTrue("slower", enu>boo);
+        CPSolver s = new CPSolver();
+        IntDomainVar v0 = s.createBooleanVar("v0");
+        IntDomainVar v1 = s.createNotBooleanVar("v", v0);
+
+        Assert.assertEquals("lower bound",0,v1.getInf());
+        Assert.assertEquals("upper bound",1,v1.getSup());
+        Assert.assertEquals("domain size",2,v1.getDomainSize());
+
+        Assert.assertEquals("getNextValue -1", 0, v1.getNextDomainValue(-1));
+        Assert.assertEquals("getNextValue 0", 1, v1.getNextDomainValue(0));
+
+        Assert.assertEquals("getNextValue 1", 0, v1.getPrevDomainValue(1));
+        Assert.assertEquals("getNextValue 2", 1, v1.getPrevDomainValue(2));
+
+        s.worldPush();
+
+        Assert.assertFalse("update inf 0",v1.updateInf(0, null, true));
+        Assert.assertEquals("lower bound",0,v1.getInf());
+        Assert.assertEquals("upper bound",1,v1.getSup());
+        Assert.assertEquals("domain size",2,v1.getDomainSize());
+
+        Assert.assertTrue("update inf 1",v1.updateInf(1, null, true));
+        Assert.assertEquals("lower bound",1,v1.getInf());
+        Assert.assertEquals("upper bound",1,v1.getSup());
+        Assert.assertEquals("domain size",1,v1.getDomainSize());
+        Assert.assertTrue("instantiated", v1.isInstantiatedTo(1));
+
+        try{
+            v1.updateInf(2, null, true);
+            Assert.fail("update inf 2");
+        }catch (ContradictionException e){
+
+        }
+
+        s.worldPop();
+        s.worldPush();
+
+        Assert.assertFalse("update sup 1",v1.updateSup(1, null, true));
+        Assert.assertEquals("lower bound",0,v1.getInf());
+        Assert.assertEquals("upper bound",1,v1.getSup());
+        Assert.assertEquals("domain size",2,v1.getDomainSize());
+
+        Assert.assertTrue("update sup 0",v1.updateSup(0, null, true));
+        Assert.assertEquals("lower bound",0,v1.getInf());
+        Assert.assertEquals("upper bound",0,v1.getSup());
+        Assert.assertEquals("domain size",1,v1.getDomainSize());
+        Assert.assertTrue("instantiated", v1.isInstantiatedTo(0));
+
+        try{
+            v1.updateInf(2, null, true);
+            Assert.fail("update sup -1");
+        }catch (ContradictionException e){
+
+        }
+
+
+        s.worldPop();
+        s.worldPush();
+
+        Assert.assertFalse("remove 2",v1.removeVal(2, null, true));
+        Assert.assertEquals("lower bound",0,v1.getInf());
+        Assert.assertEquals("upper bound",1,v1.getSup());
+        Assert.assertEquals("domain size",2,v1.getDomainSize());
+
+        Assert.assertTrue("remove 1",v1.removeVal(1, null, true));
+        Assert.assertEquals("lower bound",0,v1.getInf());
+        Assert.assertEquals("upper bound",0,v1.getSup());
+        Assert.assertEquals("domain size",1,v1.getDomainSize());
+        Assert.assertTrue("instantiated", v1.isInstantiatedTo(0));
+
+        try{
+            v1.removeVal(0, null, true);
+            Assert.fail("remove 0");
+        }catch (ContradictionException ex){
+        }
+
+        s.worldPop();
+        s.worldPush();
+
+        Assert.assertFalse("remove -1",v1.removeVal(-1, null, true));
+        Assert.assertEquals("lower bound",0,v1.getInf());
+        Assert.assertEquals("upper bound",1,v1.getSup());
+        Assert.assertEquals("domain size",2,v1.getDomainSize());
+
+        Assert.assertTrue("remove 0",v1.removeVal(0, null, true));
+        Assert.assertEquals("lower bound",1,v1.getInf());
+        Assert.assertEquals("upper bound",1,v1.getSup());
+        Assert.assertEquals("domain size",1,v1.getDomainSize());
+        Assert.assertTrue("instantiated", v1.isInstantiatedTo(1));
+
+        try{
+            v1.removeVal(1, null, true);
+            Assert.fail("remove 1");
+        }catch (ContradictionException ex){
+        }
+
+        s.worldPop();
+        s.worldPush();
+
+        Assert.assertTrue("instantiate 0",v1.instantiate(0, null, true));
+        Assert.assertEquals("lower bound",0,v1.getInf());
+        Assert.assertEquals("upper bound",0,v1.getSup());
+        Assert.assertEquals("domain size",1,v1.getDomainSize());
+        Assert.assertTrue("instantiated", v1.isInstantiatedTo(0));
+
+        s.worldPop();
+        s.worldPush();
+
+        Assert.assertTrue("instantiate 1",v1.instantiate(1, null, true));
+        Assert.assertEquals("lower bound",1,v1.getInf());
+        Assert.assertEquals("upper bound",1,v1.getSup());
+        Assert.assertEquals("domain size",1,v1.getDomainSize());
+        Assert.assertTrue("instantiated", v1.isInstantiatedTo(1));
+
+        s.worldPop();
+        s.worldPush();
+
+        try{
+            Assert.assertFalse("instantiate 2",v1.instantiate(2, null, true));
+            Assert.fail("unknown value");
+        }catch (ContradictionException ex){
+        }
+        try{
+            Assert.assertFalse("instantiate -1",v1.instantiate(-1, null, true));
+            Assert.fail("unknown value");
+        }catch (ContradictionException ex){
         }
     }
     
