@@ -305,7 +305,6 @@ public class TimesXYZTest {
 		solver.read(model);
 
 		System.out.println("start solving");
-        ChocoLogging.toSolution();
 		solver.solve();
 		Assert.assertEquals(Boolean.TRUE, solver.checkSolution());
 	}
@@ -329,7 +328,6 @@ public class TimesXYZTest {
 		solver.read(model);
         solver.addGoal(BranchingFactory.minDomIncDom(solver));
 		System.out.println("start solving");
-        ChocoLogging.toSolution();
 		solver.solve();
 		Assert.assertEquals(Boolean.TRUE, solver.checkSolution());
 	}
@@ -354,7 +352,6 @@ public class TimesXYZTest {
 		solver.read(model);
         solver.addGoal(BranchingFactory.minDomIncDom(solver));
 		System.out.println("start solving");
-        ChocoLogging.toSolution();
 		solver.solve();
 		Assert.assertEquals(Boolean.TRUE, solver.checkSolution());
 	}
