@@ -42,6 +42,10 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * @since 18/02/11
  */
 public class IntDomainVarTimePosCste extends AbstractBijectiveVar {
+
+
+    final int constante;
+
     /**
      * Build a variable Y such as Y = X + c.
      *
@@ -50,10 +54,11 @@ public class IntDomainVarTimePosCste extends AbstractBijectiveVar {
      * @param variable constraints stored specific structure
      */
     public IntDomainVarTimePosCste(final Solver solver, String name, IntDomainVar variable, int constante) {
-        super(solver, name, variable, constante);
+        super(solver, name, variable);
         if (constante < 0) {
             throw new SolverException("IntDomainVarTimePosCste: constante should be positive (" + constante + ")");
         }
+        this.constante = constante;
     }
 
     @Override

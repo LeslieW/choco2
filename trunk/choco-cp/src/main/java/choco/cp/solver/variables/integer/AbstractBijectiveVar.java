@@ -48,7 +48,6 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 public abstract class AbstractBijectiveVar extends AbstractVar implements IntDomainVar {
 
     final IntDomainVar variable;
-    final int constante;
 
 
     /**
@@ -58,10 +57,9 @@ public abstract class AbstractBijectiveVar extends AbstractVar implements IntDom
      * @param name     The name of the variable
      * @param variable constraints stored specific structure
      */
-    public AbstractBijectiveVar(final Solver solver, String name, IntDomainVar variable, int constante) {
+    public AbstractBijectiveVar(final Solver solver, String name, IntDomainVar variable) {
         super(solver, name, null);
         this.variable = variable;
-        this.constante = constante;
     }
 
     @Override

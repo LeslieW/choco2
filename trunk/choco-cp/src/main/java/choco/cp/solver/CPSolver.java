@@ -2491,6 +2491,13 @@ public class CPSolver implements Solver {
         return v;
     }
 
+    public IntDomainVar createNotBooleanVar(String name, IntDomainVar variable) {
+        IntDomainVar v = new BoolVarNot(this, name, (BooleanVarImpl)variable);
+        intVars.add(v);
+        intDecisionVars.add(v);
+        return v;
+    }
+
     public IntDomainVar createBoundIntVar(String name, int min, int max) {
         IntDomainVar v = new IntDomainVarImpl(this, name, IntDomainVar.BOUNDS,
                 min, max);
