@@ -27,7 +27,7 @@
 
 package choco.cp.solver.constraints.integer.bool.sat;
 
-import choco.cp.solver.variables.integer.BooleanVarImpl;
+import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
@@ -40,7 +40,7 @@ public final class Lits {
     //number of boolean variables
     protected int nblits;
 
-    protected BooleanVarImpl[] boolvars;
+    protected IntDomainVar[] boolvars;
 
     // watches for assignments x_i = 1
     protected Vec<WLClause>[] poswatches;
@@ -52,9 +52,13 @@ public final class Lits {
     
     @SuppressWarnings({"unchecked"})
     public void init(IntDomainVar[] vars) {
-        boolvars = new BooleanVarImpl[vars.length+1];
+        boolvars = new IntDomainVar[vars.length+1];
         for (int i = 1; i < vars.length+1; i++) {
-            boolvars[i] = (BooleanVarImpl) vars[i-1];
+            if(vars[i-1].hasBooleanDomain()){
+                boolvars[i] = vars[i-1];
+            }else{
+                throw new SolverException(vars[i-1].getName()+" is not a boolean variable");
+            }
         }
         nblits = boolvars.length + 1;
         poswatches = new Vec[nblits];

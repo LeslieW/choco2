@@ -29,167 +29,268 @@ package choco.cp.solver.variables.integer;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
- * Declare a variable Y, based on a variable X and a constante c,
- * such as Y = X + c
+ * A bijective boolean variable B :
+ * <br/>B = not(A)
  * <br/>
  *
  * @author Charles Prud'homme
- * @since 18/02/11
+ * @since 29/06/11
  */
-public class IntDomainVarAddCste extends AbstractBijectiveVar {
-
-    final int constante;
+public class BoolVarNot extends AbstractBijectiveVar {
 
     /**
-     * Build a variable Y such as Y = X + c.
+     * Build a variable Y such as Y = X op c.
      *
      * @param solver   The model this variable belongs to
      * @param name     The name of the variable
      * @param variable constraints stored specific structure
      */
-    public IntDomainVarAddCste(final Solver solver, String name, IntDomainVar variable, int constante) {
+    public BoolVarNot(final Solver solver, String name, BooleanVarImpl variable) {
         super(solver, name, variable);
-        this.constante = constante;
+
     }
+
 
     @Override
     public void remVal(int x) throws ContradictionException {
-        variable.remVal(x - constante);
+        if (x == 0) {
+            variable.remVal(1);
+        } else if (x == 1) {
+            variable.remVal(0);
+        }
     }
 
     @Override
     public void setInf(int x) throws ContradictionException {
-        variable.setInf(x - constante);
+        if (x == 1) {
+            variable.setSup(0);
+        }
     }
 
     @Override
-    @Deprecated
     public void setMin(int x) throws ContradictionException {
-        variable.setMin(x - constante);
+        if (x == 1) {
+            variable.setMax(0);
+        }
     }
 
     @Override
     public void setSup(int x) throws ContradictionException {
-        variable.setSup(x - constante);
+        if (x == 0) {
+            variable.setInf(1);
+        }
     }
 
     @Override
-    @Deprecated
     public void setMax(int x) throws ContradictionException {
-        variable.setMax(x - constante);
+        if (x == 0) {
+            variable.setMin(1);
+        }
     }
 
     @Override
     public boolean canBeInstantiatedTo(int x) {
-        return variable.canBeInstantiatedTo(x - constante);
+        if (x == 0) {
+            variable.canBeInstantiatedTo(1);
+        } else if (x == 1) {
+            variable.canBeInstantiatedTo(0);
+        }
+        return false;
     }
 
     @Override
     public boolean fastCanBeInstantiatedTo(int x) {
-        return variable.fastCanBeInstantiatedTo(x - constante);
+        if (x == 0) {
+            variable.fastCanBeInstantiatedTo(1);
+        } else if (x == 1) {
+            variable.fastCanBeInstantiatedTo(0);
+        }
+        return false;
     }
 
     @Override
     public int getRandomDomainValue() {
-        return variable.getRandomDomainValue() + constante;
+        if (variable.isInstantiated()) {
+            return getVal();
+        } else {
+            return variable.getRandomDomainValue();
+        }
     }
 
     @Override
     public int getNextDomainValue(int i) {
-        return variable.getNextDomainValue(i - constante);
+        int inf = getInf();
+        if (i < inf) return inf;
+        int sup = getSup();
+        if (i < sup) return sup;
+        return Integer.MAX_VALUE;
     }
 
     @Override
     public int getPrevDomainValue(int i) {
-        return variable.getPrevDomainValue(i - constante);
+        int sup = getSup();
+        if (i > sup) return sup;
+        int inf = getInf();
+        if (i > inf) return inf;
+        return Integer.MIN_VALUE;
     }
-
 
     @Override
     public int getInf() {
-        return variable.getInf() + constante;
+        if (variable.isInstantiated()) {
+            return getVal();
+        }
+        return variable.getInf();
     }
 
     @Override
     public int getSup() {
-        return variable.getSup() + constante;
+        if (variable.isInstantiated()) {
+            return getVal();
+        }
+        return variable.getSup();
     }
 
     @Override
     public int getValue() {
-        return variable.getValue() + constante;
+        return Math.abs(variable.getValue() - 1);
     }
 
     @Override
     public boolean updateInf(int x, SConstraint cause, boolean forceAwake) throws ContradictionException {
-        return variable.updateInf(x - constante, cause, forceAwake);
+        if(x == 1){
+            return variable.instantiate(0, cause, forceAwake);
+        }else if(x > 1){
+            propagationEngine.raiseContradiction(cause);
+        }
+        return false;
     }
 
     @Override
     public boolean updateInf(int x, int idx) throws ContradictionException {
-        return variable.updateInf(x - constante, idx);
+        if(x == 1){
+            return variable.instantiate(0, idx);
+        }else if(x > 1){
+            propagationEngine.raiseContradiction(idx, this, null);
+        }
+        return false;
     }
 
     @Override
     public boolean updateSup(int x, SConstraint cause, boolean forceAwake) throws ContradictionException {
-        return variable.updateSup(x - constante, cause, forceAwake);
+        if(x == 0){
+            return variable.instantiate(1, cause, forceAwake);
+        }else if(x < 0){
+            propagationEngine.raiseContradiction(cause);
+        }
+        return false;
     }
 
     @Override
     public boolean updateSup(int x, int idx) throws ContradictionException {
-        return variable.updateSup(x - constante, idx);
+        if(x == 0){
+            return variable.instantiate(1, idx);
+        }else if( x < 0){
+            propagationEngine.raiseContradiction(idx, this, null);
+        }
+        return false;
     }
 
     @Override
     public boolean removeVal(int x, SConstraint cause, boolean forceAwake) throws ContradictionException {
-        return variable.removeVal(x - constante, cause, forceAwake);
+        if (x == 0) {
+            return variable.instantiate(0, cause, forceAwake);
+        } else if (x == 1) {
+            return variable.instantiate(1, cause, forceAwake);
+        }
+        return false;
     }
 
     @Override
     public boolean removeVal(int x, int idx) throws ContradictionException {
-        return variable.removeVal(x - constante, idx);
+        if (x == 0) {
+            return variable.instantiate(0, idx);
+        } else if (x == 1) {
+            return variable.instantiate(1, idx);
+        }
+        return false;
     }
 
     @Override
     public boolean removeInterval(int a, int b, SConstraint cause, boolean forceAwake) throws ContradictionException {
-        return variable.removeInterval(a - constante, b - constante, cause, forceAwake);
+        if (a <= getInf())
+            return updateInf(b + 1, cause, forceAwake);
+        else if (getSup() <= b)
+            return updateSup(a - 1, cause, forceAwake);
+        return false;
     }
 
     @Override
     public boolean removeInterval(int a, int b, int idx) throws ContradictionException {
-        return variable.removeInterval(a - constante, b - constante, idx);
+        if (a <= getInf())
+            return updateInf(b + 1, idx);
+        else if (getSup() <= b)
+            return updateSup(a - 1, idx);
+        return false;
     }
 
     @Override
     public boolean instantiate(int x, SConstraint cause, boolean forceAwake) throws ContradictionException {
-        return variable.instantiate(x - constante, cause, forceAwake);
+        if (x == 0) {
+            return variable.instantiate(1, cause, forceAwake);
+        } else if (x == 1) {
+            return variable.instantiate(0, cause, forceAwake);
+        }
+        propagationEngine.raiseContradiction(cause);
+        return false;
     }
 
     @Override
     public boolean instantiate(int x, int idx) throws ContradictionException {
-        return variable.instantiate(x - constante, idx);
+        if (x == 0) {
+            return variable.instantiate(1, idx);
+        } else if (x == 1) {
+            return variable.instantiate(0, idx);
+        }
+        propagationEngine.raiseContradiction(idx, this, null);
+        return false;
     }
 
     @Override
     public void setVal(int x) throws ContradictionException {
-        variable.setVal(x - constante);
+        if (x == 0) {
+            variable.setVal(1);
+        } else if (x == 1) {
+            variable.setVal(0);
+        } else {
+            variable.setVal(x);
+        }
     }
 
     @Override
     public int getVal() {
-        return variable.getVal() + constante;
+        return Math.abs(variable.getVal() - 1);
     }
 
     @Override
     public boolean isInstantiatedTo(int x) {
-        return variable.isInstantiatedTo(x - constante);
+        if (x == 0) return variable.isInstantiatedTo(1);
+        return x == 1 && variable.isInstantiatedTo(0);
+    }
+
+    /**
+     * pretty printing
+     *
+     * @return a String representation of the variable
+     */
+    public String toString() {
+        return (name + ":" + (isInstantiated() ? getVal() : "?"));
     }
 
     @Override
     public String pretty() {
-        return String.format("(%s + %d)", variable.getName(), constante);
+        return String.format("not (%s)", variable.getName());
     }
 }

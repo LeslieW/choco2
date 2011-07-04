@@ -77,7 +77,7 @@ public abstract class AbstractEnvironment implements IEnvironment {
         }
         nextOffset++;
         if(nextOffset > currentBitSet.size()-1){
-            increaseSizeOfSharedBipartiteSet(SIZE-(nextOffset % SIZE));
+            increaseSizeOfSharedBipartiteSet(currentBitSet.size()); // double the size of the current bitset
         }
         return currentBitSet;
     }
