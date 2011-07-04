@@ -409,7 +409,7 @@ public class IntegerVariableTest {
         for (int i = 0; i < 1000; i++) {
             rand.setSeed(i);
             int low = rand.nextInt(10);
-            int upp = low + rand.nextInt(1000);
+            int upp = low + rand.nextInt(200);
             int coeff = rand.nextInt(50);
 
             Solver sb = bijectiveTime(low, upp, coeff);
