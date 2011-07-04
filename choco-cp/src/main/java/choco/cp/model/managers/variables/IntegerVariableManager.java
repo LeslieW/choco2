@@ -57,40 +57,40 @@ import java.util.Iterator;
  */
 public final class IntegerVariableManager implements VariableManager<IntegerVariable> {
 
+    private static final String CSTE = "CSTE_";
 
-	protected static IntDomainVar makeConstant(CPSolver solver,IntegerVariable iv) {
-		int value = iv.getLowB();
-        IntDomainVar v = (IntDomainVar)solver.getIntConstant(value);
-        if(v == null){
-            if(iv.isBoolean()){
-                v = new BooleanVarImpl(solver, iv.getName());
+    protected static IntDomainVar makeConstant(CPSolver solver, IntegerVariable iv) {
+        int value = iv.getLowB();
+        IntDomainVar v = (IntDomainVar) solver.getIntConstant(value);
+        // PATCH: for clarity, the constant name will be like "CSTE_<value>"
+        if (v == null) {
+            if (iv.isBoolean()) {
+                v = new BooleanVarImpl(solver, CSTE + value);
                 v.getDomain().restrict(value);
-            }else{
-                v = new IntDomainVarImpl(solver, iv.getName(), IntDomainVar.ONE_VALUE, value, value);
+            } else {
+                v = new IntDomainVarImpl(solver, CSTE + value, IntDomainVar.ONE_VALUE, value, value);
             }
             solver.addIntConstant(value, v);
         }
-         return v;
-	}
+        return v;
+    }
 
     /**
      * Build a integer variable for the given solver
      *
      * @param solver the solver defining the variable
-     * @param var model variable
+     * @param var    model variable
      * @return an integer variable
      */
     public Var makeVariable(Solver solver, IntegerVariable var) {
         if (solver instanceof CPSolver) {
             IntDomainVar v = null;
             // Interception of boolean variable
-            if(var.isConstant()){
-                return makeConstant((CPSolver)solver, var);
-            }else
-            if(var.isBoolean()){
-                v =  new BooleanVarImpl(solver, var.getName());
-            }else
-            if (var.getValues() == null) {
+            if (var.isConstant()) {
+                return makeConstant((CPSolver) solver, var);
+            } else if (var.isBoolean()) {
+                v = new BooleanVarImpl(solver, var.getName());
+            } else if (var.getValues() == null) {
                 if (var.getLowB() != var.getUppB()) {
                     int type; // default type
                     if (var.getOptions().contains(Options.V_ENUM)) {
@@ -103,14 +103,14 @@ public final class IntegerVariableManager implements VariableManager<IntegerVari
                         type = IntDomainVar.BINARYTREE;
                     } else if (var.getOptions().contains(Options.V_BLIST)) {
                         type = IntDomainVar.BIPARTITELIST;
-                    } else{
-                        type = getIntelligentDomain(solver.getModel(),var);
+                    } else {
+                        type = getIntelligentDomain(solver.getModel(), var);
                     }
-                    v =  new IntDomainVarImpl(solver, var.getName(), type, var.getLowB(), var.getUppB());
+                    v = new IntDomainVarImpl(solver, var.getName(), type, var.getLowB(), var.getUppB());
                 }
             } else {
                 int[] values = var.getValues();
-                if(values.length>1) {
+                if (values.length > 1) {
                     int type = IntDomainVar.BITSET; // default type
                     if (var.getOptions().contains(Options.V_LINK)) {
                         type = IntDomainVar.LINKEDLIST;
@@ -153,9 +153,9 @@ public final class IntegerVariableManager implements VariableManager<IntegerVari
      * @param v unknown domain type variable
      * @return a domain type
      */
-    public static int getIntelligentDomain(Model model,IntegerVariable v) {
+    public static int getIntelligentDomain(Model model, IntegerVariable v) {
         // specific case, deal with unbounded domain
-        if(v.getLowB()<= Choco.MIN_LOWER_BOUND && v.getUppB() >= Choco.MAX_UPPER_BOUND){
+        if (v.getLowB() <= Choco.MIN_LOWER_BOUND && v.getUppB() >= Choco.MAX_UPPER_BOUND) {
             return IntDomainVar.BOUNDS;
         }
 
@@ -168,7 +168,7 @@ public final class IntegerVariableManager implements VariableManager<IntegerVari
             posDom.clear(IntDomainVar.BOUNDS);
         }
         // big domain without "holes"
-        if(v.getUppB() - v.getLowB() +1 == v.getDomainSize()) {
+        if (v.getUppB() - v.getLowB() + 1 == v.getDomainSize()) {
             if (v.getDomainSize() > 300) {
                 posDom.clear(IntDomainVar.BITSET);
                 posDom.clear(IntDomainVar.LINKEDLIST);
@@ -193,14 +193,14 @@ public final class IntegerVariableManager implements VariableManager<IntegerVari
         //find the best prefered domain
         int bestDom = possibleArgMin(scoreForDomain, posDom);
         if (bestDom == -1) {
-			throw new ModelException("no suitable domain for " + v + " that can be accepted by all constraints");
-		}
+            throw new ModelException("no suitable domain for " + v + " that can be accepted by all constraints");
+        }
         return bestDom;
     }
 
 
     public static int possibleArgMin(int[] tab, BitSet posDom) {
-       int bestDom = -1;
+        int bestDom = -1;
         int minScore = Integer.MAX_VALUE;
         for (int i = 0; i < tab.length; i++) {
             if (posDom.get(i) && minScore > tab[i]) {

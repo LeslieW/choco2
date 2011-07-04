@@ -53,6 +53,7 @@ public final class Element2D extends AbstractTernIntSConstraint {
     /**
      * 2D Element constraint
      * that lvals[v0][v1] = v2 where lvals is an int[][]
+     *
      * @param v0    index1
      * @param v1    index2
      * @param v2    valeur
@@ -67,7 +68,7 @@ public final class Element2D extends AbstractTernIntSConstraint {
         for (int i = 0; i < dim1; i++) {
             for (int j = 0; j < dim2; j++) {
                 if (lvals[i][j] < 0 && lvals[i][j] < -cste) {
-                    this.cste = - lvals[i][j];
+                    this.cste = -lvals[i][j];
                 }
             }
         }
@@ -75,89 +76,77 @@ public final class Element2D extends AbstractTernIntSConstraint {
 
     @Override
     public int getFilteredEventMask(int idx) {
-        if(idx == 0){
-            if(v0.hasEnumeratedDomain()){
+        if (idx == 0) {
+            if (v0.hasEnumeratedDomain()) {
                 return IntVarEvent.INSTINT_MASK + IntVarEvent.REMVAL_MASK;
-            }else{
+            } else {
                 return IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK;
             }
-        }else if (idx == 1){
-            if(v1.hasEnumeratedDomain()){
+        } else if (idx == 1) {
+            if (v1.hasEnumeratedDomain()) {
                 return IntVarEvent.INSTINT_MASK + IntVarEvent.REMVAL_MASK;
-            }else{
+            } else {
                 return IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK;
             }
-        }else {
-            if(v2.hasEnumeratedDomain()){
+        } else {
+            if (v2.hasEnumeratedDomain()) {
                 return IntVarEvent.INSTINT_MASK + IntVarEvent.REMVAL_MASK;
-            }else{
+            } else {
                 return IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK;
             }
         }
     }
 
 
-
     public void updateValueFromIndex() throws ContradictionException {
         int minVal = Integer.MAX_VALUE, maxVal = Integer.MIN_VALUE, val;
-        DisposableIntIterator v0It = this.v0.getDomain().getIterator();
-        DisposableIntIterator v1It = this.v1.getDomain().getIterator();
-        DisposableIntIterator v2It = this.v2.getDomain().getIterator();
-        while (v0It.hasNext()) {
-            int i = v0It.next();
-            while (v1It.hasNext()) {
-                int j = v1It.next();
+        int UB0 = v0.getSup();
+        int UB1;
+        for (int i = v0.getInf(); i <= UB0; i = v0.getNextDomainValue(i)) {
+            //while (v0It.hasNext()) {
+            //    int i = v0It.next();
+            UB1 = v1.getSup();
+            for (int j = v1.getInf(); j <= UB1; j = v1.getNextDomainValue(j)) {
                 val = lvals[i][j];
                 if (minVal > val) minVal = val;
                 if (maxVal < val) maxVal = val;
             }
-            v1It.dispose();
-            v1It = this.v1.getDomain().getIterator();
         }
-        v0It.dispose();
         v2.updateSup(maxVal, this, false);
         v2.updateInf(minVal, this, false);
         // propagate on holes
         if (v2.hasEnumeratedDomain()) {
-            v0It = this.v0.getDomain().getIterator();
             BitSet feasValues = new BitSet(v2.getDomainSize());
-            while (v0It.hasNext()) {
-                int v0val = v0It.next();
-                while (v1It.hasNext()) {
-                    feasValues.set(lvals[v0val][v1It.next()] + cste);
+            UB0 = v0.getSup();
+            for (int i = v0.getInf(); i <= UB0; i = v0.getNextDomainValue(i)) {
+                UB1 = v1.getSup();
+                for (int j = v1.getInf(); j <= UB1; j = v1.getNextDomainValue(j)) {
+                    feasValues.set(lvals[i][j] + cste);
                 }
-                v1It.dispose();
-                v1It = this.v1.getDomain().getIterator();
             }
-            try{
-                for (; v2It.hasNext(); ) {  // on parcourt la valeur
-                    int i = v2It.next();
-                    if (!feasValues.get(i + cste))
-                        v2.removeVal(i, this, false);
-                }
-            }finally{
-                v2It.dispose();
+            int UB2 = v2.getSup();
+            for (int i = v2.getInf(); i <= UB2; i = v2.getNextDomainValue(i)) {  // on parcourt la valeur
+                if (!feasValues.get(i + cste))
+                    v2.removeVal(i, this, false);
             }
         }
     }
 
     public boolean testValueVarV0(int idx) {
         boolean ret = false;
-        DisposableIntIterator domIt = v1.getDomain().getIterator();
-        while (!ret & domIt.hasNext()) {
-            ret = v2.canBeInstantiatedTo(lvals[idx][domIt.next()]);
+        int ub = v1.getSup();
+        for (int val = v1.getInf(); !ret && val <= ub; val = v1.getNextDomainValue(val)) {
+            ret = v2.canBeInstantiatedTo(lvals[idx][val]);
         }
-        domIt.dispose();
         return ret;
     }
 
     public boolean testValueVarV1(int idx) {
         boolean ret = false;
-        DisposableIntIterator domIt = v0.getDomain().getIterator();
-        while (!ret & domIt.hasNext()) {
-            ret = v2.canBeInstantiatedTo(lvals[domIt.next()][idx]);
+        int ub = v0.getSup();
+        for (int val = v0.getInf(); !ret && val <= ub; val = v0.getNextDomainValue(val)) {
+            ret = v2.canBeInstantiatedTo(lvals[val][idx]);
         }
-        domIt.dispose();
         return ret;
     }
 
@@ -177,13 +166,12 @@ public final class Element2D extends AbstractTernIntSConstraint {
             }
         } else {
             // update index1
-            DisposableIntIterator v0It = this.v0.getDomain().getIterator();
-            while (v0It.hasNext()) {
-                int v0val = v0It.next();
-                if (!testValueVarV0(v0val)) minFeasibleIndex1 = v0val;
+            //DisposableIntIterator v0It = this.v0.getDomain().getIterator();
+            int UB0 = v0.getSup();
+            for (int val = v0.getInf(); val <= UB0; val = v0.getNextDomainValue(val)) {
+                if (!testValueVarV0(val)) minFeasibleIndex1 = val;
                 else break;
             }
-            v0It.dispose();
             v0.updateInf(minFeasibleIndex1, this, false);
 
             // Todo : update the prevValue api on BitSetIntDomain to perform a more efficient iteration
@@ -264,32 +252,27 @@ public final class Element2D extends AbstractTernIntSConstraint {
             updateIndexFromValue();
     }
 
-   public Boolean isEntailed() {
-    if (this.v2.isInstantiated()) {
-      boolean b = true;
-      DisposableIntIterator v0It = this.v0.getDomain().getIterator();
-      DisposableIntIterator v1It = this.v1.getDomain().getIterator();
-      while (b && v0It.hasNext()) {
-          int v0val = v0It.next();
-          while (b && v1It.hasNext()) {
-              b &= (lvals[v0val][v1It.next()] == v2.getVal());
-          }
-          v1It.dispose();
-          v1It = this.v1.getDomain().getIterator();
-      }
-        v0It.dispose();
-      if (b) return Boolean.TRUE;
+    public Boolean isEntailed() {
+        if (this.v2.isInstantiated()) {
+            boolean b = true;
+            int ub0 = v0.getSup();
+            for (int v0val = v0.getInf(); b && v0val <= ub0; v0val = v0.getNextDomainValue(v0val)) {
+                int ub1 = v1.getSup();
+                for (int v1val = v1.getInf(); b && v1val <= ub1; v1val = v1.getNextDomainValue(v1val)) {
+                    b &= (lvals[v0val][v1val] == v2.getVal());
+                }
+            }
+            if (b) return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
     }
-    return Boolean.FALSE;
-  }
-
 
 
     public boolean isSatisfied(int[] tuple) {
         return lvals[tuple[0]][tuple[1]] == tuple[2];
     }
 
-  public String pretty() {
-    return (this.v2.pretty() + " = nth(" + this.v0.pretty() + ", " + this.v1.pretty() + ", " + StringUtils.pretty(this.lvals) + ")");
-  }
+    public String pretty() {
+        return (this.v2.pretty() + " = nth(" + this.v0.pretty() + ", " + this.v1.pretty() + ", " + StringUtils.pretty(this.lvals) + ")");
+    }
 }

@@ -51,7 +51,7 @@ Feel free to report any errors occurring during the execution of this steps.
 
 To check out the source code, run the following comand in a terminal:
 \begin{lstlisting}
-$>svn co https://choco.svn.sourceforge.net/svnroot/choco trunk
+$>svn co https://choco.svn.sourceforge.net/svnroot/choco/trunk trunk
 \end{lstlisting}
 
 \vspace{.5cm}
@@ -86,8 +86,8 @@ Run the following commands (and take another coffee) to produce the final ZIP an
 \begin{lstlisting}
 $>mvn clean
 $>mvn javadoc:aggregate
-$>mvn package -DskipTests=true
-$>mvn assembly:assembly -DskipTests=true
+$>mvn package -DskipTests
+$>mvn assembly:assembly -DskipTests
 \end{lstlisting}
 
 \textbf{TODO} prepare \mylst{choco-solver} and \mylst{choco-solver-cpviz} for \mylst{deploy} command.
