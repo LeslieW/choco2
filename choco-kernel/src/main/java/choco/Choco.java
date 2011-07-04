@@ -3879,6 +3879,18 @@ public class Choco {
     }
 
     /**
+     * Ensures that the values of integer variables are contained in a set variable.
+     * <br/> &#8704; i in [1,n], vars_i &#8712; sv
+     * @param sv the set variable
+     * @param vars integer variables whose values should be contained in the set
+     * @return the new constraint
+     */
+    public static Constraint member(SetVariable sv, IntegerVariable... vars) {
+        return new ComponentConstraint(ConstraintType.MEMBER, null,
+                ArrayUtils.append(new Variable[]{sv}, vars));
+    }
+
+    /**
      * Ensures that a value is not contained ina set variable.
      *
      * @param val the forbidden value

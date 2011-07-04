@@ -27,13 +27,17 @@
 
 package choco.model.constraints.integer;
 
+import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.constraints.set.MemberXiY;
+import choco.cp.solver.search.BranchingFactory;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import gnu.trove.TIntHashSet;
@@ -286,6 +290,46 @@ public class MemberTest {
             s2.solveAll();
 
             Assert.assertEquals("seed:" + i, s2.getSolutionCount(), s1.getSolutionCount());
+        }
+    }
+
+    @Test
+    public void test7(){
+        Random r = new Random();
+        int nb = 3;
+        int base = 4;
+        for (int i = 0; i < 50; i++) {
+            r.setSeed(i);
+            int lb = -base + r.nextInt(2*base);
+            int ub = lb + 1 + r.nextInt(2*base);
+            IntegerVariable[] ivars = Choco.makeIntVarArray("x", nb, lb, ub);
+            SetVariable svar = Choco.makeSetVar("s", lb, ub);
+
+            Model model1 = new CPModel();
+            Model model2 = new CPModel();
+
+            for(int j = 0; j < ivars.length; j++){
+                model1.addConstraint(Choco.member(ivars[j], svar));
+            }
+
+            model2.addConstraint(MemberXiY.build(ivars, svar));
+
+//            ChocoLogging.toSolution();
+            Solver solver1 = new CPSolver();
+            Solver solver2 = new CPSolver();
+
+            solver1.read(model1);
+            solver1.addGoal(BranchingFactory.lexicographic(solver1, solver1.getVar(ivars)));
+            solver1.addGoal(BranchingFactory.lexicographic(solver1, solver1.getVar(new SetVariable[]{svar})));
+            solver1.solveAll();
+
+            solver2.read(model2);
+            solver2.addGoal(BranchingFactory.lexicographic(solver2, solver2.getVar(ivars)));
+            solver2.addGoal(BranchingFactory.lexicographic(solver2, solver2.getVar(new SetVariable[]{svar})));
+            solver2.solveAll();
+            Assert.assertEquals(solver1.getSolutionCount(), solver2.getSolutionCount());
+            System.out.printf("%d vs. %d\n", solver1.getTimeCount(), solver2.getTimeCount());
+
         }
     }
 

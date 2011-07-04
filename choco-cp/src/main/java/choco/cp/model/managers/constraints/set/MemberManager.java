@@ -31,6 +31,7 @@ import choco.cp.model.managers.MixedConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.set.MemberX;
 import choco.cp.solver.constraints.set.MemberXY;
+import choco.cp.solver.constraints.set.MemberXiY;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -60,6 +61,11 @@ public final class MemberManager extends MixedConstraintManager {
     public SConstraint makeConstraint(Solver solver, Variable[] vars, Object parameters, List<String> options) {
 
         if (solver instanceof CPSolver) {
+            if(vars.length > 2){
+                IntegerVariable[] ivars = new IntegerVariable[vars.length-1];
+                System.arraycopy(vars, 1, ivars, 0, ivars.length);
+                return new MemberXiY(solver.getVar((SetVariable) vars[0]), solver.getVar(ivars));
+            }else
             if (vars.length == 2) {
                 return new MemberXY(solver.getVar((SetVariable) vars[0]), solver.getVar((IntegerVariable) vars[1]));
             } else {
