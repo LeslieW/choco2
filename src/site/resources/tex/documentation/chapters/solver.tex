@@ -188,10 +188,10 @@ $$\begin{cases}
       \hline\\
       \mylst{solveAll()} or \mylst{solve(true)} &  Runs backtracking until computing \emph{all feasible solutions}, or until proving infeasibility (returns \mylst{Boolean.FALSE}) or until reaching a search limit (returns \mylst{Boolean.TRUE} if at least one first solution was computed, and \mylst{null} otherwise). \\[.3em]
       \hline\\
-      \mylst{maximize(Var obj, boolean restart)} &  Runs branch-and-bound until reaching \emph{a feasible solution that is proved to maximize objective} \mylst{obj},  or until proving infeasibility (returns \mylst{Boolean.FALSE}) or until reaching a search limit (returns \mylst{Boolean.TRUE} if at least one first solution was computed, and \mylst{null} otherwise). It proceeds by successive improvements of the best solution found so far: each time a feasible solution is found at a leaf of the tree search, then the search follows for a new solution with a greater objective, until it proves that no such improving solution exists.
+      \mylst{maximize(Var obj, boolean restart)},\mylst{maximize(boolean restart)} &  Runs branch-and-bound until reaching \emph{a feasible solution that is proved to maximize objective} \mylst{obj},  or until proving infeasibility (returns \mylst{Boolean.FALSE}) or until reaching a search limit (returns \mylst{Boolean.TRUE} if at least one first solution was computed, and \mylst{null} otherwise). It proceeds by successive improvements of the best solution found so far: each time a feasible solution is found at a leaf of the tree search, then the search follows for a new solution with a greater objective, until it proves that no such improving solution exists.
 Parameter \texttt{restart} is a boolean indicating whether the search continues from the solution leaf with a backtrack (if set to \mylst{false}) or if it is relaunch from the root node (if set to \texttt{true}).\\
 \hline\\
-      \mylst{minimize(Var obj, boolean restart)} &  similar to \texttt{maximize} but for computing \emph{a feasible solution that is proved to minimize objective} \texttt{obj}.\\[.3em]      \hline\\
+      \mylst{minimize(Var obj, boolean restart)},\mylst{minimize(boolean restart)} &  similar to \texttt{maximize} but for computing \emph{a feasible solution that is proved to minimize objective} \texttt{obj}.\\[.3em]      \hline\\
 	\end{tabular}
 
 The following  API are also useful to manipulate a \texttt{Solver} object:\\
@@ -203,6 +203,50 @@ The following  API are also useful to manipulate a \texttt{Solver} object:\\
       \mylst{isFeasible()} &  Returns the current feasibility status of the solver.\\
       \hline\\
 	\end{tabular}
+
+\section{Storing et restoring solution}\label{}\hypertarget{}{}
+By default, the last solution found is stored and accessible once the search has ended.
+
+\paragraph{Store solutions.} To store the solutions found during the resolution, one just need to override the solution pool capacity (which is set to 1 by default).
+\begin{lstlisting}
+	int size = Integer.MAX_VALUE;
+	solver.getConfiguration().putInt(Configuration.SOLUTION_POOL_CAPACITY, size);
+	solver.solveAll();
+	ISolutionPool pool = solver.getSearchStrategy().getSolutionPool();
+\end{lstlisting}
+
+Setting \textit{size} to \mylst{Integer.MAX\_VALUE} means "store every solution", otherwise you can set a finite value, for example 10 and the $10^{th}$ last solutions will be stored.
+
+A Solution object is made of arrays of values: an array of values of \mylst{IntVar}, another one for values of \mylst{SetVar} and the last one for the values of \mylst{RealVar}. For each type of variable, the $i^{th}$ one in the solver corresponds to the $i^{th}$ one in the solution:
+
+\begin{lstlisting}
+	solution.getIntValue(10);
+	solution.getSetValue(8);
+	solution.getRealValue(9);
+\end{lstlisting}
+
+And to make the link between a variable in a solution, simply retrieve the index of the variable in the solver:
+\begin{lstlisting}
+	int q0 = solver.getIntVarIndex(solver.getVar(vars[0])); // vars is an array of IntegerVariable
+	solution.getIntValue(q0);
+\end{lstlisting}
+
+\paragraph{Restore solutions.} A solution can be restored within a solver. But to do that, some precautions must be taken: before starting the search, the state of the solver must be backed up.
+\begin{lstlisting}
+	int rootworld = solver.getEnvironment().getWorldIndex();
+	solver.worldPush();
+	solver.solveAll();
+\end{lstlisting}
+
+And then, to restore a solution, first restore the root world and backup another world:
+\begin{lstlisting}
+	solver.worldPopUntil(rootworld); // restore the original state, where domains were as declared (not yet instantiated)
+	solver.worldPush(); // backup the current state of the solver, to allow other solution restoration
+	solver.restoreSolution(solution); // restore the solution
+	// do something
+\end{lstlisting}
+If you want to restore more than one solution, you just apply this 3 steps phasis.
+
 
 \section{Search Strategy}\label{solver:searchstrategy}\hypertarget{solver:searchstrategy}{}
 
