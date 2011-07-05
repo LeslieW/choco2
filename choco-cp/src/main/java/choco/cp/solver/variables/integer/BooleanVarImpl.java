@@ -177,8 +177,11 @@ public class BooleanVarImpl extends IntDomainVarImpl {
 
     /**
      * Gets the previous value in the domain.
+     * @deprecated replaced by iteration over domain with the {@code IntDomain.getNextValue, IntDomain.getPrevValue}
+     * @see IntDomain#getNextValue(int)
+     * @see IntDomain#getPrevValue(int)
      */
-
+    @Deprecated
     public final int getPrevDomainValue(int currentv) {
     	return booldomain.getPrevValue(currentv);
     }

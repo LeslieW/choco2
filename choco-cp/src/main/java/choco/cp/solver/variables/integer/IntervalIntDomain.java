@@ -63,7 +63,7 @@ public class IntervalIntDomain extends AbstractIntDomain {
         super(v, propagationEngine);
         inf = environment.makeInt(a);
         sup = environment.makeInt(b);
-        deltaDom = new IntervalDeltaDomain(this, a,b);
+        deltaDom = new IntervalDeltaDomain(this, a, b);
 
     }
 
@@ -111,10 +111,17 @@ public class IntervalIntDomain extends AbstractIntDomain {
 
     protected DisposableIntIterator _iterator = null;
 
-    public DisposableIntIterator getIterator(){
-        if(getSize() == 1) return OneValueIterator.getIterator(getInf());
+    /**
+     * @deprecated replaced by iteration over domain with the {@code IntervalIntDomain.getNextValue, IntervalIntDomain.getPrevValue}
+     * @see choco.kernel.solver.variables.integer.IntDomainVar#getNextDomainValue(int)
+     * @see choco.kernel.solver.variables.integer.IntDomainVar#getPrevDomainValue(int)
+     * @see IntervalIntDomain#getNextValue(int)
+     * @see IntervalIntDomain#getPrevValue(int)
+     */
+    public DisposableIntIterator getIterator() {
+        if (getSize() == 1) return OneValueIterator.getIterator(getInf());
         return IntervalIntDomainIterator.getIterator(this);
-      }
+    }
 
     public boolean remove(final int x) {
         return false;
@@ -129,25 +136,25 @@ public class IntervalIntDomain extends AbstractIntDomain {
     }
 
     public void restrict(final int x) {
-      if ((variable.getEvent().getPropagatedEvents() & eventBitMask) != 0) {
-        deltaDom.remove(x);
-      }
+        if ((variable.getEvent().getPropagatedEvents() & eventBitMask) != 0) {
+            deltaDom.remove(x);
+        }
         inf.set(x);
         sup.set(x);
     }
 
     public int updateInf(final int x) {
-      if ((variable.getEvent().getPropagatedEvents() & eventBitMask) != 0) {
-        deltaDom.remove(x);
-      }
+        if ((variable.getEvent().getPropagatedEvents() & eventBitMask) != 0) {
+            deltaDom.remove(x);
+        }
         inf.set(x);
         return x;
     }
 
     public int updateSup(final int x) {
-      if ((variable.getEvent().getPropagatedEvents() & eventBitMask) != 0) {
-        deltaDom.remove(x);
-      }
+        if ((variable.getEvent().getPropagatedEvents() & eventBitMask) != 0) {
+            deltaDom.remove(x);
+        }
         sup.set(x);
         return x;
     }

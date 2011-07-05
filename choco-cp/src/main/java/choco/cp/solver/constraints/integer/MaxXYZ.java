@@ -28,10 +28,8 @@
 package choco.cp.solver.constraints.integer;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractTernIntSConstraint;
-import choco.kernel.solver.variables.integer.IntDomain;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /*
@@ -52,22 +50,22 @@ public final class MaxXYZ extends AbstractTernIntSConstraint {
 
     @Override
     public int getFilteredEventMask(int idx) {
-        if(idx == 0){
-            if(v0.hasEnumeratedDomain()){
+        if (idx == 0) {
+            if (v0.hasEnumeratedDomain()) {
                 return IntVarEvent.INSTINT_MASK + IntVarEvent.REMVAL_MASK;
-            }else{
+            } else {
                 return IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK;
             }
-        }else if(idx == 1){
-            if(v1.hasEnumeratedDomain()){
+        } else if (idx == 1) {
+            if (v1.hasEnumeratedDomain()) {
                 return IntVarEvent.INSTINT_MASK + IntVarEvent.REMVAL_MASK;
-            }else{
+            } else {
                 return IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK;
             }
-        }else{
-            if(v2.hasEnumeratedDomain()){
+        } else {
+            if (v2.hasEnumeratedDomain()) {
                 return IntVarEvent.INSTINT_MASK + IntVarEvent.REMVAL_MASK;
-            }else{
+            } else {
                 return IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK;
             }
         }
@@ -136,17 +134,11 @@ public final class MaxXYZ extends AbstractTernIntSConstraint {
             v0.updateInf(Math.max(v1.getInf(), v2.getInf()), this, false);
 
             if (v0.hasEnumeratedDomain()) {
-                IntDomain dom0 = v0.getDomain();
-                DisposableIntIterator it = dom0.getIterator();
-                try{
-                    while (it.hasNext()) {
-                        int valeur = it.next();
-                        if (!v1.canBeInstantiatedTo(valeur) && !v2.canBeInstantiatedTo(valeur)) {
-                            v0.removeVal(valeur, this, false);
-                        }
+                int ub0 = v0.getSup();
+                for (int valeur = v0.getInf(); valeur <= ub0; valeur = v0.getNextDomainValue(valeur)) {
+                    if (!v1.canBeInstantiatedTo(valeur) && !v2.canBeInstantiatedTo(valeur)) {
+                        v0.removeVal(valeur, this, false);
                     }
-                }finally {
-                    it.dispose();
                 }
             }
         } else if (idx == 1) {
@@ -156,17 +148,11 @@ public final class MaxXYZ extends AbstractTernIntSConstraint {
             }
 
             if (v1.hasEnumeratedDomain()) {
-                IntDomain dom1 = v1.getDomain();
-                DisposableIntIterator it = dom1.getIterator();
-                try{
-                    while (it.hasNext()) {
-                        int valeur = it.next();
-                        if (!v0.canBeInstantiatedTo(valeur) && (valeur > v2.getSup())) {
-                            v1.removeVal(valeur, this, false);
-                        }
+                int ub1 = v1.getSup();
+                for (int valeur = v1.getInf(); valeur <= ub1; valeur = v1.getNextDomainValue(valeur)) {
+                    if (!v0.canBeInstantiatedTo(valeur) && (valeur > v2.getSup())) {
+                        v1.removeVal(valeur, this, false);
                     }
-                }finally {
-                    it.dispose();
                 }
             }
 
@@ -177,21 +163,14 @@ public final class MaxXYZ extends AbstractTernIntSConstraint {
                 v2.updateInf(v0.getInf(), this, false);
             }
             if (v2.hasEnumeratedDomain()) {
-                IntDomain dom2 = v2.getDomain();
-                DisposableIntIterator it = dom2.getIterator();
-                try{
-                    while (it.hasNext()) {
-                        int valeur = it.next();
-                        if (!v0.canBeInstantiatedTo(valeur) && (valeur > v1.getSup())) {
-                            v2.removeVal(valeur, this, false);
-                        }
+
+                int ub2 = v2.getSup();
+                for (int valeur = v2.getInf(); valeur <= ub2; valeur = v2.getNextDomainValue(valeur)) {
+                    if (!v0.canBeInstantiatedTo(valeur) && (valeur > v1.getSup())) {
+                        v2.removeVal(valeur, this, false);
                     }
-                }finally {
-                    it.dispose();
                 }
             }
-
-
         }
     }
 

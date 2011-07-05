@@ -28,7 +28,6 @@
 package choco.model.constraints.global;
 
 import choco.Choco;
-import static choco.Choco.makeIntVar;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -45,6 +44,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
+
+import static choco.Choco.makeIntVar;
 
 /**
  * User : xlorca
@@ -116,9 +117,8 @@ public class GACIncreasingNValueTest {
             if (test) {
                 for (int i = 0; i < nbVars + 1; i++) {
                     IntDomainVar dv = s.getVar(vars[i]);
-                    DisposableIntIterator it = dv.getDomain().getIterator();
-                    while (it.hasNext()) {
-                        int val = it.next();
+                    int ub = dv.getSup();
+                    for (int val = dv.getInf(); val <= ub; val = dv.getNextDomainValue(val)) {
                         Model mm = generateSpecificModel(i, val);
                         Solver ss = new CPSolver();
                         ss.read(mm);

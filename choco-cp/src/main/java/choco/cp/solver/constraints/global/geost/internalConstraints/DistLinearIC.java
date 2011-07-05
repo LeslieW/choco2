@@ -33,8 +33,8 @@ import choco.cp.solver.constraints.global.geost.geometricPrim.Obj;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Point;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Region;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.model.variables.geost.ShiftedBox;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -141,12 +141,11 @@ public final class DistLinearIC extends ForbiddenRegion {
 
     int compute_D(final int k) /*computes line 1 of Algorithm 177*/
     {
-        final DisposableIntIterator it = stp.getObject(o1).getShapeId().getDomain().getIterator();
         int max=0;
         boolean max_not_assigned=true;
-
-        while (it.hasNext()) {
-            final int sid = it.next();
+        IntDomainVar _var = stp.getObject(o1).getShapeId();
+        int ub = _var.getSup();
+        for (int sid = _var.getInf(); sid <= ub; sid = _var.getNextDomainValue(sid)) {
             boolean min_sid_not_assigned=true;
             int min_sid=-1;
             for (final ShiftedBox sb  : stp.getShape(sid)) {
@@ -168,7 +167,6 @@ public final class DistLinearIC extends ForbiddenRegion {
             if ((max_not_assigned)  || (max<min_sid)) max=min_sid;
             max_not_assigned=false;
         }
-        it.dispose();
         return max;
     }
     

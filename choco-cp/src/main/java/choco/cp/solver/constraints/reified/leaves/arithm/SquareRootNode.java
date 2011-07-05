@@ -43,6 +43,11 @@ public final class SquareRootNode extends INode implements ArithmNode {
 		super(subt, NodeType.SQUARE);
 	}
 
+    @Override
+    public boolean isDecompositionPossible() {
+        return false;
+    }
+
     /**
      * pretty printing of the object. This String is not constant and may depend on the context.
      *

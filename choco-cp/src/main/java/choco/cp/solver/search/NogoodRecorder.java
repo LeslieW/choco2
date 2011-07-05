@@ -27,15 +27,15 @@
 
 package choco.cp.solver.search;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.logging.Logger;
-
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.search.IntBranchingTrace;
 import choco.kernel.solver.search.integer.IntVarValPair;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * analyze the trace of the branching for nogood recording from restarts. </br>
@@ -94,7 +94,7 @@ public final class NogoodRecorder {
 		if(bvar==null) {
 			LOGGER.finest("reset nogood recording: not a integer variable");
 			reset();
-		}else if( ! bvar.getDomain().isBoolean()) {
+		}else if( ! bvar.hasBooleanDomain()) {
 			LOGGER.finest("reset nogood recording: not a boolean variable");
 			reset();
 		}else {

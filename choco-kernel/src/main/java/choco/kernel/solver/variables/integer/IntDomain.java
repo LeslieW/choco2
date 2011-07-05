@@ -42,8 +42,13 @@ public interface IntDomain extends Domain {
 	public final static Logger LOGGER = ChocoLogging.getEngineLogger();
 	/**
 	 * Retrieve an getIterator for traversing the sequence of values contained in the domain
+     * @deprecated replaced by iteration over domain with the {@code IntDomain.getNextValue, IntDomain.getPrevValue}
+     * @see IntDomainVar#getNextDomainValue(int)
+     * @see IntDomainVar#getPrevDomainValue(int)
+     * @see IntDomain#getNextValue(int)
+     * @see IntDomain#getPrevValue(int)
 	 */
-
+    @Deprecated
 	public DisposableIntIterator getIterator();
 
 
@@ -111,6 +116,16 @@ public interface IntDomain extends Domain {
 	 * Accessing the smallest value stored in the domain and strictly greater
 	 * than <i>x</i>.
 	 * Does not require <i>x</i> to be in the domain.
+     * <p/>
+     * To iterate over the values in a <code>IntDomain</code>,
+     * use the following loop:
+     *
+     * <pre>
+     * int ub = dom.getSup();
+     * for (int val = dom.getInf(); val <= ub; val = dom.getNextValue(val)) {
+     *     // operate on value 'val' here
+     * }</pre>
+     *
 	 */
 
 	public int getNextValue(int x);
@@ -120,6 +135,16 @@ public interface IntDomain extends Domain {
 	 * Accessing the largest value stored in the domain and strictly smaller
 	 * than <i>x</i>.
 	 * Does not require <i>x</i> to be in the domain.
+     *
+     * <p/>
+     * To iterate over the values in a <code>IntDomain</code>,
+     * use the following loop:
+     *
+     * <pre>
+     * int lb = dom.getInf();
+     * for (int val = dom.getSup(); val >= lb; val = dom.getPrevValue(val)) {
+     *     // operate on value 'val' here
+     * }</pre>
 	 */
 
 	public int getPrevValue(int x);

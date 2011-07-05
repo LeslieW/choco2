@@ -210,7 +210,7 @@ public final class AmongSet extends AbstractMixedSetIntSConstraint {
 
     private void filter() throws ContradictionException {
         if (n.isInstantiated()) {
-            DisposableIntIterator it = null;
+            DisposableIntIterator it;
             int[] lb_ub = computeLastBounds();
 
             int left, right;
@@ -240,9 +240,8 @@ public final class AmongSet extends AbstractMixedSetIntSConstraint {
                     int i = bothE[j];
                     IntDomainVar v = ivars[i];
                     left = right = Integer.MIN_VALUE;
-                    it = v.getDomain().getIterator();
-                    while (it.hasNext()) {
-                        int val = it.next();
+                    int ub = v.getSup();
+                    for (int val = v.getInf(); val <= ub; val = v.getNextDomainValue(val)) {
                         if (!s.isInDomainEnveloppe(val)) {
                             if (val == right + 1) {
                                 right = val;
@@ -255,7 +254,6 @@ public final class AmongSet extends AbstractMixedSetIntSConstraint {
                         }
                     }
                     v.removeInterval(left, right, this, false);
-                    it.dispose();
                 }
             }
         }
@@ -321,17 +319,14 @@ public final class AmongSet extends AbstractMixedSetIntSConstraint {
 
     private int updateLB(final IntDomainVar var, final int i) {
         if (var.getDomainSize() <= s.getKernelDomainSize()) {
-            final DisposableIntIterator it = var.getDomain().getIterator();
-            while (it.hasNext()) {
-                int val = it.next();
+            int ub = var.getSup();
+            for (int val = var.getInf(); val <= ub; val = var.getNextDomainValue(val)) {
                 if (!s.isInDomainKernel(val)) {
                     ensureCapacity(bothK, kIdx);
                     bothK[kIdx++] = i;
-                    it.dispose();
                     return -1;
                 }
             }
-            it.dispose();
             return 0;
         }
         ensureCapacity(bothK, kIdx);
@@ -382,9 +377,8 @@ public final class AmongSet extends AbstractMixedSetIntSConstraint {
                 }
                 if (!outEnv.get(i)) {
                     nb = 0;
-                    DisposableIntIterator it = var.getDomain().getIterator();
-                    while (it.hasNext()) {
-                        int vv = it.next();
+                    int UB = var.getSup();
+                    for (int vv = var.getInf(); vv <= UB; vv = var.getNextDomainValue(vv)) {
                         if (vv != val) {
                             if (s.isInDomainEnveloppe(vv)) {
                                 nb++;
@@ -392,7 +386,6 @@ public final class AmongSet extends AbstractMixedSetIntSConstraint {
                             }
                         }
                     }
-                    it.dispose();
                     if (nb == 0) {
                         ub--;
                     }

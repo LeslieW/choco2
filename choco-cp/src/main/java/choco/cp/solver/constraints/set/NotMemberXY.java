@@ -61,24 +61,20 @@ public final class NotMemberXY extends AbstractBinSetIntSConstraint {
      * @throws ContradictionException
      */
     public void filter() throws ContradictionException {
-        final DisposableIntIterator it = v0.getDomain().getIterator();
-        try {
-            int count = 0, val = Integer.MAX_VALUE;
-            while (it.hasNext()) {
-                val = it.next();
-                if (!v1.isInDomainKernel(val)) {
-                    count += 1;
-                    if (count > 1) break;
-                }
+        int count = 0, val = Integer.MAX_VALUE;
+        int ub0 = v0.getSup();
+        for (int i = v0.getInf(); i <= ub0; i = v0.getNextDomainValue(val)) {
+            val = i;
+            if (!v1.isInDomainKernel(val)) {
+                count += 1;
+                if (count > 1) break;
             }
-            if (count == 0)
-                this.fail();
-            else if (count == 1) {
-                v0.instantiate(val, this, false);
-                v1.remFromEnveloppe(val, this, false);
-            }
-        } finally {
-            it.dispose();
+        }
+        if (count == 0)
+            this.fail();
+        else if (count == 1) {
+            v0.instantiate(val, this, false);
+            v1.remFromEnveloppe(val, this, false);
         }
     }
 
@@ -159,14 +155,12 @@ public final class NotMemberXY extends AbstractBinSetIntSConstraint {
     }
 
     public boolean isConsistent() {
-        final DisposableIntIterator it = v0.getDomain().getIterator();
-        while (it.hasNext()) {
-            if (v1.isInDomainKernel(it.next())) {
-                it.dispose();
+        int ub0 = v0.getSup();
+        for (int val = v0.getInf(); val <= ub0; val = v0.getNextDomainValue(val)) {
+            if (v1.isInDomainKernel(val)) {
                 return false;
             }
         }
-        it.dispose();
         return true;
     }
 
@@ -181,9 +175,8 @@ public final class NotMemberXY extends AbstractBinSetIntSConstraint {
     public Boolean isEntailed() {
         boolean allInKernel = true;
         boolean allOutEnv = true;
-        final DisposableIntIterator it = v0.getDomain().getIterator();
-        while (it.hasNext()) {
-            final int val = it.next();
+        int ub0 = v0.getSup();
+        for (int val = v0.getInf(); val <= ub0; val = v0.getNextDomainValue(val)) {
             if (!v1.isInDomainKernel(val)) {
                 allInKernel = false;
             }
@@ -191,7 +184,6 @@ public final class NotMemberXY extends AbstractBinSetIntSConstraint {
                 allOutEnv = false;
             }
         }
-        it.dispose();
         if (allInKernel) {
             return Boolean.FALSE;
         } else if (allOutEnv) {

@@ -28,12 +28,10 @@
 package choco.cp.solver.constraints.integer;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
-import choco.kernel.solver.variables.integer.IntDomain;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
@@ -79,39 +77,29 @@ public final class Absolute extends AbstractBinIntSConstraint {
 	 */
 	public void propagate() throws ContradictionException {
 		v0.updateInf(0, this, false);
-		if (v0.getDomain().isEnumerated()) {
-			IntDomain dom0 = v0.getDomain();
-			DisposableIntIterator it = dom0.getIterator();
-            try{
-            while(it.hasNext()) {
-                int valeur = it.next();
+		if (v0.hasEnumeratedDomain()) {
+			int ub0 = v0.getSup();
+			for (int valeur = v0.getInf(); valeur <= ub0; valeur = v0.getNextDomainValue(valeur)) {
+
         		if (!v1.canBeInstantiatedTo(valeur) &&
 						!v1.canBeInstantiatedTo(-valeur)) {
 					v0.removeVal(valeur, this, false);
 				}
 			}
-            }finally {
-                it.dispose();
-            }
         } else {
 			awakeOnInf(1);
 			awakeOnSup(1);
 		}
-		if (v1.getDomain().isEnumerated()) {
-			IntDomain dom1 = v1.getDomain();
-            DisposableIntIterator it = dom1.getIterator();
-            try{
-            while (it.hasNext()) {
-                int valeur = it.next();
+		if (v1.hasEnumeratedDomain()) {
+            int ub1 = v1.getSup();
+            for (int valeur = v1.getInf(); valeur <= ub1; valeur = v1.getNextDomainValue(valeur)) {
+
                 if (!v0.canBeInstantiatedTo(valeur) &&
                         !v0.canBeInstantiatedTo(-valeur)) {
 					v1.removeVal(valeur, this, false);
 					v1.removeVal(-valeur, this, false);
 				}
 			}
-            }finally {
-                it.dispose();
-            }
         } else {
 			awakeOnInf(0);
 			awakeOnSup(0);
@@ -138,11 +126,11 @@ public final class Absolute extends AbstractBinIntSConstraint {
 				v1.updateInf(v0.getInf(), this, false);
 			else if (v1.getSup() < v0.getInf())
 				v1.updateSup(-v0.getInf(), this, false);
-			else if (v1.getDomain().isEnumerated()) {
+			else if (v1.hasEnumeratedDomain()) {
 				v1.removeInterval(-v0.getInf() + 1, v0.getInf() - 1, this, false);
 			}
 		} else { // free variable lower bound is increased
-			if (!v1.getDomain().isEnumerated()
+			if (!v1.hasEnumeratedDomain()
 					&& v1.getInf() > -v0.getInf() /* v0.getInf() > 0 by definition */
 					&& v1.getInf() < v0.getInf() /* v0.getInf() > cste by fefinition */) {
 				v1.updateInf(v0.getInf(), this, true);
@@ -170,7 +158,7 @@ public final class Absolute extends AbstractBinIntSConstraint {
 			v1.updateSup(v0.getSup(), this, false);
 			v1.updateInf(-v0.getSup(), this, false);
 		} else {
-			if (!v1.getDomain().isEnumerated() &&
+			if (!v1.hasEnumeratedDomain() &&
 					v1.getSup() > -v0.getInf() &&
 					v1.getSup() < v0.getInf()) {
 				// Y.sup cannot remain in the gap (-(X.inf) .. X.inf)
@@ -252,10 +240,9 @@ public final class Absolute extends AbstractBinIntSConstraint {
 	 * in which case abs(value) can be removed from the domain of X)
 	 */
 	protected void detectSymetricalHoles(int inf, int sup) throws ContradictionException {
-		if (v1.getDomain().isEnumerated()) {
-			IntDomain dom0 = v0.getDomain();
+		if (v1.hasEnumeratedDomain()) {
 			for (int valeur = Math.max(inf, v0.getInf());
-			     valeur <= Math.min(sup, v0.getSup()); valeur = dom0.getNextValue(valeur)) {
+			     valeur <= Math.min(sup, v0.getSup()); valeur = v0.getNextDomainValue(valeur)) {
 				if (!v1.canBeInstantiatedTo(valeur) &&
 						!v1.canBeInstantiatedTo(-valeur)) {
 					v0.removeVal(valeur, this, false);
@@ -271,11 +258,11 @@ public final class Absolute extends AbstractBinIntSConstraint {
 	 *
 	 */
 	protected void updateMinFromHoles() throws ContradictionException {
-		if (v1.getDomain().isEnumerated() &&
+		if (v1.hasEnumeratedDomain() &&
 				v1.getInf() < 0 &&
 				v1.getSup() > 0) {
-			int minPositiveValue = v1.getDomain().getNextValue(-1);
-			int maxNegativeValue = v1.getDomain().getPrevValue(1);
+			int minPositiveValue = v1.getNextDomainValue(-1);
+			int maxNegativeValue = v1.getPrevDomainValue(1);
 			v0.updateInf(Math.min(-maxNegativeValue, minPositiveValue), this, false);
 		}
 	}

@@ -39,16 +39,17 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.AbstractTask;
 import choco.kernel.solver.variables.scheduling.ITask;
 import junit.framework.Assert;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.awt.Point;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 class SimpleTask extends AbstractTask {
 
@@ -195,7 +196,7 @@ public class TestTask {
 		assertEquals(4, solver.getIntDecisionVars().length);
 		assertEquals(3, solver.getNbTaskVars());
 		assertEquals(2, solver.getTaskDecisionVars().length);
-		assertTrue(solver.getVar(t3).start().getDomain().isEnumerated());
+		assertTrue(solver.getVar(t3).start().hasEnumeratedDomain());
 	}
 	
 

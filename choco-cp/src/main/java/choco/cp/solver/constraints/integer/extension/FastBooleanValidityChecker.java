@@ -58,7 +58,7 @@ public final class FastBooleanValidityChecker extends ValidityChecker {
 
     public boolean isValid(int[] tuple, int i) {
         nbCheck++;
-		return sortedvs[i].getDomain().contains(tuple[position[i]]);
+		return sortedvs[i].canBeInstantiatedTo(tuple[position[i]]);
 	}
 
 }

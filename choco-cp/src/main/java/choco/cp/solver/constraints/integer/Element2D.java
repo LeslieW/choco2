@@ -32,7 +32,6 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractTernIntSConstraint;
-import choco.kernel.solver.variables.integer.IntDomain;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.BitSet;
@@ -158,8 +157,7 @@ public final class Element2D extends AbstractTernIntSConstraint {
         if (v2.hasEnumeratedDomain()) thecause2 = getConstraintIdx(1);
 
         if (v0.hasEnumeratedDomain()) {
-            IntDomain v0Dom = this.v0.getDomain();
-            for (int i = v0Dom.getNextValue(minFeasibleIndex1 - 1); i <= maxFeasibleIndex1; i = v0Dom.getNextValue(i)) {
+            for (int i = v0.getNextDomainValue(minFeasibleIndex1 - 1); i <= maxFeasibleIndex1; i = v0.getNextDomainValue(i)) {
                 if (!testValueVarV0(i)) {
                     this.v0.removeVal(i, this, false);
                 }
@@ -182,21 +180,18 @@ public final class Element2D extends AbstractTernIntSConstraint {
         }
 
         if (v1.hasEnumeratedDomain()) {
-            IntDomain v1Dom = this.v1.getDomain();
-            for (int i = v1Dom.getNextValue(minFeasibleIndex2 - 1); i <= maxFeasibleIndex2; i = v1Dom.getNextValue(i)) {
+            for (int i = v1.getNextDomainValue(minFeasibleIndex2 - 1); i <= maxFeasibleIndex2; i = v1.getNextDomainValue(i)) {
                 if (!testValueVarV1(i)) {
                     this.v1.removeVal(i, this, false);
                 }
             }
         } else {
             // update index2
-            DisposableIntIterator v1It = this.v1.getDomain().getIterator();
-            while (v1It.hasNext()) {
-                int v1val = v1It.next();
+            int ub1 = v1.getSup();
+            for (int v1val = v1.getInf(); v1val <= ub1; v1val = v1.getNextDomainValue(v1val)) {
                 if (!testValueVarV1(v1val)) minFeasibleIndex2 = v1val;
                 else break;
             }
-            v1It.dispose();
             v1.updateInf(minFeasibleIndex2, this, false);
 
             // Todo : update the prevValue api on BitSetIntDomain to perform a more efficient iteration

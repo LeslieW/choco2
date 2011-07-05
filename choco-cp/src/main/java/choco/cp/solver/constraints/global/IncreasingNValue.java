@@ -27,7 +27,6 @@
 
 package choco.cp.solver.constraints.global;
 
-import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.propagation.event.ConstraintEvent;
@@ -253,15 +252,13 @@ public final class IncreasingNValue extends AbstractLargeIntSConstraint {
      */
     public final int minInfSuffix(final int k) {
         int min = Integer.MAX_VALUE;
-        final DisposableIntIterator it = x[k].getDomain().getIterator();
-        while (it.hasNext()) {
-            final int v = it.next();
+        int ub = x[k].getSup();
+        for (int v = x[k].getInf(); v <= ub; v = x[k].getNextDomainValue(v)) {
             final int w = infSuffix.get(k, v);
             if (min > w) {
                 min = w;
             }
         }
-        it.dispose();
         return min;
     }
 
@@ -270,15 +267,14 @@ public final class IncreasingNValue extends AbstractLargeIntSConstraint {
      */
     public final int maxSupSuffix(final int k) {
         int max = Integer.MIN_VALUE;
-        final DisposableIntIterator it = x[k].getDomain().getIterator();
-        while (it.hasNext()) {
-            final int v = it.next();
+        int ub = x[k].getSup();
+        for (int v = x[k].getInf(); v <= ub; v = x[k].getNextDomainValue(v)) {
+
             final int w = supSuffix.get(k, v);
             if (max < w) {
                 max = w;
             }
         }
-        it.dispose();
         return max;
     }
 

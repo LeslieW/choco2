@@ -191,15 +191,18 @@ public class ClausesTest {
 
             for (int seed2 = 0; seed2 < 5; seed2++) {
                 LOGGER.info("seed " + seed1);
-                int nbnode = solveNBSOL(seed2, nbvar, nbct, false);
-                int nbnode2 = solveNBSOL(seed2, nbvar, nbct, true);
+                int nbnode = solveNBSOL(seed2, nbvar, nbct, false, false);
+                int nbnode2 = solveNBSOL(seed2, nbvar, nbct, false, true);
+                int nbnode3 = solveNBSOL(seed2, nbvar, nbct, true, false);
                 assertEquals(nbnode, nbnode2);
+                assertEquals(nbnode, nbnode3);
             }
         }
     }
 
-    public int solveNBSOL(int seed, int nbvar, int nbc, boolean clause) {
+    public int solveNBSOL(int seed, int nbvar, int nbc, boolean clause, boolean decomp) {
         CPModel mod = new CPModel();
+        mod.setDefaultExpressionDecomposition(decomp);
         CPSolver s = new CPSolver();
 
         Random rand = new Random(seed);

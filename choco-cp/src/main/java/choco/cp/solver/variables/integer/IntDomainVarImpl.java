@@ -27,7 +27,6 @@
 
 package choco.cp.solver.variables.integer;
 
-import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.structure.Couple;
 import choco.kernel.memory.structure.PartiallyStoredIntCstrList;
@@ -266,13 +265,11 @@ public class IntDomainVarImpl<C extends AbstractSConstraint & IntPropagator> ext
                 if (!this.hasEnumeratedDomain() || !x.hasEnumeratedDomain())
                     return true;
                 else {
-                    DisposableIntIterator it = this.getDomain().getIterator();
-                    for (; it.hasNext();) {
-                        int v = it.next();
-                        if (x.canBeInstantiatedTo(v))
+                    int ub = this.getSup();
+                    for (int val = this.getInf(); val <= ub; val = this.getNextDomainValue(val)) {
+                        if (x.canBeInstantiatedTo(val))
                             return true;
                     }
-                    it.dispose();
                     return false;
                 }
             } else

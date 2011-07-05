@@ -190,6 +190,14 @@ public final class BooleanDomain extends AbstractIntDomain {
         return (notInstanciated.contain(offset)?2:1);
     }
 
+    /**
+     * @deprecated replaced by iteration over domain with the {@code BooleanDomain.getNextValue, BooleanDomain.getPrevValue}
+     * @see choco.kernel.solver.variables.integer.IntDomainVar#getNextDomainValue(int)
+     * @see choco.kernel.solver.variables.integer.IntDomainVar#getPrevDomainValue(int)
+     * @see BooleanDomain#getNextValue(int)
+     * @see BooleanDomain#getPrevValue(int)
+     */
+    @Deprecated
     public DisposableIntIterator getIterator() {
         if(getSize() == 1) return OneValueIterator.getIterator(getInf());
         return BooleanDomainIterator.getIterator(this);

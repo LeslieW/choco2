@@ -27,7 +27,6 @@
 
 package choco.kernel.solver.constraints.global.matching;
 
-import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.IStateIntVector;
@@ -138,14 +137,13 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 	 * @return the set of right vertices that can be matched to i
 	 */
 	public final int[] mayMatch(int i) {
-		int[] ret = new int[this.getVar(i).getDomain().getSize()];
+        IntDomainVar var = getVar(i);
+		int[] ret = new int[var.getDomainSize()];
 		int offset = 0;
-		DisposableIntIterator iterator = this.getVar(i).getDomain().getIterator();
-		for (; iterator.hasNext();) {
-			int j = iterator.next();
-			ret[offset++] = j - this.minValue;
+		int ub = var.getSup();
+		for (int j = var.getInf(); j <= ub; j = var.getNextDomainValue(j)) {
+		    ret[offset++] = j - this.minValue;
 		}
-		iterator.dispose();
 		return ret;
 
 	}

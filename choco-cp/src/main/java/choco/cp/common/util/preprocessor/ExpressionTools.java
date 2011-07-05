@@ -32,7 +32,6 @@ import choco.cp.solver.constraints.integer.*;
 import choco.cp.solver.constraints.integer.bool.BoolTimesXYZ;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
 import choco.cp.solver.constraints.reified.leaves.ConstantLeaf;
-import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Configuration;
 import choco.kernel.solver.constraints.SConstraint;
@@ -46,12 +45,13 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Mail : cprudhom(a)emn.fr<br/>
  * Date : 2 avr. 2010br/>
  * Since : Choco 2.1.1<br/>
- *
- * An class providing expression tools. 
+ * <p/>
+ * An class providing expression tools.
  */
 public final class ExpressionTools {
 
-    private ExpressionTools(){}
+    private ExpressionTools() {
+    }
 
     /**
      * If the expression can be matched to a known intensional constraint, then
@@ -61,23 +61,23 @@ public final class ExpressionTools {
     public static SConstraint getIntentionalConstraint(final ExpressionSConstraint e, final CPSolver s) {
         SConstraint ct = null;
         ct = getSignConstraint(e);
-        if (ct != null){
+        if (ct != null) {
             return ct;
         }
         ct = getScalarConstraint(e, s);
-        if (ct != null){
+        if (ct != null) {
             return ct;
         }
         ct = getMinMaxConstraint(e, s);
-        if (ct != null){
+        if (ct != null) {
             return ct;
         }
         ct = getMultConstraint(e, s);
-        if (ct != null){
+        if (ct != null) {
             return ct;
         }
         ct = getDistanceConstraint(e, s);
-        if (ct != null){
+        if (ct != null) {
             return ct;
         }
         return ct;
@@ -155,8 +155,8 @@ public final class ExpressionTools {
         final IntDomainVar[] scope = e.getVars();
         final INode expr = e.getRootNode();
         if (scope.length == 2 &&
-            (scope[0].canBeInstantiatedTo(0) ||
-            scope[0].canBeInstantiatedTo(0))) //safety test with the value 0
+                (scope[0].canBeInstantiatedTo(0) ||
+                        scope[0].canBeInstantiatedTo(0))) //safety test with the value 0
         {
             return null;
         }
@@ -170,7 +170,7 @@ public final class ExpressionTools {
             } else {
                 return null;
             }
-        }else if (expr.getType().equals(NodeType.GT)) {
+        } else if (expr.getType().equals(NodeType.GT)) {
             if (testXMultYAndCste(expr, 0, 1, 0)
                     || testXMultYAndCste(expr, 0, 1, -1)) {
                 return new SignOp(scope[0], scope[1], true);
@@ -182,10 +182,10 @@ public final class ExpressionTools {
             }
         } else if (expr.getType().equals(NodeType.LEQ)) {
             if (testXMultYAndCste(expr, 1, 0, 0)
-            || testXMultYAndCste(expr, 1, 0, 1)) {
+                    || testXMultYAndCste(expr, 1, 0, 1)) {
                 return new SignOp(scope[0], scope[1], true);
             } else if (testXMultYAndCste(expr, 0, 1, 0)
-            || testXMultYAndCste(expr, 0, 1, -1)) {
+                    || testXMultYAndCste(expr, 0, 1, -1)) {
                 return new SignOp(scope[0], scope[1], false);
             } else {
                 return null;
@@ -274,9 +274,9 @@ public final class ExpressionTools {
                 vs = new IntDomainVar[3];
                 final IntDomainVar[] scope0 = expr.getSubtree(0).getScope(s);
                 vs[0] = scope0[0];
-                if(scope0.length==2){
+                if (scope0.length == 2) {
                     vs[1] = scope0[1];
-                }else{
+                } else {
                     // specific case, when expresion is like:
                     // eq(mult(Z,Z), X)
                     vs[1] = scope0[0];
@@ -287,9 +287,9 @@ public final class ExpressionTools {
                 vs[2] = expr.getSubtree(0).getScope(s)[0];
                 final IntDomainVar[] scope1 = expr.getSubtree(1).getScope(s);
                 vs[0] = scope1[0];
-                if(scope1.length==2){
+                if (scope1.length == 2) {
                     vs[1] = scope1[1];
-                }else{
+                } else {
                     // specific case, when expresion is like:
                     // eq(mult(Z,Z), X)
                     vs[1] = scope1[0];
@@ -343,43 +343,37 @@ public final class ExpressionTools {
             if (expr.getType().equals(NodeType.EQ)) {
                 if (z == null) {
                     return new DistanceXYC(x, y, dist, DistanceXYC.EQ);
-                }
-                else {
+                } else {
                     return new DistanceXYZ(x, y, z, 0, DistanceXYZ.EQ);
                 }
             } else if (expr.getType().equals(NodeType.LT)) {
                 if (z == null) {
                     return new DistanceXYC(x, y, dist, DistanceXYC.LT);
-                }
-                else {
+                } else {
                     return new DistanceXYZ(x, y, z, 0, DistanceXYZ.LT);
                 }
             } else if (expr.getType().equals(NodeType.GT)) {
                 if (z == null) {
                     return new DistanceXYC(x, y, dist, DistanceXYC.GT);
-                }
-                else {
+                } else {
                     return new DistanceXYZ(x, y, z, 0, DistanceXYZ.GT);
                 }
             } else if (expr.getType().equals(NodeType.LEQ)) {
                 if (z == null) {
                     return new DistanceXYC(x, y, dist + 1, DistanceXYC.LT);
-                }
-                else {
+                } else {
                     return new DistanceXYZ(x, y, z, 1, DistanceXYZ.LT);
                 }
             } else if (expr.getType().equals(NodeType.GEQ)) {
                 if (z == null) {
                     return new DistanceXYC(x, y, dist - 1, DistanceXYC.GT);
-                }
-                else {
+                } else {
                     return new DistanceXYZ(x, y, z, -1, DistanceXYZ.GT);
                 }
             } else if (expr.getType().equals(NodeType.NEQ)) {
                 if (z == null) {
                     return new DistanceXYC(x, y, dist, DistanceXYC.NEQ);
-                }
-                else {
+                } else {
                     return null;
                 }
             }
@@ -453,11 +447,9 @@ public final class ExpressionTools {
     private static int getConstant(final INode plus) {
         final INode in = plus.getSubtree(0);
         final INode in2 = plus.getSubtree(1);
-        if (in.countNbVar() == 0)
-        {
+        if (in.countNbVar() == 0) {
             return ((ArithmNode) in).eval(null);
-        }
-        else {
+        } else {
             return ((ArithmNode) in2).eval(null);
         }
     }
@@ -492,17 +484,14 @@ public final class ExpressionTools {
                 v2 = temp;
             }
             if (v1.getDomainSize() <= 100 && v2.getDomainSize() <= 100) {
-                final DisposableIntIterator it = v1.getDomain().getIterator();
-                while (it.hasNext()) {
-                    final int val = it.next();
+                int ub1 = v1.getSup();
+                for (int val = v1.getInf(); val <= ub1; val = v1.getNextDomainValue(val)) {
                     if (v2.canBeInstantiatedTo(val)) {
-                        if (ic.checkCouple(val, val)){
-                            it.dispose();
+                        if (ic.checkCouple(val, val)) {
                             return false;
                         }
                     }
                 }
-                it.dispose();
                 return true;
             }
         }
@@ -517,7 +506,7 @@ public final class ExpressionTools {
      * Is there at least one variable within the scope of e
      * that has more than ratioHole % of holes in the domain ?
      *
-     * @param e expression
+     * @param e             expression
      * @param configuration
      * @return true if one of the variables has some holes
      */
