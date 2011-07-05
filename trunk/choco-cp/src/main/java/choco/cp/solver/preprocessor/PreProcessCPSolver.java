@@ -32,7 +32,6 @@ import choco.cp.common.util.preprocessor.detector.scheduling.DisjunctiveModel;
 import choco.cp.model.CPModel;
 import choco.cp.model.preprocessor.ModelDetectorFactory;
 import choco.cp.solver.CPSolver;
-import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.trailing.EnvironmentTrailing;
 import choco.kernel.model.Model;
@@ -305,11 +304,10 @@ public class PreProcessCPSolver extends CPSolver {
 			worldPush();
 			for (int i = 0; i < getNbIntVars(); i++) {
 				final IntDomainVar v = getIntVar(i);
-				final DisposableIntIterator it = v.getDomain().getIterator();
 				if ((sched && v.getDomainSize() == 2) || (!sched && v.hasEnumeratedDomain())) {
-					while (it.hasNext()) {
-						final int val = it.next();
-						nbvtried++;
+                    int ub = v.getSup();
+                    for (int val = v.getInf(); val <= ub; val = v.getNextDomainValue(val)) {
+                        nbvtried++;
 						boolean cont = false;
 						worldPush();
 						try {
@@ -336,7 +334,6 @@ public class PreProcessCPSolver extends CPSolver {
 							break;
 						}
 					}
-					it.dispose();
 				}
 			}
 		}

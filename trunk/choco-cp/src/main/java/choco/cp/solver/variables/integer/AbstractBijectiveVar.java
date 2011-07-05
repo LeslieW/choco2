@@ -26,7 +26,6 @@
  */
 package choco.cp.solver.variables.integer;
 
-import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.memory.structure.PartiallyStoredVector;
@@ -90,13 +89,11 @@ public abstract class AbstractBijectiveVar extends AbstractVar implements IntDom
                 if (!this.hasEnumeratedDomain() || !x.hasEnumeratedDomain())
                     return true;
                 else {
-                    DisposableIntIterator it = this.getDomain().getIterator();
-                    for (; it.hasNext();) {
-                        int v = it.next();
+                    int ub = this.getSup();
+                    for (int v = this.getInf(); v <= ub; v = this.getNextDomainValue(v)) {
                         if (x.canBeInstantiatedTo(v))
                             return true;
                     }
-                    it.dispose();
                     return false;
                 }
             } else

@@ -145,29 +145,24 @@ public final class GACstrPositiveLargeSConstraint extends CspLargeSConstraint {
     }
 
     public void pruningPhase() throws ContradictionException {
-        for (Iterator<Integer> itf = futureVars.iterator(); itf.hasNext();) {
+        for (Iterator<Integer> itf = futureVars.iterator(); itf.hasNext(); ) {
             int vIdx = itf.next();
             IntDomainVar v = vars[vIdx];
-            DisposableIntIterator it3 = v.getDomain().getIterator();
             int left = Integer.MIN_VALUE;
             int right = left;
-            try {
-                while (it3.hasNext()) {
-                    int val = it3.next();
-                    if (!gacValues[vIdx].get(val - offsets[vIdx])) {
-                        if (val == right + 1) {
-                            right = val;
-                        } else {
-                            v.removeInterval(left, right, this, false);
-                            left = right = val;
-                        }
-//                        v.removeVal(val, this, false);
+            int ub = v.getSup();
+            for (int val = v.getInf(); val <= ub; val = v.getNextDomainValue(val)) {
+                if (!gacValues[vIdx].get(val - offsets[vIdx])) {
+                    if (val == right + 1) {
+                        right = val;
+                    } else {
+                        v.removeInterval(left, right, this, false);
+                        left = right = val;
                     }
+//                        v.removeVal(val, this, false);
                 }
-                v.removeInterval(left, right, this, false);
-            } finally {
-                it3.dispose();
             }
+            v.removeInterval(left, right, this, false);
         }
     }
 
@@ -185,7 +180,7 @@ public final class GACstrPositiveLargeSConstraint extends CspLargeSConstraint {
             try {
                 if (valcheck.isValid(tuple, idx)) {
                     //extract the supports
-                    for (Iterator<Integer> itf = futureVars.iterator(); itf.hasNext();) {
+                    for (Iterator<Integer> itf = futureVars.iterator(); itf.hasNext(); ) {
                         int vIdx = itf.next();
                         if (!gacValues[vIdx].get(tuple[vIdx] - offsets[vIdx])) {
                             gacValues[vIdx].set(tuple[vIdx] - offsets[vIdx]);
@@ -216,7 +211,7 @@ public final class GACstrPositiveLargeSConstraint extends CspLargeSConstraint {
 
             if (valcheck.isValid(tuple)) {
                 //extract the supports
-                for (Iterator<Integer> itf = futureVars.iterator(); itf.hasNext();) {
+                for (Iterator<Integer> itf = futureVars.iterator(); itf.hasNext(); ) {
                     int vIdx = itf.next();
                     if (!gacValues[vIdx].get(tuple[vIdx] - offsets[vIdx])) {
                         gacValues[vIdx].set(tuple[vIdx] - offsets[vIdx]);

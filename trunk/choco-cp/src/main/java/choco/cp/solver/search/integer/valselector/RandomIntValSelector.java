@@ -27,7 +27,6 @@
 
 package choco.cp.solver.search.integer.valselector;
 
-import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -60,13 +59,10 @@ public class RandomIntValSelector implements ValSelector<IntDomainVar> {
 			else if( x.hasBooleanDomain() ) return nextBound(x);
 			else {
 				final int val = (random.nextInt(x.getDomainSize()));
-
-				DisposableIntIterator iterator = x.getDomain().getIterator();
+                int res = x.getInf();
 				for (int i = 0; i < val; i++) {
-					iterator.next();
+					res = x.getNextDomainValue(res);
 				}
-				int res = iterator.next();
-				iterator.dispose();
 				return res;
 			}
 		} else {

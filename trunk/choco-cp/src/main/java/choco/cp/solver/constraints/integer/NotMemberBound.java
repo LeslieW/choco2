@@ -27,7 +27,6 @@
 
 package choco.cp.solver.constraints.integer;
 
-import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
@@ -60,7 +59,7 @@ public final class NotMemberBound extends AbstractUnIntSConstraint {
      */
     @Override
     public void propagate() throws ContradictionException {
-        if(v0.removeInterval(lower, upper, this, false)){
+        if (v0.removeInterval(lower, upper, this, false)) {
 //        if (v0.hasEnumeratedDomain()) {
             this.setEntailed();
         }
@@ -115,10 +114,10 @@ public final class NotMemberBound extends AbstractUnIntSConstraint {
      */
     @Override
     public Boolean isEntailed() {
-        DisposableIntIterator it = v0.getDomain().getIterator();
         int in = 0, out = 0;
-        while (it.hasNext()) {
-            if (v0.canBeInstantiatedTo(it.next())) {
+        int ub0 = v0.getSup();
+        for (int val = v0.getInf(); val <= ub0; val = v0.getNextDomainValue(val)) {
+            if (v0.canBeInstantiatedTo(val)) {
                 in++;
             } else {
                 out++;

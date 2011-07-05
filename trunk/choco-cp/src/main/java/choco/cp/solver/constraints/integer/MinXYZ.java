@@ -28,10 +28,8 @@
 package choco.cp.solver.constraints.integer;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractTernIntSConstraint;
-import choco.kernel.solver.variables.integer.IntDomain;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /*
@@ -50,28 +48,28 @@ public final class MinXYZ extends AbstractTernIntSConstraint {
         return (Math.min(tuple[2], tuple[1]) == tuple[0]);
     }
 
-  public String pretty() {
-    return "min(" + v2.pretty() + "," + v1.pretty() + ") = " + v0.pretty();
-  }
+    public String pretty() {
+        return "min(" + v2.pretty() + "," + v1.pretty() + ") = " + v0.pretty();
+    }
 
     @Override
     public int getFilteredEventMask(int idx) {
-        if(idx == 0){
-            if(v0.hasEnumeratedDomain()){
+        if (idx == 0) {
+            if (v0.hasEnumeratedDomain()) {
                 return IntVarEvent.INSTINT_MASK + IntVarEvent.REMVAL_MASK;
-            }else{
+            } else {
                 return IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK;
             }
-        }else if(idx == 1){
-            if(v1.hasEnumeratedDomain()){
+        } else if (idx == 1) {
+            if (v1.hasEnumeratedDomain()) {
                 return IntVarEvent.INSTINT_MASK + IntVarEvent.REMVAL_MASK;
-            }else{
+            } else {
                 return IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK;
             }
-        }else{
-            if(v2.hasEnumeratedDomain()){
+        } else {
+            if (v2.hasEnumeratedDomain()) {
                 return IntVarEvent.INSTINT_MASK + IntVarEvent.REMVAL_MASK;
-            }else{
+            } else {
                 return IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK;
             }
         }
@@ -134,17 +132,11 @@ public final class MinXYZ extends AbstractTernIntSConstraint {
             v0.updateSup(Math.min(v1.getSup(), v2.getSup()), this, false);
 
             if (v0.hasEnumeratedDomain()) {
-                IntDomain dom0 = v0.getDomain();
-                DisposableIntIterator it = dom0.getIterator();
-                try{
-                    while (it.hasNext()) {
-                        int valeur = it.next();
-                        if (!v1.canBeInstantiatedTo(valeur) && !v2.canBeInstantiatedTo(valeur)) {
-                            v0.removeVal(valeur, this, false);
-                        }
+                int ub0 = v0.getSup();
+                for (int valeur = v0.getInf(); valeur <= ub0; valeur = v0.getNextDomainValue(valeur)) {
+                    if (!v1.canBeInstantiatedTo(valeur) && !v2.canBeInstantiatedTo(valeur)) {
+                        v0.removeVal(valeur, this, false);
                     }
-                }finally {
-                    it.dispose();
                 }
             }
         } else if (idx == 1) {
@@ -154,17 +146,11 @@ public final class MinXYZ extends AbstractTernIntSConstraint {
                 v1.updateSup(v0.getSup(), this, false);
             }
             if (v1.hasEnumeratedDomain()) {
-                IntDomain dom1 = v1.getDomain();
-                DisposableIntIterator it = dom1.getIterator();
-                try{
-                    while (it.hasNext()) {
-                        int valeur = it.next();
-                        if (!v0.canBeInstantiatedTo(valeur) && (v2.getInf() > valeur)) {
-                            v1.removeVal(valeur, this, false);
-                        }
+                int ub1 = v1.getSup();
+                for (int valeur = v1.getInf(); valeur <= ub1; valeur = v1.getNextDomainValue(valeur)) {
+                    if (!v0.canBeInstantiatedTo(valeur) && (v2.getInf() > valeur)) {
+                        v1.removeVal(valeur, this, false);
                     }
-                }finally {
-                    it.dispose();
                 }
             }
 
@@ -174,17 +160,11 @@ public final class MinXYZ extends AbstractTernIntSConstraint {
                 v2.updateSup(v0.getSup(), this, false);
             }
             if (v2.hasEnumeratedDomain()) {
-                IntDomain dom2 = v2.getDomain();
-                DisposableIntIterator it = dom2.getIterator();
-                try{
-                    while (it.hasNext()) {
-                        int valeur = it.next();
-                        if (!v0.canBeInstantiatedTo(valeur) && (v1.getInf() > valeur)) {
-                            v2.removeVal(valeur, this, false);
-                        }
+                int ub2 = v2.getSup();
+                for (int valeur = v2.getInf(); valeur <= ub2; valeur = v2.getNextDomainValue(valeur)) {
+                    if (!v0.canBeInstantiatedTo(valeur) && (v1.getInf() > valeur)) {
+                        v2.removeVal(valeur, this, false);
                     }
-                }finally {
-                    it.dispose();
                 }
             }
 

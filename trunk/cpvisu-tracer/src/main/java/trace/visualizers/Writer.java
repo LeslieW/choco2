@@ -69,11 +69,10 @@ public class Writer {
         } else {
             _st.setLength(0);
             if (ivar.getDomain().isEnumerated()) {
-                DisposableIntIterator it = ivar.getDomain().getIterator();
-                while (it.hasNext()) {
-                    _st.append(it.next()).append(' ');
+                int ub = ivar.getSup();
+                for (int val = ivar.getInf(); val <= ub; val = ivar.getNextDomainValue(val)) {
+                    _st.append(val).append(' ');
                 }
-                it.dispose();
             } else {
                 _st.append(ivar.getDomain().getInf()).append(" .. ").append(ivar.getDomain().getSup());
             }

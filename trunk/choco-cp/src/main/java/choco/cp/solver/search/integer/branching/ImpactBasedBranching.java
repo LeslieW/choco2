@@ -29,7 +29,6 @@ package choco.cp.solver.search.integer.branching;
 
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.TimeCacheThread;
-import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.AbstractLargeIntBranchingStrategy;
@@ -150,18 +149,16 @@ public class ImpactBasedBranching extends AbstractLargeIntBranchingStrategy {
 	public int getBestVal(IntDomainVar var) {
 		if (randValueChoice == null) {
 			if (var.hasEnumeratedDomain()) {
-				DisposableIntIterator iter = var.getDomain().getIterator();
 				double min = Double.MAX_VALUE;
-				int minVal = Integer.MAX_VALUE;
-				while (iter.hasNext()) {
-					int val = iter.next();
-					double note = _ibs.getImpactVal(var, val);
+                int minVal = Integer.MAX_VALUE;
+                int ub = var.getSup();
+                for (int val = var.getInf(); val <= ub; val = var.getNextDomainValue(val)) {
+                    double note = _ibs.getImpactVal(var, val);
 					if (note < min) {
 						min = note;
 						minVal = val;
 					}
 				}
-				iter.dispose();
 				return minVal;
 			} else {
 				return var.getInf();
@@ -170,13 +167,11 @@ public class ImpactBasedBranching extends AbstractLargeIntBranchingStrategy {
 			if (var.hasEnumeratedDomain()) {
 				if (var.isInstantiated()) return var.getVal();                
 				int val = (randValueChoice.nextInt(var.getDomainSize()));
-				DisposableIntIterator iterator = var.getDomain().getIterator();
-				for (int i = 0; i < val; i++) {
-					iterator.next();
+				int res = var.getInf();
+                for (int i = 0; i < val; i++) {
+                    res = var.getNextDomainValue(res);
 				}
-				int res = iterator.next();
-				iterator.dispose();
-				return res;
+                return res;
 			} else {
 				int val = (randValueChoice.nextInt(2));
 				if (val == 0) return var.getInf();
@@ -299,10 +294,9 @@ public class ImpactBasedBranching extends AbstractLargeIntBranchingStrategy {
 						//for (Object svar : svars) {
 						IntDomainVar v = (IntDomainVar) svars.get(i);
 						if (!v.isInstantiated() && v.hasEnumeratedDomain()) {
-							DisposableIntIterator it = v.getDomain().getIterator();
-							while (it != null && it.hasNext()) {
-								int val = it.next();
-								boolean cont = false;
+							int ub = v.getSup();
+							for (int val = v.getInf(); val <= ub; val = v.getNextDomainValue(val)) {
+							    boolean cont = false;
 								if (v.hasBooleanDomain() && val > v.getInf() && val < v.getSup())
 									break;							
 								_branching._solver.worldPush();
@@ -329,7 +323,6 @@ public class ImpactBasedBranching extends AbstractLargeIntBranchingStrategy {
 									return true;
 								}
 							}
-							it.dispose();
 						}
 
 					}
@@ -486,13 +479,11 @@ public class ImpactBasedBranching extends AbstractLargeIntBranchingStrategy {
 			int idx = var.getExtension(ABSTRACTVAR_EXTENSION).get();
 			if (idx != -1) {
 				double imp = 0.0;
-				DisposableIntIterator it = var.getDomain().getIterator();
-				int blockadress = dataS.blocks[idx] - dataS.offsets[idx];
-				while (it.hasNext()) {
-					int val = it.next();
-					imp += 1 - getImpactVal(blockadress + val);
+                int blockadress = dataS.blocks[idx] - dataS.offsets[idx];
+                int ub = var.getSup();
+                for (int val = var.getInf(); val <= ub; val = var.getNextDomainValue(val)) {
+                    imp += 1 - getImpactVal(blockadress + val);
 				}
-				it.dispose();
 				return imp;
 			} else
 				return 0;

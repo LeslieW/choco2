@@ -48,7 +48,7 @@ public class MaxRegret extends IntHeuristicIntVarSelector {
      */
   public int getHeuristic(IntDomainVar v) {
       int val = v.getInf();
-      val -= v.getDomain().getNextValue(val);
+      val -= v.getNextDomainValue(val);
       return val;
   }
 }

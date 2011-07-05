@@ -27,7 +27,6 @@
 
 package choco.kernel.solver.constraints.integer.extension;
 
-import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -60,13 +59,12 @@ public abstract class CspBinSConstraint extends AbstractBinIntSConstraint {
     public Boolean isEntailed() {
         int nbCons = 0;
 
-        DisposableIntIterator itv0 = v0.getDomain().getIterator();
-        while (itv0.hasNext()) {
-            int val = itv0.next();
+        int ub0 = v0.getSup();
+        for (int val0 = v0.getInf(); val0 <= ub0; val0 = v0.getNextDomainValue(val0)) {
             int nbS = 0;
-            DisposableIntIterator itv1 = v1.getDomain().getIterator();
-            while (itv1.hasNext()) {
-                if (relation.isConsistent(val, itv1.next())) {
+            int ub1 = v1.getSup();
+            for (int val1 = v1.getInf(); val1 <= ub1; val1 = v1.getNextDomainValue(val1)) {
+                if (relation.isConsistent(val0, val1)) {
                     nbS++;
                 }
             }
@@ -74,9 +72,7 @@ public abstract class CspBinSConstraint extends AbstractBinIntSConstraint {
                 return null;
             }
             nbCons += nbS;
-
         }
-        itv0.dispose();
         if (nbCons == 0) {
             return Boolean.FALSE;
         } else if (nbCons == v0.getDomainSize() * v1.getDomainSize()) {

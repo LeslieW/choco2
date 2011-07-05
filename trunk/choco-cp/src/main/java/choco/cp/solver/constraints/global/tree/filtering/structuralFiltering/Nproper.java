@@ -29,7 +29,6 @@ package choco.cp.solver.constraints.global.tree.filtering.structuralFiltering;
 
 
 import choco.cp.solver.constraints.global.tree.filtering.AbstractPropagator;
-import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateBitSet;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -69,18 +68,21 @@ public class Nproper extends AbstractPropagator {
     public boolean feasibility() throws ContradictionException {
         // update the upper bound of nproper according to ntree
         if (tree.getNtree().getSup() < tree.getNproper().getSup()) {
-            if (affiche) LOGGER.info("1-NProper: updateSup nProper = " + tree.getNproper().getSup() + " ==> " + tree.getNtree().getSup());
+            if (affiche)
+                LOGGER.info("1-NProper: updateSup nProper = " + tree.getNproper().getSup() + " ==> " + tree.getNtree().getSup());
             propagateStruct.setMaxNProper(tree.getNtree().getSup());
         }
         // update the lower bound of nproper according to ntree
         if (tree.getNtree().getInf() < tree.getNproper().getInf()) {
-            if (affiche) LOGGER.info("1-NProper: updateInf nProper = " + tree.getNproper().getInf() + " ==> " + tree.getNtree().getInf());
+            if (affiche)
+                LOGGER.info("1-NProper: updateInf nProper = " + tree.getNproper().getInf() + " ==> " + tree.getNtree().getInf());
             propagateStruct.setMinNProper(tree.getNtree().getInf());
         }
         // update the lower bound of nproper according to the evaluated lower bound
         lowerBd = getLowerBound();
         if (lowerBd > tree.getNproper().getInf()) {
-            if (affiche) LOGGER.info("2-NProper: updateInf nProper = " + tree.getNproper().getInf() + " ==> " + lowerBd);
+            if (affiche)
+                LOGGER.info("2-NProper: updateInf nProper = " + tree.getNproper().getInf() + " ==> " + lowerBd);
             propagateStruct.setMinNProper(lowerBd);
         }
 
@@ -88,7 +90,8 @@ public class Nproper extends AbstractPropagator {
         IStateBitSet potentialRoots = inputGraph.getPotentialRoots();
         upperBd = getUpperBound(potentialRoots);
         if (upperBd < tree.getNproper().getSup()) {
-            if (affiche) LOGGER.info("2-NProper: updateSup nProper = " + tree.getNproper().getSup() + " ==> " + upperBd);
+            if (affiche)
+                LOGGER.info("2-NProper: updateSup nProper = " + tree.getNproper().getSup() + " ==> " + upperBd);
             propagateStruct.setMaxNProper(upperBd);
         }
         Vector<IStateBitSet> setcc = inputGraph.getSure().getSetCC();
@@ -106,12 +109,12 @@ public class Nproper extends AbstractPropagator {
 
     /**
      * <p> the filtering rule is decomposed in two steps: </p>
-     *
+     * <p/>
      * <blockquote> - max(nproper) <= lowerBd: enforce the potential root of each node which does not belong
      * to <code> tmp </code>. </blockquote>
      * <blockquote> - min(nProper) >= upperBd: enforce the potential root of each isolated node. </blockquote>
      */
-    public void filter(){
+    public void filter() {
         // filtering if max(nProper) <= lowerBd
         if (tree.getNproper().getSup() <= lowerBd) {
             tmp.clear();
@@ -141,16 +144,14 @@ public class Nproper extends AbstractPropagator {
                         if (inputGraph.getMaybe().getSuccessors(i).get(j)) reachable = true;
                     }
                     if (!tmp.get(i) && !reachable) {
-                        DisposableIntIterator it = var.getDomain().getIterator();
-                        while (it.hasNext()) {
-                            int j = it.next();
+                        int ub = var.getSup();
+                        for (int j = var.getInf(); j <= ub; j = var.getNextDomainValue(j)) {
                             if (j != i && var.canBeInstantiatedTo(j)) {
                                 if (affiche) LOGGER.info("1-1 NProper: suppression arc (" + i + "," + j + ")");
                                 int[] arc = {i, j};
                                 propagateStruct.addRemoval(arc);
                             }
                         }
-                        it.dispose();
                         // no node reach the node i
                         for (int j = 0; j < nbVertices; j++) {
                             if (j != i && nodes[j].getSuccessors().canBeInstantiatedTo(i)) {
@@ -170,16 +171,14 @@ public class Nproper extends AbstractPropagator {
             for (int i = potentialRoots.nextSetBit(0); i >= 0; i = potentialRoots.nextSetBit(i + 1)) {
                 // enforce the loop for node i
                 IntDomainVar var = nodes[i].getSuccessors();
-                DisposableIntIterator it = var.getDomain().getIterator();
-                while (it.hasNext()) {
-                    int j = it.next();
+                int ub = var.getSup();
+                for (int j = var.getInf(); j <= ub; j = var.getNextDomainValue(j)) {
                     if (j != i && var.canBeInstantiatedTo(j)) {
                         if (affiche) LOGGER.info("2- NProper: suppression arc (" + i + "," + j + ")");
                         int[] arc = {i, j};
                         propagateStruct.addRemoval(arc);
                     }
                 }
-                it.dispose();
             }
         }
     }

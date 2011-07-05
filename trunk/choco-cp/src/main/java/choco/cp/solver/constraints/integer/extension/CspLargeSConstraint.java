@@ -87,24 +87,20 @@ public class CspLargeSConstraint extends AbstractLargeIntSConstraint {
             if (nbUnassigned == 1) {
                 int left = Integer.MIN_VALUE;
                 int right = left;
-                DisposableIntIterator it = vars[index].getDomain().getIterator();
-                try {
-                    while (it.hasNext()) {
-                        int val = currentTuple[index] = it.next();
-                        if (!relation.isConsistent(currentTuple)) {
-                            if (val == right + 1) {
-                                right = val;
-                            } else {
-                                vars[index].removeInterval(left, right, this, false);
-                                left = right = val;
-                            }
-//                            vars[index].removeVal(currentTuple[index], this, false);
+                int ub = vars[index].getSup();
+                for (int val = vars[index].getInf(); val <= ub; val = vars[index].getNextDomainValue(val)) {
+                    currentTuple[index] = val;
+                    if (!relation.isConsistent(currentTuple)) {
+                        if (val == right + 1) {
+                            right = val;
+                        } else {
+                            vars[index].removeInterval(left, right, this, false);
+                            left = right = val;
                         }
+//                            vars[index].removeVal(currentTuple[index], this, false);
                     }
-                    vars[index].removeInterval(left, right, this, false);
-                } finally {
-                    it.dispose();
                 }
+                vars[index].removeInterval(left, right, this, false);
             } else {
                 if (!relation.isConsistent(currentTuple)) {
                     this.fail();

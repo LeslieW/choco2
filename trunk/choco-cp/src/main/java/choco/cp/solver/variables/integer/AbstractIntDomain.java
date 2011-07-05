@@ -74,8 +74,13 @@ public abstract class AbstractIntDomain implements IntDomain {
 
     /**
 	 * Returns an getIterator.
+     * @deprecated replaced by iteration over domain with the {@code IntDomain.getNextValue, IntDomain.getPrevValue}
+     * @see IntDomainVar#getNextDomainValue(int)
+     * @see IntDomainVar#getPrevDomainValue(int)
+     * @see IntDomain#getNextValue(int)
+     * @see IntDomain#getPrevValue(int)
 	 */
-
+    @Deprecated
 	public DisposableIntIterator getIterator() {
         if(getSize() == 1) return OneValueIterator.getIterator(getInf());
         return IntDomainIterator.getIterator(this);

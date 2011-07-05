@@ -35,7 +35,6 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.extension.ConsistencyRelation;
 import choco.kernel.solver.constraints.integer.extension.LargeRelation;
-import choco.kernel.solver.variables.integer.IntDomain;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.Arrays;
@@ -107,36 +106,31 @@ public final class GAC3rmLargeConstraint extends CspLargeSConstraint {
      */
     public void initializeSupports(int indexVar) throws ContradictionException {
         int[] currentSupport;
-        IntDomain dom = vars[indexVar].getDomain();
         int val;
         if (vars[indexVar].hasEnumeratedDomain()) {
-            DisposableIntIterator it = dom.getIterator();
             int left = Integer.MIN_VALUE;
             int right = left;
-            try {
-                while (it.hasNext()) {
-                    val = it.next();
-                    if (lastSupport(indexVar, val)[0] == Integer.MIN_VALUE) { // no supports initialized yet for this value
-                        currentSupport = seekNextSupport(indexVar, val);
-                        if (currentSupport != null) {
-                            setSupport(currentSupport);
+            int ub = vars[indexVar].getSup();
+            for (val = vars[indexVar].getInf(); val <= ub; val = vars[indexVar].getNextDomainValue(val)) {
+                if (lastSupport(indexVar, val)[0] == Integer.MIN_VALUE) { // no supports initialized yet for this value
+                    currentSupport = seekNextSupport(indexVar, val);
+                    if (currentSupport != null) {
+                        setSupport(currentSupport);
+                    } else {
+                        if (val == right + 1) {
+                            right = val;
                         } else {
-                            if (val == right + 1) {
-                                right = val;
-                            } else {
-                                vars[indexVar].removeInterval(left, right, this, false);
-                                left = right = val;
-                            }
-//                        vars[indexVar].removeVal(val, this, false);
+                            vars[indexVar].removeInterval(left, right, this, false);
+                            left = right = val;
                         }
+//                        vars[indexVar].removeVal(val, this, false);
                     }
                 }
-                vars[indexVar].removeInterval(left, right, this, false);
-            } finally {
-                it.dispose();
             }
+            vars[indexVar].removeInterval(left, right, this, false);
         } else {
-            for (val = vars[indexVar].getInf(); val <= vars[indexVar].getSup(); val++) {
+            int ub = vars[indexVar].getSup();
+            for (val = vars[indexVar].getInf(); val <= ub; val = vars[indexVar].getNextDomainValue(val)) {
                 currentSupport = seekNextSupport(indexVar, val);
                 if (currentSupport != null) {
                     setBoundSupport(indexVar, 0, currentSupport);
@@ -144,7 +138,8 @@ public final class GAC3rmLargeConstraint extends CspLargeSConstraint {
                 }
             }
             vars[indexVar].updateInf(val, this, false);
-            for (val = vars[indexVar].getSup(); val >= vars[indexVar].getInf(); val--) {
+            int lb = vars[indexVar].getInf();
+            for (val = vars[indexVar].getSup(); val >= lb; val = vars[indexVar].getPrevDomainValue(val)) {
                 currentSupport = seekNextSupport(indexVar, val);
                 if (currentSupport != null) {
                     setBoundSupport(indexVar, 1, currentSupport);
@@ -160,34 +155,28 @@ public final class GAC3rmLargeConstraint extends CspLargeSConstraint {
     // and remove unsupported values for variable
     public void reviseVar(int indexVar) throws ContradictionException {
         int[] currentSupport;
-        IntDomain dom = vars[indexVar].getDomain();
         int val;
         if (vars[indexVar].hasEnumeratedDomain()) {
-            DisposableIntIterator it = dom.getIterator();
             int left = Integer.MIN_VALUE;
             int right = left;
-            try {
-                while (it.hasNext()) {
-                    val = it.next();
-                    if (!isValid(lastSupport(indexVar, val))) {
-                        currentSupport = seekNextSupport(indexVar, val);
-                        if (currentSupport != null) {
-                            setSupport(currentSupport);
+            int ub = vars[indexVar].getSup();
+            for (val = vars[indexVar].getInf(); val <= ub; val = vars[indexVar].getNextDomainValue(val)) {
+                if (!isValid(lastSupport(indexVar, val))) {
+                    currentSupport = seekNextSupport(indexVar, val);
+                    if (currentSupport != null) {
+                        setSupport(currentSupport);
+                    } else {
+                        if (val == right + 1) {
+                            right = val;
                         } else {
-                            if (val == right + 1) {
-                                right = val;
-                            } else {
-                                vars[indexVar].removeInterval(left, right, this, false);
-                                left = right = val;
-                            }
-//                            vars[indexVar].removeVal(val, this, false);
+                            vars[indexVar].removeInterval(left, right, this, false);
+                            left = right = val;
                         }
+//                            vars[indexVar].removeVal(val, this, false);
                     }
                 }
-                vars[indexVar].removeInterval(left, right, this, false);
-            } finally {
-                it.dispose();
             }
+            vars[indexVar].removeInterval(left, right, this, false);
         } else {
             int[] inf_supports = lastBoundSupport(indexVar, 0);
             if (vars[indexVar].getInf() != inf_supports[indexVar] || !isValid(inf_supports)) {

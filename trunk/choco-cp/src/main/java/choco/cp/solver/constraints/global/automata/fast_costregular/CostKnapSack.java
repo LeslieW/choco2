@@ -28,22 +28,19 @@
 package choco.cp.solver.constraints.global.automata.fast_costregular;
 
 import choco.kernel.model.constraints.automaton.FA.IAutomaton;
-import gnu.trove.TIntHashSet;
-import gnu.trove.TIntIterator;
-
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.HashSet;
-
-import org.jgrapht.graph.DirectedMultigraph;
-
-import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.Arc;
 import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.Node;
 import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.StoredValuedDirectedMultiGraph;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import gnu.trove.TIntHashSet;
+import gnu.trove.TIntIterator;
+import org.jgrapht.graph.DirectedMultigraph;
+
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.HashSet;
 
 /**
  * Created by IntelliJ IDEA.
@@ -115,7 +112,6 @@ private static IntDomainVar[] merge(IntDomainVar[] vars, IntDomainVar bound, Int
 
 
         int i,j,k;
-        DisposableIntIterator varIter;
         TIntIterator layerIter;
         TIntIterator qijIter;
 
@@ -134,10 +130,8 @@ private static IntDomainVar[] merge(IntDomainVar[] vars, IntDomainVar bound, Int
 
         for (i = 0 ; i < n ; i++)
         {
-            varIter = vs[i].getDomain().getIterator();
-            while(varIter.hasNext())
-            {
-                j = varIter.next();
+            int ub = vs[i].getSup();
+            for (j = vs[i].getInf(); j <= ub; j = vs[i].getNextDomainValue(j)) {
                 layerIter = layer.get(i).iterator();//getIterator();
                 while(layerIter.hasNext())
                 {
@@ -158,7 +152,6 @@ private static IntDomainVar[] merge(IntDomainVar[] vars, IntDomainVar bound, Int
                     }
                 }
             }
-            varIter.dispose();
         }
 
         //removing reachable non accepting states
@@ -186,10 +179,8 @@ private static IntDomainVar[] merge(IntDomainVar[] vars, IntDomainVar bound, Int
         for (i = n -1 ; i >=0 ; i--)
         {
             mark.clear(0,nbNodes);
-            varIter = vs[i].getDomain().getIterator();
-            while (varIter.hasNext())
-            {
-                j = varIter.next();
+            int ub = vs[i].getSup();
+            for (j = vs[i].getInf(); j <= ub; j = vs[i].getNextDomainValue(j)) {
                 int idx = starts[i]+j-offsets[i];
                 TIntHashSet l = tmpQ[idx];
                 if (l!= null)
@@ -234,7 +225,6 @@ private static IntDomainVar[] merge(IntDomainVar[] vars, IntDomainVar bound, Int
                     }
                 }
             }
-            varIter.dispose();
             layerIter = layer.get(i).iterator();
 
             // If no more arcs go out of a given state in the layer, then we remove the state from that layer

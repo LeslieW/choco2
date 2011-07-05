@@ -34,7 +34,6 @@ import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.integer.extension.LargeRelation;
-import choco.kernel.solver.variables.integer.IntDomain;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 
@@ -97,11 +96,10 @@ public final class GAC2001LargeSConstraint extends CspLargeSConstraint {
     // and remove unsupported values for variable
     public void reviseVar(int indexVar, boolean fromScratch) throws ContradictionException {
         int[] currentSupport;
-        IntDomain dom = vars[indexVar].getDomain();
         int left = Integer.MIN_VALUE;
         int right = left;
         int val;
-        for (val = vars[indexVar].getInf(); val <= vars[indexVar].getSup(); val = dom.getNextValue(val)) {
+        for (val = vars[indexVar].getInf(); val <= vars[indexVar].getSup(); val = vars[indexVar].getNextDomainValue(val)) {
             currentSupport = seekNextSupport(indexVar, val, fromScratch);
             if (currentSupport != null) {
                 setSupport(indexVar, val, currentSupport);
@@ -176,7 +174,7 @@ public final class GAC2001LargeSConstraint extends CspLargeSConstraint {
                     currentSupport[k] = vars[k].getInf();
                     k++;
                 } else {
-                    currentSupport[k] = vars[k].getDomain().getNextValue(currentSupport[k]);
+                    currentSupport[k] = vars[k].getNextDomainValue(currentSupport[k]);
                     if ((relation.isConsistent(currentSupport))) {
                         return currentSupport;
                     }
@@ -205,7 +203,7 @@ public final class GAC2001LargeSConstraint extends CspLargeSConstraint {
                     t[k] = vars[k].getInf();
                     k++;
                 } else {
-                    t[k] = vars[k].getDomain().getNextValue(t[k]);
+                    t[k] = vars[k].getNextDomainValue(t[k]);
                     if (valcheck.isValid(t)) {
                         return t;
                     }

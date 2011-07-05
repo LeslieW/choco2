@@ -315,6 +315,7 @@ public class ReifiedSomeTest {
     @Test
     public void testPropagBibi() {
         IntegerVariable x = makeIntVar("x", 0, 20);
+        m.setDefaultExpressionDecomposition(false);
         m.addConstraint(or(lt((x), (10)), lt((x), (8))));
         s.read(m);
         try {
@@ -1257,6 +1258,7 @@ public class ReifiedSomeTest {
     @Test
     public void wendlmar1Test() {
         Model m = new CPModel();
+        m.setDefaultExpressionDecomposition(false);
         Solver s = new CPSolver();
 
         IntegerVariable v1 = makeIntVar("v1", -10, 10);
@@ -1280,6 +1282,7 @@ public class ReifiedSomeTest {
             int type = r.nextInt(2);
 
             Model m = new CPModel();
+            m.setDefaultExpressionDecomposition(false);
             Solver s = new CPSolver();
 
             IntegerVariable v1 = makeIntVar("v1", -r.nextInt(10), r.nextInt(10));
@@ -1300,6 +1303,7 @@ public class ReifiedSomeTest {
     @Test
     public void wendlmar3Test() {
         Model m = new CPModel();
+        m.setDefaultExpressionDecomposition(false);
         Solver s = new CPSolver();
 
         IntegerVariable v1 = makeIntVar("v1", 0, 10);
@@ -1316,6 +1320,7 @@ public class ReifiedSomeTest {
     @Test
     public void wendlmar4Test() {
         Model m = new CPModel();
+        m.setDefaultExpressionDecomposition(false);
         Solver s = new CPSolver();
 
         IntegerVariable v1 = makeIntVar("v1", 0, 10);

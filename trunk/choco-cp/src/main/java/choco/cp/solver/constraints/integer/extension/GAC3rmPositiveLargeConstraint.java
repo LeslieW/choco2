@@ -132,35 +132,30 @@ public final class GAC3rmPositiveLargeConstraint extends CspLargeSConstraint {
      * @throws ContradictionException
      */
     public void reviseVar(final int indexVar) throws ContradictionException {
-        DisposableIntIterator itv = vars[indexVar].getDomain().getIterator();
+        int ub = vars[indexVar].getSup();
         int left = Integer.MIN_VALUE;
         int right = left;
-        try {
-            while (itv.hasNext()) {
-                int val = itv.next();
-                int nva = val - relation.getRelationOffset(indexVar);
-                int currentIdxSupport = getSupport(indexVar, val);
-                //check the residual support !
-                if (!valcheck.isValid(relation.getTuple(currentIdxSupport))) {
-                    //the residual support is not valid anymore, seek a new one
-                    currentIdxSupport = seekNextSupport(indexVar, nva);
-                    if (currentIdxSupport == NO_SUPPORT) {
-                        if (val == right + 1) {
-                            right = val;
-                        } else {
-                            vars[indexVar].removeInterval(left, right, this, false);
-                            left = right = val;
-                        }
-//                        vars[indexVar].removeVal(val, this, false);
+        for (int val = vars[indexVar].getInf(); val <= ub; val = vars[indexVar].getNextDomainValue(val)) {
+            int nva = val - relation.getRelationOffset(indexVar);
+            int currentIdxSupport = getSupport(indexVar, val);
+            //check the residual support !
+            if (!valcheck.isValid(relation.getTuple(currentIdxSupport))) {
+                //the residual support is not valid anymore, seek a new one
+                currentIdxSupport = seekNextSupport(indexVar, nva);
+                if (currentIdxSupport == NO_SUPPORT) {
+                    if (val == right + 1) {
+                        right = val;
                     } else {
-                        setSupport(currentIdxSupport);
+                        vars[indexVar].removeInterval(left, right, this, false);
+                        left = right = val;
                     }
+//                        vars[indexVar].removeVal(val, this, false);
+                } else {
+                    setSupport(currentIdxSupport);
                 }
             }
-            vars[indexVar].removeInterval(left, right, this, false);
-        } finally {
-            itv.dispose();
         }
+        vars[indexVar].removeInterval(left, right, this, false);
     }
 
 
@@ -207,29 +202,24 @@ public final class GAC3rmPositiveLargeConstraint extends CspLargeSConstraint {
      */
     public void initSupports() throws ContradictionException {
         for (int i = 0; i < vars.length; i++) {
-            DisposableIntIterator itv = vars[i].getDomain().getIterator();
             int left = Integer.MIN_VALUE;
             int right = left;
-            try {
-                while (itv.hasNext()) {
-                    int val = itv.next();
-                    int nva = val - relation.getRelationOffset(i);
-                    if (tab[i][nva].length == 0) {
-                        if (val == right + 1) {
-                            right = val;
-                        } else {
-                            vars[i].removeInterval(left, right, this, false);
-                            left = right = val;
-                        }
-//                        vars[i].removeVal(val, this, false);
+            int ub = vars[i].getSup();
+            for (int val = vars[i].getInf(); val <= ub; val = vars[i].getNextDomainValue(val)) {
+                int nva = val - relation.getRelationOffset(i);
+                if (tab[i][nva].length == 0) {
+                    if (val == right + 1) {
+                        right = val;
                     } else {
-                        setSupport(tab[i][nva][0]);
+                        vars[i].removeInterval(left, right, this, false);
+                        left = right = val;
                     }
+//                        vars[i].removeVal(val, this, false);
+                } else {
+                    setSupport(tab[i][nva][0]);
                 }
-                vars[i].removeInterval(left, right, this, false);
-            } finally {
-                itv.dispose();
             }
+            vars[i].removeInterval(left, right, this, false);
         }
     }
 

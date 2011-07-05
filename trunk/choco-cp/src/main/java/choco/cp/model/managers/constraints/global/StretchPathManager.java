@@ -30,7 +30,6 @@ package choco.cp.model.managers.constraints.global;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.regular.Regular;
-import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.automaton.DFA;
 import choco.kernel.model.constraints.automaton.Transition;
@@ -52,6 +51,7 @@ import java.util.*;
  *    \
  *    |
  */
+
 /**
  * A manager to build new all stretchpath constraints
  */
@@ -61,7 +61,7 @@ public final class StretchPathManager extends IntConstraintManager {
         if (solver instanceof CPSolver) {
 
             if (parameters instanceof List) {
-                List<int[]> stretchParameters = (List<int[]>)parameters;
+                List<int[]> stretchParameters = (List<int[]>) parameters;
 
                 IntDomainVar[] vars = solver.getVar(variables);
 
@@ -70,14 +70,12 @@ public final class StretchPathManager extends IntConstraintManager {
 
                 ArrayList<Integer> alphabet = new ArrayList<Integer>();
                 for (int i = 0; i < vars.length; i++) {
-                    DisposableIntIterator it = tmpVars[i].getDomain().getIterator();
-                    for ( ; it.hasNext();) {
-                        int val = it.next();
+                    int ub = tmpVars[i].getSup();
+                    for (int val = tmpVars[i].getInf(); val <= ub; val = tmpVars[i].getNextDomainValue(val)) {
                         if (!alphabet.contains(val)) {
                             alphabet.add(val);
                         }
                     }
-                    it.dispose();
                 }
 
                 int nbStates = 1;

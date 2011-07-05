@@ -360,6 +360,14 @@ public class BipartiteIntDomain extends AbstractIntDomain {
         else return values[random.nextInt(valuesInDomainNumber.get() + 1)];
     }
 
+    /**
+     * @deprecated replaced by iteration over domain with the {@code BipartiteIntDomain.getNextValue, BipartiteIntDomain.getPrevValue}
+     * @see choco.kernel.solver.variables.integer.IntDomainVar#getNextDomainValue(int)
+     * @see choco.kernel.solver.variables.integer.IntDomainVar#getPrevDomainValue(int)
+     * @see BipartiteIntDomain#getNextValue(int)
+     * @see BipartiteIntDomain#getPrevValue(int)
+     */
+    @Deprecated
     public DisposableIntIterator getIterator() {
         if(getSize() == 1) return OneValueIterator.getIterator(getInf());
         return BipartiteIntDomainIterator.getIterator(valuesInDomainNumber.get(), values);

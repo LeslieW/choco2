@@ -27,7 +27,6 @@
 
 package choco.model.constraints.integer;
 
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -41,14 +40,16 @@ import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import org.junit.After;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import static java.text.MessageFormat.format;
 import java.util.Random;
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
+import static java.text.MessageFormat.format;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by IntelliJ IDEA.
@@ -193,9 +194,9 @@ public class MaxTest {
 		} catch (ContradictionException e) {
 			e.printStackTrace();
 		}
-		LOGGER.info(format("max {0}", s.getVar(max).getDomain().pretty()));
-		LOGGER.info(format("y {0}", s.getVar(y).getDomain().pretty()));
-		LOGGER.info(format("z {0}", s.getVar(z).getDomain().pretty()));
+		LOGGER.info(format("max {0}", s.getVar(max).pretty()));
+		LOGGER.info(format("y {0}", s.getVar(y).pretty()));
+		LOGGER.info(format("z {0}", s.getVar(z).pretty()));
 		LOGGER.info(format("{0}", !s.getVar(y).canBeInstantiatedTo(3)));
 		assertTrue(!s.getVar(y).canBeInstantiatedTo(3));
 	}
@@ -213,9 +214,9 @@ public class MaxTest {
 		} catch (ContradictionException e) {
 			e.printStackTrace();
 		}
-		LOGGER.info(format("max {0}", s.getVar(max).getDomain().pretty()));
-		LOGGER.info(format("y {0}", s.getVar(y).getDomain().pretty()));
-		LOGGER.info(format("z {0}", s.getVar(z).getDomain().pretty()));
+		LOGGER.info(format("max {0}", s.getVar(max).pretty()));
+		LOGGER.info(format("y {0}", s.getVar(y).pretty()));
+		LOGGER.info(format("z {0}", s.getVar(z).pretty()));
 		LOGGER.info(format("{0}", s.getVar(z).canBeInstantiatedTo(3) && s.getVar(max).canBeInstantiatedTo(3)));
 		assertTrue(s.getVar(z).canBeInstantiatedTo(3) && s.getVar(max).canBeInstantiatedTo(3));
 	}
@@ -233,9 +234,9 @@ public class MaxTest {
 		} catch (ContradictionException e) {
 			e.printStackTrace();
 		}
-		LOGGER.info(format("max {0}", s.getVar(max).getDomain().pretty()));
-		LOGGER.info(format("y {0}", s.getVar(y).getDomain().pretty()));
-		LOGGER.info(format("z {0}", s.getVar(z).getDomain().pretty()));
+		LOGGER.info(format("max {0}", s.getVar(max).pretty()));
+		LOGGER.info(format("y {0}", s.getVar(y).pretty()));
+		LOGGER.info(format("z {0}", s.getVar(z).pretty()));
 		LOGGER.info(format("{0}", s.getVar(y).canBeInstantiatedTo(3) && s.getVar(z).canBeInstantiatedTo(3)));
 		assertTrue(s.getVar(y).canBeInstantiatedTo(3) && s.getVar(z).canBeInstantiatedTo(3));
 	}
@@ -252,11 +253,11 @@ public class MaxTest {
 		} catch (ContradictionException e) {
 			e.printStackTrace();
 		}
-		LOGGER.info(format("max {0}", s.getVar(max).getDomain().pretty()));
-		LOGGER.info(format("y {0}", s.getVar(y).getDomain().pretty()));
-		LOGGER.info(format("z {0}", s.getVar(z).getDomain().pretty()));
-		LOGGER.info(format("{0}", s.getVar(max).getDomain().getSize() == 3));
-		assertTrue(s.getVar(max).getDomain().getSize() == 3);
+		LOGGER.info(format("max {0}", s.getVar(max).pretty()));
+		LOGGER.info(format("y {0}", s.getVar(y).pretty()));
+		LOGGER.info(format("z {0}", s.getVar(z).pretty()));
+		LOGGER.info(format("{0}", s.getVar(max).getDomainSize() == 3));
+		assertTrue(s.getVar(max).getDomainSize() == 3);
 	}
 
 	@Test
@@ -273,11 +274,11 @@ public class MaxTest {
 		} catch (ContradictionException e) {
 			e.printStackTrace();
 		}
-		LOGGER.info(format("max {0}", s.getVar(max).getDomain().pretty()));
-		LOGGER.info(format("y {0}", s.getVar(y).getDomain().pretty()));
-		LOGGER.info(format("z {0}", s.getVar(z).getDomain().pretty()));
-		LOGGER.info(format("{0}", s.getVar(max).getDomain().getSize() == 3));
-		assertEquals(s.getVar(max).getDomain().getSize(),3);
+		LOGGER.info(format("max {0}", s.getVar(max).pretty()));
+		LOGGER.info(format("y {0}", s.getVar(y).pretty()));
+		LOGGER.info(format("z {0}", s.getVar(z).pretty()));
+		LOGGER.info(format("{0}", s.getVar(max).getDomainSize() == 3));
+		assertEquals(s.getVar(max).getDomainSize(),3);
 		assertEquals(s.getVar(z).getDomainSize(),3);
 	}
 
@@ -444,7 +445,7 @@ public class MaxTest {
 		} catch (ContradictionException e) {
 			e.printStackTrace();
 		}
-		LOGGER.info("max " + s.getVar(max).getDomain().pretty());
-		assertTrue(s.getVar(max).getDomain().getSize() == 3);
+		LOGGER.info("max " + s.getVar(max).pretty());
+		assertTrue(s.getVar(max).getDomainSize() == 3);
 	}
 }

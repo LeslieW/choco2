@@ -70,22 +70,21 @@ public class AC2001BinSConstraint extends CspBinSConstraint {
 
     // updates the support for all values in the domain of v1, and remove unsupported values for v1
     public void reviseV1() throws ContradictionException {
-        DisposableIntIterator itv1 = v1.getDomain().getIterator();
+        int ub1 = v1.getSup();
         int left = Integer.MIN_VALUE;
         int right = left;
-        while (itv1.hasNext()) {
-            int x = itv1.next();
+        for (int x = v1.getInf(); x <= ub1; x = v1.getNextDomainValue(x)) {
             if (!v0.canBeInstantiatedTo(currentSupport1[x - offset1].get())) {
                 boolean found = false;
                 int support = currentSupport1[x - offset1].get();
                 int max1 = v0.getSup();
                 while (!found && support < max1) {
-                    support = v0.getDomain().getNextValue(support);
+                    support = v0.getNextDomainValue(support);
                     if (relation.isConsistent(support, x)) found = true;
                 }
-                if (found){
+                if (found) {
                     currentSupport1[x - offset1].set(support);
-                }else {
+                } else {
                     if (x == right + 1) {
                         right = x;
                     } else {
@@ -97,22 +96,20 @@ public class AC2001BinSConstraint extends CspBinSConstraint {
             }
         }
         v1.removeInterval(left, right, this, false);
-        itv1.dispose();
     }
 
     // updates the support for all values in the domain of v0, and remove unsupported values for v0
     public void reviseV0() throws ContradictionException {
-        DisposableIntIterator itv0 = v0.getDomain().getIterator();
+        int ub0 = v0.getSup();
         int left = Integer.MIN_VALUE;
         int right = left;
-        while (itv0.hasNext()) {
-            int x = itv0.next();
+        for (int x = v0.getInf(); x <= ub0; x = v0.getNextDomainValue(x)) {
             if (!v1.canBeInstantiatedTo(currentSupport0[x - offset0].get())) {
                 boolean found = false;
                 int support = currentSupport0[x - offset0].get();
                 int max2 = v1.getSup();
                 while (!found && support < max2) {
-                    support = v1.getDomain().getNextValue(support);
+                    support = v1.getNextDomainValue(support);
                     if (relation.isConsistent(x, support)) found = true;
                 }
                 if (found)
@@ -129,27 +126,23 @@ public class AC2001BinSConstraint extends CspBinSConstraint {
             }
         }
         v0.removeInterval(left, right, this, false);
-        itv0.dispose();
     }
 
     public void awake() throws ContradictionException {
-        DisposableIntIterator itv0 = v0.getDomain().getIterator();
+        int ub0 = v0.getSup();
         int support = 0;
         boolean found = false;
         int left = Integer.MIN_VALUE;
         int right = left;
-        while (itv0.hasNext()) {
-            DisposableIntIterator itv1 = v1.getDomain().getIterator();
-            int val0 = itv0.next();
-            while (itv1.hasNext()) {
-                int val1 = itv1.next();
+        for (int val0 = v0.getInf(); val0 <= ub0; val0 = v0.getNextDomainValue(val0)) {
+            int ub1 = v1.getSup();
+            for (int val1 = v1.getInf(); val1 <= ub1; val1 = v1.getNextDomainValue(val1)) {
                 if (relation.isConsistent(val0, val1)) {
                     support = val1;
                     found = true;
                     break;
                 }
             }
-            itv1.dispose();
             if (!found) {
                 if (val0 == right + 1) {
                     right = val0;
@@ -165,22 +158,19 @@ public class AC2001BinSConstraint extends CspBinSConstraint {
             found = false;
         }
         v0.removeInterval(left, right, this, false);
-        itv0.dispose();
+
         found = false;
         right = left = Integer.MIN_VALUE;
-        DisposableIntIterator itv1 = v1.getDomain().getIterator();
-        while (itv1.hasNext()) {
-            itv0 = v0.getDomain().getIterator();
-            int val1 = itv1.next();
-            while (itv0.hasNext()) {
-                int val0 = itv0.next();
+        int ub1 = v1.getSup();
+        for (int val1 = v1.getInf(); val1 <= ub1; val1 = v1.getNextDomainValue(val1)) {
+            ub0 = v0.getSup();
+            for (int val0 = v0.getInf(); val0 <= ub0; val0 = v0.getNextDomainValue(val0)) {
                 if (relation.isConsistent(val0, val1)) {
                     support = val0;
                     found = true;
                     break;
                 }
             }
-            itv0.dispose();
             if (!found) {
                 if (val1 == right + 1) {
                     right = val1;
@@ -195,7 +185,6 @@ public class AC2001BinSConstraint extends CspBinSConstraint {
             found = false;
         }
         v1.removeInterval(left, right, this, false);
-        itv1.dispose();
         //propagate();
     }
 
@@ -244,9 +233,8 @@ public class AC2001BinSConstraint extends CspBinSConstraint {
             int value = v0.getVal();
             int left = Integer.MIN_VALUE;
             int right = left;
-            DisposableIntIterator itv1 = v1.getDomain().getIterator();
-            while (itv1.hasNext()) {
-                int val = itv1.next();
+            int ub1 = v1.getSup();
+            for (int val = v1.getInf(); val <= ub1; val = v1.getNextDomainValue(val)) {
                 if (!relation.isConsistent(value, val)) {
                     if (val == right + 1) {
                         right = val;
@@ -259,14 +247,12 @@ public class AC2001BinSConstraint extends CspBinSConstraint {
                 }
             }
             v1.removeInterval(left, right, this, false);
-            itv1.dispose();
         } else {
             int value = v1.getVal();
             int left = Integer.MIN_VALUE;
             int right = left;
-            DisposableIntIterator itv0 = v0.getDomain().getIterator();
-            while (itv0.hasNext()) {
-                int val = itv0.next();
+            int ub0 = v0.getSup();
+            for (int val = v0.getInf(); val <= ub0; val = v0.getNextDomainValue(val)) {
                 if (!relation.isConsistent(val, value)) {
                     if (val == right + 1) {
                         right = val;
@@ -279,7 +265,6 @@ public class AC2001BinSConstraint extends CspBinSConstraint {
                 }
             }
             v0.removeInterval(left, right, this, false);
-            itv0.dispose();
         }
     }
 

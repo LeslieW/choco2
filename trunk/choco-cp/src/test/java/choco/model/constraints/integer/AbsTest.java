@@ -27,7 +27,6 @@
 
 package choco.model.constraints.integer;
 
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -36,12 +35,14 @@ import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
-import static java.text.MessageFormat.format;
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
+import static java.text.MessageFormat.format;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by IntelliJ IDEA.
@@ -71,8 +72,8 @@ public class AbsTest {
         } catch (ContradictionException e) {
             e.printStackTrace();
         }
-        LOGGER.info(format("x {0}", s.getVar(x).getDomain().pretty()));
-        LOGGER.info(format("y {0}", s.getVar(y).getDomain().pretty()));
+        LOGGER.info(format("x {0}", s.getVar(x).pretty()));
+        LOGGER.info(format("y {0}", s.getVar(y).pretty()));
         LOGGER.info(format("{0}", !s.getVar(x).canBeInstantiatedTo(3)));
         assertTrue(!s.getVar(x).canBeInstantiatedTo(3));
         assertTrue(!s.getVar(y).canBeInstantiatedTo(0));
@@ -120,8 +121,8 @@ public class AbsTest {
         } catch (ContradictionException e) {
             e.printStackTrace();
         }
-        LOGGER.info(format("x {0}", s.getVar(x).getDomain().pretty()));
-        LOGGER.info(format("y {0}", s.getVar(y).getDomain().pretty()));
+        LOGGER.info(format("x {0}", s.getVar(x).pretty()));
+        LOGGER.info(format("y {0}", s.getVar(y).pretty()));
         LOGGER.info(format("{0}", !s.getVar(x).canBeInstantiatedTo(3)));
         assertTrue(!s.getVar(x).canBeInstantiatedTo(3));
         assertTrue(!s.getVar(y).canBeInstantiatedTo(0));
@@ -144,8 +145,8 @@ public class AbsTest {
         } catch (ContradictionException e) {
             e.printStackTrace();
         }
-        LOGGER.info(format("x {0}", s.getVar(x).getDomain().pretty()));
-        LOGGER.info(format("y {0}", s.getVar(y).getDomain().pretty()));
+        LOGGER.info(format("x {0}", s.getVar(x).pretty()));
+        LOGGER.info(format("y {0}", s.getVar(y).pretty()));
         LOGGER.info(format("{0}", !s.getVar(x).canBeInstantiatedTo(3)));
         assertTrue(!s.getVar(y).canBeInstantiatedTo(3));
         assertTrue(!s.getVar(y).canBeInstantiatedTo(-3));
@@ -171,8 +172,8 @@ public class AbsTest {
         } catch (ContradictionException e) {
             e.printStackTrace();
         }
-        LOGGER.info("x " + s.getVar(x).getDomain().pretty());
-        LOGGER.info("y " + s.getVar(y).getDomain().pretty());
+        LOGGER.info("x " + s.getVar(x).pretty());
+        LOGGER.info("y " + s.getVar(y).pretty());
         for (int i = 0; i < 6; i++) {
             assertTrue(!s.getVar(y).canBeInstantiatedTo(-i));
             assertTrue(!s.getVar(y).canBeInstantiatedTo(i));
