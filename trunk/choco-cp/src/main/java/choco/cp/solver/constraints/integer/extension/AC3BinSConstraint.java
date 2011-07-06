@@ -28,6 +28,7 @@
 package choco.cp.solver.constraints.integer.extension;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
@@ -56,15 +57,18 @@ public final class AC3BinSConstraint extends CspBinSConstraint {
         int nbs = 0;
         int left = Integer.MIN_VALUE;
         int right = left;
-        int ub1 = v1.getSup();
-        for (int val1 = v1.getInf(); val1 <= ub1; val1 = v1.getNextDomainValue(val1)) {
-            int ub0 = v0.getSup();
-            for (int val0 = v0.getInf(); val0 <= ub0; val0 = v0.getNextDomainValue(val0)) {
+        DisposableIntIterator itv1 = v1.getDomain().getIterator();
+        while (itv1.hasNext()) {
+            DisposableIntIterator itv0 = v0.getDomain().getIterator();
+            int val1 = itv1.next();
+            while (itv0.hasNext()) {
+                int val0 = itv0.next();
                 if (relation.isConsistent(val0, val1)) {
                     nbs += 1;
                     break;
                 }
             }
+            itv0.dispose();
             if (nbs == 0) {
                 if (val1 == right + 1) {
                     right = val1;
@@ -77,6 +81,7 @@ public final class AC3BinSConstraint extends CspBinSConstraint {
             nbs = 0;
         }
         v1.removeInterval(left, right, this, false);
+        itv1.dispose();
     }
 
     // updates the support for all values in the domain of v0, and remove unsupported values for v0
@@ -84,15 +89,18 @@ public final class AC3BinSConstraint extends CspBinSConstraint {
         int nbs = 0;
         int left = Integer.MIN_VALUE;
         int right = left;
-        int ub = v0.getSup();
-        for (int val0 = v0.getInf(); val0 <= ub; val0 = v0.getNextDomainValue(val0)) {
-            int ub1 = v1.getSup();
-            for (int val1 = v1.getInf(); val1 <= ub1; val1 = v1.getNextDomainValue(val1)) {
+        DisposableIntIterator itv0 = v0.getDomain().getIterator();
+        while (itv0.hasNext()) {
+            DisposableIntIterator itv1 = v1.getDomain().getIterator();
+            int val0 = itv0.next();
+            while (itv1.hasNext()) {
+                int val1 = itv1.next();
                 if (relation.isConsistent(val0, val1)) {
                     nbs += 1;
                     break;
                 }
             }
+            itv1.dispose();
             if (nbs == 0) {
                 if (val0 == right + 1) {
                     right = val0;
@@ -105,6 +113,7 @@ public final class AC3BinSConstraint extends CspBinSConstraint {
             nbs = 0;
         }
         v0.removeInterval(left, right, this, false);
+        itv0.dispose();
     }
 
     // standard filtering algorithm initializing all support counts

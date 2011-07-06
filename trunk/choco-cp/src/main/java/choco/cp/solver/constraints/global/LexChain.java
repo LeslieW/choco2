@@ -194,7 +194,7 @@ public final class LexChain extends AbstractLargeIntSConstraint {
         int alpha = -1;
 
 
-        while(i< n &&  x[i].getInf()<= b[i] && x[i].getSup()>= b[i] && x[i].canBeInstantiatedTo(b[i])){
+        while(i< n &&  x[i].getInf()<= b[i] && x[i].getSup()>= b[i] && x[i].getDomain().contains(b[i])){
 
             if(b[i] > x[i].getInf()){
                 alpha = i;
@@ -227,7 +227,7 @@ public final class LexChain extends AbstractLargeIntSConstraint {
     public int  computeBeta(IntDomainVar [] x ,int [] a)throws ContradictionException {
         int i =0;
         int beta = -1;
-        while(i< n && x[i].getInf()<= a[i] && x[i].getSup()>= a[i] && x[i].canBeInstantiatedTo(a[i])){
+        while(i< n && x[i].getInf()<= a[i] && x[i].getSup()>= a[i] && x[i].getDomain().contains(a[i])){
             if(a[i] < x[i].getSup()){
                 beta= i;
             }

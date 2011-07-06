@@ -28,6 +28,7 @@
 package choco.cp.solver.constraints.integer.extension;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
@@ -63,38 +64,48 @@ public final class FCBinSConstraint extends CspBinSConstraint {
     }
 
     public void awakeOnInst(int idx) throws ContradictionException {
-        int left, right;
+		int left, right;
         if (idx == 0) {
-            int value = v0.getVal();
-            left = right = Integer.MIN_VALUE;
-            int ub1 = v1.getSup();
-            for (int val = v1.getInf(); val <= ub1; val = v1.getNextDomainValue(val)) {
-                if (!relation.isConsistent(value, val)) {
-                    if (val == right + 1) {
-                        right = val;
-                    } else {
-                        v1.removeInterval(left, right, this, false);
-                        left = right = val;
-                    }
-                }
-            }
-            v1.removeInterval(left, right, this, false);
-        } else {
-            int value = v1.getVal();
-            int ub0 = v0.getSup();
-            left = right = Integer.MIN_VALUE;
-            for (int val = v0.getInf(); val <= ub0; val = v0.getNextDomainValue(val)) {
-                if (!relation.isConsistent(val, value)) {
-                    if (val == right + 1) {
-                        right = val;
-                    } else {
-                        v0.removeInterval(left, right, this, false);
-                        left = right = val;
-                    }
-                }
-            }
-            v0.removeInterval(left, right, this, false);
-        }
+			int value = v0.getVal();
+			DisposableIntIterator itv1 = v1.getDomain().getIterator();
+			left = right = Integer.MIN_VALUE;
+            try {
+				while (itv1.hasNext()) {
+					int val = itv1.next();
+					if (!relation.isConsistent(value, val)) {
+                        if(val == right +1){
+                            right = val;
+                        }else{
+                            v1.removeInterval(left, right, this, false);
+                            left = right = val;
+                        }
+					}
+				}
+                v1.removeInterval(left, right, this, false);
+			} finally {
+				itv1.dispose();
+			}
+		} else {
+			int value = v1.getVal();
+			DisposableIntIterator itv0 = v0.getDomain().getIterator();
+			left = right = Integer.MIN_VALUE;
+            try {
+				while (itv0.hasNext()) {
+					int val = itv0.next();
+					if (!relation.isConsistent(val, value)) {
+						if(val == right +1){
+                            right = val;
+                        }else{
+                            v0.removeInterval(left, right, this, false);
+                            left = right = val;
+                        }
+					}
+				}
+                v0.removeInterval(left, right, this, false);
+			} finally {
+				itv0.dispose();
+			}
+		}
     }
 
 

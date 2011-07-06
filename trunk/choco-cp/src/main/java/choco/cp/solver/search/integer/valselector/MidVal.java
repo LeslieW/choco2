@@ -38,7 +38,7 @@ public class MidVal implements ValSelector<IntDomainVar> {
      * @return what seems the most interesting value for branching
      */
     public int getBestVal(IntDomainVar x) {
-        if (x.hasEnumeratedDomain()) {
+        if (x.getDomain().isEnumerated()) {
             final int midVal = x.getInf() + (x.getSup() - x.getInf()) / 2;
             // -1 is mandatory in case of instantiation
             return x.getNextDomainValue(midVal-1);

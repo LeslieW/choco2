@@ -27,6 +27,7 @@
 
 package choco.cp.solver.constraints.integer;
 
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
@@ -60,24 +61,29 @@ public final class MemberEnum extends AbstractUnIntSConstraint {
      */
     @Override
     public void propagate() throws ContradictionException {
-        int ub = v0.getSup();
-        int left = Integer.MIN_VALUE;
-        int right = left;
-        boolean rall = true;
-        for (int val = v0.getInf(); val <= ub; val = v0.getNextDomainValue(val)) {
-            if (!values.contains(val)) {
-                if (val == right + 1) {
-                    right = val;
-                } else {
-                    rall &= v0.removeInterval(left, right, this, false);
-                    left = right = val;
-                }
+        final DisposableIntIterator iterator = v0.getDomain().getIterator();
+        try {
+            int left = Integer.MIN_VALUE;
+            int right = left;
+            boolean rall = true;
+            while (iterator.hasNext()) {
+                final int val = iterator.next();
+                if (!values.contains(val)) {
+                    if (val == right + 1) {
+                        right = val;
+                    } else {
+                        rall &= v0.removeInterval(left, right, this, false);
+                        left = right = val;
+                    }
 //                    v0.removeVal(val, this, false);
+                }
             }
-        }
-        rall &= v0.removeInterval(left, right, this, false);
-        if (rall) {
-            this.setEntailed();
+            rall &= v0.removeInterval(left, right, this, false);
+            if (rall) {
+                this.setEntailed();
+            }
+        } finally {
+            iterator.dispose();
         }
     }
 
@@ -122,13 +128,17 @@ public final class MemberEnum extends AbstractUnIntSConstraint {
      */
     @Override
     public boolean isSatisfied() {
-        int ub0 = v0.getSup();
-        for (int val = v0.getInf(); val <= ub0; val = v0.getNextDomainValue(val)) {
-            if (!values.contains(val)) {
-                return false;
+        final DisposableIntIterator it = v0.getDomain().getIterator();
+        try {
+            while (it.hasNext()) {
+                if (!values.contains(it.next())) {
+                    return false;
+                }
             }
+            return true;
+        } finally {
+            it.dispose();
         }
-        return true;
     }
 
     /**
@@ -138,13 +148,15 @@ public final class MemberEnum extends AbstractUnIntSConstraint {
      */
     @Override
     public Boolean isEntailed() {
+        final DisposableIntIterator it = v0.getDomain().getIterator();
         int nb = 0;
-        int ub0 = v0.getSup();
-        for (int val = v0.getInf(); val <= ub0; val = v0.getNextDomainValue(val)) {
+        while (it.hasNext()) {
+            final int val = it.next();
             if (values.contains(val)) {
                 nb++;
             }
         }
+        it.dispose();
         if (nb == 0) return false;
         else if (nb == v0.getDomainSize()) return true;
         return null;

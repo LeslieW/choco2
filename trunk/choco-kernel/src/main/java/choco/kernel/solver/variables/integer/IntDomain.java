@@ -42,13 +42,8 @@ public interface IntDomain extends Domain {
 	public final static Logger LOGGER = ChocoLogging.getEngineLogger();
 	/**
 	 * Retrieve an getIterator for traversing the sequence of values contained in the domain
-     * @deprecated replaced by iteration over domain with the {@code IntDomain.getNextValue, IntDomain.getPrevValue}
-     * @see IntDomainVar#getNextDomainValue(int)
-     * @see IntDomainVar#getPrevDomainValue(int)
-     * @see IntDomain#getNextValue(int)
-     * @see IntDomain#getPrevValue(int)
 	 */
-    @Deprecated
+
 	public DisposableIntIterator getIterator();
 
 

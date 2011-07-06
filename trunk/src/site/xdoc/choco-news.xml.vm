@@ -9,7 +9,7 @@
         <section name="News">
             <subsection name="Refactoring">
                 <p>
-                    Charles Prud'homme - July 10th 2011
+                    Charles Prud'homme - July 07th 2011
                 </p>
                 <p>
                     We are currently working on the new version of Choco, version 3.
@@ -23,51 +23,9 @@
                     <u>
                         <li>releasing the current version of the trunk (v2.1.2);</li>
                         <li>distinguishing, in different modules, the Solver (main module) and the Modeler.
-                            We tend to reduce to the minimum, the user impact;
-                        </li>
+                            We tend to reduce to the minimum, the user impact;</li>
                         <li>closing the current version, with up-to-date documentation (v2.2.0)</li>
                     </u>
-                </p>
-
-                <p>
-                    If you have any suggestions, please let us know.
-                </p>
-
-            </subsection>
-
-            <subsection name="Iteration over domain values">
-                <p>
-                    Charles Prud'homme - July 07th 2011
-                </p>
-                <p>
-                    IntDomain.getIterator() becomes deprecated. From now on, we stronlgy encourage users
-                    to replace iteration over domain values with:
-                    <source>
-                        IntDomainVar v0;
-                        int ub0 = v0.getSup();
-                        for (int value = v0.getInf(); value &#8804; ub0; value = v0.getNextDomainValue(value)) {
-                        // do something ...
-                        }
-                    </source>
-                    or
-                    <source>
-                        IntDomainVar v0;
-                        int lb0 = v0.getInf();
-                        for (int value = v0.getSup(); value &#8805; lb0; value = v0.getPrevDomainValue(value)) {
-                        // do something ...
-                        }
-                    </source>
-                </p>
-                <p>
-                    This choice has been made to avoid usage of disposable iterators in critical part of the code.
-                    A disposable iterator is an Iterator Object that can reuse to prevent from multiple creation of Iterator
-                    (which can be really costfull in Java). To do so, it declares a new services "dispose()", which informs
-                    the solver of it reusability.
-                    This requires some particular attention when using, and most of the time, the iterator is not freed
-                    when iteration is done.
-                </p>
-                <p>
-                    The for-loop proposed, is based on the BitSet iteration, and seems user friendly to us.
                 </p>
 
                 <p>
@@ -90,16 +48,12 @@
                     build on an O(n) bound-consistency algorithm.
                 </p>
                 <p>
-                    inverseChannelingWithinRange(IntegerVariable[] x, IntegerVariable[] y): derived from
-                    inverseChanneling(x, y),
-                    "If the i^th variable of the collection X is assigned to j and if j is less than or equal to the
-                    number of items of the collection Y
+                    inverseChannelingWithinRange(IntegerVariable[] x, IntegerVariable[] y): derived from inverseChanneling(x, y),
+                    "If the i^th variable of the collection X is assigned to j and if j is less than or equal to the number of items of the collection Y
                     then the j^th variable of the collection Y is assigned to i.
-                    Conversely, if the j^th variable of the collection Y is assigned to i and if i is less than or equal
-                    to the number of items of the collection X
+                    Conversely, if the j^th variable of the collection Y is assigned to i and if i is less than or equal to the number of items of the collection X
                     then the ith variable of the collection X is assigned to j."
-                    See<a href="http://www.emn.fr/z-info/sdemasse/gccat/Cinverse_within_range.html">
-                    inverse_within_range</a>.
+                    See <a href="http://www.emn.fr/z-info/sdemasse/gccat/Cinverse_within_range.html">inverse_within_range</a>.
                 </p>
 
             </subsection>
@@ -132,22 +86,22 @@
                     Here is an example code of the SendMoreMoney problem with logging statements
                 </p>
                 <source>
-                    CPModel mod = new CPModel();
-                    CPSolver s = new CPSolver();
-                    IntegerVariable b = Choco.makeBooleanVar("to be");
-                    mod.addVariable(b);
+CPModel mod = new CPModel();
+CPSolver s = new CPSolver();
+IntegerVariable b = Choco.makeBooleanVar("to be");
+mod.addVariable(b);
 
-                    ALogicTree or = Node.or(Literal.pos(b), Literal.neg(b));
+ALogicTree or = Node.or(Literal.pos(b), Literal.neg(b));
 
-                    mod.addConstraints(clauses(or));
-                    s.read(mod);
-                    s.solveAll();
+mod.addConstraints(clauses(or));
+s.read(mod);
+s.solveAll();
                 </source>
 
             </subsection>
             <subsection name="CP-VIZ: An Open Source Visualization Platform for CP">
                 <p>
-                    Charles Prud'homme - December 13th 2010
+                    Charles Prud'homme - December  13th 2010
                 </p>
                 <p>
                     We currently have the pleasure to welcome Helmut Simonis at Ecole des Mines. As part of the
@@ -172,52 +126,52 @@
                     Here is an example code of the SendMoreMoney problem with logging statements
                 </p>
                 <source>
-                    Model model;
-                    IntegerVariable S, E, N, D, M, O, R, Y;
-                    IntegerVariable[] SEND, MORE, MONEY;
+Model model;
+IntegerVariable S, E, N, D, M, O, R, Y;
+IntegerVariable[] SEND, MORE, MONEY;
 
-                    model = new CPModel();
+model = new CPModel();
 
-                    S = makeIntVar("S", 0, 9);
-                    E = makeIntVar("E", 0, 9);
-                    N = makeIntVar("N", 0, 9);
-                    D = makeIntVar("D", 0, 9);
-                    M = makeIntVar("M", 0, 9);
-                    O = makeIntVar("0", 0, 9);
-                    R = makeIntVar("R", 0, 9);
-                    Y = makeIntVar("Y", 0, 9);
-                    SEND = new IntegerVariable[]{S, E, N, D};
-                    MORE = new IntegerVariable[]{M, O, R, E};
-                    MONEY = new IntegerVariable[]{M, O, N, E, Y};
+S = makeIntVar("S", 0, 9);
+E = makeIntVar("E", 0, 9);
+N = makeIntVar("N", 0, 9);
+D = makeIntVar("D", 0, 9);
+M = makeIntVar("M", 0, 9);
+O = makeIntVar("0", 0, 9);
+R = makeIntVar("R", 0, 9);
+Y = makeIntVar("Y", 0, 9);
+SEND = new IntegerVariable[]{S, E, N, D};
+MORE = new IntegerVariable[]{M, O, R, E};
+MONEY = new IntegerVariable[]{M, O, N, E, Y};
 
-                    model.addConstraints(neq(S, 0), neq(M, 0));
-                    model.addConstraint(allDifferent(S, E, N, D, M, O, R, Y));
-                    model.addConstraints(
-                    eq(plus(scalar(new int[]{1000, 100, 10, 1}, SEND),
-                    scalar(new int[]{1000, 100, 10, 1}, MORE)),
-                    scalar(new int[]{10000, 1000, 100, 10, 1}, MONEY))
-                    );
+model.addConstraints(neq(S, 0), neq(M, 0));
+model.addConstraint(allDifferent(S, E, N, D, M, O, R, Y));
+model.addConstraints(
+eq(plus(scalar(new int[]{1000, 100, 10, 1}, SEND),
+scalar(new int[]{1000, 100, 10, 1}, MORE)),
+scalar(new int[]{10000, 1000, 100, 10, 1}, MONEY))
+);
 
-                    Solver solver = new CPSolver();
-                    solver.read(model);
+Solver solver = new CPSolver();
+solver.read(model);
 
-                    // Creation of the visualization wrapper
-                    Visualization visu = new Visualization("SendMoreMoney", solver, "./out");
+// Creation of the visualization wrapper
+Visualization visu = new Visualization("SendMoreMoney", solver, "./out");
 
-                    visu.createTree(); // declare tree tool
-                    visu.createViz(); // declare viz tool
+visu.createTree(); // declare tree tool
+visu.createViz(); // declare viz tool
 
-                    // declare of specialized visualizer for variables states
-                    Vector visualizer = new Vector(solver.getVar(S,E,N,D,M,O,R,Y), "expanded", 0, 0, 8, 10, "SENDMORY",
-                    0, 9);
+// declare of specialized visualizer for variables states
+Vector visualizer = new Vector(solver.getVar(S,E,N,D,M,O,R,Y), "expanded", 0, 0, 8, 10, "SENDMORY",
+0, 9);
 
-                    // add the vector visualizer to the viz tool
-                    visu.addVisualizer(visualizer);
+// add the vector visualizer to the viz tool
+visu.addVisualizer(visualizer);
 
-                    solver.solve();
+solver.solve();
 
-                    // close the XML files safely
-                    visu.close();
+// close the XML files safely
+visu.close();
                 </source>
 
             </subsection>

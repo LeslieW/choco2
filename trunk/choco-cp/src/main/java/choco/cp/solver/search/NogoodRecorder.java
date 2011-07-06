@@ -94,7 +94,7 @@ public final class NogoodRecorder {
 		if(bvar==null) {
 			LOGGER.finest("reset nogood recording: not a integer variable");
 			reset();
-		}else if( ! bvar.hasBooleanDomain()) {
+		}else if( ! bvar.getDomain().isBoolean()) {
 			LOGGER.finest("reset nogood recording: not a boolean variable");
 			reset();
 		}else {

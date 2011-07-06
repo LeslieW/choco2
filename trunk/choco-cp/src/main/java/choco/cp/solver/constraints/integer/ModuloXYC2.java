@@ -30,6 +30,7 @@ package choco.cp.solver.constraints.integer;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
+import choco.kernel.solver.variables.integer.IntDomain;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.BitSet;
@@ -110,8 +111,8 @@ public final class ModuloXYC2 extends AbstractBinIntSConstraint {
         }
 
         if (v1.hasEnumeratedDomain()) {
-            int ub = v1.getSup();
-            for (int val = v1.getInf(); val <= ub; val = v1.getNextDomainValue(val)) {
+            IntDomain dom = v1.getDomain();
+            for (int val = dom.getInf(); val <= dom.getSup(); val = dom.getNextValue(val)) {
                 if (!v0.canBeInstantiatedTo(val % m)) {
                     v1.removeVal(val, this, false);
                 }
@@ -126,8 +127,8 @@ public final class ModuloXYC2 extends AbstractBinIntSConstraint {
     //
     public BitSet searchSupportsP() {
         BitSet bs = new BitSet();
-        int ub = v1.getSup();
-        for (int val = v1.getInf(); val <= ub && bs.cardinality() < m; val = v1.getNextDomainValue(val)) {
+        IntDomain dom = v1.getDomain();
+        for (int val = dom.getInf(); (val <= dom.getSup()) && bs.cardinality() < m; val = dom.getNextValue(val)) {
             bs.set(val % m);
         }
         return bs;
@@ -137,8 +138,8 @@ public final class ModuloXYC2 extends AbstractBinIntSConstraint {
     public BitSet searchSupports() {
         BitSet bs = new BitSet();
         bs.set(0, m);
-        int ub  =v1.getSup();
-        for (int val = v1.getInf(); (val <= ub) && bs.cardinality() > 0; val = v1.getNextDomainValue(val)) {
+        IntDomain dom = v1.getDomain();
+        for (int val = dom.getInf(); (val <= dom.getSup()) && bs.cardinality() > 0; val = dom.getNextValue(val)) {
             if (bs.get(val % m)) {
                 //   supports[val % m].set(val);
                 bs.clear(val % m);
@@ -175,9 +176,9 @@ public final class ModuloXYC2 extends AbstractBinIntSConstraint {
     // Modification de la borne inf. de v0
     public void reviseV1OnInf() throws ContradictionException {
         if (v1.hasEnumeratedDomain()) {
+            IntDomain dom = v1.getDomain();
             int inf = v0.getInf();
-            int ub = v1.getSup();
-            for (int val = v1.getInf(); val <= ub; val = v1.getNextDomainValue(val)) {
+            for (int val = dom.getInf(); val <= dom.getSup(); val = dom.getNextValue(val)) {
                 if (val % m < inf) {
                     v1.removeVal(val, this, false);
                 } /*else {
@@ -199,7 +200,8 @@ public final class ModuloXYC2 extends AbstractBinIntSConstraint {
         } else if (v1.getInf() % m <= v0.getInf()) {
             return v0.getInf() + n;
         } else {
-            int inf = v0.getNextDomainValue((v1.getInf() % m)-1);
+            IntDomain dom = v0.getDomain();
+            int inf = dom.getNextValue((v1.getInf() % m)-1);
             return (inf + n);
         }
     }
@@ -234,9 +236,9 @@ public final class ModuloXYC2 extends AbstractBinIntSConstraint {
     // Modification de la borne sup. de v0    
     public void reviseV1OnSup() throws ContradictionException {
         if (v1.hasEnumeratedDomain()) {
+            IntDomain dom = v1.getDomain();
             int sup = v0.getSup();
-            int ub = v1.getSup();
-            for (int val = v1.getInf(); val <= ub; val = v1.getNextDomainValue(val)) {
+            for (int val = dom.getInf(); val <= dom.getSup(); val = dom.getNextValue(val)) {
                 if (val % m > sup) {
                     v1.removeVal(val, this, false);
                 } /* else {
@@ -257,7 +259,8 @@ public final class ModuloXYC2 extends AbstractBinIntSConstraint {
         } else if (v1.getSup() % m == v0.getInf()) {
             return v1.getSup();
         } else {
-            int sup = v0.getPrevDomainValue((v1.getSup() % m)+1);
+            IntDomain dom = v0.getDomain();
+            int sup = dom.getPrevValue((v1.getSup() % m)+1);
             return (sup + n);
         }
     }
@@ -279,8 +282,8 @@ public final class ModuloXYC2 extends AbstractBinIntSConstraint {
 
     public void reviseV1OnInst(int inst) throws ContradictionException {
         if (v1.hasEnumeratedDomain()) {
-            int ub = v1.getSup();
-            for (int val = v1.getInf(); val <= ub; val = v1.getNextDomainValue(val)) {
+            IntDomain dom = v1.getDomain();
+            for (int val = dom.getInf(); val <= dom.getSup(); val = dom.getNextValue(val)) {
                 if (val % m != inst)
                     v1.removeVal(val, this, false);
             }
@@ -321,8 +324,8 @@ public final class ModuloXYC2 extends AbstractBinIntSConstraint {
 
     public void reviseV1OnRem(int valeur) throws ContradictionException {
         if (v1.hasEnumeratedDomain()) {
-            int ub = v1.getSup();
-            for (int q = v1.getInf() / m; q <= ub/ m; q++) {
+            IntDomain dom = v1.getDomain();
+            for (int q = dom.getInf() / m; q <= dom.getSup() / m; q++) {
                 v1.removeVal(valeur + q * m, this, false);
             }
         } else {

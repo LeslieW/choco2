@@ -28,6 +28,7 @@
 package choco.cp.solver.constraints.global.regular;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.IntEnumeration;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
@@ -117,7 +118,7 @@ public final class Regular extends AbstractLargeIntSConstraint {
         }
         initQij(qijvalues);
         for (int i = 0; i < Qij.length; i++) {
-            Qij[i] = (StoredIndexedBipartiteSet) environment.makeBipartiteSet(qijvalues[i]);
+            Qij[i] = (StoredIndexedBipartiteSet)environment.makeBipartiteSet(qijvalues[i]);
         }
     }
 
@@ -132,8 +133,9 @@ public final class Regular extends AbstractLargeIntSConstraint {
         Ni[0].add(autom.getInitState());
         for (int i = 0; i < Ni.length - 1; i++) {
             for (final LightState st : Ni[i]) {
-                int ub = vars[i].getSup();
-                for (int val = vars[i].getInf(); val <= ub; val = vars[i].getNextDomainValue(val)) {
+                final DisposableIntIterator domIt = vars[i].getDomain().getIterator();
+                for (; domIt.hasNext();) {
+                    final int val = domIt.next();
                     if (st.hasDelta(val - autom.getOffset(i))) {
                         qijvalues[start[i] + val - offset[i]].add(st);
                         final LightState nst = st.delta(val - autom.getOffset(i));
@@ -143,6 +145,7 @@ public final class Regular extends AbstractLargeIntSConstraint {
                         }
                     }
                 }
+                domIt.dispose();
             }
         }
     }
@@ -158,9 +161,7 @@ public final class Regular extends AbstractLargeIntSConstraint {
 
     /***************************************************/
     /*************** Initial propagation ***************/
-    /**
-     * ***********************************************
-     */
+    /***************************************************/
 
 
     // temporary data structures to intialize the Qij set
@@ -204,17 +205,18 @@ public final class Regular extends AbstractLargeIntSConstraint {
 
     public void forwardOnLevel(final int i) {
         for (final LightState st : Ni[i]) {
-            int ub = vars[i].getSup();
-            for (int val = vars[i].getInf(); val <= ub; val = vars[i].getNextDomainValue(val)) {
+            final DisposableIntIterator domIt = vars[i].getDomain().getIterator();
+            for (; domIt.hasNext();) {
+                final int val = domIt.next();
                 if (st.hasDelta(val - autom.getOffset(i))) {
-                    qijvalues[start[i] + val - offset[i]].add(st);
+                    qijvalues[start[i] + val - offset[i]].add(st);                    
                     final LightState nst = st.delta(val - autom.getOffset(i));
                     if (!mark.get(nst.getIdx())) { // st is a candidate for support                       
                         Ni[i + 1].add(nst);
                         mark.set(nst.getIdx());
                     }
                 }
-            }
+            }domIt.dispose();
         }
     }
 
@@ -226,7 +228,7 @@ public final class Regular extends AbstractLargeIntSConstraint {
         for (int i = Ni.length - 2; i >= 0; i--) {
             backward2OnLevel(i);
             backwardOnLevel(i);
-            for (Iterator it = Ni[i].iterator(); it.hasNext(); ) {
+            for (Iterator it = Ni[i].iterator(); it.hasNext();) {
                 final LightState st = (LightState) it.next();
                 if (!mark.get(st.getIdx()))
                     it.remove();
@@ -235,11 +237,12 @@ public final class Regular extends AbstractLargeIntSConstraint {
     }
 
     public void backwardOnLevel(final int i) {
-        int ub = vars[i].getSup();
-        for (int val = vars[i].getInf(); val <= ub; val = vars[i].getNextDomainValue(val)) {
+        final DisposableIntIterator domIt = vars[i].getDomain().getIterator();
+        for (; domIt.hasNext();) {
+            final int val = domIt.next();
             final StoredIndexedBipartiteSet qij = getQij(i, val);
             final BipartiteSetIterator it = qij.getObjectIterator();
-            while (it.hasNext()) {
+            while(it.hasNext()) {
                 final LightState st = (LightState) it.nextObject();
                 final LightState nst = st.delta(val - autom.getOffset(i));
                 if (nst != null && mark.get(nst.getIdx())) { //isMark(ctIdx)) {     // st confirmed as a support
@@ -252,14 +255,16 @@ public final class Regular extends AbstractLargeIntSConstraint {
             }
             it.dispose();
         }
+        domIt.dispose();
     }
 
     public void backward2OnLevel(final int i) {
-        int ub = vars[i].getSup();
-        for (int val = vars[i].getInf(); val <= ub; val = vars[i].getNextDomainValue(val)) {
+        final DisposableIntIterator domIt = vars[i].getDomain().getIterator();
+        for (; domIt.hasNext();) {
+            final int val = domIt.next();
             final StoredIndexedBipartiteSet qij = getQij(i, val);
             final BipartiteSetIterator it = qij.getObjectIterator();
-            while (it.hasNext()) {
+            while(it.hasNext()) {
                 final LightState st = (LightState) it.nextObject();
                 if (!qijvalues[start[i] + val - offset[i]].contains(st)) { //isMark(ctIdx)) {     // st confirmed as a support
                     it.remove();
@@ -267,6 +272,7 @@ public final class Regular extends AbstractLargeIntSConstraint {
             }
             it.dispose();
         }
+        domIt.dispose();
     }
 
 
@@ -309,6 +315,7 @@ public final class Regular extends AbstractLargeIntSConstraint {
     /*******************************************************/
 
     /**
+     *
      * @param i
      * @param val
      * @throws ContradictionException
@@ -404,7 +411,7 @@ public final class Regular extends AbstractLargeIntSConstraint {
 
             propagateRemoval(idx, x);
         } else this.constAwake(false);
-        if (!vars[idx].hasEnumeratedDomain()) {
+        if (!vars[idx].hasEnumeratedDomain()){
             StoredIndexedBipartiteSet supports = getQij(idx, vars[idx].getInf());
             if (supports.isEmpty()) {
                 vars[idx].removeVal(vars[idx].getInf(), this, true);

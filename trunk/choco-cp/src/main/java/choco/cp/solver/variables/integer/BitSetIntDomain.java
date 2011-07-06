@@ -250,14 +250,6 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
         return size.get();
     }
 
-    /**
-     * @deprecated replaced by iteration over domain with the {@code BitSetIntDomain.getNextValue, BitSetIntDomain.getPrevValue}
-     * @see choco.kernel.solver.variables.integer.IntDomainVar#getNextDomainValue(int)
-     * @see choco.kernel.solver.variables.integer.IntDomainVar#getPrevDomainValue(int)
-     * @see BitSetIntDomain#getNextValue(int)
-     * @see BitSetIntDomain#getPrevValue(int)
-     */
-    @Deprecated
     public DisposableIntIterator getIterator() {
         if (getSize() == 1) return OneValueIterator.getIterator(getInf());
         return BitSetIntDomainIterator.getIterator(offset, contents);

@@ -196,7 +196,7 @@ public class TestTask {
 		assertEquals(4, solver.getIntDecisionVars().length);
 		assertEquals(3, solver.getNbTaskVars());
 		assertEquals(2, solver.getTaskDecisionVars().length);
-		assertTrue(solver.getVar(t3).start().hasEnumeratedDomain());
+		assertTrue(solver.getVar(t3).start().getDomain().isEnumerated());
 	}
 	
 

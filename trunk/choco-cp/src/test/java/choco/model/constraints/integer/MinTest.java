@@ -138,9 +138,9 @@ public class MinTest{
         } catch (ContradictionException e) {
             e.printStackTrace();
         }
-        LOGGER.info(format("min {0}", s.getVar(min).pretty()));
-        LOGGER.info(format("y {0}", s.getVar(y).pretty()));
-        LOGGER.info(format("z {0}", s.getVar(z).pretty()));
+        LOGGER.info(format("min {0}", s.getVar(min).getDomain().pretty()));
+        LOGGER.info(format("y {0}", s.getVar(y).getDomain().pretty()));
+        LOGGER.info(format("z {0}", s.getVar(z).getDomain().pretty()));
         LOGGER.info(format("{0}", !s.getVar(y).canBeInstantiatedTo(3)));
         assertTrue(!s.getVar(y).canBeInstantiatedTo(3));
     }
@@ -159,9 +159,9 @@ public class MinTest{
         } catch (ContradictionException e) {
             e.printStackTrace();
         }
-        LOGGER.info(format("min {0}", s.getVar(min).pretty()));
-        LOGGER.info(format("y {0}", s.getVar(y).pretty()));
-        LOGGER.info(format("z {0}", s.getVar(z).pretty()));
+        LOGGER.info(format("min {0}", s.getVar(min).getDomain().pretty()));
+        LOGGER.info(format("y {0}", s.getVar(y).getDomain().pretty()));
+        LOGGER.info(format("z {0}", s.getVar(z).getDomain().pretty()));
         LOGGER.info(format("{0}", s.getVar(z).canBeInstantiatedTo(3) && s.getVar(min).canBeInstantiatedTo(3)));
         assertTrue(s.getVar(z).canBeInstantiatedTo(3) && s.getVar(min).canBeInstantiatedTo(3));
     }
@@ -179,9 +179,9 @@ public class MinTest{
         } catch (ContradictionException e) {
             e.printStackTrace();
         }
-        LOGGER.info(format("min {0}", s.getVar(min).pretty()));
-        LOGGER.info(format("y {0}", s.getVar(y).pretty()));
-        LOGGER.info(format("z {0}", s.getVar(z).pretty()));
+        LOGGER.info(format("min {0}", s.getVar(min).getDomain().pretty()));
+        LOGGER.info(format("y {0}", s.getVar(y).getDomain().pretty()));
+        LOGGER.info(format("z {0}", s.getVar(z).getDomain().pretty()));
         LOGGER.info(format("{0}", s.getVar(y).canBeInstantiatedTo(3) && s.getVar(z).canBeInstantiatedTo(3)));
         assertTrue(s.getVar(y).canBeInstantiatedTo(3) && s.getVar(z).canBeInstantiatedTo(3));
     }
@@ -198,11 +198,11 @@ public class MinTest{
         } catch (ContradictionException e) {
             e.printStackTrace();
         }
-        LOGGER.info(format("min {0}", s.getVar(min).pretty()));
-        LOGGER.info(format("y {0}", s.getVar(y).pretty()));
-        LOGGER.info(format("z {0}", s.getVar(z).pretty()));
-        LOGGER.info(format("{0}", s.getVar(min).getDomainSize() == 3));
-        assertTrue(s.getVar(min).getDomainSize() == 3);
+        LOGGER.info(format("min {0}", s.getVar(min).getDomain().pretty()));
+        LOGGER.info(format("y {0}", s.getVar(y).getDomain().pretty()));
+        LOGGER.info(format("z {0}", s.getVar(z).getDomain().pretty()));
+        LOGGER.info(format("{0}", s.getVar(min).getDomain().getSize() == 3));
+        assertTrue(s.getVar(min).getDomain().getSize() == 3);
     }
 
 
@@ -302,8 +302,8 @@ public class MinTest{
         } catch (ContradictionException e) {
             e.printStackTrace();
         }
-        LOGGER.info("min " + s.getVar(min).pretty());
-        assertTrue(s.getVar(min).getDomainSize() == 3);
+        LOGGER.info("min " + s.getVar(min).getDomain().pretty());
+        assertTrue(s.getVar(min).getDomain().getSize() == 3);
     }
 
 

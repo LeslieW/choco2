@@ -34,8 +34,10 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.TimesXYZ;
 import choco.cp.solver.constraints.integer.bool.sat.ClauseStore;
 import choco.cp.solver.search.integer.varselector.MinDomain;
+import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.cp.solver.variables.integer.IntervalIntDomain;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
@@ -475,6 +477,68 @@ public class IntegerVariableTest {
             solver1.post(new ClauseStore(bvars, solver1.getEnvironment()));
             Assert.assertEquals(0, solver1.getSolutionCount());
         }
+    }
+
+    @Test
+    public void iterationTest(){
+        Random rand = new Random();
+        Solver solver = new CPSolver();
+        for(int seed = 3; seed  < 500; seed++){
+            //System.out.printf("seed: %d\n", seed);
+            rand.setSeed(seed);
+            int type = rand.nextInt(4);
+            int a  = -200 + rand.nextInt(200);
+            int b = a + rand.nextInt(200);
+            IntDomainVar var = new IntDomainVarImpl(solver, "", type, a, b);
+            DisposableIntIterator it = var.getDomain().getIterator();
+            for(int i  = var.getInf(); i <= var.getSup(); i = var.getNextDomainValue(i)){
+                Assert.assertTrue(it.hasNext());
+                Assert.assertEquals(it.next(), i);
+            }
+            Assert.assertFalse(it.hasNext());
+        }
+    }
+
+    @Test
+    public void iterationTest2(){
+        Solver solver = new CPSolver();
+        int n = 199999;
+        IntDomainVar i1 = solver.createEnumIntVar("i1", -n, n);
+        long t2 = -System.currentTimeMillis();
+        for(int i = 0; i < 999; i++){
+            int k = 0;
+            DisposableIntIterator it = i1.getDomain().getIterator();
+            while(it.hasNext()){
+                it.next();
+                k++;
+            }
+            it.dispose();
+            Assert.assertEquals(i1.getDomainSize(), k);
+        }
+        t2 += System.currentTimeMillis();
+        long t1 = -System.currentTimeMillis();
+        for(int i = 0; i < 999; i++){
+            int k = 0;
+            int ub = i1.getSup();
+            for (int val = i1.getInf(); val <= ub; val = i1.getNextDomainValue(val)) {
+                //if(i1.canBeInstantiatedTo(val))
+                k++;
+            }
+            Assert.assertEquals(i1.getDomainSize(), k);
+        }
+        t1 += System.currentTimeMillis();
+        long t3 = -System.currentTimeMillis();
+        for(int i = 0; i < 999; i++){
+            int k = 0;
+            int ub = i1.getSup();
+            for (int val = i1.getInf(); val <= ub; val ++) {
+                if(i1.canBeInstantiatedTo(val))
+                k++;
+            }
+            Assert.assertEquals(i1.getDomainSize(), k);
+        }
+        t3 += System.currentTimeMillis();
+        System.out.printf("%d vs. %d vs. %d\n", t1, t2, t3);
     }
 
 }
