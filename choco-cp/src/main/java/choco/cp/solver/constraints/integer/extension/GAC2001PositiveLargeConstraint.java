@@ -122,26 +122,31 @@ public final class GAC2001PositiveLargeConstraint extends CspLargeSConstraint {
      * @throws ContradictionException
      */
     public void reviseVar(int indexVar) throws ContradictionException {
+        DisposableIntIterator itv = vars[indexVar].getDomain().getIterator();
         int left = Integer.MIN_VALUE;
         int right = left;
-        int ub = vars[indexVar].getSup();
-        for (int val = vars[indexVar].getInf(); val <= ub; val = vars[indexVar].getNextDomainValue(val)) {
-            int nva = val - relation.getRelationOffset(indexVar);
-            int currentIdxSupport = getSupport(indexVar, val);
-            currentIdxSupport = seekNextSupport(indexVar, nva, currentIdxSupport);
-            if (currentIdxSupport == NO_SUPPORT) {
-                if (val == right + 1) {
-                    right = val;
-                } else {
-                    vars[indexVar].removeInterval(left, right, this, false);
-                    left = right = val;
-                }
+        try {
+            while (itv.hasNext()) {
+                int val = itv.next();
+                int nva = val - relation.getRelationOffset(indexVar);
+                int currentIdxSupport = getSupport(indexVar, val);
+                currentIdxSupport = seekNextSupport(indexVar, nva, currentIdxSupport);
+                if (currentIdxSupport == NO_SUPPORT) {
+                    if (val == right + 1) {
+                        right = val;
+                    } else {
+                        vars[indexVar].removeInterval(left, right, this, false);
+                        left = right = val;
+                    }
 //                    vars[indexVar].removeVal(val, this, false);
-            } else {
-                setSupport(indexVar, val, currentIdxSupport);
+                } else {
+                    setSupport(indexVar, val, currentIdxSupport);
+                }
             }
+            vars[indexVar].removeInterval(left, right, this, false);
+        } finally {
+            itv.dispose();
         }
-        vars[indexVar].removeInterval(left, right, this, false);
     }
 
 

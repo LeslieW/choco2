@@ -28,6 +28,7 @@
 package choco.cp.solver.constraints.global;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBitSet;
@@ -262,9 +263,10 @@ public final class AmongGAC extends AbstractLargeIntSConstraint {
         int left, right;
         for (int i = both.nextSetBit(0); i >= 0; i = both.nextSetBit(i + 1)) {
             IntDomainVar v = vars[i];
-            int ub = v.getSup();
+            DisposableIntIterator it = v.getDomain().getIterator();
             left = right = Integer.MIN_VALUE;
-            for (int value = v.getInf(); value <= ub; value = v.getNextDomainValue(value)) {
+            while (it.hasNext()) {
+                int value = it.next();
                 if (!valuesAsList.contains(value)) {
                     if (value == right + 1) {
                         right = value;
@@ -276,6 +278,7 @@ public final class AmongGAC extends AbstractLargeIntSConstraint {
                 }
             }
             v.removeInterval(left, right, this, false);
+            it.dispose();
         }
     }
 

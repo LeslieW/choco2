@@ -957,8 +957,8 @@ public final class GeometricKernel {
         }
 
 
-        int x = o2.getShapeId().getSup();
-        int y = o1.getShapeId().getSup();
+        int x = o2.getShapeId().getDomain().getSup();
+        int y = o1.getShapeId().getDomain().getSup();
         return (stp.opt.memo_objects[o1.getObjectId()][o2.getObjectId()]) &&
                 included.get(new Pair<Integer, Integer>(x, y)) && old_c.lexGreaterThan(c, ctrlV);
     }

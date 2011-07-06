@@ -121,8 +121,8 @@ public class VarGraphView {
     /**
      * Constructor of the graph view
      *
-     * @param solver the Choco solver who uses the current tree constraint
-     * @param vars   the successor variables depicting the graph to partition
+     * @param solver    the Choco solver who uses the current tree constraint
+     * @param vars the successor variables depicting the graph to partition
      */
     public VarGraphView(Solver solver, IntDomainVar[] vars) {
         this.solver = solver;
@@ -166,17 +166,21 @@ public class VarGraphView {
                 int j = s[i].getVal();
                 sureGraph[i].set(j, true);
             } else {
-                int ubi = s[i].getSup();
-                for (int j = s[i].getInf(); j <= ubi; j = s[i].getNextDomainValue(j)) {
+                DisposableIntIterator it = s[i].getDomain().getIterator();
+                while (it.hasNext()) {
+                    int j = it.next();
                     maybeGraph[i].set(j, true);
                 }
+                it.dispose();
             }
         }
         for (int i = 0; i < nbNodes; i++) {
-            int ubi = s[i].getSup();
-            for (int j = s[i].getInf(); j <= ubi; j = s[i].getNextDomainValue(j)) {
+            DisposableIntIterator it = s[i].getDomain().getIterator();
+            while (it.hasNext()) {
+                int j = it.next();
                 globalGraph[i].set(j, true);
             }
+            it.dispose();
         }
     }
 
@@ -190,8 +194,8 @@ public class VarGraphView {
     /**
      * an arc (u,v) is removed from the graph
      *
-     * @param u index of a node
-     * @param v index of a node
+     * @param u     index of a node
+     * @param v     index of a node
      */
     public void updateOnRem(int u, int v) {
         maybe.remArc(u, v);
@@ -203,7 +207,7 @@ public class VarGraphView {
     /**
      * an arc (u,v) is fixed
      *
-     * @param u index of a node
+     * @param u     index of a node
      */
     public void updateOnInst(int u) {
         int v = s[u].getVal();
@@ -222,8 +226,8 @@ public class VarGraphView {
     /**
      * all the arc (u,v), such that v belongs to the set depicted by the iterator, are removed
      *
-     * @param u           index of a node
-     * @param deltaDomain an iterator over the removed indices
+     * @param u     index of a node
+     * @param deltaDomain   an iterator over the removed indices
      */
     public void updateOnRemovals(int u, DisposableIntIterator deltaDomain) {
         // supprimer tous les succ de u qui sont dans deltaDomain de maybe et global
@@ -241,7 +245,7 @@ public class VarGraphView {
     /**
      * remove all the successors of u with an index below to <code> s[u].getInf() </code>
      *
-     * @param u index of a node
+     * @param u     index of a node
      */
     public void updateOnInf(int u) {
         maybe.remAllLowerIdx(u, s[u].getInf());
@@ -253,7 +257,7 @@ public class VarGraphView {
     /**
      * remove all the successors of u with an index higher than <code> s[u].getSup() </code>
      *
-     * @param u index of a node
+     * @param u     index of a node
      */
     public void updateOnSup(int u) {
         maybe.remAllGreaterIdx(u, s[u].getSup());
@@ -266,7 +270,7 @@ public class VarGraphView {
      * remove all the successors of u with an index below to <code> s[u].getInf() </code> and
      * higher than <code> s[u].getSup() </code>
      *
-     * @param u index of a node
+     * @param u     index of a node
      */
     public void updateOnBounds(int u) {
         maybe.remAllIdx(u, s[u].getInf(), s[u].getSup());
@@ -276,16 +280,18 @@ public class VarGraphView {
     }
 
     /**
-     * @param u index of a node
-     * @return <code> true </true> iff an outgoing arc from node u is fixed
+     *
+     * @param u     index of a node
+     * @return  <code> true </true> iff an outgoing arc from node u is fixed
      */
     public boolean isFixedSucc(int u) {
         return sure.getSuccessors(u).cardinality() > 0;
     }
 
     /**
-     * @param u index of a node
-     * @return the index of the required successor of node u
+     *
+     * @param u     index of a node
+     * @return  the index of the required successor of node u
      */
     public int getFixedSucc(int u) {
         return sure.getSuccessors(u).nextSetBit(0);

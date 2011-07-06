@@ -27,6 +27,7 @@
 
 package choco.visu.brick;
 
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.visu.components.ColorConstant;
@@ -80,16 +81,17 @@ public class QueenBrick extends AChocoBrick{
             chopapplet.shape(pion, 0, 0);
             chopapplet.noFill();
         }else{
-            IntDomainVar ivar = (IntDomainVar)var;
-            int ub = ivar.getSup();
-            for (int vv = ivar.getInf(); vv <= ub; vv = ivar.getNextDomainValue(vv)) {
-                int val = name + ((vv-1)*8);
+            DisposableIntIterator it = ((IntDomainVar)var).getDomain().getIterator();
+            while(it.hasNext()){
+                int val = it.next();
+                val = name + ((val-1)*8);
                 pion = ((QueenBoardPApplet)chopapplet).card.getChild("pion"+val);
                 pion.disableStyle();
                 chopapplet.fill(ColorConstant.GRAY);
                 chopapplet.shape(pion, 0, 0);
                 chopapplet.noFill();
             }
+            it.dispose();
         }
     }
 }

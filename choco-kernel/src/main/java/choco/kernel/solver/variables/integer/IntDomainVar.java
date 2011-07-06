@@ -205,16 +205,6 @@ public interface IntDomainVar extends IntVar {
 	 * <b>Public user API:</b>
 	 * <i>Domains :</i> retrieves the value immediately (but strictly) after
 	 * <i>i</i> in the domain
-     *
-     * <p/>
-     * To iterate over the values in a <code>IntDomainVar</code>,
-     * use the following loop:
-     *
-     * <pre>
-     * int ub = ivar.getSup();
-     * for (int val = ivar.getInf(); val <= ub; val = ivar.getNextDomainValue(val)) {
-     *     // operate on value 'val' here
-     * }</pre>
 	 *
 	 * @param i the pivot value. May or may not be in the domain
 	 * @return the value immediatly after the domain
@@ -222,22 +212,11 @@ public interface IntDomainVar extends IntVar {
 
 	public int getNextDomainValue(int i);
 
-
 	/**
 	 * <b>Public user API:</b>
 	 * <i>Domains :</i> retrieves the value immediately (but strictly) before
 	 * <i>i</i> in the domain.
 	 *
-     * <p/>
-     * To iterate over the values in a <code>IntDomain</code>,
-     * use the following loop:
-     *
-     * <pre>
-     * int lb = ivar.getInf();
-     * for (int val = ivar.getSup(); val >= lb; val = ivar.getPrevDomainValue(val)) {
-     *     // operate on value 'val' here
-     * }</pre>
-     *
 	 * @param i the pivot value. May or may not be in the domain
 	 * @return the value immediatly before the domain
 	 */

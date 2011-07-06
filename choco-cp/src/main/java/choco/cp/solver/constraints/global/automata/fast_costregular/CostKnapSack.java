@@ -27,6 +27,7 @@
 
 package choco.cp.solver.constraints.global.automata.fast_costregular;
 
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.model.constraints.automaton.FA.IAutomaton;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
@@ -112,6 +113,7 @@ private static IntDomainVar[] merge(IntDomainVar[] vars, IntDomainVar bound, Int
 
 
         int i,j,k;
+        DisposableIntIterator varIter;
         TIntIterator layerIter;
         TIntIterator qijIter;
 
@@ -130,8 +132,10 @@ private static IntDomainVar[] merge(IntDomainVar[] vars, IntDomainVar bound, Int
 
         for (i = 0 ; i < n ; i++)
         {
-            int ub = vs[i].getSup();
-            for (j = vs[i].getInf(); j <= ub; j = vs[i].getNextDomainValue(j)) {
+            varIter = vs[i].getDomain().getIterator();
+            while(varIter.hasNext())
+            {
+                j = varIter.next();
                 layerIter = layer.get(i).iterator();//getIterator();
                 while(layerIter.hasNext())
                 {
@@ -152,6 +156,7 @@ private static IntDomainVar[] merge(IntDomainVar[] vars, IntDomainVar bound, Int
                     }
                 }
             }
+            varIter.dispose();
         }
 
         //removing reachable non accepting states
@@ -179,8 +184,10 @@ private static IntDomainVar[] merge(IntDomainVar[] vars, IntDomainVar bound, Int
         for (i = n -1 ; i >=0 ; i--)
         {
             mark.clear(0,nbNodes);
-            int ub = vs[i].getSup();
-            for (j = vs[i].getInf(); j <= ub; j = vs[i].getNextDomainValue(j)) {
+            varIter = vs[i].getDomain().getIterator();
+            while (varIter.hasNext())
+            {
+                j = varIter.next();
                 int idx = starts[i]+j-offsets[i];
                 TIntHashSet l = tmpQ[idx];
                 if (l!= null)
@@ -225,6 +232,7 @@ private static IntDomainVar[] merge(IntDomainVar[] vars, IntDomainVar bound, Int
                     }
                 }
             }
+            varIter.dispose();
             layerIter = layer.get(i).iterator();
 
             // If no more arcs go out of a given state in the layer, then we remove the state from that layer

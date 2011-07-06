@@ -27,6 +27,7 @@
 
 package choco.cp.solver.constraints.global;
 
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
@@ -67,12 +68,13 @@ public final class OrderedSparseArray {
         for (int i = 0; i < n; i++) {
             values[i] = new int[vars[i].getDomainSize()];
             nbVals[i] = vars[i].getDomainSize();
-            int ub = vars[i].getSup();
+            final DisposableIntIterator it = vars[i].getDomain().getIterator();
             int j = 0;
-            for (int val = vars[i].getInf(); val <= ub; val = vars[i].getNextDomainValue(val)) {
-                values[i][j] = val;
+            while (it.hasNext()) {
+                values[i][j] = it.next();
                 j++;
             }
+            it.dispose();
             infos[i] = new int[vars[i].getDomainSize()];
             for (j = 0; j < nbVals[i]; j++) {
                 infos[i][j] = def;

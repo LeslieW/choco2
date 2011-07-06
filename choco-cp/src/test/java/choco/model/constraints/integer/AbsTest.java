@@ -72,8 +72,8 @@ public class AbsTest {
         } catch (ContradictionException e) {
             e.printStackTrace();
         }
-        LOGGER.info(format("x {0}", s.getVar(x).pretty()));
-        LOGGER.info(format("y {0}", s.getVar(y).pretty()));
+        LOGGER.info(format("x {0}", s.getVar(x).getDomain().pretty()));
+        LOGGER.info(format("y {0}", s.getVar(y).getDomain().pretty()));
         LOGGER.info(format("{0}", !s.getVar(x).canBeInstantiatedTo(3)));
         assertTrue(!s.getVar(x).canBeInstantiatedTo(3));
         assertTrue(!s.getVar(y).canBeInstantiatedTo(0));
@@ -121,8 +121,8 @@ public class AbsTest {
         } catch (ContradictionException e) {
             e.printStackTrace();
         }
-        LOGGER.info(format("x {0}", s.getVar(x).pretty()));
-        LOGGER.info(format("y {0}", s.getVar(y).pretty()));
+        LOGGER.info(format("x {0}", s.getVar(x).getDomain().pretty()));
+        LOGGER.info(format("y {0}", s.getVar(y).getDomain().pretty()));
         LOGGER.info(format("{0}", !s.getVar(x).canBeInstantiatedTo(3)));
         assertTrue(!s.getVar(x).canBeInstantiatedTo(3));
         assertTrue(!s.getVar(y).canBeInstantiatedTo(0));
@@ -145,8 +145,8 @@ public class AbsTest {
         } catch (ContradictionException e) {
             e.printStackTrace();
         }
-        LOGGER.info(format("x {0}", s.getVar(x).pretty()));
-        LOGGER.info(format("y {0}", s.getVar(y).pretty()));
+        LOGGER.info(format("x {0}", s.getVar(x).getDomain().pretty()));
+        LOGGER.info(format("y {0}", s.getVar(y).getDomain().pretty()));
         LOGGER.info(format("{0}", !s.getVar(x).canBeInstantiatedTo(3)));
         assertTrue(!s.getVar(y).canBeInstantiatedTo(3));
         assertTrue(!s.getVar(y).canBeInstantiatedTo(-3));
@@ -172,8 +172,8 @@ public class AbsTest {
         } catch (ContradictionException e) {
             e.printStackTrace();
         }
-        LOGGER.info("x " + s.getVar(x).pretty());
-        LOGGER.info("y " + s.getVar(y).pretty());
+        LOGGER.info("x " + s.getVar(x).getDomain().pretty());
+        LOGGER.info("y " + s.getVar(y).getDomain().pretty());
         for (int i = 0; i < 6; i++) {
             assertTrue(!s.getVar(y).canBeInstantiatedTo(-i));
             assertTrue(!s.getVar(y).canBeInstantiatedTo(i));

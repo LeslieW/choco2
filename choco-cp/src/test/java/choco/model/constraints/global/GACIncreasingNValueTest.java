@@ -117,8 +117,9 @@ public class GACIncreasingNValueTest {
             if (test) {
                 for (int i = 0; i < nbVars + 1; i++) {
                     IntDomainVar dv = s.getVar(vars[i]);
-                    int ub = dv.getSup();
-                    for (int val = dv.getInf(); val <= ub; val = dv.getNextDomainValue(val)) {
+                    DisposableIntIterator it = dv.getDomain().getIterator();
+                    while (it.hasNext()) {
+                        int val = it.next();
                         Model mm = generateSpecificModel(i, val);
                         Solver ss = new CPSolver();
                         ss.read(mm);

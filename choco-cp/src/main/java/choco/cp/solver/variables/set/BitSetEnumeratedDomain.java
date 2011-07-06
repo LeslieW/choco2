@@ -45,95 +45,97 @@ import choco.kernel.solver.variables.set.SetVar;
  */
 public class BitSetEnumeratedDomain implements SetSubDomain {
 
-  /**
-   * The offset, that is the minimal value of the domain (stored at index 0).
-   * Thus the entry at index i corresponds to x=i+offset).
-   */
+    /**
+     * The offset, that is the minimal value of the domain (stored at index 0).
+     * Thus the entry at index i corresponds to x=i+offset).
+     */
 
-  protected final int offset;
+    protected final int offset;
 
-  /**
-   * Number of present values.
-   */
+    /**
+     * Number of present values.
+     */
 
-  protected IStateInt size;
+    protected IStateInt size;
 
 
-  /**
-   * A bit set indicating for each value whether it is present or not
-   */
+    /**
+     * A bit set indicating for each value whether it is present or not
+     */
 
-  protected IStateBitSet contents;
+    protected IStateBitSet contents;
 
-  /**
-   * the initial size of the domain (never increases)
-   */
-  private final int capacity;
+    /**
+     * the initial size of the domain (never increases)
+     */
+    private final int capacity;
 
     private final IDeltaDomain delatDom;
 
-  /**
-   * Constructs a new domain for the specified variable and bounds.
-   *
-   * @param v    The involved variable.
-   * @param a    Minimal value.
-   * @param b    Maximal value.
-   * @param full indicate if the initial bitSetDomain is full or empty (env or ker)
-   * @param environment
-   */
+    /**
+     * Constructs a new domain for the specified variable and bounds.
+     *
+     * @param v           The involved variable.
+     * @param a           Minimal value.
+     * @param b           Maximal value.
+     * @param full        indicate if the initial bitSetDomain is full or empty (env or ker)
+     * @param environment
+     */
 
-  public BitSetEnumeratedDomain(SetVar v, int a, int b, boolean full, IEnvironment environment) {
-      capacity = b - a + 1;           // number of entries
-    this.offset = a;
-    if (full)
-      size = environment.makeInt(capacity);
-    else
-      size = environment.makeInt(0);
-    contents = environment.makeBitSet(capacity);
-    if (full) {
-      for (int i = 0; i < capacity; i++)
-        contents.set(i);
-    }
+    public BitSetEnumeratedDomain(SetVar v, int a, int b, boolean full, IEnvironment environment) {
+        capacity = b - a + 1;           // number of entries
+        this.offset = a;
+        if (full)
+            size = environment.makeInt(capacity);
+        else
+            size = environment.makeInt(0);
+        contents = environment.makeBitSet(capacity);
+        if (full) {
+            for (int i = 0; i < capacity; i++)
+                contents.set(i);
+        }
         delatDom = new BitSetDeltaDomain(capacity, offset);
-  }
+    }
 
-  public BitSetEnumeratedDomain(SetVar v, int[] sortedValues, boolean full, IEnvironment environment) {
-      int a = sortedValues[0];
-      int b = sortedValues[sortedValues.length - 1];
-      capacity = b - a + 1;           // number of entries
-      this.offset = a;
-      if (full) {
-          size = environment.makeInt(sortedValues.length);
-      } else {
-          size = environment.makeInt(0);
-      }
-      contents = environment.makeBitSet(capacity);
-      if (full) {
-          // TODO : could be improved...
-          for (int sortedValue : sortedValues) {
-              contents.set(sortedValue - a);
-          }
-      }
-      delatDom = new BitSetDeltaDomain(capacity, offset);
-  }
+    public BitSetEnumeratedDomain(SetVar v, int[] sortedValues, boolean full, IEnvironment environment) {
+        int a = sortedValues[0];
+        int b = sortedValues[sortedValues.length - 1];
+        capacity = b - a + 1;           // number of entries
+        this.offset = a;
+        if (full) {
+            size = environment.makeInt(sortedValues.length);
+        } else {
+            size = environment.makeInt(0);
+        }
+        contents = environment.makeBitSet(capacity);
+        if (full) {
+            // TODO : could be improved...
+            for (int sortedValue : sortedValues) {
+                contents.set(sortedValue - a);
+            }
+        }
+        delatDom = new BitSetDeltaDomain(capacity, offset);
+    }
 
     /**
      * Specific constructor for set variable with empty domain
+     *
      * @param v
      * @param environment
      */
     private BitSetEnumeratedDomain(SetVar v, IEnvironment environment) {
         capacity = 0;           // number of entries
-      this.offset = 0;
-      size = environment.makeInt(0);
-      contents = environment.makeBitSet(capacity);
+        this.offset = 0;
+        size = environment.makeInt(0);
+        contents = environment.makeBitSet(capacity);
         delatDom = new BitSetDeltaDomain(capacity, offset);
-  }
+    }
 
 
     /**
      * Specific constructor for empty set variable
-     * @param v the set variable with no value
+     *
+     * @param v           the set variable with no value
      * @param environment
      * @return empty BitSetEnumeratedDomain
      */
@@ -142,190 +144,195 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
     }
 
 
-  /**
-   * Returns the minimal present value.
-   */
-  public int getFirstVal() {
-    if (size.get() > 0)
-      return contents.nextSetBit(0) + offset;
-    else
-      return -1;
-  }
-
-
-  /**
-   * Returns the maximal present value.
-   */
-
-  public int getLastVal() {
-    if (size.get() > 0)
-      return contents.prevSetBit(capacity - 1) + offset;
-    else
-      return -1;
-  }
-
-  /**
-   * Checks if the value is present.
-   *
-   * @param x The value to check.
-   */
-
-  public boolean contains(int x) {
-    int i = x - offset;
-    return (i >= 0 && i < capacity && contents.get(i));
-  }
-
-  /**
-   * Removes a value.
-   */
-
-  public boolean remove(int x) {
-    int i = x - offset;
-    if (contents.get(i)) {
-      removeIndex(i);
-      return true;
-    } else {
-      return false;
+    /**
+     * Returns the minimal present value.
+     */
+    public int getFirstVal() {
+        if (size.get() > 0)
+            return contents.nextSetBit(0) + offset;
+        else
+            return -1;
     }
-  }
-
-  private void removeIndex(int i) {
-    contents.clear(i);
-    delatDom.remove(i+offset);
-    if (contents.get(i))
-      LOGGER.severe("etrange etrange");
-    size.add(-1);
-  }
 
 
-  /**
-   * add a value.
-   * @param x value to add
-   * @return true wether the value has been added
-   */
+    /**
+     * Returns the maximal present value.
+     */
 
-  public boolean add(int x) {
-    int i = x - offset;
-    if (!contents.get(i)) {
-      addIndex(i);
-      return true;
-    } else {
-      return false;
+    public int getLastVal() {
+        if (size.get() > 0)
+            return contents.prevSetBit(capacity - 1) + offset;
+        else
+            return -1;
     }
-  }
 
-  private void addIndex(int i) {
-    contents.set(i);
-    delatDom.remove(i+offset);
-    if (!contents.get(i))
-      LOGGER.severe("etrange etrange");
-    size.add(1);
-  }
+    /**
+     * Checks if the value is present.
+     *
+     * @param x The value to check.
+     */
 
-  /**
-   * Returns the current size of the domain.
-   */
+    public boolean contains(int x) {
+        int i = x - offset;
+        return (i >= 0 && i < capacity && contents.get(i));
+    }
 
-  public int getSize() {
-    return size.get();
-  }
+    /**
+     * Removes a value.
+     */
+
+    public boolean remove(int x) {
+        int i = x - offset;
+        if (contents.get(i)) {
+            removeIndex(i);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void removeIndex(int i) {
+        contents.clear(i);
+        delatDom.remove(i + offset);
+        if (contents.get(i))
+            LOGGER.severe("etrange etrange");
+        size.add(-1);
+    }
 
 
-  /**
-   * Returns the value following <code>x</code>
-   * if non exist return -1
-   * @param x starting value
-   * @return value following x
-   */
+    /**
+     * add a value.
+     *
+     * @param x value to add
+     * @return true wether the value has been added
+     */
 
-  public int getNextValue(int x) {
-    int i = x - offset;
-    int val = contents.nextSetBit(i + 1);
+    public boolean add(int x) {
+        int i = x - offset;
+        if (!contents.get(i)) {
+            addIndex(i);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void addIndex(int i) {
+        contents.set(i);
+        delatDom.remove(i + offset);
+        if (!contents.get(i))
+            LOGGER.severe("etrange etrange");
+        size.add(1);
+    }
+
+    /**
+     * Returns the current size of the domain.
+     */
+
+    public int getSize() {
+        return size.get();
+    }
+
+
+    /**
+     * Returns the value following <code>x</code>
+     * if non exist return -1
+     *
+     * @param x starting value
+     * @return value following x
+     */
+
+    public int getNextValue(int x) {
+        int i = x - offset;
+        int val = contents.nextSetBit(i + 1);
     if (val > 0)
       return val + offset;
-    else
+        else
       return -1;
-  }
+    }
 
 
-  /**
-   * Returns the value preceding <code>x</code>
-   * if non exist return -1
-   * @param x starting value
-   * @return value preceding x
-   */
+    /**
+     * Returns the value preceding <code>x</code>
+     * if non exist return -1
+     *
+     * @param x starting value
+     * @return value preceding x
+     */
 
-  public int getPrevValue(int x) {
-    int i = x - offset;
+    public int getPrevValue(int x) {
+        int i = x - offset;
     int val = contents.prevSetBit(i - 1);
     if (val > 0)
       return val + offset;
     else
       return -1;
-  }
+    }
 
 
-  /**
-   * Checks if the value has a following value.
-   * @param x starting value
-   * @return true whether there is a following value
-   */
+    /**
+     * Checks if the value has a following value.
+     *
+     * @param x starting value
+     * @return true whether there is a following value
+     */
 
-  public boolean hasNextValue(int x) {
-    int i = x - offset;
-    return (contents.nextSetBit(i + 1) != -1);
-  }
+    public boolean hasNextValue(int x) {
+        int i = x - offset;
+        return (contents.nextSetBit(i + 1) != -1);
+    }
 
 
-  /**
-   * Checks if the value has a preceding value.
-   * @param x starting value
-   * @return true if there is a preceding value
-   */
+    /**
+     * Checks if the value has a preceding value.
+     *
+     * @param x starting value
+     * @return true if there is a preceding value
+     */
 
-  public boolean hasPrevValue(int x) {
-    int i = x - offset;
-    return (contents.prevSetBit(i - 1) != -1);
-  }
+    public boolean hasPrevValue(int x) {
+        int i = x - offset;
+        return (contents.prevSetBit(i - 1) != -1);
+    }
 
-  public DisposableIntIterator getDeltaIterator() {
-      return delatDom.iterator();
-      }
+    public DisposableIntIterator getDeltaIterator() {
+        return delatDom.iterator();
+    }
 
-      @Override
+    @Override
     public IDeltaDomain copyDelta() {
         return delatDom.copy();
-      }
-
-  /**
-   * The delta domain container is "frozen" (it can no longer accept new value removals)
-   * so that this set of values can be iterated as such
-   */
-  public void freezeDeltaDomain() {
-    delatDom.freeze();
     }
 
-  /**
-   * after an iteration over the delta domain, the delta domain is reopened again.
-   *
-   * @return true iff the delta domain is reopened empty (no updates have been made to the domain
-   *         while it was frozen, false iff the delta domain is reopened with pending value removals (updates
-   *         were made to the domain, while the delta domain was frozen).
-   */
-  public boolean releaseDeltaDomain() {
-    return delatDom.release();
+    /**
+     * The delta domain container is "frozen" (it can no longer accept new value removals)
+     * so that this set of values can be iterated as such
+     */
+    public void freezeDeltaDomain() {
+        delatDom.freeze();
     }
 
-  public boolean getReleasedDeltaDomain() {
-    return delatDom.isReleased();
-  }
+    /**
+     * after an iteration over the delta domain, the delta domain is reopened again.
+     *
+     * @return true iff the delta domain is reopened empty (no updates have been made to the domain
+     *         while it was frozen, false iff the delta domain is reopened with pending value removals (updates
+     *         were made to the domain, while the delta domain was frozen).
+     */
+    public boolean releaseDeltaDomain() {
+        return delatDom.release();
+    }
 
-  /**
-   * cleans the data structure implementing the delta domain
-   */
-  public void clearDeltaDomain() {
-    delatDom.clear();
-  }
+    public boolean getReleasedDeltaDomain() {
+        return delatDom.isReleased();
+    }
+
+    /**
+     * cleans the data structure implementing the delta domain
+     */
+    public void clearDeltaDomain() {
+        delatDom.clear();
+    }
 
     /**
      * pretty printing of the object. This String is not constant and may depend on the context.
@@ -338,13 +345,13 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
         int maxDisplay = 15;
         int count = 0;
         int val = getFirstVal();
-        if(val>-1){
-            do{
+        if (val > -1) {
+            do {
                 count++;
                 if (count > 1) buf.append(", ");
                 buf.append(val);
                 val = getNextValue(val);
-            }while(val>-1 && count < maxDisplay);
+            } while (val > -1 && count < maxDisplay);
         }
         if (this.getSize() > maxDisplay) {
             buf.append("..., ");

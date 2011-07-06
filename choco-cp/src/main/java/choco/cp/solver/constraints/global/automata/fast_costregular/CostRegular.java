@@ -58,7 +58,7 @@ import java.util.*;
  * Date: Feb 4, 2010
  * Time: 1:03:04 PM
  */
-public class CostRegular extends AbstractLargeIntSConstraint {
+public class CostRegular extends AbstractLargeIntSConstraint{
 
 
     IntDomainVar[] vs;
@@ -78,43 +78,50 @@ public class CostRegular extends AbstractLargeIntSConstraint {
     DirectedMultigraph<Node, Arc> originalGraph;
     Node source;
 
-    private CostRegular(IntDomainVar[] vars, Solver s) {
+    private CostRegular(IntDomainVar[] vars,Solver s)
+    {
         super(ConstraintEvent.CUBIC, vars);
         this.environment = s.getEnvironment();
         this.solver = s;
-        this.vs = new IntDomainVar[vars.length - 1];
+        this.vs = new IntDomainVar[vars.length-1];
         System.arraycopy(vars, 0, vs, 0, vs.length);
-        this.z = vars[vars.length - 1];
+        this.z = vars[vars.length-1];
         this.toRemove = new TIntStack();
         this.boundChange = environment.makeBool(false);
     }
 
-    public CostRegular(IntDomainVar[] vars, IAutomaton pi, int[][][] costs, Solver s) {
-        this(vars, s);
-        this.pi = CostAutomaton.makeSingleResource(pi, costs, this.z.getInf(), this.z.getSup());
+    public CostRegular(IntDomainVar[] vars, IAutomaton pi, int[][][] costs, Solver s)
+    {
+        this(vars,s);
+        this.pi = CostAutomaton.makeSingleResource(pi,costs,this.z.getInf(),this.z.getSup());
     }
 
-    public CostRegular(IntDomainVar[] vars, IAutomaton pi, int[][] costs, Solver s) {
-        this(vars, s);
-        this.pi = CostAutomaton.makeSingleResource(pi, costs, this.z.getInf(), this.z.getSup());
+    public CostRegular(IntDomainVar[] vars, IAutomaton pi, int[][] costs, Solver s)
+    {
+        this(vars,s);
+        this.pi = CostAutomaton.makeSingleResource(pi,costs,this.z.getInf(),this.z.getSup());
     }
 
-    public CostRegular(IntDomainVar[] vars, ICostAutomaton pi, Solver s) {
-        this(vars, s);
+    public CostRegular(IntDomainVar[] vars, ICostAutomaton pi, Solver s)
+    {
+        this(vars,s);
         this.pi = pi;
     }
 
 
-    public CostRegular(IntDomainVar[] vars, DirectedMultigraph<Node, Arc> graph, Node source, Solver s) {
-        this(vars, s);
 
-        this.originalGraph = graph;
+    public CostRegular(IntDomainVar[] vars, DirectedMultigraph<Node, Arc> graph, Node source, Solver s)
+    {
+        this(vars,s);
+
+        this.originalGraph =graph;
         this.source = source;
 
 
     }
 
-    public void initGraph(DirectedMultigraph<Node, Arc> graph, Node source) {
+    public void initGraph(DirectedMultigraph<Node,Arc> graph, Node source)
+    {
 
         int[] offsets = new int[vs.length];
         int[] sizes = new int[vs.length];
@@ -123,16 +130,18 @@ public class CostRegular extends AbstractLargeIntSConstraint {
         int totalSizes = 0;
 
         starts[0] = 0;
-        for (int i = 0; i < vs.length; i++) {
+        for (int i = 0 ; i < vs.length ; i++)
+        {
             offsets[i] = vs[i].getInf();
-            sizes[i] = vs[i].getSup() - vs[i].getInf() + 1;
-            if (i > 0) starts[i] = sizes[i - 1] + starts[i - 1];
+            sizes[i] = vs[i].getSup() - vs[i].getInf()+1;
+            if (i > 0) starts[i] = sizes[i-1] + starts[i-1];
             totalSizes += sizes[i];
         }
 
 
-        TIntArrayList[] layers = new TIntArrayList[vs.length + 1];
-        for (int i = 0; i < layers.length; i++) {
+        TIntArrayList[] layers = new TIntArrayList[vs.length+1];
+        for (int i = 0 ; i < layers.length ;i++)
+        {
             layers[i] = new TIntArrayList();
         }
         Queue<Node> queue = new ArrayDeque<Node>();
@@ -141,23 +150,27 @@ public class CostRegular extends AbstractLargeIntSConstraint {
 
         int nid = 0;
         int aid = 0;
-        while (!queue.isEmpty()) {
+        while(!queue.isEmpty())
+        {
             Node n = queue.remove();
-            n.id = nid++;
+            n.id  = nid++;
             layers[n.layer].add(n.id);
             Set<Arc> tmp = graph.outgoingEdgesOf(n);
-            for (Arc a : tmp) {
+            for (Arc a : tmp)
+            {
                 a.id = aid++;
                 Node next = graph.getEdgeTarget(a);
-                next.layer = n.layer + 1;
+                next.layer = n.layer+1;
                 queue.add(next);
             }
         }
         int[][] lays = new int[layers.length][];
-        for (int i = 0; i < lays.length; i++) {
+        for (int i = 0 ; i < lays.length ;i++)
+        {
             lays[i] = layers[i].toNativeArray();
         }
-        this.graph = new StoredValuedDirectedMultiGraph(solver.getEnvironment(), this, graph, lays, starts, offsets, totalSizes);
+        this.graph = new StoredValuedDirectedMultiGraph(solver.getEnvironment(), this,graph,lays,starts,offsets,totalSizes);
+
 
 
     }
@@ -175,12 +188,14 @@ public class CostRegular extends AbstractLargeIntSConstraint {
         int totalSizes = 0;
 
         starts[0] = 0;
-        for (int i = 0; i < vs.length; i++) {
+        for (int i = 0 ; i < vs.length ; i++)
+        {
             offsets[i] = vs[i].getInf();
-            sizes[i] = vs[i].getSup() - vs[i].getInf() + 1;
-            if (i > 0) starts[i] = sizes[i - 1] + starts[i - 1];
+            sizes[i] = vs[i].getSup() - vs[i].getInf()+1;
+            if (i > 0) starts[i] = sizes[i-1] + starts[i-1];
             totalSizes += sizes[i];
         }
+
 
 
         DirectedMultigraph<Node, Arc> graph;
@@ -188,11 +203,13 @@ public class CostRegular extends AbstractLargeIntSConstraint {
         int n = vs.length;
         graph = new DirectedMultigraph<Node, Arc>(new Arc.ArcFacroty());
         ArrayList<HashSet<Arc>> tmp = new ArrayList<HashSet<Arc>>(totalSizes);
-        for (int i = 0; i < totalSizes; i++)
+        for (int i = 0 ; i < totalSizes ;i++)
             tmp.add(new HashSet<Arc>());
 
 
-        int i, j, k;
+
+        int i,j,k;
+        DisposableIntIterator varIter;
         TIntIterator layerIter;
         TIntIterator qijIter;
 
@@ -200,7 +217,8 @@ public class CostRegular extends AbstractLargeIntSConstraint {
         TIntHashSet[] tmpQ = new TIntHashSet[totalSizes];
         // DLList[vars.length+1];
 
-        for (i = 0; i <= n; i++) {
+        for (i = 0 ; i <= n ; i++)
+        {
             layer.add(new TIntHashSet());// = new DLList(nbNodes);
         }
 
@@ -209,24 +227,28 @@ public class CostRegular extends AbstractLargeIntSConstraint {
         layer.get(0).add(pi.getInitialState());
 
         TIntHashSet succ = new TIntHashSet();
-        for (i = 0; i < n; i++) {
-            int ub = vs[i].getSup();
-            for (j = vs[i].getInf(); j <= ub; j = vs[i].getNextDomainValue(j)) {
-
+        for (i = 0 ; i < n ; i++)
+        {
+            varIter = vs[i].getDomain().getIterator();
+            while(varIter.hasNext())
+            {
+                j = varIter.next();
                 layerIter = layer.get(i).iterator();//getIterator();
-                while (layerIter.hasNext()) {
+                while(layerIter.hasNext())
+                {
                     k = layerIter.next();
                     succ.clear();
-                    pi.delta(k, j, succ);
-                    if (!succ.isEmpty()) {
+                    pi.delta(k,j,succ);
+                    if (!succ.isEmpty())
+                    {
                         TIntIterator it = succ.iterator();
-                        for (; it.hasNext(); )
-                            layer.get(i + 1).add(it.next());
+                        for (;it.hasNext();)
+                            layer.get(i+1).add(it.next());
                         //incrQ(i,j,);
 
-                        int idx = starts[i] + j - offsets[i];
+                        int idx = starts[i]+j-offsets[i];
                         if (tmpQ[idx] == null)
-                            tmpQ[idx] = new TIntHashSet();
+                            tmpQ[idx] =  new TIntHashSet();
 
                         tmpQ[idx].add(k);
 
@@ -234,14 +256,17 @@ public class CostRegular extends AbstractLargeIntSConstraint {
                     }
                 }
             }
+            varIter.dispose();
         }
 
         //removing reachable non accepting states
 
         layerIter = layer.get(n).iterator();
-        while (layerIter.hasNext()) {
+        while (layerIter.hasNext())
+        {
             k = layerIter.next();
-            if (!pi.isFinal(k)) {
+            if (!pi.isFinal(k))
+            {
                 layerIter.remove();
             }
 
@@ -252,46 +277,56 @@ public class CostRegular extends AbstractLargeIntSConstraint {
         int nbNodes = pi.getNbStates();
         BitSet mark = new BitSet(nbNodes);
 
-        Node[] in = new Node[pi.getNbStates() * (n + 1)];
-        Node tink = new Node(pi.getNbStates() + 1, n + 1, nid++);
+        Node[] in = new Node[pi.getNbStates()*(n+1)];
+        Node tink = new Node(pi.getNbStates()+1,n+1,nid++);
         graph.addVertex(tink);
 
-        for (i = n - 1; i >= 0; i--) {
-            mark.clear(0, nbNodes);
-            int ub = vs[i].getSup();
-            for (j = vs[i].getInf(); j <= ub; j = vs[i].getNextDomainValue(j)) {
-                int idx = starts[i] + j - offsets[i];
+        for (i = n -1 ; i >=0 ; i--)
+        {
+            mark.clear(0,nbNodes);
+            varIter = vs[i].getDomain().getIterator();
+            while (varIter.hasNext())
+            {
+                j = varIter.next();
+                int idx = starts[i]+j-offsets[i];
                 TIntHashSet l = tmpQ[idx];
-                if (l != null) {
+                if (l!= null)
+                {
                     qijIter = l.iterator();
-                    while (qijIter.hasNext()) {
+                    while (qijIter.hasNext())
+                    {
                         k = qijIter.next();
                         succ.clear();
-                        pi.delta(k, j, succ);
+                        pi.delta(k,j,succ);
                         TIntIterator it = succ.iterator();
                         boolean added = false;
-                        for (; it.hasNext(); ) {
+                        for(;it.hasNext();)
+                        {
                             int qn = it.next();
-                            if (layer.get(i + 1).contains(qn)) {
+                            if (layer.get(i+1).contains(qn))
+                            {
                                 added = true;
-                                Node a = in[i * pi.getNbStates() + k];
-                                if (a == null) {
-                                    a = new Node(k, i, nid++);
-                                    in[i * pi.getNbStates() + k] = a;
+                                Node a = in[i*pi.getNbStates()+k];
+                                if (a == null)
+                                {
+                                    a = new Node(k,i,nid++);
+                                    in[i*pi.getNbStates()+k] = a;
                                     graph.addVertex(a);
                                 }
 
 
-                                Node b = in[(i + 1) * pi.getNbStates() + qn];
-                                if (b == null) {
-                                    b = new Node(qn, i + 1, nid++);
-                                    in[(i + 1) * pi.getNbStates() + qn] = b;
+
+                                Node b = in[(i+1)*pi.getNbStates()+qn];
+                                if (b == null)
+                                {
+                                    b = new Node(qn,i+1,nid++);
+                                    in[(i+1)*pi.getNbStates()+qn] = b;
                                     graph.addVertex(b);
                                 }
 
 
-                                Arc arc = new Arc(a, b, j, aid++, pi.getCostByState(i, j, a.state));
-                                graph.addEdge(a, b, arc);
+                                Arc arc = new Arc(a,b,j,aid++,pi.getCostByState(i,j,a.state));
+                                graph.addEdge(a,b,arc);
                                 tmp.get(idx).add(arc);
 
                                 // addToOutarc(k,qn,j,i);
@@ -305,53 +340,61 @@ public class CostRegular extends AbstractLargeIntSConstraint {
                     }
                 }
             }
+            varIter.dispose();
             layerIter = layer.get(i).iterator();
 
             // If no more arcs go out of a given state in the layer, then we remove the state from that layer
             while (layerIter.hasNext())
-                if (!mark.get(layerIter.next()))
+                if(!mark.get(layerIter.next()))
                     layerIter.remove();
         }
 
         TIntHashSet th = new TIntHashSet();
-        int[][] intLayer = new int[n + 2][];
-        for (k = 0; k < pi.getNbStates(); k++) {
-            Node o = in[n * pi.getNbStates() + k];
+        int[][] intLayer = new int[n+2][];
+        for (k = 0 ; k < pi.getNbStates() ; k++)
+        {
+            Node o = in[n*pi.getNbStates()+k];
             {
-                if (o != null) {
-                    Arc a = new Arc(o, tink, 0, aid++, 0.0);
-                    graph.addEdge(o, tink, a);
+                if (o != null)
+                {
+                    Arc a = new Arc(o,tink,0,aid++,0.0);
+                    graph.addEdge(o,tink,a);
                 }
             }
         }
 
 
-        for (i = 0; i <= n; i++) {
+        for (i = 0 ; i <= n ; i++)
+        {
             th.clear();
-            for (k = 0; k < pi.getNbStates(); k++) {
-                Node o = in[i * pi.getNbStates() + k];
-                if (o != null) {
+            for (k = 0 ; k < pi.getNbStates() ; k++)
+            {
+                Node o = in[i*pi.getNbStates()+k];
+                if (o != null)
+                {
                     th.add(o.id);
                 }
             }
             intLayer[i] = th.toArray();
         }
-        intLayer[n + 1] = new int[]{tink.id};
+        intLayer[n+1] = new int[]{tink.id};
 
 
         if (intLayer[0].length > 0)
-            this.graph = new StoredValuedDirectedMultiGraph(solver.getEnvironment(), this, graph, intLayer, starts, offsets, totalSizes);
+            this.graph = new StoredValuedDirectedMultiGraph(solver.getEnvironment(), this,graph,intLayer,starts,offsets,totalSizes);
         else
             this.fail();
     }
 
 
-    public void awake() throws ContradictionException {
+
+    public void awake() throws ContradictionException
+    {
         checkBounds();
-        if (pi != null)
+        if (pi !=null)
             initGraph(pi);
         else if (originalGraph != null)
-            initGraph(originalGraph, source);
+            initGraph(originalGraph,source);
         this.prefilter();
         this.pi = null;
         this.originalGraph = null;
@@ -359,23 +402,25 @@ public class CostRegular extends AbstractLargeIntSConstraint {
 
     }
 
-    private void checkBounds() throws ContradictionException {
+private void checkBounds() throws ContradictionException
+{
         Bounds bounds = this.pi.getCounters().get(0).bounds();
-        z.updateInf(bounds.min.value, this, false);
-        z.updateSup(bounds.max.value, this, false);
-    }
+        z.updateInf(bounds.min.value,this,false);
+        z.updateSup(bounds.max.value,this,false);
+}
 
 
-    public void prefilter() throws ContradictionException {
+public void prefilter() throws ContradictionException {
         double zinf = this.graph.GNodes.spft.get(this.graph.sourceIndex);
         double zsup = this.graph.GNodes.lpfs.get(this.graph.tinkIndex);
 
-        z.updateInf((int) Math.ceil(zinf), this, false);
-        z.updateSup((int) Math.floor(zsup), this, false);
+        z.updateInf((int)Math.ceil(zinf), this, false);
+        z.updateSup((int)Math.floor(zsup), this, false);
 
         DisposableIntIterator it = this.graph.inGraph.getIterator();
         //for (int id = this.graph.inGraph.nextSetBit(0) ; id >=0 ; id = this.graph.inGraph.nextSetBit(id+1))  {
-        while (it.hasNext()) {
+        while(it.hasNext())
+        {
             int id = it.next();
             int orig = this.graph.GArcs.origs[id];
             int dest = this.graph.GArcs.dests[id];
@@ -389,7 +434,8 @@ public class CostRegular extends AbstractLargeIntSConstraint {
             double lpft = this.graph.GNodes.lpft.get(dest);
 
 
-            if ((spfs + spft + acost > z.getSup() || lpfs + lpft + acost < z.getInf()) && !this.graph.isInStack(id)) {
+            if ((spfs + spft + acost > z.getSup() || lpfs + lpft + acost < z.getInf()) && !this.graph.isInStack(id))
+            {
                 this.graph.setInStack(id);
                 this.toRemove.push(id);
             }
@@ -397,21 +443,28 @@ public class CostRegular extends AbstractLargeIntSConstraint {
 
         it.dispose();
 
-        try {
-            do {
-                while (toRemove.size() > 0) {
+        try
+        {
+            do
+            {
+                while (toRemove.size() > 0)
+                {
                     int id = toRemove.pop();
                     // toRemove.removeLast();
-                    this.graph.removeArc(id, toRemove);
+                    this.graph.removeArc(id,toRemove);
                 }
-                while (this.graph.toUpdateLeft.size() > 0) {
-                    this.graph.updateLeft(this.graph.toUpdateLeft.pop(), toRemove);
+                while (this.graph.toUpdateLeft.size() > 0)
+                {
+                    this.graph.updateLeft(this.graph.toUpdateLeft.pop(),toRemove);
                 }
-                while (this.graph.toUpdateRight.size() > 0) {
-                    this.graph.updateRight(this.graph.toUpdateRight.pop(), toRemove);
+                while(this.graph.toUpdateRight.size() > 0)
+                {
+                    this.graph.updateRight(this.graph.toUpdateRight.pop(),toRemove);
                 }
             } while (toRemove.size() > 0);
-        } catch (ContradictionException e) {
+        }
+        catch (ContradictionException e)
+        {
             toRemove.reset();
             this.graph.inStack.clear();
             this.graph.toUpdateLeft.reset();
@@ -419,6 +472,10 @@ public class CostRegular extends AbstractLargeIntSConstraint {
 
             throw e;
         }
+
+
+
+
 
 
         /*for (int i  = 0 ; i < vs.length ; i++)
@@ -435,13 +492,15 @@ public class CostRegular extends AbstractLargeIntSConstraint {
 
     }
 
-    protected void checkWorld() {
+    protected void checkWorld()
+    {
         int currentworld = environment.getWorldIndex();
         int currentbt = solver.getBackTrackCount();
         int currentrestart = solver.getRestartCount();
         //System.err.println("TIME STAMP : "+currentbt+"   BT COUNT : "+solver.getBackTrackCount());
-        // assert (currentbt == solver.getBackTrackCount());
-        if (currentworld < lastWorld || currentbt != lastNbOfBacktracks || currentrestart > lastNbOfRestarts) {
+       // assert (currentbt == solver.getBackTrackCount());
+        if (currentworld < lastWorld || currentbt != lastNbOfBacktracks || currentrestart > lastNbOfRestarts)
+        {
             this.toRemove.reset();
             this.graph.inStack.clear();
             this.graph.toUpdateLeft.reset();
@@ -456,14 +515,18 @@ public class CostRegular extends AbstractLargeIntSConstraint {
     public void awakeOnRemovals(int idx, DisposableIntIterator it2) throws ContradictionException {
         checkWorld();
         boolean mod = false;
-        while (it2.hasNext()) {
+        while (it2.hasNext())
+        {
             int val = it2.next();
-            StoredIndexedBipartiteSet sup = graph.getSupport(idx, val);
-            if (sup != null) {
-                DisposableIntIterator it = sup.getIterator();
-                while (it.hasNext()) {
-                    int arcId = it.next();
-                    if (!graph.isInStack(arcId)) {
+            StoredIndexedBipartiteSet sup = graph.getSupport(idx,val);
+            if (sup != null)
+            {
+                DisposableIntIterator it=  sup.getIterator();
+                while (it.hasNext())
+                {
+                    int arcId  = it.next();
+                    if (!graph.isInStack(arcId))
+                    {
                         graph.setInStack(arcId);
                         toRemove.push(arcId);
                         mod = true;
@@ -496,14 +559,12 @@ public class CostRegular extends AbstractLargeIntSConstraint {
     }
 
 
-    public void awakeOnInst(int idx) {
+    public void awakeOnInst(int idx){
         System.err.println("CALLED INST");
     }
-
-    public void awakeOnBounds(int idx) {
+    public void awakeOnBounds(int idx){
         System.err.println("CALLED BOUNDS");
     }
-
     public void awakeOnRem(int idx, int val) {
         System.err.println("CALLED REM");
     }
@@ -512,11 +573,13 @@ public class CostRegular extends AbstractLargeIntSConstraint {
     @Override
     public void propagate() throws ContradictionException {
 
-        if (boundChange.get()) {
+        if (boundChange.get())
+        {
             boundChange.set(false);
             DisposableIntIterator it = this.graph.inGraph.getIterator();
             //for (int id = this.graph.inGraph.nextSetBit(0) ; id >=0 ; id = this.graph.inGraph.nextSetBit(id+1))  {
-            while (it.hasNext()) {
+            while(it.hasNext())
+            {
                 int id = it.next();
                 int orig = this.graph.GArcs.origs[id];
                 int dest = this.graph.GArcs.dests[id];
@@ -529,7 +592,8 @@ public class CostRegular extends AbstractLargeIntSConstraint {
                 double spft = this.graph.GNodes.spft.get(dest);
 
 
-                if ((lpfs + lpft + acost < z.getInf() || spfs + spft + acost > z.getSup()) && !this.graph.isInStack(id)) {
+                if ((lpfs + lpft + acost < z.getInf() || spfs + spft + acost > z.getSup()) && !this.graph.isInStack(id))
+                {
                     this.graph.setInStack(id);
                     this.toRemove.push(id);
                 }
@@ -538,17 +602,21 @@ public class CostRegular extends AbstractLargeIntSConstraint {
 
         }
 
-        do {
-            while (toRemove.size() > 0) {
+        do
+        {
+            while (toRemove.size() > 0)
+            {
                 int id = toRemove.pop();
                 // toRemove.removeLast();
-                this.graph.removeArc(id, toRemove);
+                this.graph.removeArc(id,toRemove);
             }
-            while (this.graph.toUpdateLeft.size() > 0) {
-                this.graph.updateLeft(this.graph.toUpdateLeft.pop(), toRemove);
+            while (this.graph.toUpdateLeft.size() > 0)
+            {
+                this.graph.updateLeft(this.graph.toUpdateLeft.pop(),toRemove);
             }
-            while (this.graph.toUpdateRight.size() > 0) {
-                this.graph.updateRight(this.graph.toUpdateRight.pop(), toRemove);
+            while(this.graph.toUpdateRight.size() > 0)
+            {
+                this.graph.updateRight(this.graph.toUpdateRight.pop(),toRemove);
             }
         } while (toRemove.size() > 0);
 
@@ -556,8 +624,9 @@ public class CostRegular extends AbstractLargeIntSConstraint {
         double zinf = this.graph.GNodes.spft.get(this.graph.sourceIndex);
         double zsup = this.graph.GNodes.lpfs.get(this.graph.tinkIndex);
 
-        z.updateInf((int) Math.ceil(zinf), this, false);
-        z.updateSup((int) Math.floor(zsup), this, false);
+        z.updateInf((int)Math.ceil(zinf), this, false);
+        z.updateSup((int)Math.floor(zsup), this, false);
+
 
 
     }
@@ -567,28 +636,32 @@ public class CostRegular extends AbstractLargeIntSConstraint {
     }
 
 
-    public boolean isSatisfied(int[] tuple) {
+    public boolean isSatisfied(int[] tuple)
+    {
 
         int first = this.graph.sourceIndex;
         boolean found;
         double cost = 0.0;
-        for (int i = 0; i < tuple.length - 1; i++) {
+        for (int i = 0 ; i< tuple.length -1 ; i ++)
+        {
             found = false;
             StoredIndexedBipartiteSet bs = this.graph.GNodes.outArcs[first];
             DisposableIntIterator it = bs.getIterator();
-            while (!found && it.hasNext()) {
+            while(!found && it.hasNext())
+            {
                 int idx = it.next();
-                if (this.graph.GArcs.values[idx] == tuple[i]) {
+                if (this.graph.GArcs.values[idx] == tuple[i])
+                {
                     found = true;
                     first = this.graph.GArcs.dests[idx];
-                    cost += this.graph.GArcs.costs[idx];
+                    cost+= this.graph.GArcs.costs[idx];
                 }
             }
             if (!found)
                 return false;
 
         }
-        int intCost = tuple[tuple.length - 1];
+        int intCost = tuple[tuple.length-1];
         return cost == intCost;
 
     }

@@ -28,6 +28,7 @@
 package choco.cp.solver.constraints.integer;
 
 
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
@@ -133,21 +134,25 @@ because we are in a pure removeValue environnement */
     public Boolean isEntailed() {
         if (this.v1.isInstantiated()) {
             boolean b = true;
-            int ub0 = v0.getSup();
-            for (int val = v0.getInf(); val <= ub0; val = v0.getNextDomainValue(val)) {
+            final DisposableIntIterator iter = this.v0.getDomain().getIterator();
+            for (; iter.hasNext();) {
+                final int val = iter.next();
                 b &= (val) >= 0;
                 b &= (val) < this.lval.length;
                 b &= this.lval[val] == this.v1.getVal();
             }
+            iter.dispose();
             if (b) return Boolean.TRUE;
         } else {
             boolean b = false;
-            int ub0 = v0.getSup();
-            for (int val = v0.getInf(); val <= ub0 && !b; val = v0.getNextDomainValue(val)) {
+            final DisposableIntIterator iter = this.v0.getDomain().getIterator();
+            while (iter.hasNext() && !b) {
+                final int val = iter.next();
                 b = (val) >= 0;
                 b &= (val) < this.lval.length;
                 b &= this.v1.canBeInstantiatedTo(this.lval[val]);
             }
+            iter.dispose();
             if (b) return null;
         }
         return Boolean.FALSE;
@@ -235,23 +240,29 @@ because we are in a pure removeValue environnement */
 
         /* Update Index via Var = cas 0-1-1 :
           v in Tableau, i in Index but v not in Var => remove I from Index */
+        final DisposableIntIterator iter = this.v0.getDomain().getIterator();
         int left = Integer.MIN_VALUE;
         int right = left;
-        int ub0 = v0.getSup();
-        for (int index = v0.getInf(); index <= ub0; index = v0.getNextDomainValue(index)) {
-            // bug "index - 1 > 0" change to "index - 1 >= 0"  [EBo 6/4/8]
-            if ((index - 1 < this.lval.length) && (index - 1 >= 0) && (!this.v1.canBeInstantiatedTo(this.lval[index - 1]))) {
-                if (index == right + 1) {
-                    right = index;
-                } else {
-                    v0.removeInterval(left, right, this, false);
-                    left = index;
-                    right = index;
-                }
+        try {
+            for (; iter.hasNext();) {
+                final int index = iter.next();
+                // bug "index - 1 > 0" change to "index - 1 >= 0"  [EBo 6/4/8]
+                if ((index - 1 < this.lval.length) && (index - 1 >= 0) && (!this.v1.canBeInstantiatedTo(this.lval[index - 1]))) {
+                    if (index == right + 1) {
+                        right = index;
+                    } else {
+                        v0.removeInterval(left, right, this, false);
+                        left = index;
+                        right = index;
+                    }
 //                    this.v0.removeVal(index, this, false);
+                }
             }
+            v0.removeInterval(left, right, this, false);
+        } finally {
+            iter.dispose();
         }
-        v0.removeInterval(left, right, this, false);
+
         /* update Var via Index = cas 1-0-1 :
           v in Tableau, i not in Index => remove v from Var si occur = 1 sinon update FirstPos */
         left = right = Integer.MIN_VALUE;
@@ -369,28 +380,32 @@ because we are in a pure removeValue environnement */
         if ((v1.getDomainSize() == this.domainSize[1].get())) {
             // already test in a previous awake !
         } else {
+            final DisposableIntIterator iter = this.v0.getDomain().getIterator();
             int left = Integer.MIN_VALUE;
             int right = left;
-            int ub0 = v0.getSup();
-            for (int index = v0.getInf(); index <= ub0; index = v0.getNextDomainValue(index)) {
-
+            try {
+                for (; iter.hasNext();) {
+                    final int index = iter.next();
 //		      if ((index - 1 < this.lval.length) && (index - 1 > 0) && (this.lval[index-1] == v)) {				  
-                if ((index - 1 < this.lval.length) && (index - 1 >= 0) && (this.lval[index - 1] == v)) {
-                    if (this.v0.canBeInstantiatedTo(index)) {
-                        if (index == right + 1) {
-                            right = index;
-                        } else {
-                            v0.removeInterval(left, right, this, false);
-                            left = index;
-                            right = index;
-                        }
+                    if ((index - 1 < this.lval.length) && (index - 1 >= 0) && (this.lval[index - 1] == v)) {
+                        if (this.v0.canBeInstantiatedTo(index)) {
+                            if (index == right + 1) {
+                                right = index;
+                            } else {
+                                v0.removeInterval(left, right, this, false);
+                                left = index;
+                                right = index;
+                            }
 //                            this.v0.removeVal(index, this, false);
 //                            this.domainSize[0].set(v0.getDomainSize());
+                        }
                     }
                 }
+                v0.removeInterval(left, right, this, false);
+                this.domainSize[0].set(v0.getDomainSize());
+            } finally {
+                iter.dispose();
             }
-            v0.removeInterval(left, right, this, false);
-            this.domainSize[0].set(v0.getDomainSize());
         }
     }
 }

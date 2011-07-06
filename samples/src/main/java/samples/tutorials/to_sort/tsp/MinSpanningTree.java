@@ -111,8 +111,9 @@ public class MinSpanningTree extends AbstractLargeIntSConstraint {
             if (!s[i].isInstantiated()) {
                 int ci = Integer.MAX_VALUE;
                 int j = -1;
-                int ub = s[i].getSup();
-                for (int tmp = s[i].getInf(); tmp <= ub; tmp = s[i].getNextDomainValue(tmp)) {
+                DisposableIntIterator it = s[i].getDomain().getIterator();
+                while (it.hasNext()) {
+                    int tmp = it.next();
                     if (ci > dist[i][tmp].get()) {
                         boolean cycle = false;
                         for (Set<Integer> set : classes) {
@@ -124,6 +125,7 @@ public class MinSpanningTree extends AbstractLargeIntSConstraint {
                         }
                     }
                 }
+                it.dispose();
                 if (j > -1) {
                     cost += ci;
                     //LOGGER.info(showSet(classes));

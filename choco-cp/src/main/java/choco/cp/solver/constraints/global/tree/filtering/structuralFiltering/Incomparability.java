@@ -29,9 +29,10 @@ package choco.cp.solver.constraints.global.tree.filtering.structuralFiltering;
 
 
 import choco.cp.solver.constraints.global.tree.filtering.AbstractPropagator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateBitSet;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.kernel.solver.variables.integer.IntDomain;
 
 import java.util.BitSet;
 
@@ -66,24 +67,27 @@ public class Incomparability extends AbstractPropagator {
 
     /**
      * <p> two filtering rules are applied for the incomparability constraints: </p>
-     * <p/>
+     *
      * <blockquote> 1- remove infeasible potential roots when the number of trees is fixed to 1. </blockquote>
      * <blockquote> 2- for each potential arc (u,v) in the graph, if there exists a node u_d in the mandatory
      * descendants of u and a node a_v in the mandatory ancestors of v such that u_d and a_v are incomparable then,
      * the arc (u,v) is infeasible according to the interaction between precedence and incomparability constraints.
-     * </blockquote>
-     *
+     * </blockquote> 
      * @throws choco.kernel.solver.ContradictionException
-     *
      */
     public void filter() throws ContradictionException {
         filterAccordingToNtree();
         for (int u = 0; u < nbVertices; u++) {
             if (!nodes[u].getSuccessors().isInstantiated()) {
-                IntDomainVar _succ = nodes[u].getSuccessors();
-                int ub = _succ.getSup();
-                for (int v = _succ.getInf(); v <= ub; v = _succ.getNextDomainValue(v)) {
+                IntDomain dom = nodes[u].getSuccessors().getDomain();
+                DisposableIntIterator iter = dom.getIterator();
+                try{
+                while (iter.hasNext()) {
+                    int v = iter.next();
                     if (u != v) filteringAccordingToPrecsAndIncs(u, v);
+                }
+                }finally {
+                    iter.dispose();
                 }
             }
         }
@@ -116,13 +120,13 @@ public class Incomparability extends AbstractPropagator {
     private void filteringAccordingToPrecsAndIncs(int u, int v) {
         int[] arc = {u, v};
         BitSet A_u = precs.getAncestors(u);
-        A_u.set(u, true);
+        A_u.set(u,true);
         BitSet D_v = precs.getDescendants(v);
-        D_v.set(v, true);
+        D_v.set(v,true);
         BitSet A_v = precs.getAncestors(v);
-        A_v.set(v, true);
+        A_v.set(v,true);
         BitSet Dr_u = precs.getDescendants(u);
-        Dr_u.set(u, false);
+        Dr_u.set(u,false);
         for (int v_a = A_v.nextSetBit(0); v_a >= 0; v_a = A_v.nextSetBit(v_a + 1)) {
             for (int u_d = Dr_u.nextSetBit(0); u_d >= 0; u_d = Dr_u.nextSetBit(u_d + 1)) {
                 if (v_a < u_d && nodes[v_a].getIncomparableNodes().get(u_d)) {

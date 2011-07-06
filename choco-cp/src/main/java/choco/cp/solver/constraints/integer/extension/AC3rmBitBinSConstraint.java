@@ -72,18 +72,22 @@ public final class AC3rmBitBinSConstraint extends CspBinSConstraint {
         int[] initS1 = new int[v1.getSup() - v1.getInf() + 1];
         minS0 = Integer.MAX_VALUE;
         minS1 = Integer.MAX_VALUE;
-        int ub0 = v0.getSup();
-        for (int val0 = v0.getInf(); val0 <= ub0; val0 = v0.getNextDomainValue(val0)) {
+        DisposableIntIterator itv0 = v0.getDomain().getIterator();
+        while (itv0.hasNext()) {
+            int val0 = itv0.next();
             int initS0 = 0;
-            int ub1 = v1.getSup();
-            for (int val1 = v1.getInf(); val1 <= ub1; val1 = v1.getNextDomainValue(val1)) {
+            DisposableIntIterator itv1 = v1.getDomain().getIterator();
+            while (itv1.hasNext()) {
+                int val1 = itv1.next();
                 if (relation.isConsistent(val0, val1)) {
                     initS0++;
                     initS1[val1 - offset1]++;
                 }
             }
             if (initS0 < minS0) minS0 = initS0;
+            itv1.dispose();
         }
+        itv0.dispose();
         for (int i = 0; i < initS1.length; i++) {
             if (initS1[i] < minS1) minS1 = initS1[i];
         }
@@ -99,45 +103,55 @@ public final class AC3rmBitBinSConstraint extends CspBinSConstraint {
 
     // updates the support for all values in the domain of v1, and remove unsupported values for v1
     public void reviseV1() throws ContradictionException {
-        int v0Size = v0.getDomainSize();
+        int v0Size = v0Domain.getSize();
         if (minS1 <= (initDomSize0 - v0Size)) {
             int left = Integer.MIN_VALUE;
             int right = left;
-            int ub1 = v1.getSup();
-            for (int y = v1.getInf(); y <= ub1; y = v1.getNextDomainValue(y)) {
-                if (!((CouplesBitSetTable) relation).checkValue(1, y, v0Domain)) {
-                    if (y == right + 1) {
-                        right = y;
-                    } else {
-                        v1.removeInterval(left, right, this, false);
-                        left = right = y;
-                    }
+            DisposableIntIterator itv1 = v1Domain.getIterator();
+            try {
+                while (itv1.hasNext()) {
+                    int y = itv1.next();
+                    if (!((CouplesBitSetTable) relation).checkValue(1, y, v0Domain)) {
+                        if (y == right + 1) {
+                            right = y;
+                        } else {
+                            v1.removeInterval(left, right, this, false);
+                            left = right = y;
+                        }
 //                        v1.removeVal(y, this, false);
+                    }
                 }
+                v1.removeInterval(left, right, this, false);
+            } finally {
+                itv1.dispose();
             }
-            v1.removeInterval(left, right, this, false);
         }
     }
 
     // updates the support for all values in the domain of v0, and remove unsupported values for v0
     public void reviseV0() throws ContradictionException {
-        int v1Size = v1.getDomainSize();
+        int v1Size = v1Domain.getSize();
         if (minS0 <= (initDomSize1 - v1Size)) {
             int left = Integer.MIN_VALUE;
             int right = left;
-            int ub0 = v0.getSup();
-            for (int x = v0.getInf(); x <= ub0; x = v0.getNextDomainValue(x)) {
-                if (!((CouplesBitSetTable) relation).checkValue(0, x, v1Domain)) {
-                    if (x == right + 1) {
-                        right = x;
-                    } else {
-                        v0.removeInterval(left, right, this, false);
-                        left = right = x;
-                    }
+            DisposableIntIterator itv0 = v0Domain.getIterator();
+            try {
+                while (itv0.hasNext()) {
+                    int x = itv0.next();
+                    if (!((CouplesBitSetTable) relation).checkValue(0, x, v1Domain)) {
+                        if (x == right + 1) {
+                            right = x;
+                        } else {
+                            v0.removeInterval(left, right, this, false);
+                            left = right = x;
+                        }
 //                        v0.removeVal(x, this, false);
+                    }
                 }
+                v0.removeInterval(left, right, this, false);
+            } finally {
+                itv0.dispose();
             }
-            v0.removeInterval(left, right, this, false);
         }
     }
 
@@ -156,33 +170,43 @@ public final class AC3rmBitBinSConstraint extends CspBinSConstraint {
         init();
         int left = Integer.MIN_VALUE;
         int right = left;
-        int ub0 = v0.getSup();
-        for (int val0 = v0.getInf(); val0 <= ub0; val0 = v0.getNextDomainValue(val0)) {
-            if (!((CouplesBitSetTable) relation).checkValue(0, val0, v1Domain)) {
-                if (val0 == right + 1) {
-                    right = val0;
-                } else {
-                    v0.removeInterval(left, right, this, false);
-                    left = right = val0;
-                }
+        DisposableIntIterator itv0 = v0Domain.getIterator();
+        try {
+            while (itv0.hasNext()) {
+                int val0 = itv0.next();
+                if (!((CouplesBitSetTable) relation).checkValue(0, val0, v1Domain)) {
+                    if (val0 == right + 1) {
+                        right = val0;
+                    } else {
+                        v0.removeInterval(left, right, this, false);
+                        left = right = val0;
+                    }
 //                    v0.removeVal(val0, this, false);
-            }
-        }
-        v0.removeInterval(left, right, this, false);
-        left = right = Integer.MIN_VALUE;
-        int ub1 = v1.getSup();
-        for (int val1 = v1.getInf(); val1 <= ub1; val1 = v1.getNextDomainValue(val1)) {
-            if (!((CouplesBitSetTable) relation).checkValue(1, val1, v0Domain)) {
-                if (val1 == right + 1) {
-                    right = val1;
-                } else {
-                    v1.removeInterval(left, right, this, false);
-                    left = right = val1;
                 }
-//                    v1.removeVal(val1, this, false);
             }
+            v0.removeInterval(left, right, this, false);
+        } finally {
+            itv0.dispose();
         }
-        v1.removeInterval(left, right, this, false);
+        itv0 = v1Domain.getIterator();
+        left = right = Integer.MIN_VALUE;
+        try {
+            while (itv0.hasNext()) {
+                int val1 = itv0.next();
+                if (!((CouplesBitSetTable) relation).checkValue(1, val1, v0Domain)) {
+                    if (val1 == right + 1) {
+                        right = val1;
+                    } else {
+                        v1.removeInterval(left, right, this, false);
+                        left = right = val1;
+                    }
+//                    v1.removeVal(val1, this, false);
+                }
+            }
+            v1.removeInterval(left, right, this, false);
+        } finally {
+            itv0.dispose();
+        }
     }
 
     public void propagate() throws ContradictionException {
@@ -222,36 +246,46 @@ public final class AC3rmBitBinSConstraint extends CspBinSConstraint {
             int value = v0.getVal();
             int left = Integer.MIN_VALUE;
             int right = left;
-            int ub1 = v1.getSup();
-            for (int val = v1.getInf(); val <= ub1; val = v1.getNextDomainValue(val)) {
-                if (!relation.isConsistent(value, val)) {
-                    if (val == right + 1) {
-                        right = val;
-                    } else {
-                        v1.removeInterval(left, right, this, false);
-                        left = right = val;
-                    }
+            DisposableIntIterator itv1 = v1Domain.getIterator();
+            try {
+                while (itv1.hasNext()) {
+                    int val = itv1.next();
+                    if (!relation.isConsistent(value, val)) {
+                        if (val == right + 1) {
+                            right = val;
+                        } else {
+                            v1.removeInterval(left, right, this, false);
+                            left = right = val;
+                        }
 //						v1.removeVal(val, this, false);
+                    }
                 }
+                v1.removeInterval(left, right, this, false);
+            } finally {
+                itv1.dispose();
             }
-            v1.removeInterval(left, right, this, false);
         } else {
             int value = v1.getVal();
             int left = Integer.MIN_VALUE;
             int right = left;
-            int ub0 = v0.getSup();
-            for (int val = v0.getInf(); val <= ub0; val = v0.getNextDomainValue(val)) {
-                if (!relation.isConsistent(val, value)) {
-                    if (val == right + 1) {
-                        right = val;
-                    } else {
-                        v0.removeInterval(left, right, this, false);
-                        left = right = val;
-                    }
+            DisposableIntIterator itv0 = v0Domain.getIterator();
+            try {
+                while (itv0.hasNext()) {
+                    int val = itv0.next();
+                    if (!relation.isConsistent(val, value)) {
+                        if (val == right + 1) {
+                            right = val;
+                        } else {
+                            v0.removeInterval(left, right, this, false);
+                            left = right = val;
+                        }
 //                        v0.removeVal(val, this, false);
+                    }
                 }
+                v0.removeInterval(left, right, this, false);
+            } finally {
+                itv0.dispose();
             }
-            v0.removeInterval(left, right, this, false);
         }
     }
 

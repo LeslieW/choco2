@@ -29,6 +29,7 @@
 package choco.cp.solver.constraints.integer;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
@@ -44,6 +45,8 @@ public final class EqualXY_C extends AbstractBinIntSConstraint {
      * The search constant of the constraint
      */
     protected final int cste;
+
+    private DisposableIntIterator reuseIter;
 
     /**
      * Constructs the constraint with the specified variables and constant.
@@ -102,22 +105,30 @@ public final class EqualXY_C extends AbstractBinIntSConstraint {
         updateInfV1();
         updateSupV1();
         // ensure that, in case of enumerated domains, holes are also propagated
+        reuseIter = v0.getDomain().getIterator();
+        int val;
         if (v1.hasEnumeratedDomain() && v0.hasEnumeratedDomain()) {
-            int ub0 = v0.getSup();
-            for (int val = v0.getInf(); val <= ub0; val = v0.getNextDomainValue(val)) {
-
-                if (!v1.canBeInstantiatedTo(cste - val)) {
-                    v0.removeVal(val, this, false);
+            try {
+                while (reuseIter.hasNext()) {
+                    val = reuseIter.next();
+                    if (!v1.canBeInstantiatedTo(cste - val)) {
+                        v0.removeVal(val, this, false);
+                    }
                 }
+            } finally {
+                reuseIter.dispose();
             }
-
-            int ub1 = v1.getSup();
-            for (int val = v1.getInf(); val <= ub1; val = v1.getNextDomainValue(val)) {
-                if (!v0.canBeInstantiatedTo(cste - val)) {
-                    v1.removeVal(val, this, false);
+            reuseIter = v1.getDomain().getIterator();
+            try {
+                while (reuseIter.hasNext()) {
+                    val = reuseIter.next();
+                    if (!v0.canBeInstantiatedTo(cste - val)) {
+                        v1.removeVal(val, this, false);
+                    }
                 }
+            } finally {
+                reuseIter.dispose();
             }
-
         }
     }
 

@@ -28,37 +28,41 @@
 package choco.cp.solver.search.integer.valselector;
 
 import choco.cp.solver.constraints.global.pack.PackSConstraint;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
  * @author Arnaud Malapert</br>
- * @version 2.0.1</br>
  * @since 7 déc. 2008 version 2.0.1</br>
+ * @version 2.0.1</br>
  */
 public class BestFit implements ValSelector<IntDomainVar> {
 
-    public final PackSConstraint pack;
+	public final PackSConstraint pack;
 
-    public BestFit(PackSConstraint cstr) {
-        super();
-        this.pack = cstr;
-    }
+	public BestFit(PackSConstraint cstr) {
+		super();
+		this.pack = cstr;
+	}
 
-    @Override
-    public int getBestVal(IntDomainVar x) {
-        int ub = x.getSup();
-        int bin = x.getInf();
-        int max = pack.getRemainingSpace(bin);
-        for (int b = x.getNextDomainValue(bin); b <= ub; b = x.getNextDomainValue(b)) {
-            final int space = pack.getRemainingSpace(b);
-            if (space < max) {
-                max = space;
-                bin = b;
-            }
-        }
-        return bin;
-    }
+	@Override
+	public int getBestVal(IntDomainVar x) {
+		final DisposableIntIterator iter=x.getDomain().getIterator();
+		int bin= iter.next();
+		int max=pack.getRemainingSpace(bin);
+		while(iter.hasNext()) {
+			final int  b =iter.next();
+			final int space=pack.getRemainingSpace(b);
+			if(space<max) {
+				max =space;
+				bin = b;
+			}
+		}
+        iter.dispose();
+		return bin;
+	}
+
 
 
 }
