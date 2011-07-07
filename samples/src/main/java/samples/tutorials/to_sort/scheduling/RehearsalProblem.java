@@ -41,7 +41,6 @@ import org.kohsuke.args4j.Option;
 import samples.tutorials.PatternExample;
 
 
-// TODO : a little bit long...
 public class RehearsalProblem extends PatternExample {
 
     public int[] CSPLIB_DURATIONS = {2, 4, 1, 3, 3, 2, 5, 7, 6};
@@ -133,6 +132,7 @@ public class RehearsalProblem extends PatternExample {
     public void buildSolver() {
         CPSolver s = new CPSolver();
         s.read(model);
+        // TODO - Add search strategies - created 5 juil. 2011 by Arnaud Malapert
         solver = s;
     }
 

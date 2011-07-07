@@ -394,6 +394,7 @@ public class PackTest {
 		final CPModel m = new CPModel();
 		final Constraint pc = Choco.pack(packM
 				,Options.C_PACK_AR, Options.C_PACK_DLB, Options.C_PACK_FB);
+				//,Options.C_PACK_AR, Options.C_PACK_FB);
 		m.addConstraint(pc);
 		final CPSolver s = new CPSolver();
 		s.read(m);

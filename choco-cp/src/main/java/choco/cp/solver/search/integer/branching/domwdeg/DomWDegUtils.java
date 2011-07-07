@@ -165,7 +165,6 @@ public class DomWDegUtils {
 		final int nbF = getConstraintExtension(c).get();
 		final int n = c.getNbVars();
 		for (int k = 0; k < n; k++) {
-            //TODO: remove is useless, but at least, tests run right.
 			if(getVarExtension(c.getVarQuick(k)) == null){
                 addVariableExtension(c.getVarQuick(k));
             }

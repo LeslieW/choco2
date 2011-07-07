@@ -41,7 +41,6 @@ import java.util.List;
 import org.junit.Test;
 
 import choco.cp.solver.search.task.ProbabilisticProfile;
-import choco.kernel.common.VisuFactory;
 import choco.kernel.solver.constraints.global.scheduling.FakeResource;
 import choco.kernel.solver.constraints.global.scheduling.ICumulativeResource;
 import choco.kernel.solver.constraints.global.scheduling.IResource;
@@ -49,6 +48,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.AbstractTask;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.ITask;
+import choco.kernel.visu.VisuFactory;
 
 ///////////////////// REMOVE class (import problem with cp.test) ///////////////////
 
@@ -163,7 +163,7 @@ public class TestProbProfile {
 
 	private void display() {
 		if(DISPLAY) {
-			VisuFactory.createAndShowGnuplotGUI(new String(profile.draw()));
+			VisuFactory.getGnuplotManager().show( profile.draw().toString());
 		}
 	}
 

@@ -96,10 +96,6 @@ public abstract class AbstractUseResourcesSConstraint extends AbstractTaskSConst
 			if(rtasks[i].isOptional()) {
 				final int lctI= rtasks[i].getHTask().getLCT(); 
 				if(lctI > maxLctI) maxLctI = lctI;
-				//if( lctI < taskvars[TASK_IDX].getLCT()) {
-					//TODO optimize comparison
-				//	if(lctI > maxLctI) maxLctI = lctI;
-				//}else return; //no update
 			}
 		}
 		if(maxLctI > Choco.MIN_LOWER_BOUND && maxLctI < taskvars[TASK_IDX].getLCT()) {
@@ -130,10 +126,6 @@ public abstract class AbstractUseResourcesSConstraint extends AbstractTaskSConst
 				final int estI= rtasks[i].getHTask().getEST(); 
 				if(estI < minEstI) 
 					minEstI = estI;
-				//if( estI > taskvars[TASK_IDX].getEST()) {
-					//TODO optimize comparison
-				//	if(estI < minEstI) minEstI = estI;
-				//}else return; //no update
 			}
 		}
 		if(minEstI < Choco.MAX_UPPER_BOUND && minEstI > taskvars[TASK_IDX].getEST()) {

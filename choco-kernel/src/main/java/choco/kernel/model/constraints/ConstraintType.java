@@ -127,7 +127,7 @@ public enum ConstraintType {
     TIMES("times", "constraint.times", false),
     TREE("tree", "constraint.tree", false),
     TRUE("true", "constraint.true", false),
-    // USE_RESOURCES("useResources", "constraint.useResources", false),
+    //USE_RESOURCES("useResources", "constraint.useResources", false),
     XNOR("xnor", "constraint.xnor", true),
     XOR("xor", "constraint.xor", true),;
 

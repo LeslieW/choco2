@@ -116,7 +116,7 @@ public class UseResourcesManager extends ConstraintManager<Variable> {
 	@Override
 	public SConstraint[] makeConstraintAndOpposite(Solver solver,
 			Variable[] variables, Object parameters, List<String> options) {
-		//TODO should simply return the opposite bool sum
+		// TODO - should return the opposite sum - created 4 juil. 2011 by Arnaud Malapert
 		return null;
 	}
 

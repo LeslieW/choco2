@@ -32,12 +32,11 @@ import choco.cp.solver.constraints.global.scheduling.trees.DisjTreeTL;
 import choco.cp.solver.constraints.global.scheduling.trees.IThetaLambdaTree;
 import choco.cp.solver.constraints.global.scheduling.trees.IThetaTree;
 import choco.cp.solver.constraints.global.scheduling.trees.IVilimTree.TreeMode;
-import choco.kernel.common.VisuFactory;
-import static choco.kernel.common.VisuFactory.toDotty;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.opres.graph.IBinaryNode;
 import choco.kernel.common.opres.graph.INodeLabel;
 import choco.kernel.common.opres.graph.ProperBinaryTree;
+import choco.kernel.visu.VisuFactory;
 import static junit.framework.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -167,7 +166,7 @@ public class TestTrees {
 //		toDotty(tree);
 		DisjTreeTL tree2 = new DisjTreeTL(l);
 		tree2.setMode(TreeMode.ECT);
-		toDotty(tree2);
+		VisuFactory.getDotManager().show(tree2);
 	}
 
 	

@@ -47,6 +47,7 @@ import java.util.logging.Level;
  * @version 2.1.1</br>
  */
 public class HsqldbServerCmd extends AbstractCmdLine {
+	// TODO - Simplify command line (only compress/uncompress) - created 5 juil. 2011 by Arnaud Malapert
 
 	@Option(name="-d",aliases={"--dir"},usage="compress/uncompress to/from the given directory",required=true)
 	protected File dbDir;	

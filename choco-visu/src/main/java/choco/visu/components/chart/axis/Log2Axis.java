@@ -44,7 +44,6 @@ public class Log2Axis extends LogAxis {
 		this.setLowerBound(1);
 		this.setLowerMargin(0);
 		setTickLabelsVisible(true);
-		//FIXME this.setMinorTickMarksVisible(true);
 		setAutoRange(true);
 		setAutoTickUnitSelection(true);
 		

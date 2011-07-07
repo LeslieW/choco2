@@ -217,7 +217,6 @@ public class NoSumList {
 					sb+=k2.getVal();
 					INoSumCell k3=k2;
 					for (int i = 0; i <= cpt; i++) {
-						//FIXME a mon avis y a un bug en perspective ici
 						k3= candidatesList.getPrevious(k3);
 					}
 					sb-=k3.getVal();

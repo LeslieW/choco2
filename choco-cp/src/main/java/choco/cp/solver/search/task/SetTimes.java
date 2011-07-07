@@ -119,7 +119,6 @@ public class SetTimes extends AbstractLargeIntBranchingStrategy {
 	/** select a task. */
 	protected final TaskVarSelector selector;
 
-	//FIXME  change constructor signature
 	public SetTimes(final Solver solver, final List<TaskVar> tasks, final Comparator<ITask> comparator, final boolean randomized) {
 		this(solver, tasks, randomized ? new RandomizedTaskSelector(comparator) : new TaskSelector(comparator));
 	}

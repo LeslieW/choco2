@@ -62,7 +62,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 	protected AltDisjTreeTLTO altDisjTreeTLTO;
 	////*****************************/////
 
-	//FIXME should try to avoid insertions/deletions in trees when the rules are off
+	// FIXME - avoid useless insertions/deletions in trees (trigger according to rules) - created 4 juil. 2011 by Arnaud Malapert
 	public AltDisjRules(final IRTask[] rtasks, IRMakespan makespan, IEnvironment environment) {
 		super(rtasks, makespan, true);
 		size = environment.makeIntProcedure(this, rtasks.length);

@@ -83,7 +83,6 @@ public final class RestartFactory {
 		conf.putFalse(RESTART_AFTER_SOLUTION);
 		conf.putFalse(RESTART_LUBY);
 		conf.putFalse(RESTART_GEOMETRICAL);
-		//FIXME set automatically the default value
 		conf.remove(NOGOOD_RECORDING_FROM_RESTART);
 		conf.remove(RESTART_BASE);
 		conf.remove(RESTART_LUBY_GROW);

@@ -45,12 +45,12 @@ import java.util.logging.Logger;
 
 public final class PdfExport {
 
-
-    protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
+	public final static Logger LOGGER = ChocoLogging.getMainLogger();
 
 	private PdfExport() {
 		super();
 	}
+	
 	
 	public static void saveChartAsPDF(File file,
 			JFreeChart chart,

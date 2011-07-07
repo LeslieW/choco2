@@ -25,15 +25,17 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package choco.kernel.common;
+package choco.kernel.visu;
 
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import choco.kernel.common.IDotty;
 import choco.kernel.common.logging.ChocoLogging;
 
 
@@ -46,100 +48,16 @@ public final class VisuFactory {
 	 */
 	private VisuFactory() {}
 	
-	//*****************************************************************//
-	//*******************  Dotty  ************************************//
-	//***************************************************************//
-
-	public static File toDotty(final String source) {
-		return toDotty(new IDotty() {
-			@Override
-			public String toDotty() {
-				return source;
-			}
-		}
-		);
-	}
-
-	public static File toDotty(final IDotty... sources) {
-		final File f = createTempFile("dotty", ".dot");
-		toDotty(f,sources);
-		return f;
-	}
-
-	public static void toDotty(final File f, final IDotty... sources) {
-		if(f != null && sources!=null && sources.length>0) {
-			try {
-				final FileWriter fw=new FileWriter(f);
-				fw.write("digraph g {\n\n");
-				for (IDotty s : sources) {
-					fw.write(s.toDotty());
-					fw.write('\n');
-				}
-				fw.write("\n}");
-				fw.close();
-				LOGGER.log(Level.CONFIG, "dotty...[dotExport:{0}][OK]",f);
-				return;
-			} catch (IOException e) {}
-		}
-		LOGGER.log(Level.WARNING, "dotty...[dotExport:{0}][FAIL]",f);
+	
+	public static IVisuManager getGnuplotManager() {
+		return GnuplotManager.getInstance();
 	}
 	
-	public static void createAndShowGUI( final IDotty... sources) {
-		createAndShowDottyGUI( toDotty(sources));
-	}
-	public static void createAndShowDottyGUI(File f) {
-		launchCommand("dotty "+f.getAbsolutePath(), false); 
+	public static IVisuManager getDotManager() {
+		return DotManager.getInstance();
 	}
 	
-	
-	
-	//*****************************************************************//
-	//*******************  Gnuplot ***********************************//
-	//***************************************************************//
-	
-	private static void writeGnuplot(final File f, final String content) {
-		if(f != null && content!=null && ! content.isEmpty()) {
-			try {
-				final FileWriter fw=new FileWriter(f);
-				fw.write(content);
-				fw.close();
-				LOGGER.log(Level.CONFIG, "gnuplot...[gplExport:{0}][OK]",f);
-				return;
-			} catch (IOException e) {}
-		}
-		LOGGER.log(Level.WARNING, "gnuplot...[gplExport:{0}][FAIL]",f);
-	}
-	
-	public static void createAndShowGnuplotGUI(final String curve) {
-		final File dat=createTempFile("gnuplot", ".dat");
-		writeGnuplot(dat, curve);
-		final File script= new File(dat.getAbsolutePath()+".gpl");
-		writeGnuplot(script, "plot "+dat.getAbsolutePath()+" with lines");
-		createAndShowGnuplotGUI(script);
-	}
-	
-	
-	public static void createAndShowGnuplotGUI(File script) {
-		launchCommand("gnuplot --persist "+script.getAbsolutePath(), false); 
-	}
-	
-	//****************************************************************//
-	//********* Utils*******************************************//
-	//****************************************************************//
-
-
-
-	public static File createTempFile(final String name, final String suffix) {
-		File f=null;
-		try {
-			f= File.createTempFile(name+"_",suffix);
-		} catch (IOException e) {
-			LOGGER.log(Level.WARNING,"tempFile...[create][FAIL]",e);
-		}
-		return f;
-	}
-
-	public static void launchCommand(final String cmd, final boolean waitFor) {
+	public static void launchCommand(final boolean waitFor, final String... cmd) {
 		// Win 95/98/ : pour lancer un .bat
 		// cmd = "command.com /c c:\\fichier.bat";
 
@@ -172,12 +90,119 @@ public final class VisuFactory {
 				p.waitFor();//si l'application doit attendre a ce que ce process fini
 			}
 		}catch(Exception e) {
-			LOGGER.log(Level.SEVERE, "exec...["+cmd+"][FAIL]", e);
+			LOGGER.log(Level.SEVERE, "exec...["+Arrays.toString(cmd)+"][FAIL]", e);
 		}
 	}
 
 }
 
 
+class DotManager extends AbstractVisuManager {
+
+	/** 
+	 * The shared instance. 
+	 */ 
+	private final static DotManager SINGLOTON = new DotManager(); 
+	/** 
+	 * Private constructor. 
+	 */ 
+	private DotManager() { 
+		super(); 
+	} 
+	/** 
+	 * Returns this shared instance. 
+	 * 
+	 * @returns The shared instance 
+	 */ 
+	public final static DotManager getInstance() { 
+		return SINGLOTON;
+	}
+	
+	
+	@Override
+	protected String getFileExtension() {
+		return "dot";
+	}
+
+	@Override
+	protected boolean doExport(File file, Object chart, int width, int height)
+	throws IOException {
+		if (chart instanceof IDotty) {
+			IDotty source = (IDotty) chart;
+			final FileWriter fw=new FileWriter(file);
+			fw.write("digraph g {\n\n");
+			fw.write(source.toDotty());
+			fw.write("\n}");
+			fw.close();
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	protected boolean doShow(Object chart, int width, int height) {
+		File file = export(null, null, chart, width, height);
+		if(file != null) {
+			VisuFactory.launchCommand(false, "dotty", file.getAbsolutePath());
+			return true;
+		} else return false;
+	}
+
+
+}
+
+
+class GnuplotManager extends AbstractVisuManager {
+
+	/** 
+	 * The shared instance. 
+	 */
+	private final static GnuplotManager SINGLOTON = new GnuplotManager();
+
+	/** 
+	 * Private constructor. 
+	 */
+	private GnuplotManager() {
+		super();
+	}
+
+	/** 
+	 * Returns this shared instance. 
+	 * 
+	 * @returns The shared instance 
+	 */
+	public final static GnuplotManager getInstance() {
+		return SINGLOTON;
+	}
+
+	@Override
+	protected String getFileExtension() {
+		return "gpl";
+	}
+
+	@Override
+	protected boolean doExport(File file, Object chart, int width, int height)
+	throws IOException {
+		if (chart instanceof String) {
+			String source = (String) chart;
+			final FileWriter fw=new FileWriter(file);
+			fw.write(source);
+			fw.close();
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	protected boolean doShow(Object chart, int width, int height) {
+		File file = export(null, null, chart, width, height);
+		if(file != null) {
+			VisuFactory.launchCommand(false, "/bin/sh", "-c", "echo \"plot \'"+file.getAbsolutePath()+"\' with linespoints\" | gnuplot -persist");
+			return true;
+		} else return false;
+	}
+}
 
 

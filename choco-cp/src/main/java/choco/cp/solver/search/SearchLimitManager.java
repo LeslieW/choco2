@@ -28,6 +28,7 @@
 package choco.cp.solver.search;
 
 
+import choco.kernel.common.TimeCacheThread;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
@@ -181,7 +182,6 @@ public class SearchLimitManager implements GlobalSearchLimitManager {
 			restartCutoff = restartStrategy.getNextCutoff(restartFromStrategyCount);
 			restartStrategyLimit.setNbMax( restartStrategyLimit.getNb() + restartCutoff);
 			//perform restart
-			//TODO set a flag to indicate if we are recording nogoods
 			searchStrategy.solver.getPropagationEngine().raiseContradiction(searchLimit, RESTART);
 		}
 	}

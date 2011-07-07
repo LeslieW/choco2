@@ -110,7 +110,7 @@ public class TestUseResource {
 		final Constraint useRsc = ChocoContrib.useResources(JobA, k, resources);
 		solver.addConstraint(useRsc);
 		solver.propagate();
-		//FIXME no propagation of task events
+		// FIXME - No propagation of task events - created 4 juil. 2011 by Arnaud Malapert
 		( (AbstractSConstraint) solver.getCstr(useRsc) ).propagate();
 	}
 	@Test

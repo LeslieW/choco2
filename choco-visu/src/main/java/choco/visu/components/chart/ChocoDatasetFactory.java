@@ -46,8 +46,7 @@ import org.jfree.data.xy.XYSeries;
 
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.pack.PackSConstraint;
-import choco.kernel.common.util.tools.ArrayUtils;
-import choco.kernel.common.util.tools.IteratorUtils;
+import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintType;
 import choco.kernel.model.constraints.pack.PackModel;
@@ -171,13 +170,13 @@ public final class ChocoDatasetFactory {
 		return datasets;
 	}
 
-	public static CategoryDataset createPackDataset(int nbBins, IntDomainVar[] bins,IntDomainVar[] sizes) {
+	public static CategoryDataset createPackDataset(int nbBins, IntDomainVar[] bins,int[] sizes) {
 		DefaultCategoryDataset   dataset =   new   DefaultCategoryDataset();
 		int[] series = new int[nbBins];
 		for (int i = 0; i < bins.length; i++) {
 			if(bins[i].isInstantiated()) {
 				int b = bins[i].getVal();
-				dataset.addValue(sizes[i].getVal(),   "Series "+series[b],   "B"+b);	
+				dataset.addValue(sizes[i],   "Series "+series[b],   "B"+b);	
 				series[b]++;
 			}
 		}
@@ -185,7 +184,10 @@ public final class ChocoDatasetFactory {
 	}
 
 	public static CategoryDataset createPackDataset(Solver s,PackModel modeler) {
-		return createPackDataset(modeler.getNbBins(), s.getVar(modeler.getBins()), s.getVar(modeler.getSizes()));
+		return createPackDataset(modeler.getNbBins()
+				, s.getVar(modeler.getBins())
+				, VariableUtils.getConstantValues(s.getVar(modeler.getSizes()))
+		);
 	}
 
 	//*****************************************************************//
@@ -212,8 +214,6 @@ public final class ChocoDatasetFactory {
 			final Solution sol = sols.get(i);
 			dataset.addValue(sol.getObjectiveValue(), series, Integer.valueOf(limit.getValue(sol.getMeasures())));
 		}
-
-
 		return dataset;
 	}
 
@@ -227,20 +227,6 @@ public final class ChocoDatasetFactory {
 	//		return dataset;
 	//	}
 
-
-	//*****************************************************************//
-	//*******************  Linear function (YInterval) ***************//
-	//***************************************************************//
-
-	//	public static YIntervalSeries createFunctionDataset(String keys, IPiecewiseLinearFunction<StatEvent> function) {
-	//		YIntervalSeries series = new YIntervalSeries(keys);
-	//		for (StatEvent evt : function.getFunction()) {
-	//			final double m = evt.getContribution();
-	//			final double std = evt.getContribStat().getStandardDeviation();
-	//			series.add(evt.getCoordinate()+1, m, m-std, m+std);
-	//		}
-	//		return series;
-	//	}
 
 }
 

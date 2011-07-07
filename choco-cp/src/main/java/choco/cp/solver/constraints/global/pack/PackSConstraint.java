@@ -33,6 +33,7 @@ import choco.kernel.common.util.bitmask.BitMask;
 import choco.kernel.common.util.bitmask.StringMask;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.ArrayUtils;
+import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateIntVector;
 import choco.kernel.solver.ContradictionException;
@@ -74,7 +75,7 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 	private IStateIntVector availableBins;
 
 	/** The sizes of the items. */
-	protected final IntDomainVar[] sizes;
+	protected final int[] sizes;
 
 	/** The loads of the bins. */
 	protected final IntDomainVar[] loads;
@@ -82,17 +83,20 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 	/** The bin of each item. */
 	protected final IntDomainVar[] bins;
 
+// TODO - provide d-dimensional constraint - Arnaud Malapert - 4 juil. 2011	
+
+	
 	public PackSConstraint(IEnvironment environment, SetVar[] itemSets, IntDomainVar[] loads, IntDomainVar[] sizes,
 			IntDomainVar[] bins, IntDomainVar nbNonEmpty) {
 		super(ArrayUtils.append(loads,sizes,bins,new IntDomainVar[]{nbNonEmpty}),itemSets);
 		this.loads=loads;
-		this.sizes=sizes;
+		this.sizes=VariableUtils.getConstantValues(sizes);
 		this.bins =bins;
 		this.bounds = new BoundNumberOfBins();
 		filtering = new PackFiltering(this,flags);
 		availableBins = environment.makeBipartiteIntList(ArrayUtils.zeroToN(getNbBins()));
 		reuseStatus = new NoSumList(this.sizes);
-		//Pas de MaskgetFilteredEventMask(idx)
+		// FIXME - Pas de Mask : getFilteredEventMask(idx) - Arnaud Malapert - 4 juil. 2011
 	}
 
 	public void readOptions(final List<String> options) {
@@ -103,7 +107,7 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 		return svars[bin].getKernelDomainSize()==0;
 	}
 
-
+	
 	@Override
 	public void fireAvailableBins() {
 		final DisposableIntIterator iter = availableBins.getIterator();
@@ -126,7 +130,7 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 		final DisposableIntIterator iter= svars[bin].getDomain().getKernelIterator();
 		int load = 0;
 		while(iter.hasNext()) {
-			load+= sizes[iter.next()].getVal();
+			load+= sizes[iter.next()];
 		}
 		iter.dispose();
 		return load;
@@ -180,7 +184,7 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 
 
 	@Override
-	public final IntDomainVar[] getSizes() {
+	public final int[] getSizes() {
 		return sizes;
 	}
 
@@ -195,19 +199,16 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 	public final boolean pack(int item, int bin) throws ContradictionException {
 		boolean res = svars[bin].addToKernel(item, this, false);
 		if(bins[item].canBeInstantiatedTo(bin)) {
-			final DisposableIntIterator iter = bins[item].getDomain().getIterator();
-			//remove from other env
-			try{
-				while(iter.hasNext()) {
-					final int b= iter.next();
-					if(bin!=b) {
-						res |= svars[b].remFromEnveloppe(item, this, false);
-					}
-				}
-			}finally {
-				iter.dispose();
-			}
-			res |= bins[item].instantiate(bin, this, false);
+			// FIXME - Charles, is these two loops all right ? - created 7 juil. 2011 by Arnaud Malapert
+            final int ub = bins[item].getSup();
+            for (int b = bins[item].getInf(); b < bin; b = bins[item].getNextDomainValue(b)) {
+            	res |= svars[b].remFromEnveloppe(item, this, false);
+            }
+            for (int b = bins[item].getNextDomainValue(bin); b <= ub; b = bins[item].getNextDomainValue(b)) {
+            	res |= svars[b].remFromEnveloppe(item, this, false);
+            }
+            // FIXME - need only to check the last assignment (lazy) ?  - created 6 juil. 2011 by Arnaud Malapert
+            res |= bins[item].instantiate(bin, this, false);
 		}else {
 			this.fail();
 		}
@@ -234,6 +235,7 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 
 	@Override
 	public final boolean updateNbNonEmpty(int min, int max) throws ContradictionException {
+		// TODO - Try to empty sets faster - Arnaud Malapert - 4 juil. 2011
 		boolean res = false;
 		final int idx = ivars.length-1;
 		//LOGGER.info(min+ " "+max + " -> "+ivars[idx].pretty());
@@ -242,6 +244,7 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 		if( ivars[idx].updateSup(max, this, false)
 				&& flags.contains(PackSConstraint.LAST_BINS_EMPTY)) {
 			for (int b = max; b < oldSup; b++) {
+				
 				final DisposableIntIterator iter = svars[b].getDomain().getEnveloppeIterator();
 				try{
 					while(iter.hasNext()) {
@@ -455,10 +458,11 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 	public void propagate() throws ContradictionException {
 		do {
 			filtering.propagate();
-			//feasibility test (DDFF)
+			//feasibility test (MDFF)
 			if ( ! bounds.computeBounds(flags.contains(PackSConstraint.DYNAMIC_LB)) ) {
 				fail();
 			}
+			// FIXME - is this loop useful (after MDFF) ? - Arnaud Malapert - 4 juil. 2011
 		}while( updateNbNonEmpty(bounds.getMinimumNumberOfBins(), bounds.getMaximumNumberOfBins()));
 
 
@@ -471,7 +475,7 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 		for (int i = 0; i < bins.length; i++) {
 			final int b =  bins[i].getVal();
 			if( ! svars[b].isInDomainKernel(i)) return false; //check channeling
-			l[b] += sizes[i].getVal();
+			l[b] += sizes[i];
 			c[b] ++;
 		}
 		int nbb = 0;
@@ -491,9 +495,9 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 				int l = t.length - 1;
 				b.append('[');
 				for (int i = 0; i < l; i++) {
-					b.append(sizes[t[i]].getVal()).append(", ");
+					b.append(sizes[t[i]]).append(", ");
 				}
-				b.append(sizes[t[l]].getVal()).append("] ");
+				b.append(sizes[t[l]]).append("] ");
 			}
 		}
 		return b.toString();
@@ -566,12 +570,12 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 		private void handleItems() {
 			final int n = getNbItems();
 			for (int i = 0; i < n; i++) {
-				final int size = sizes[i].getVal();
+				final int size = sizes[i];
 				if(bins[i].isInstantiated()) {
-					remainingSpace[bins[i].getVal()] -= size;
+					remainingSpace[bins[i].getVal()] -= sizes[i];
 				}else {
-					totalSizeCLB += size;
-					itemsMLB.add(size);
+					totalSizeCLB += sizes[i];
+					itemsMLB.add(sizes[i]);
 				}
 			}
 			sizeIMLB = itemsMLB.size();
@@ -625,10 +629,10 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 
 		/**
 		 *
-		 * @param useDDFF do we use advanced and costly bounding procedure for a feaasibility test.
+		 * @param useMDFF do we use advanced and costly bounding procedure for a feaasibility test.
 		 * @return <code>false</code>  if the current state is infeasible.
 		 */
-		public boolean computeBounds(boolean useDDFF) {
+		public boolean computeBounds(boolean useMDFF) {
 			reset();
 			//the order of the following calls is important
 			handleItems();
@@ -643,17 +647,9 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 					computeMinimumNumberOfNewBins();
 				}
 				if( getMinimumNumberOfBins() > ivars[ivars.length - 1].getSup()) return false; //the continous bound prove infeasibility
-				if( useDDFF) {
+				if( useMDFF) {
 					createFakeItems();
-					return LowerBoundFactory.consistencyTestLDFF(itemsMLB, capacityMLB, binsMLB.size());
-					//					int[] items = getItems();
-					//					final int ub=new BestFit1BP(items,capacityMLB,AbstractHeurisic1BP.SORT).computeUB();
-					//					if( ub > binsMLB.size()) {
-					//						//the heuristics solution is infeasible
-					//						//so, the lower bound could also be infeasible
-					//						final int lb = LowerBoundFactory.computeL_DFF_1BP(items, capacityMLB ,ub);
-					//						if( lb > binsMLB.size()) return false;
-					//					}//otherwise, the modified instance is feasible with best fit heuristics
+					return LowerBoundFactory.testPackingConsistencyWithMDFF(itemsMLB, capacityMLB, binsMLB.size());
 				}
 			}
 			return true;

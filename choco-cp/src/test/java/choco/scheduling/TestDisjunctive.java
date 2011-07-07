@@ -67,7 +67,7 @@ public class TestDisjunctive {
 
 	protected static void solveAll(DisjProblem dp, final int nbSol, Policy policy, Configuration conf) {
 		dp.generateSolver(policy, conf);
-		SchedUtilities.solveRandom(dp.solver, nbSol, -1, "disj " + SETTINGS.toSettingsString());
+		SchedUtilities.solveRandom(dp.solver, nbSol, -1, "disj " + SETTINGS);
 		//Utilities.solveTotOrder(apc.createProblem(),nbSol,-1,"disj Total Order "+apc.DisjSettings.toString());
 	}
 

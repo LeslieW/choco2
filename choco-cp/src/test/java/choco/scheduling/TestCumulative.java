@@ -98,7 +98,7 @@ public class TestCumulative {
 	private static  void solve(CumulProblem cp, final int nbSol, int nbNodes) {
 		cp.generateSolver();
 		//LOGGER.info(cp.solver.pretty());
-		SchedUtilities.solveRandom(cp.solver, nbSol, nbNodes, cp.rsc.getOptions()+": "+SETTINGS.toSettingsString());
+		SchedUtilities.solveRandom(cp.solver, nbSol, nbNodes, cp.rsc.getOptions()+": "+SETTINGS);
 	}
 
 

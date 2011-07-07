@@ -70,7 +70,7 @@ public final class PackFiltering {
 	protected final BitMask flags;
 
 	/** The sizes of the items. */
-	protected final IntDomainVar[] sizes;
+	protected final int[] sizes;
 
 	/** The loads of the bins. */
 	protected final IntDomainVar[] loads;
@@ -85,9 +85,11 @@ public final class PackFiltering {
 
 	protected final SumDataStruct loadSum;
 
-	//TODO protected SumDataStruct cardSum; implémenter les règles
 
+	// TODO - protected SumDataStruct cardSum; implémenter les règles -Arnaud Malapert - 4 juil. 2011
 
+	// TODO -  affiner les réveil - Arnaud Malapert - 4 juil. 2011
+	// TODO - getRemainingSpace() : ne pas recalculer - Arnaud Malapert - 4 juil. 2011
 	/**
 	 * Instantiates a new 1BP constraint.
 	 * @param environment
@@ -108,15 +110,13 @@ public final class PackFiltering {
 		long l=0;
 		int last=Integer.MAX_VALUE;
 		for (int i = 0; i < sizes.length; i++) {
-			if(sizes[i].isInstantiated()) {
-				final int s=sizes[i].getVal();
-				if(s>last) {throw new SolverException("size must be sorted according to non increasing order");}
-				else {
-					l+=s;
-					last=s;
-				}
+			if(sizes[i]>last) {
+				// TODO - allow non sorted items - Arnaud Malapert - 4 juil. 2011
+				throw new SolverException("size must be sorted according to non increasing order");
+			} else {
+				l+=sizes[i];
+				last=sizes[i];
 			}
-			else {throw new SolverException("sizes must be constant");}
 		}
 		return l;
 	}
@@ -209,10 +209,10 @@ public final class PackFiltering {
 		final ListIterator<INoSumCell> iter = reuseStatus.listIterator();
 		while(iter.hasNext()) {
 			final int item = iter.next().getID();
-			if(sizes[item].getInf() + reuseStatus.getRequiredLoad()>loads[bin].getSup()) {
+			if(sizes[item] + reuseStatus.getRequiredLoad()>loads[bin].getSup()) {
 				reuseStatus.remove(iter, item);
 				remove(item, bin);
-			}else if(reuseStatus.getMaximumLoad()-sizes[item].getSup()<loads[bin].getInf()) {
+			}else if(reuseStatus.getMaximumLoad()-sizes[item]<loads[bin].getInf()) {
 				reuseStatus.pack(iter, item);
 				pack(item, bin);
 			}
@@ -230,14 +230,18 @@ public final class PackFiltering {
 		final ListIterator<INoSumCell> iter = reuseStatus.listIterator();
 		while(iter.hasNext()) {
 			final int item = iter.next().getID();
-			if(sizes[item].getInf() + reuseStatus.getRequiredLoad()>loads[bin].getSup()) {
+			if(sizes[item] + reuseStatus.getRequiredLoad()>loads[bin].getSup()) {
 				reuseStatus.remove(iter, item);
 				remove(item, bin);
-			}else if( reuseStatus.getMaximumLoad()-sizes[item].getSup()<loads[bin].getInf() ||
-					reuseStatus.getRequiredLoad()+sizes[item].getInf()==loads[bin].getSup() ) {
+			}else if( reuseStatus.getMaximumLoad()-sizes[item] < loads[bin].getInf() ||
+					reuseStatus.getRequiredLoad()+sizes[item] ==loads[bin].getSup() ) {
 				reuseStatus.pack(iter, item);
 				pack(item, bin);
-			}
+			} 
+			// FIXME - Add break statement ? - Arnaud Malapert - 4 juil. 2011
+			//			else {	
+			//break;
+			//			}
 		}
 	}
 
@@ -290,7 +294,7 @@ public final class PackFiltering {
 		while(reuseStatus.getNbCandidates() > 1 && iter.hasNext()) {
 			final int item = iter.next().getID();
 			reuseStatus.remove(iter, item);
-			if(nosum.noSum(loads[bin].getInf()-reuseStatus.getRequiredLoad()-sizes[item].getVal(), loads[bin].getSup()-reuseStatus.getRequiredLoad()-sizes[item].getInf())) {
+			if(nosum.noSum(loads[bin].getInf()-reuseStatus.getRequiredLoad()-sizes[item], loads[bin].getSup()-reuseStatus.getRequiredLoad()-sizes[item])) {
 				remove(item, bin);
 			}else if (nosum.noSum(loads[bin].getInf()-reuseStatus.getRequiredLoad(),loads[bin].getSup()-reuseStatus.getRequiredLoad())) {
 				reuseStatus.packRemoved(item);

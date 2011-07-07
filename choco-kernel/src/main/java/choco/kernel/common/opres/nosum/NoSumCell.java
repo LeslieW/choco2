@@ -43,6 +43,7 @@ public final class NoSumCell extends TLinkableAdapter implements INoSumCell {
 	
 	public NoSumCell(int id, IntDomainVar constant) {
 		this(id, constant.getVal());
+		assert constant.isInstantiated();
 	}
 
 	public NoSumCell(int id, int val) {

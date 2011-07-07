@@ -107,10 +107,12 @@ public abstract class AbstractVilimTree extends ProperBinaryTree implements IVil
 
 	public void sort() {
 		if(getNbLeaves()>1) {
-			//store array to avoid memory issue ? need to check size at each creation.
+			//TODO store array to avoid memory issue ? need to check size at each creation FIXME -  Temporary : waiting for task event management - created 4 juil. 2011 by Arnaud Malapert
 			final ITask[] tmp = map.keySet().toArray(new ITask[map.keySet().size()]);
 			Arrays.sort(tmp, getTaskComparator());
-			map.clear(); //TODO avoid to clear the map.
+			map.clear();
+			// TODO - Do not clear the map - created 4 juil. 2011 by Arnaud Malapert
+
 			final ListIterator<ITask> iter = Arrays.asList(tmp).listIterator();
 			applySort(getRoot(), iter);
 			if(iter.hasNext()) {

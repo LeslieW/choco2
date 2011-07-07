@@ -127,7 +127,7 @@ public class GraphDTC implements IDotty {
 
 	protected int nbEdges = 0;
 
-	protected boolean TransitiveArcAdded = true;
+	protected boolean transitiveArcAdded = true;
 
 	protected final TreeNode[][] index;
 
@@ -149,12 +149,12 @@ public class GraphDTC implements IDotty {
 
 
 	public final boolean isTransitiveArcAdded() {
-		return TransitiveArcAdded;
+		return transitiveArcAdded;
 	}
 
 
 	public final void setTransitiveArcAdded(boolean transitiveArcAdded) {
-		TransitiveArcAdded = transitiveArcAdded;
+		transitiveArcAdded = transitiveArcAdded;
 	}
 
 

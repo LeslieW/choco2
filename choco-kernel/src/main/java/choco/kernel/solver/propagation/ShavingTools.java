@@ -37,6 +37,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 
 
 public class ShavingTools {
+	// TODO - Add logging statement - created 5 juil. 2011 by Arnaud Malapert
 
 	public final Solver solver;
 
@@ -211,7 +212,6 @@ public class ShavingTools {
 	}
 
 
-	//TODO optimize by keeping trace of the last not instantiated variables
 	protected final void detectLuckySolution() throws LuckySolutionException {
 		int n = solver.getNbIntVars();
 		for (int i = 0; i < n; i++) {
@@ -221,9 +221,11 @@ public class ShavingTools {
 		for (int i = 0; i < n; i++) {
 			if( ! solver.getSetVarQuick(i).isInstantiated()) return;
 		}
-		if(solver.getNbRealVars() > 0) return; //FIXME what about real
+		if(solver.getNbRealVars() > 0) return; 
+		// FIXME - How to handle real variables ? - created 4 juil. 2011 by Arnaud Malapert
 		throw LuckySolutionException.SINGLOTON;
 	}
+
 
 	final static class LuckySolutionException extends Exception {
 

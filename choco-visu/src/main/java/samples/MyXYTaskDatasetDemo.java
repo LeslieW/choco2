@@ -128,7 +128,7 @@ public final class MyXYTaskDatasetDemo extends ApplicationFrame {
 	protected static TaskSeriesCollection createTasks() {
 		TaskSeriesCollection dataset = new TaskSeriesCollection();
 		TaskSeries s1 = new TaskSeries("37_D");
-		//FIXME subtasks are not considered
+		// FIXME - subtasks ignored - created 4 juil. 2011 by Arnaud Malapert
 //		Task t = new Task("T1a", new Day());
 //		t.addSubtask(new Task("T1a-1", new Hour(2, new Day())));
 //		t.addSubtask(new Task("T1a-2", new Hour(0, new Day())));

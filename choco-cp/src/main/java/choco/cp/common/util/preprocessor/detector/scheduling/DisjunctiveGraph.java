@@ -219,12 +219,12 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 	}
 
 	protected void writeEdge(StringBuilder b, E rel, int i, int j) {
-		if(rel.IsFixed() && rel.getDirVal() == ITemporalRelation.BWD) writeArc(b, j, i);
+		if(rel.isFixed() && rel.getDirVal() == ITemporalRelation.BWD) writeArc(b, j, i);
 		else writeArc(b, i, j);
 	}
 	
 	protected void writeEdgeAttributes(StringBuilder b, E rel, int i, int j) {
-		if(rel.IsFixed()) {
+		if(rel.isFixed()) {
 			writeAttributes(b, EDGE_COLOR, STY_BOLD, ARROW_BIG, 
 					(rel.getDirVal() == ITemporalRelation.FWD ? getArcLabel(i, j) : getArcLabel(j, i)));
 		} else {
@@ -251,7 +251,7 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 			                                                               .nextSetBit(j + 1)) {
 				E rel = storedConstraints.get(getKey(i, j) );
 				if( rel != null) {
-					writeEdge(b, rel, i, j); //TODO change to writeEdge pour SModel
+					writeEdge(b, rel, i, j); 
 					writeEdgeAttributes(b,rel, i, j);
 				}
 			}

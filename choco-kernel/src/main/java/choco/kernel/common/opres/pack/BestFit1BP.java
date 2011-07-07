@@ -27,22 +27,46 @@
 
 package choco.kernel.common.opres.pack;
 
+import java.util.Arrays;
+
+
 public class BestFit1BP extends AbstractHeuristic1BP {
 
-	public BestFit1BP(int capacity) {
-		super(capacity);
-	}
 
 	@Override
-	protected boolean handleInsertion(TLinkedBin bin) {
-		if( bin.isFit(reuseSize) ) {
-			reuseBin = bin;
-			return false;
-		} else if( reuseBin == null || 
-				reuseBin.remainingArea > bin.remainingArea) {
-			reuseBin = bin;
+	public boolean execute(final int arg0) {
+		if(arg0 > 0) {
+			if(arg0 < capacity) {
+				int bin = -1, slack = Integer.MAX_VALUE;
+				for (int i = 0; i < pos; i++) {
+					if(bins[i] == arg0) {
+						//fit exactly
+						removeBin(i);
+						return true;
+					} else if (bins[i] > arg0) {
+						//slack
+						if(bins[i] <slack) {
+							bin = i;
+							slack = bins[i];
+						}
+					} 
+				}
+				if(bin >=0) {
+					pack(bin, arg0);
+				} else {
+					createBin(arg0);
+				}
+			} else {
+				full++;
+			}
+
+			return true;
 		}
-		return true;
+		// iterate over items in non ascending sizes =>  we can stop the procedure as soon as we discover a nil item
+		return false;
 	}
+
+
+
 
 }

@@ -50,7 +50,8 @@ public class UseResourcesGeq extends AbstractUseResourcesSConstraint {
 	public void awakeOnInst(int idx) throws ContradictionException {
 		super.awakeOnInst(idx);
 		boolSumS.awakeOnGeq();
-		filterHypotheticalDomains(); //FIXME temporary implementation (waiting for task event amangement)
+		filterHypotheticalDomains(); 
+		//FIXME -  Temporary : waiting for task event management - created 4 juil. 2011 by Arnaud Malapert
 	}
 
 	@Override
