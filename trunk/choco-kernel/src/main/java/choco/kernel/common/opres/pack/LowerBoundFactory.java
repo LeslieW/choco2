@@ -28,8 +28,14 @@
 package choco.kernel.common.opres.pack;
 
 import gnu.trove.TIntArrayList;
+import gnu.trove.TIntHashSet;
+import gnu.trove.TIntIterator;
 
 /**
+ * Compute lower bounds for one-dimensional bin packing problems using MDFF (F_0^k, f_{CCM,1}^k.
+ *  @see Clautiaux, F., Alves, C. & Valério de Carvalho, J. </br>
+ *  <i>A survey of dual-feasible and superadditive functions</i> </br>
+ *   Annals of Operations Research, Springer Netherlands, 2010, Vol. 179, pp. 317-342
  * @author Arnaud Malapert
  *
  */
@@ -40,46 +46,199 @@ public final class LowerBoundFactory {
 	 */
 	private LowerBoundFactory() {}
 
+	
+
+	//*****************************************************************//
+	//*******************  Multithread MDFF  *************************//
+	//***************************************************************//
+
 	/**
-	 * Compute L_{DFF}^{1BP} as defined in the phd thesis of F. Clautiaux
+	 * Compute the lower bound L0 
 	 *
-	 * @param sizes the sizes of the items
-	 * @param capacity the capacity of the bin
+	 * @param sizes items (not sorted) 
+	 * @param capacity the capacity of bins
+	 * 
+	 * @return a Lower bound on the number of bins
+	 */
+	public static int computeL0(final TIntArrayList items, int capacity) {
+		final ComputeL0 l0 = new ComputeL0(capacity);
+		items.forEachDescending(l0);
+		return l0.getLowerBound();
+	}
+	/**
+	 * Compute a lower bound based on F_0^k.
+	 *
+	 * @param sizes items sorted according non decreasing sizes 
+	 * @param capacity the capacity of bins
+	 * @param upperBound an upper bound on the number of bins (can speed up the computation)
 	 *
 	 * @return a Lower bound on the number of bins
 	 */
-	public static boolean  consistencyTestLDFF(TIntArrayList sizes,final int capacity, int threshold) {
-		sizes.sort();
-		final int ub = (new BestFit1BP(capacity)).computeUB(sizes);
-		if (ub > threshold) {
-			//the heuristics solution is greater than the threshold
-			//so, what about the lower bound ?
-			return computeL_DFF(sizes, capacity, ub) <= threshold;
-		}//otherwise, best fit gives a number of bins lower than the threshold
-		return true;
+	public static final int computeF0(final TIntArrayList items, int capacity, int upperBound) {
+		return computeMDDFF(items, capacity, upperBound, new FindParametersF0(), new FunctionF0());
+	}
+
+	/**
+	 * Compute a lower bound based on F_{CCM,1}^k.
+	 *
+	 * @param sizes items sorted according non decreasing sizes 
+	 * @param capacity the capacity of bins
+	 * @param upperBound an upper bound on the number of bins (can speed up the computation)
+	 *
+	 * @return a Lower bound on the number of bins
+	 */
+	public static final int computeFCCM1(final TIntArrayList items, int capacity, int upperBound) {
+		return computeMDDFF(items, capacity, upperBound, new FindParametersFCCM1(), new FunctionFCCM1());
+	}
+	
+	/**
+	 * Compute a lower bound based on F_0^k and F_{CCM,1}^k.
+	 *
+	 * @param sizes items sorted according non decreasing sizes 
+	 * @param capacity the capacity of bins
+	 * @param upperBound an upper bound on the number of bins (can speed up the computation)
+	 *
+	 * @return a Lower bound on the number of bins
+	 */
+	public static final int  computeAllMDFF(final TIntArrayList items, int capacity, int upperBound) {
+		int lb = computeF0(items, capacity, upperBound);
+		return lb == upperBound ? 
+				lb : Math.max(lb, computeFCCM1(items, capacity, upperBound));
+	}
+
+	protected static final int computeMDDFF(final TIntArrayList items, int capacity, int upperBound, AbstractFindParameters findParameters, AbstractFunctionDFF functionDDFF) {
+		return computeMDDFF(items, items.toNativeArray(), capacity, upperBound, new ComputeL0(), findParameters, functionDDFF);
+	}
+
+	private static final int computeMDDFF(final TIntArrayList items, int[] storedItems, int capacity, int upperBound,
+			ComputeL0 computeL0, AbstractFindParameters findParameters, AbstractFunctionDFF functionDFF) {
+		int lowerBound = 0;
+		findParameters.clearParameters();
+		findParameters.setCapacity(capacity);
+		items.forEachDescending(findParameters);
+		final TIntHashSet parameters = findParameters.getParameters();
+		if( ! parameters.isEmpty() ) {
+			functionDFF.setCapacity(capacity);
+			final TIntArrayList transformedItems = new TIntArrayList(items.size());
+			final TIntIterator iter = parameters.iterator();
+			while(iter.hasNext()) {
+				functionDFF.setParameter(iter.next());
+				transformedItems.resetQuick();
+				transformedItems.add(storedItems);
+				transformedItems.transformValues(functionDFF);
+				computeL0.reset();
+				computeL0.setCapacity(functionDFF.transformCapacity());
+				transformedItems.forEachDescending(computeL0);
+				if(lowerBound < computeL0.getLowerBound()) {
+					lowerBound = computeL0.getLowerBound();
+					if(lowerBound >= upperBound) return lowerBound;
+				}
+			}
+		}
+		return lowerBound;
+	}
+
+	//*****************************************************************//
+	//*******************  Mono-thread MDFF  *************************//
+	//***************************************************************//
+	// Reuse the static fields 
+
+	private final static ComputeL0 COMPUTE_L0 = new ComputeL0();
+
+	private final static AbstractFindParameters FIND_PARAMETERS_F0 = new FindParametersF0();
+
+	private final static AbstractFunctionDFF FUNCTION_F0 = new FunctionF0();
+
+	private final static AbstractFindParameters FIND_PARAMETERS_FCCM1 = new FindParametersFCCM1();
+
+	private final static AbstractFunctionDFF FUNCTION_FCCM1 = new FunctionFCCM1();
+
+	/**
+	 * Compute the lower bound L0 (not thread safe)
+	 *
+	 * @param sizes items (not sorted) 
+	 * @param capacity the capacity of bins
+	 * 
+	 * @return a Lower bound on the number of bins
+	 */
+	public static int memComputeL0(final TIntArrayList items, int capacity) {
+		COMPUTE_L0.reset();
+		COMPUTE_L0.setCapacity(capacity);
+		items.forEachDescending(COMPUTE_L0);
+		return COMPUTE_L0.getLowerBound();
+	}
+	
+	/**
+	 * Compute a lower bound based on F_0^k (not thread safe)
+	 *
+	 * @param sizes items sorted according non decreasing sizes 
+	 * @param capacity the capacity of bins
+	 * @param upperBound an upper bound on the number of bins (can speed up the computation)
+	 *
+	 * @return a Lower bound on the number of bins
+	 */
+	public static int memComputeF0(final TIntArrayList items, int capacity, int upperBound) {
+		return computeMDDFF(items, items.toNativeArray(), capacity, upperBound, COMPUTE_L0, FIND_PARAMETERS_F0, FUNCTION_F0);
 	}
 
 
-/**
- * Compute L_{DFF}^{1BP} as defined in the phd thesis of F. Clautiaux
- *
- * @param sizes the sizes of the items
- * @param capacity the capacity of the bin
- * @param ub an upper bound
- * @return a Lower bound on the number of bins
- */
-public static int  computeL_DFF_1BP(final int[] sizes,final int capacity,final int ub) {
-	final TIntArrayList items = new TIntArrayList(sizes);
-	items.sort();
-	return computeL_DFF(items, capacity, ub);
-}
+	/**
+	 * Compute a lower bound based on F_{CCM,1}^k (not thread safe)
+	 *
+	 * @param sizes items sorted according non decreasing sizes 
+	 * @param capacity the capacity of bins
+	 * @param upperBound an upper bound on the number of bins (can speed up the computation)
+	 *
+	 * @return a Lower bound on the number of bins
+	 */
+	public static int memComputeFCCM1(final TIntArrayList items, int capacity, int upperBound) {
+		return computeMDDFF(items, items.toNativeArray(), capacity, upperBound, COMPUTE_L0, FIND_PARAMETERS_FCCM1, FUNCTION_FCCM1);
+	}
 
-public static int  computeL_DFF(final TIntArrayList sizes,final int capacity,final int ub) {
-	PackDDFF ddffs = new PackDDFF(capacity);
-	ddffs.setItems(sizes);
-	ddffs.setUB(ub);
-	return ddffs.computeDDFF();
-}
+	/**
+	 * Compute a lower bound based on F_0^k and F_{CCM,1}^k (not thread safe)
+	 *
+	 * @param sizes items sorted according non decreasing sizes 
+	 * @param capacity the capacity of bins
+	 * @param upperBound an upper bound on the number of bins (can speed up the computation)
+	 *
+	 * @return a Lower bound on the number of bins
+	 */
+	public static int memComputeAllMDFF(final TIntArrayList items, int capacity, int upperBound) {
+		final int[] tab = items.toNativeArray();
+		int lb = computeMDDFF(items, tab, capacity, upperBound, COMPUTE_L0, FIND_PARAMETERS_F0, FUNCTION_F0);
+		return lb == upperBound ? 
+				lb : Math.max(lb, computeMDDFF(items, tab, capacity, upperBound, COMPUTE_L0, FIND_PARAMETERS_FCCM1, FUNCTION_FCCM1));
+	}
 
+
+	private final static FirstFit1BP FIRST_FIT = new FirstFit1BP();
+
+	private final static BestFit1BP BEST_FIT = new BestFit1BP();
+
+	/**
+	 * Apply a consistency test a one-dimensional bin packing limited to a maximum number of bins.
+	 *
+	 * @param sizes sizes of items (not sorted)
+	 * @param capacity the capacity of bins
+	 * @param maxNumberOfBins maximum number of bins 
+	 *
+	 * @return <code>false</code> if the lower bound is strictly greater than the maxumum number of bins
+	 */
+	public static boolean  testPackingConsistencyWithMDFF(TIntArrayList sizes,final int capacity, int maxNumberOfBins) {
+		sizes.sort();
+		final int ub1 = FIRST_FIT.executeQuick(sizes, capacity);
+		if (ub1 > maxNumberOfBins) {
+			final int ub2 = BEST_FIT.executeQuick(sizes, capacity);
+			if (ub2 > maxNumberOfBins) {
+				//the heuristics solutions are greater than the maximum number of bins.
+				//so, what about the lower bound ?
+				return memComputeFCCM1(sizes, capacity, ub1 > ub2 ? ub1 : ub2) <= maxNumberOfBins;
+			}
+		}//otherwise, heuristics give a number of bins lower than the maximum
+		return true;
+	}
+	
+	
 
 }

@@ -34,8 +34,10 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.kernel.solver.variables.integer.IntVar;
 import choco.kernel.solver.variables.real.RealVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 import choco.kernel.solver.variables.set.SetVar;
@@ -428,6 +430,15 @@ public final class VariableUtils {
             return decisions.toArray(tmp);
         }
     }
+    
+    public static int[] getConstantValues(IntVar... vars) {
+    	final int[] cards =new int[vars.length];
+		for (int i = 0; i < vars.length; i++) {
+			if(vars[i].isInstantiated()) cards[i]= vars[i].getVal();
+			else throw new SolverException(vars[i].pretty()+" is not an integer constant");
+		}
+		return cards;
+	}
     
     public static IntegerVariable[] getCardinalities(SetVariable... vars) {
     	final IntegerVariable[] cards =new IntegerVariable[vars.length];

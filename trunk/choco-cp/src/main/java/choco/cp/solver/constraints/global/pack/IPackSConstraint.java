@@ -40,7 +40,6 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  */
 public interface IPackSConstraint {
 
-	//TODO should be super-interface
 	int getNbBins();
 	
 	int getNbItems();
@@ -49,7 +48,7 @@ public interface IPackSConstraint {
 	
 	IntDomainVar[] getLoads();
 
-	IntDomainVar[] getSizes();
+	int[] getSizes();
 
 	void fail() throws ContradictionException;
 

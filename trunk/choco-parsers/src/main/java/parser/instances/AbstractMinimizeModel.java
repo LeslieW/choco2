@@ -28,25 +28,15 @@
 /**
  *
  */
-package parser.instance;
+package parser.instances;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.logging.Level;
-
-import org.apache.commons.io.FilenameUtils;
-import org.jfree.chart.JFreeChart;
-
-import parser.instances.AbstractInstanceModel;
-import parser.instances.BasicSettings;
-import parser.instances.InstanceFileParser;
-import parser.instances.ResolutionStatus;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.opres.heuristics.IHeuristic;
+import choco.kernel.common.opres.heuristics.NoHeuristic;
 import choco.kernel.solver.Configuration;
 import choco.kernel.solver.ResolutionPolicy;
 import choco.kernel.solver.Solver;
-import choco.visu.components.chart.ChocoChartFactory;
-import choco.visu.components.chart.PdfExport;
+import choco.kernel.visu.IVisuManager;
 
 /**
  * @author Arnaud Malapert
@@ -54,35 +44,30 @@ import choco.visu.components.chart.PdfExport;
  */
 public abstract class AbstractMinimizeModel extends AbstractInstanceModel {
 
-	protected IHeuristicAlgorithm heuristics = IHeuristicAlgorithm.SINGLOTON;
+	private IHeuristic heuristics;
 
-	protected int computedLowerBound;
+	private int computedLowerBound;
+
+	private IVisuManager chartManager;
 
 	public AbstractMinimizeModel(InstanceFileParser parser, Configuration settings) {
 		super(parser, settings);
+		cancelHeuristic();
 		settings.putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
 		settings.putFalse(Configuration.STOP_AT_FIRST_SOLUTION);
 	}
 
-	public final void cancelHeuristics() {
-		heuristics = IHeuristicAlgorithm.SINGLOTON;
+
+	public final void cancelHeuristic() {
+		heuristics = NoHeuristic.getInstance();
 	}
 
-	@Override
-	public final String getInstanceName() {
-		if( parser == null || parser.getInstanceFile() == null) return "UNKNOWN";
-		else {
-			return FilenameUtils.removeExtension(parser.getInstanceFile().getName());
-		}
-	}
-
-
-	public final IHeuristicAlgorithm getHeuristics() {
+	public final IHeuristic getHeuristic() {
 		return heuristics;
 	}
 
-	public final void setHeuristics(IHeuristicAlgorithm heuristics) {
-		this.heuristics = heuristics;
+	public final void setHeuristic(IHeuristic heuristic) {
+		this.heuristics = heuristic;
 	}
 
 	public int getComputedLowerBound() {
@@ -91,6 +76,15 @@ public abstract class AbstractMinimizeModel extends AbstractInstanceModel {
 
 	public final void setComputedLowerBound(int computedLowerBound) {
 		this.computedLowerBound = computedLowerBound;
+	}
+
+
+	public final IVisuManager getChartManager() {
+		return chartManager;
+	}
+
+	public final void setChartManager(IVisuManager chartManager) {
+		this.chartManager = chartManager;
 	}
 
 
@@ -152,51 +146,28 @@ public abstract class AbstractMinimizeModel extends AbstractInstanceModel {
 		return solver.isFeasible();
 	}
 
-	private final static String PDF_SUFFIX = ".pdf";
 
-	private final File createChartFile() {
-		final File dir = getOutputDirectory();
-		File r = new File(dir, getInstanceName()+PDF_SUFFIX);
-		if( r.exists()) {
-			try {
-				r = File.createTempFile(getInstanceName(), PDF_SUFFIX, dir);
-			} catch (IOException e) {
-				r = null;
+	protected abstract Object makeSolutionChart();
+
+	protected void makeChart(Object chart, IVisuManager chartManager) {
+		if( defaultConf.readBoolean(BasicSettings.SOLUTION_REPORT) ) {
+			if( chart == null) {
+				LOGGER.config("visu...[chart][FAIL]");
+			}else {
+				if( defaultConf.readBoolean(BasicSettings.SOLUTION_EXPORT)) {
+					chartManager.export(getOutputDirectory(), getInstanceName(), chart);
+				} else {
+					chartManager.show(chart);
+
+				}
 			}
 		}
-		return r;
 	}
 	
-	public abstract JFreeChart makeSolutionChart();
-
 	@Override
 	public void makeReports() {
 		super.makeReports();
-		if( defaultConf.readBoolean(BasicSettings.SOLUTION_REPORT) ) {
-			JFreeChart chart = makeSolutionChart();
-			if( chart == null) {
-				LOGGER.config("chart...[drawChart][FAIL]");
-			}else {
-				if( defaultConf.readBoolean(BasicSettings.SOLUTION_EXPORT)) {
-					//export chart
-					final File pdf = createChartFile();
-					if( pdf == null) {
-						LOGGER.config("chart...[pdfExport:createFile][FAIL]");
-					}else {
-						try {
-							PdfExport.saveChartAsPDF(pdf, chart, 800, 600);
-							//PdfExport.saveChartAsPDF(pdf, chart, 800, 200);
-							LOGGER.log(Level.CONFIG, "chart...[pdfExport:{0}][OK]", pdf);
-						} catch (IOException e) {
-							LOGGER.log(Level.WARNING, "chart...[pdfExport:{0}][FAIL]", e);
-						}
-					}
-				} else {
-					ChocoChartFactory.createAndShowGUI(getClass().getSimpleName(), chart);
-					LOGGER.config("chart...[visu][OK]");
-				}
-			}	
-		}
+		makeChart(makeSolutionChart(), chartManager);
 	}
 
 }

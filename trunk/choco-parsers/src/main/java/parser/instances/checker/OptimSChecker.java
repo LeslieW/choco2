@@ -54,26 +54,32 @@ public final class OptimSChecker implements IOptimChecker {
 		return maxObjValue;
 	}
 
+	@Override
 	public boolean checkLowerBound(boolean doMaximize, int lbVal) {
 		return doMaximize ? lbVal >= minObjValue : lbVal <= maxObjValue;
 	}
 
+	@Override
 	public boolean checkOptimum(int optVal) {
 		return optVal >= minObjValue && optVal <= maxObjValue;
 	}
 
+	@Override
 	public boolean checkUpperBound(boolean doMaximize, int ubVal) {
 		return doMaximize ? ubVal <= maxObjValue : ubVal >= minObjValue;
 	}
 
+	@Override
 	public boolean checkLowerBound(boolean doMaximize, Number lbVal) {
 		return lbVal != null && checkLowerBound(doMaximize, lbVal.intValue());
 	}
 
+	@Override
 	public boolean checkUpperBound(boolean doMaximize, Number ubVal) {
 		return ubVal != null && checkUpperBound(doMaximize, ubVal.intValue());
 	}
 
+	@Override
 	public boolean checkOptimum(Number optVal) {
 		return optVal != null && checkOptimum(optVal.intValue());
 	}

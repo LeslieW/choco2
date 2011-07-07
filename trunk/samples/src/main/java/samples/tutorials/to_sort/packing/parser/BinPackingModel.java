@@ -27,10 +27,23 @@
 
 package samples.tutorials.to_sort.packing.parser;
 
+import static choco.Options.C_PACK_AR;
+import static choco.Options.C_PACK_DLB;
+import static choco.Options.C_PACK_FB;
+import static choco.Options.C_PACK_LBE;
+import static choco.Options.V_OBJECTIVE;
+
+
+import gnu.trove.TIntArrayList;
+
+
+import parser.instances.AbstractMinimizeModel;
+import parser.instances.BasicSettings;
 import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.constraints.global.pack.PackSConstraint;
 import choco.cp.solver.search.BranchingFactory;
+import choco.kernel.common.opres.heuristics.IHeuristic;
 import choco.kernel.common.opres.pack.LowerBoundFactory;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
@@ -38,12 +51,6 @@ import choco.kernel.model.constraints.pack.PackModel;
 import choco.kernel.solver.Configuration;
 import choco.kernel.solver.Solver;
 import choco.visu.components.chart.ChocoChartFactory;
-import org.jfree.chart.JFreeChart;
-import parser.instance.AbstractMinimizeModel;
-import parser.instance.IHeuristicAlgorithm;
-import parser.instances.BasicSettings;
-
-import static choco.Options.*;
 
 
 /**
@@ -66,7 +73,7 @@ public class BinPackingModel extends AbstractMinimizeModel {
 	@Override
 	public void initialize() {
 		super.initialize();
-		heuristics = IHeuristicAlgorithm.SINGLOTON;
+		cancelHeuristic();
 		nbBins = 0;
 		modeler = null;
 		pack = null;
@@ -75,13 +82,16 @@ public class BinPackingModel extends AbstractMinimizeModel {
 	@Override
 	public Boolean preprocess() {
 		final BinPackingFileParser pr = (BinPackingFileParser) parser;
-		heuristics = new CompositeHeuristics1BP(pr);
+		setHeuristic(new CompositeHeuristics1BP(pr));
+		// TODO - can reuse heuristic object - created 6 juil. 2011 by Arnaud Malapert
 		Boolean b = super.preprocess();
 		if(b != null && Boolean.valueOf(b)) {
-			computedLowerBound = LowerBoundFactory.computeL_DFF_1BP(pr.sizes, pr.capacity, heuristics.getObjectiveValue().intValue());
-			nbBins = heuristics.getObjectiveValue().intValue() - 1;
+			// FIXME - Check the order of items - created 5 juil. 2011 by Arnaud Malapert
+			nbBins = getHeuristic().getObjectiveValue().intValue();
+			setComputedLowerBound(LowerBoundFactory.memComputeAllMDFF(new TIntArrayList(pr.sizes), pr.capacity, nbBins));
+			nbBins--;
 		}else {
-			computedLowerBound = 0;
+			setComputedLowerBound(0);
 			nbBins = pr.sizes.length;
 		}
 		return b;
@@ -125,7 +135,7 @@ public class BinPackingModel extends AbstractMinimizeModel {
 	}	
 	
 	@Override
-	public JFreeChart makeSolutionChart() {
+	protected Object makeSolutionChart() {
 		return solver != null && solver.existsSolution() ?
 				ChocoChartFactory.createPackChart(getInstanceName()+" : "+getStatus(), (PackSConstraint) solver.getCstr(pack)) : null;
 	}

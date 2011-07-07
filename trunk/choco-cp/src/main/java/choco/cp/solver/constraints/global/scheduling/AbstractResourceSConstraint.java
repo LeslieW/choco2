@@ -83,7 +83,7 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 	 * @param solver
 	 * @param name the ressource name
 	 * @param taskvars the tasks using the resources
-	 * @param enableHypotheticalDomain TODO
+	 * @param enableHypotheticalDomain 
 	 * @param uppBound is an integer variable such that max(end(T))<= uppBound
 	 * @param otherVars = [ u_k, ...,u_n,h_1,...,h_n,v_1,v_m, ub, cste:1] 
 	 */
@@ -95,7 +95,6 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		this.nbOptionalTasks = nbOptionalTasks;
 		this.nbRegularTasks = taskvars.length - nbOptionalTasks;
 		this.enableHeights = enableHeights;
-		//TODO checkIntVars !
 		this.indexUnit = getNbVars()-1;
 		this.indexUB = indexUnit - 1;
 		this.flags = new BitMask();
@@ -120,7 +119,7 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 	public abstract void readOptions(List<String> options);
 	
 	public final int indexOf(TaskVar task) {
-		//FIXME temporary implementation
+		// FIXME - Optimize indexOf (a task). Use hook ? - created 4 juil. 2011 by Arnaud Malapert
 		for (int i = 0; i < getNbTasks(); i++) {
 			if(taskvars[i] == task) return i;
 		}
@@ -269,7 +268,7 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 					}
 				}
 			}
-			//FIXME how do I handle properly task with nil duration in disjunctive
+			// FIXME - how do I handle properly task with nil duration ? - created 4 juil. 2011 by Arnaud Malapert
 			//check profile
 			for (int aLoad : load) {
 				if ( aLoad > capacity ||

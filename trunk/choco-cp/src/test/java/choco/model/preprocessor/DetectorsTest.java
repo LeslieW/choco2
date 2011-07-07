@@ -35,7 +35,6 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.BoundAllDiff;
 import choco.cp.solver.constraints.global.matching.AllDifferent;
 import choco.cp.solver.preprocessor.PreProcessCPSolver;
-import choco.kernel.common.VisuFactory;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.model.constraints.ConstraintType;
@@ -44,6 +43,8 @@ import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.scheduling.TaskVar;
+import choco.kernel.visu.VisuFactory;
+
 import org.junit.Test;
 
 import java.util.logging.Logger;
@@ -365,8 +366,8 @@ public class DetectorsTest {
 		final DisjunctiveModel disjMod = new DisjunctiveModel(model);
 		run(model, precFromImpliedDetector(model, disjMod));
 		assertEquals(0, model.getNbConstraints());
-
-		//FIXME Charles remove Hook while commiting
+		
+		// FIXME - Problem with hook - created 4 juil. 2011 by Arnaud Malapert
 		model = new CPModel();
 		model.addConstraint(precedenceImplied(t4, 3,t3, ONE));
 		assertEquals(1, model.getNbConstraintByType(ConstraintType.PRECEDENCE_IMPLIED));
@@ -384,7 +385,7 @@ public class DetectorsTest {
 		assertEquals(0, model.getNbConstraintByType(ConstraintType.PRECEDENCE_IMPLIED));
 		assertEquals(1, model.getNbConstraints());
 
-		//FIXME Charles remove Hook while commiting
+		// FIXME - Problem with hook - created 4 juil. 2011 by Arnaud Malapert
 		model = new CPModel();
 		model.addConstraint(precedenceReified(t4, 3,t3, ONE));
 		assertEquals(1, model.getNbConstraintByType(ConstraintType.PRECEDENCE_REIFIED));
@@ -442,7 +443,7 @@ public class DetectorsTest {
 		final DisjunctiveModel disjMod = new DisjunctiveModel(model);
 		run(model, disjointDetector(model, disjMod));
 		//assertEquals(2, model.getNbConstraints());
-		VisuFactory.toDotty(disjMod);
+		VisuFactory.getDotManager().show(disjMod);
 	}
 	
 	@Test

@@ -40,8 +40,8 @@ import java.util.Arrays;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import choco.kernel.common.VisuFactory;
 import choco.kernel.common.opres.graph.DagDTC;
+import choco.kernel.visu.VisuFactory;
 
 
 
@@ -133,7 +133,7 @@ public class TestGraphDTC {
 			step++;
 			}
 		}
-		VisuFactory.toDotty(graph);
+		VisuFactory.getDotManager().show(graph);
 		//remove
 		assertFalse("rm", graph.remove(0,3));
 		for (int i = states.length-1; i >=0; i--) {

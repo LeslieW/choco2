@@ -27,16 +27,35 @@
 
 package choco.kernel.common.opres.pack;
 
+
 public class FirstFit1BP extends AbstractHeuristic1BP {
 
-	public FirstFit1BP(int capacity) {
-		super(capacity);
-	}
 
 	@Override
-	protected boolean handleInsertion(TLinkedBin bin) {
-		reuseBin = bin;
+	public boolean execute(final int arg0) {
+		if(arg0 > 0) {
+			if(arg0 < capacity) {
+				for (int i = 0; i < pos; i++) {
+					if(bins[i] == arg0) {
+						//fit exactly
+						removeBin(i);
+						return true;
+					} else if (bins[i] > arg0) {
+						pack(i, arg0);
+						return true;
+					} 
+				}
+				createBin(arg0);
+			} else {
+				full++;
+			}
+			return true;
+		}
+		// iterate over items in non ascending sizes =>  we can stop the procedure as soon as we discover a nil item
 		return false;
 	}
+
+
+
 
 }

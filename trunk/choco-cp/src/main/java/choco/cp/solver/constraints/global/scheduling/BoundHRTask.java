@@ -135,7 +135,6 @@ public class BoundHRTask extends RTask {
 	}
 
 	public final boolean setHEndNotIn(int a, int b) throws ContradictionException {
-		//FIXME is incomplete
 		if( a <= htask.getECT()) return setHECT(b);
 		else if(b >= htask.getLCT()) return setHLCT(a);
 		else return false;
@@ -205,7 +204,6 @@ public class BoundHRTask extends RTask {
 	}
 
 	protected final  boolean setHStartNotIn(int min, int max) throws ContradictionException {
-		//FIXME is incomplete
 		if( min <= htask.getEST()) return setHEST(max);
 		else if(max >= htask.getLST()) return setHLST(min);
 		else return false;

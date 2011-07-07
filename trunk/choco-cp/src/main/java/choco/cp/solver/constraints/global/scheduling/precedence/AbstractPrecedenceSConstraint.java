@@ -59,7 +59,7 @@ implements ITemporalSRelation {
 		this.task1 = t1;
 		this.task2 = t2;
 	}
-	//TODO record tasks in the constraint list ? 
+	// TODO - Record temporal constraint in the constraint list of takss ? - created 4 juil. 2011 by Arnaud Malapert//TODO record tasks in the constraint list ? 
 	//In this case, change the postRedundantTaskConstraint
 
 	@Override
@@ -76,9 +76,9 @@ implements ITemporalSRelation {
 	public IntDomainVar getDirection() {
 		return vars[BIDX];
 	}
-		
+
 	@Override
-	public final boolean IsFixed() {
+	public final boolean isFixed() {
 		return vars[BIDX].isInstantiated();
 	}
 
@@ -97,7 +97,7 @@ implements ITemporalSRelation {
 		throw new UnsupportedOperationException("not yet implemented");
 	}
 
-	
+
 
 	/**
 	 * propagate vars[idx1] <= vars[idx2]
@@ -251,26 +251,23 @@ implements ITemporalSRelation {
 		return name + " "+vars[BIDX]+"( "+trueStr+" || "+falseStr+" )";
 	}
 
-	
-	
+
+
 	@Override
 	public int getTotalSlack() {
-		//FIXME
-		// TODO Auto-generated method stub
+		// TODO - Precedence domain measure - created 4 juil. 2011 by Arnaud Malapert
 		return 0;
 	}
 
 	@Override
 	public double getForwardPreserved() {
-		//FIXME
-		// TODO Auto-generated method stub
+		// TODO - Precedence domain measure - created 4 juil. 2011 by Arnaud Malapert
 		return 0;
 	}
 
 	@Override
 	public double getBackwardPreserved() {
-		//FIXME
-		// TODO Auto-generated method stub
+		// TODO - Precedence domain measure - created 4 juil. 2011 by Arnaud Malapert
 		return 0;
 	}
 

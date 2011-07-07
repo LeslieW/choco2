@@ -27,29 +27,33 @@
 
 package samples.tutorials.to_sort.packing.parser;
 
+import gnu.trove.TIntArrayList;
+import choco.kernel.common.opres.heuristics.AbstractHeuristic;
 import choco.kernel.common.opres.pack.AbstractHeuristic1BP;
 import choco.kernel.common.opres.pack.BestFit1BP;
 import choco.kernel.common.opres.pack.FirstFit1BP;
-import gnu.trove.TIntArrayList;
-import parser.instance.AbstractHeuristics;
 
-public class CompositeHeuristics1BP extends AbstractHeuristics {
+public class CompositeHeuristics1BP extends AbstractHeuristic {
 
 	private final TIntArrayList sizes;
 	private final AbstractHeuristic1BP ff, bf;
 
 	public CompositeHeuristics1BP(BinPackingFileParser parser) {
 		super();
-		ff = new FirstFit1BP(parser.capacity);
-		bf = new BestFit1BP(parser.capacity);
+		ff = new FirstFit1BP();
+		bf = new BestFit1BP();
+		ff.setCapacity(parser.capacity);
+		bf.setCapacity(parser.capacity);
 		this.sizes = new TIntArrayList(parser.sizes);
 		this.sizes.sort();
+		ff.setItems(sizes);
+		bf.setItems(sizes);
 	}
 
 
 	@Override
 	protected int apply() {
-		return Math.min( ff.computeUB(sizes), bf.computeUB(sizes));
+		return Math.min( ff.apply(), bf.apply());
 	}
 
 

@@ -66,8 +66,7 @@ public class PrecedenceStore implements ITemporalStore {
 		if(precMap.contains(key)) {
 			throw new SolverException("duplicate or opposite precedence");
 		}
-		//FIXME precMap.put(key, new StoredPrecedence(t1, t2, direction));
-
+		// FIXME - precMap.put(key, new StoredPrecedence(t1, t2, direction)); - created 4 juil. 2011 by Arnaud Malapert
 	}
 
 	

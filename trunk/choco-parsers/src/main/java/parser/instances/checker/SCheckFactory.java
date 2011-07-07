@@ -70,6 +70,7 @@ public final class SCheckFactory {
 		return makeStatusChecker(model.getInstanceName());
 	}
 
+	
 	public static IStatusChecker makeStatusChecker(String key) {
 		String pvalue = SCheckFactory.PROPERTIES.getProperty(key);
 		if( pvalue != null) {

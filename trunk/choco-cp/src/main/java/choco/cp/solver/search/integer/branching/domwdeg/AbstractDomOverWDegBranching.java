@@ -119,7 +119,6 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 	}
 
 	private void updateVarWeights(final Var currentVar, final SConstraint<?> cstr, final int delta) {
-		//TODO retrieve index of the variable and duplicate loop ?
 		if(delta != 0) {
 			final int n = cstr.getNbVars();
 			for (int k = 0; k < n; k++) {

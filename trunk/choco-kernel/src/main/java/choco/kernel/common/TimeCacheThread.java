@@ -25,38 +25,46 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package choco.kernel.common.opres.pack;
+package choco.kernel.common;
 
-public abstract class AbstractFunctionDDFF implements FunctionDDFF {
+import choco.kernel.solver.SolverException;
 
-	public final int capacity;
-	
-	public final int midCapacity;
-	
-	public int k;
+ /**
+ * fast time limit computation inspired from: http://dow.ngra.de/2008/10/27/when-systemcurrenttimemillis-is-too-slow/.
+ * cant use the heartbeat counter because it lascks of precision.
+ * @author Arnaud Malapert</br> 
+ * @since 23 juil. 2009 version 2.1.1</br>
+ * @version 2.1.1</br>
+ */
+public final class TimeCacheThread extends Thread {
 
-	public AbstractFunctionDDFF(int capacity) {
+	// TODO - Increase heartbeat to 200m or 500ms ? - created 5 juil. 2011 by Arnaud Malapert
+	public final static int CHOCO_MS_TIME_PRECISION = 100;
+		
+	public static volatile long currentTimeMillis = System.currentTimeMillis();
+
+
+	private TimeCacheThread() {
 		super();
-		this.capacity = capacity;
-		this.midCapacity = this.capacity/2;
+		setDaemon(true);
 	}
 
-	public final int getCapacity() {
-		return capacity;
+
+	static {
+		new TimeCacheThread().start();
 	}
 
-	public final int getParameter() {
-		return k;
-	}
-	
 	@Override
-	public void setParameter(int k) {
-		assert(k> 0 && k <= midCapacity);
-		this.k = k;
+	public void run() {
+		while(true) {
+			currentTimeMillis = System.currentTimeMillis();
+			try {
+				Thread.sleep(CHOCO_MS_TIME_PRECISION);
+			} catch (InterruptedException e) {
+				throw new SolverException("Time Limit Thread was interrupted");
+			}
+		}
 	}
-	
-	
-	
-	
-	
+
+
 }

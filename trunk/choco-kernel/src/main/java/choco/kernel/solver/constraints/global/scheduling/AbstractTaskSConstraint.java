@@ -56,6 +56,7 @@ public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstrain
 	 */
 	public AbstractTaskSConstraint(final TaskVar task1, TaskVar task2, final IntDomainVar... otherVars) {
 		this(new TaskVar[]{task1,task2}, otherVars);
+		// FIXME - Set up FineDegree and priority - created 5 juil. 2011 by Arnaud Malapert
 	}
 
 	

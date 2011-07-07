@@ -25,75 +25,43 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package parser.instance;
+package choco.kernel.common.opres.heuristics;
 
-public abstract class AbstractHeuristics implements IHeuristicAlgorithm {
+import java.util.logging.Logger;
+
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.solver.search.measure.IOptimizationMeasures;
+import choco.kernel.solver.search.measure.ISolutionMeasures;
+
+public interface IHeuristic extends ISolutionMeasures, IOptimizationMeasures {
+
+	public final static Logger LOGGER = ChocoLogging.makeUserLogger("heuristic");
 	
-	protected int objective;
+	void reset();
 	
-	private boolean executed = false;
+	void execute();
 	
-	private double time;
+	/**
+	 * indicates if the algorithm was executed
+	 * @return <code><code>true</code> if a solution was found
+	 */
+	boolean hasSearched();
 
-	@Override
-	public void reset() {
-		executed = false;
-		objective = Integer.MAX_VALUE;
-	}
+	/**
+	 * get computation time in seconds
+	 * 
+	 */
+	double getTimeCount();
 	
-	@Override
-	public boolean isObjectiveOptimal() {
-		return false;
-	}
+	/**
+	 * get computation time in seconds
+	 * 
+	 */
+	int getIterationCount();
+
 	
-	@Override
-	public int getIterationCount() {
-		return hasSearched() ? 1 : 0;
-	}
 
-
-	@Override
-	public int getSolutionCount() {
-		return hasSearched() ? 1 : 0;
-	}
-
-
-
-	@Override
-	public final void execute() {
-		time = - System.currentTimeMillis();
-		objective = apply();
-		time += System.currentTimeMillis();
-		time/=1000;
-		executed = true;
-	}
-
-
-
-	protected abstract int apply();
-
-
-	@Override
-	public final Number getObjectiveValue() {
-		return Integer.valueOf(objective);
-	}
-
-	@Override
-	public final double getTimeCount() {
-		return time;
-	}
-
-	@Override
-	public final boolean hasSearched() {
-		return executed;
-	}
-
-
-	@Override
-	public boolean existsSolution() {
-		return hasSearched();
-	}
-	
-	
 }
 
+
+ 

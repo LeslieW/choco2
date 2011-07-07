@@ -61,78 +61,77 @@ import static choco.Choco.*;
  */
 public class ResourceAllocation extends PatternExample {
 
-    //Task are scheduled within given time windows
-    public int[][] timeWindows = {{0, 4}, {3, 5}, {4, 8}, {4, 8}, {8, 12}};
-    //Benefits related tothe presence of the task in the final schedule
-    public int[] durations = {3, 1, 3, 2, 3};
-    public TaskVariable[] operationRequests;
+	//Task are scheduled within given time windows
+	public int[][] timeWindows = {{0, 4}, {3, 5}, {4, 8}, {4, 8}, {8, 12}};
+	//Benefits related tothe presence of the task in the final schedule
+	public int[] durations = {3, 1, 3, 2, 3};
+	public TaskVariable[] operationRequests;
 
-    //Indicate if a task belongs to the final schedule
-    protected IntegerVariable[] usages;
-    //Benefits related tothe presence of the task in the final schedule
-    protected int[] costs = {7, 10, 4, 8, 7};
+	//Indicate if a task belongs to the final schedule
+	protected IntegerVariable[] usages;
+	//Benefits related tothe presence of the task in the final schedule
+	protected int[] costs = {7, 10, 4, 8, 7};
 
-    //Non renewable resource
-    protected int[] sizes = {3, 4, 4, 8, 6};
-    protected int capacity = 13;
+	//Non renewable resource
+	protected int[] sizes = {3, 4, 4, 8, 6};
+	protected int capacity = 13;
 
-    protected IntegerVariable objective;
-
-
-    @Override
-    public void buildModel() {
-        model = new CPModel();
-        //define variables
-        final int n = timeWindows.length;
-        operationRequests = new TaskVariable[n];
-        for (int i = 0; i < n; i++) {
-            operationRequests[i] = makeTaskVar("OR-" + i, timeWindows[i][0], timeWindows[i][1], durations[i]);
-        }
-        usages = makeBooleanVarArray("usage", n);
-        objective = makeIntVar("objective", 0, MathUtils.sum(costs), Options.V_ENUM, Options.V_OBJECTIVE, Options.V_NO_DECISION);
-        //Tasks does not overlap in the final schedule
-        //TODO think about redondant constraints.
-        model.addConstraints(
-                disjunctive(operationRequests, usages),//non-overlaping
-                leq(scalar(sizes, usages), capacity), //non renewable resource
-                eq(scalar(costs, usages), objective) //objective
-        );
-        //schedule non allocated task at the origin (dirty, should be integrated within branching)
-        for (int i = 0; i < n; i++) {
-            model.addConstraints(Choco.implies(eq(usages[i], 0), eq(operationRequests[i].start(), operationRequests[i].start().getLowB())));
-        }
-    }
+	protected IntegerVariable objective;
 
 
-    @Override
-    public void buildSolver() {
-        solver = new CPSolver();
-        solver.getConfiguration().putFalse(Configuration.STOP_AT_FIRST_SOLUTION);
-        solver.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MAXIMIZE);
-        solver.read(model);
-        //search heuristics: schedule the remaining operation request with highest cost.
-        final IntDomainVar[] sortedUsages = new IntDomainVar[operationRequests.length];
-        PermutationUtils.getSortingPermuation(costs, true).applyPermutation(solver.getVar(usages), sortedUsages);
-        solver.attachGoal(new AssignVar(new StaticVarOrder(solver, sortedUsages), new MaxVal()));
-        solver.addGoal(BranchingFactory.setTimes(solver));
-    }
+	@Override
+	public void buildModel() {
+		model = new CPModel();
+		//define variables
+		final int n = timeWindows.length;
+		operationRequests = new TaskVariable[n];
+		for (int i = 0; i < n; i++) {
+			operationRequests[i] = makeTaskVar("OR-" + i, timeWindows[i][0], timeWindows[i][1], durations[i]);
+		}
+		usages = makeBooleanVarArray("usage", n);
+		objective = makeIntVar("objective", 0, MathUtils.sum(costs), Options.V_ENUM, Options.V_OBJECTIVE, Options.V_NO_DECISION);
+		//Tasks does not overlap in the final schedule
+		model.addConstraints(
+				disjunctive(operationRequests, usages),//non-overlaping
+				leq(scalar(sizes, usages), capacity), //non renewable resource
+				eq(scalar(costs, usages), objective) //objective
+		);
+		//schedule non allocated task at the origin (dirty, should be integrated within branching)
+		for (int i = 0; i < n; i++) {
+			model.addConstraints(Choco.implies(eq(usages[i], 0), eq(operationRequests[i].start(), operationRequests[i].start().getLowB())));
+		}
+	}
 
-    @Override
-    public void prettyOut() {
-        //LOGGER.info(solver.pretty());
-        LOGGER.info(Arrays.toString(solver.getVar(usages)));
+
+	@Override
+	public void buildSolver() {
+		solver = new CPSolver();
+		solver.getConfiguration().putFalse(Configuration.STOP_AT_FIRST_SOLUTION);
+		solver.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MAXIMIZE);
+		solver.read(model);
+		//search heuristics: schedule the remaining operation request with highest cost.
+		final IntDomainVar[] sortedUsages = new IntDomainVar[operationRequests.length];
+		PermutationUtils.getSortingPermuation(costs, true).applyPermutation(solver.getVar(usages), sortedUsages);
+		solver.attachGoal(new AssignVar(new StaticVarOrder(solver, sortedUsages), new MaxVal()));
+		solver.addGoal(BranchingFactory.setTimes(solver));
+	}
+
+	@Override
+	public void prettyOut() {
+		//LOGGER.info(solver.pretty());
+		LOGGER.info(Arrays.toString(solver.getVar(usages)));
 
 
-    }
+	}
 
-    @Override
-    public void solve() {
-        solver.generateSearchStrategy();
-        solver.launch();
-    }
+	@Override
+	public void solve() {
+		solver.generateSearchStrategy();
+		solver.launch();
+	}
 
-    public static void main(String[] args) {
-        (new ResourceAllocation()).execute(args);
-    }
+	public static void main(String[] args) {
+		(new ResourceAllocation()).execute(args);
+	}
 
 }

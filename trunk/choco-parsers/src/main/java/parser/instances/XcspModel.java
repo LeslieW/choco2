@@ -48,7 +48,7 @@ import static parser.instances.xcsp.XcspSettings.Heuristic.IMPACT;
 
 import java.io.File;
 
-//TODO InstanceParser should implement the interface. 
+
 class ParserWrapper implements InstanceFileParser {
 
 	public InstanceParser source = new InstanceParser(); 

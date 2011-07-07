@@ -85,7 +85,6 @@ import choco.kernel.solver.variables.set.SetVar;
 
 public final class BranchingFactory {
 
-	//FIXME add Javadoc
 	private BranchingFactory() {
 		super();
 	}
@@ -428,7 +427,6 @@ public final class BranchingFactory {
 	}
 
 	public static SetTimes setTimes(final Solver solver, final TaskVar[] tasks, final Comparator<ITask> comparator, final boolean randomized) {
-		//FIXME set array in constructor
 		return new SetTimes(solver, Arrays.asList(tasks), comparator, randomized);
 	}
 

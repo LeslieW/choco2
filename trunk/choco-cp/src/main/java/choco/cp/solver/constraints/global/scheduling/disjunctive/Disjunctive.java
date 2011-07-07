@@ -136,7 +136,6 @@ public class Disjunctive extends AbstractResourceSConstraint {
 			if(flags.contains(NF_NL)) {
 				noFixPoint |= rules.notLast();
 				if(flags.contains(DETECTABLE_PRECEDENCE)) {
-					//FIXME need rules.fireDomainChanged();
 					noFixPoint |= rules.detectablePrecedenceEST();
 					noFixPoint |= rules.notFirst();
 					noFixPoint |= rules.detectablePrecedenceLCT();
@@ -197,7 +196,7 @@ public class Disjunctive extends AbstractResourceSConstraint {
 		//Solver.flushLogs();
 		if(rules.isActive()) {
 			rules.initialize();
-			//FIXME set the constraint as passive if necessary 
+			// TODO - Set the constraint passive if necessary - created 4 juil. 2011 by Arnaud Malapert 
 			switch (policy) {
 			case DEFAULT:defaultFiltering();break;
 			case VILIM:vilimFiltering();break;

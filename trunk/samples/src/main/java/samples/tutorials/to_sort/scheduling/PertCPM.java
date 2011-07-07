@@ -36,12 +36,12 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.kernel.visu.VisuFactory;
 import samples.tutorials.PatternExample;
 
 import java.util.logging.Level;
 
 import static choco.Choco.*;
-import static choco.kernel.common.VisuFactory.createAndShowGUI;
 
 
 /**
@@ -114,6 +114,9 @@ public class PertCPM extends PatternExample {
 		);
 	}
 
+	private void showGUI(Object disjMod) {
+		VisuFactory.getDotManager().show(disjMod);
+	}
 
 	@Override
 	public void buildSolver() {
@@ -122,7 +125,7 @@ public class PertCPM extends PatternExample {
 		PreProcessConfiguration.keepSchedulingPreProcess(s);
 		s.createMakespan();
 		s.read(model);
-		createAndShowGUI(s.getDisjMod());
+		showGUI(s.getDisjMod());
 	}
 
 	@Override
@@ -132,7 +135,7 @@ public class PertCPM extends PatternExample {
 		final DisjunctiveSModel disjSMod = new DisjunctiveSModel((PreProcessCPSolver) solver);
 		try {
 			solver.propagate();
-			createAndShowGUI(disjSMod);
+			showGUI(disjSMod);
 			
 			solver.worldPush();
 						
@@ -140,7 +143,7 @@ public class PertCPM extends PatternExample {
 			solver.propagate();
 			makespan.instantiate(makespan.getInf(), null, true); //instantiate makespan 
 			solver.propagate(); //compute slack times
-			createAndShowGUI(disjSMod);
+			showGUI(disjSMod);
 			
 			solver.worldPop();
 			
@@ -148,7 +151,7 @@ public class PertCPM extends PatternExample {
 			solver.propagate();
 			makespan.instantiate(makespan.getInf(), null, true); //instantiate makespan and compute slack times
 			solver.propagate();
-			createAndShowGUI(disjSMod);
+			showGUI(disjSMod);
 			
 		} catch (ContradictionException e) {
 			LOGGER.log(Level.SEVERE, "Pert/CPM should not raise a contradiction !", e);

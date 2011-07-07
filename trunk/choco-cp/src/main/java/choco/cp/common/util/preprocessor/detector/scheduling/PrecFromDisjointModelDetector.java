@@ -39,7 +39,7 @@ public final class PrecFromDisjointModelDetector extends AbstractTemporalDetecto
 
 	@Override
 	protected void apply(TemporalConstraint ct) {
-		if(ct.IsFixed()
+		if(ct.isFixed()
 				&& disjMod.safeAddArc(ct) ) delete(ct);
 	}
 

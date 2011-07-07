@@ -37,6 +37,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.LayoutManager;
+import java.io.File;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.FieldPosition;
 import java.text.NumberFormat;
@@ -101,6 +103,7 @@ import choco.kernel.solver.constraints.global.scheduling.ICumulativeResource;
 import choco.kernel.solver.constraints.global.scheduling.IResource;
 import choco.kernel.solver.search.limit.Limit;
 import choco.kernel.solver.variables.scheduling.TaskVar;
+import choco.kernel.visu.AbstractVisuManager;
 import choco.visu.components.chart.axis.Log2Axis;
 import choco.visu.components.chart.dataset.MyXYTaskDataset;
 import choco.visu.components.chart.labels.CumulTaskToolTipGenerator;
@@ -328,7 +331,7 @@ public final class ChocoChartFactory {
 	public static JFreeChart createUnaryHChart(String title, IResource<TaskVar> rsc) {
 		return createUnaryHChart(title, createTaskCollection(rsc), ResourceRenderer.COLUMN);
 	}
-	
+
 	public static JFreeChart createUnaryHChart(String title, Solver scheduler) {
 		return createUnaryHChart(title, createTaskCollection(scheduler, scheduler.getModel().getConstraintByType(ConstraintType.DISJUNCTIVE)), ResourceRenderer.COORD);
 	}
@@ -536,15 +539,15 @@ public final class ChocoChartFactory {
 		return chart;
 	}
 
-	
+
 	//*****************************************************************//
 	//*******************  Util **************************************//
 	//***************************************************************//
 
 	private final static int DEFAULT_WIDTH = 800;
-	
+
 	private final static int DEFAULT_HEIGHT = 600;
-	
+
 	public static void createAndShowGUI(final String title,final int width,final int height, final LayoutManager layout, final Component... components) {
 		//Schedule a job for the event dispatch thread:
 		//creating and showing this application's GUI.
@@ -578,14 +581,20 @@ public final class ChocoChartFactory {
 		createAndShowGUI(title, width, height, layout, components);
 	}
 
-	
+
 	public static void createAndShowGUI(String title, JFreeChart jfreechart) {
 		createAndShowGUI(title, DEFAULT_WIDTH, DEFAULT_HEIGHT, null, jfreechart);
 	}
-	
+
 	public static void createAndShowGUI(String title, Solver solver) {
 		createAndShowGUI(title, DEFAULT_WIDTH, DEFAULT_HEIGHT, null, new ChocoChartPanel(solver));
 	}
+	
+	public static void getJFreeChartManager() {
+		JFreeChartManager.getInstance();
+	}
+
+	
 }
 
 final class IntegerDateFormat extends SimpleDateFormat {
@@ -604,5 +613,56 @@ final class IntegerDateFormat extends SimpleDateFormat {
 		return numberFormat.format(date.getTime(), toAppendTo, pos);
 	}
 
+}
 
+
+class JFreeChartManager extends AbstractVisuManager {
+	
+	/** 
+	 * The shared instance. 
+	 */
+	private final static JFreeChartManager SINGLOTON = new JFreeChartManager();
+
+	/** 
+	 * Private constructor. 
+	 */
+	private JFreeChartManager() {
+		super();
+	}
+
+	/** 
+	 * Returns this shared instance. 
+	 * 
+	 * @returns The shared instance 
+	 */
+	public final static JFreeChartManager getInstance() {
+		return SINGLOTON;
+	}
+
+	@Override
+	protected String getFileExtension() {
+		return "pdf";
+	}
+
+	@Override
+	protected boolean doExport(File file, Object chart, int width, int height)
+			throws IOException {
+		if (chart instanceof JFreeChart) {
+			PdfExport.saveChartAsPDF(file, (JFreeChart) chart, width, height);
+			return true;			
+		} else return false;
+	}
+
+	@Override
+	protected boolean doShow(Object chart, int width, int height) {
+		if (chart instanceof JFreeChart) {
+			JFreeChart jfc = (JFreeChart) chart;
+			ChocoChartFactory.createAndShowGUI(jfc.getTitle().getText(), width, height, null, jfc);
+			return true;
+		} else return false;
+		
+	}
+	
+	
+	
 }

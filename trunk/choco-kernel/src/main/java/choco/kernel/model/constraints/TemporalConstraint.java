@@ -110,7 +110,7 @@ public class TemporalConstraint extends ComponentConstraint implements ITemporal
 	}
 	
 	@Override
-	public final boolean IsFixed() {
+	public final boolean isFixed() {
 		return getDirection().isConstant();
 	}
 

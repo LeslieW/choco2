@@ -110,16 +110,6 @@ public final class BitMask implements IBitMask {
 		}
 	}
 
-	public String toSettingsString() {
-		StringBuilder b = new StringBuilder();
-		//FIXME
-//		for(IBitMask setting : IBitMask.values()) {
-//			if(contains(setting)) {
-//				b.append(setting).append(" ");
-//			}
-//		}
-		return new String(b);
-	}
 
 	@Override
 	public String toString() {

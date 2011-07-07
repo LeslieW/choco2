@@ -25,42 +25,87 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package choco.kernel.common.opres.pack;
+package choco.kernel.common.opres.heuristics;
 
-public class FunctionF2 extends AbstractFunctionDDFF {
+import choco.kernel.common.TimeCacheThread;
 
-	private int currentCapacity;
+public abstract class AbstractHeuristic implements IHeuristic {
+	
+	private int objective;
+	
+	private boolean hasSearched = false;
+	
+	private double time;
 
-	private int currentMidCapacity;
+	@Override
+	public void reset() {
+		hasSearched = false;
+		time= 0;
+		objective = Integer.MAX_VALUE;
+	}
+	
+	@Override
+	public boolean isObjectiveOptimal() {
+		return false;
+	}
+	
+	@Override
+	public int getIterationCount() {
+		return hasSearched() ? 1 : 0;
+	}
 
-	public FunctionF2(int capacity) {
-		super(capacity);
+
+	@Override
+	public int getSolutionCount() {
+		return hasSearched() ? 1 : 0;
+	}
+
+
+
+	@Override
+	public final void execute() {
+		time = - TimeCacheThread.currentTimeMillis;
+		objective = apply();
+		time += TimeCacheThread.currentTimeMillis;
+		time/=1000;
+		hasSearched = true;
+	}
+	
+	public final void executeQuick() {
+		objective = apply();
+		hasSearched = true;
+	}
+
+
+
+	protected abstract int apply();
+
+
+	public final int getNumberOfBins() {
+		return objective;
+	}
+	
+	@Override
+	public final Number getObjectiveValue() {
+		return Integer.valueOf(objective);
 	}
 
 	@Override
-	public void setParameter(int k) {
-		super.setParameter(k);
-		currentMidCapacity = (capacity / k);
-		currentCapacity = 2 * currentMidCapacity;
+	public final double getTimeCount() {
+		return time;
 	}
 
 	@Override
-	public int apply(int size) {
-		if( size > midCapacity) {
-			return currentCapacity - ( ( (capacity - size) / k)  << 1);
-		}else if( (size << 1) == capacity) return currentMidCapacity;
-		else return (size/k) << 1;
+	public final boolean hasSearched() {
+		return hasSearched;
 	}
+
 
 	@Override
-	public int findParameter(int size) {
-		if( size > midCapacity) return  size == midCapacity + 1 ? midCapacity : capacity - size +1;
-		else return size;
+	public boolean existsSolution() {
+		return hasSearched();
 	}
-
-	@Override
-	public int getCurrentCapacity() {
-		return currentCapacity;
-	}
-
+	
+	
 }
+

@@ -27,6 +27,26 @@
 
 package parser.instances;
 
+import static parser.instances.ResolutionStatus.ERROR;
+import static parser.instances.ResolutionStatus.OPTIMUM;
+import static parser.instances.ResolutionStatus.SAT;
+import static parser.instances.ResolutionStatus.TIMEOUT;
+import static parser.instances.ResolutionStatus.UNKNOWN;
+import static parser.instances.ResolutionStatus.UNSAT;
+import static parser.instances.ResolutionStatus.UNSUPPORTED;
+
+import java.io.File;
+import java.sql.Timestamp;
+import java.text.MessageFormat;
+import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.apache.commons.io.FilenameUtils;
+
+import parser.absconparseur.tools.UnsupportedConstraintException;
+import parser.instances.checker.IStatusChecker;
+import parser.instances.checker.SCheckFactory;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.configure.MessageFactory;
 import choco.cp.solver.configure.StrategyFactory;
@@ -40,17 +60,6 @@ import choco.kernel.solver.search.checker.SolutionCheckerException;
 import choco.kernel.solver.search.measure.IMeasures;
 import db.DbManager;
 import db.DbTables;
-import parser.absconparseur.tools.UnsupportedConstraintException;
-import static parser.instances.ResolutionStatus.*;
-import parser.instances.checker.IStatusChecker;
-import parser.instances.checker.SCheckFactory;
-
-import java.io.File;
-import java.sql.Timestamp;
-import java.text.MessageFormat;
-import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A class to provide facilities for loading and solving instance described by a file (txt, xml, ...). </br>
@@ -96,13 +105,8 @@ public abstract class AbstractInstanceModel {
 	}
 
 	public String getInstanceName() {
-		final File file = parser.getInstanceFile();
-		if(file != null) {
-			final String filename = file.getName();
-			final int extIdx = filename.lastIndexOf('.');
-			return extIdx == -1 ? filename : filename.substring(0, extIdx);
-		}
-		return null;
+		return (parser == null || parser.getInstanceFile() == null) ? 
+				"UNDEF" : FilenameUtils.removeExtension(parser.getInstanceFile().getName());
 	}
 
 	public void initialize() {
@@ -465,9 +469,9 @@ public abstract class AbstractInstanceModel {
 	public void databaseReport() {
 		//insert solver
 		Integer solverID = dbManager.insertEntryAndRetrieveGPK(DbTables.T_SOLVERS,
-                getInstanceName(), status.getName(), getFullSecTime(), "", //getValuesMessage(),
-                dbManager.getModelID(solver), dbManager.getEnvironmentID(), getSeed(), new Timestamp(System.currentTimeMillis()));
-		//TODO remettre getModelID en protected quand dans choco
+				getInstanceName(), status.getName(), getFullSecTime(), "", //getValuesMessage(),
+				dbManager.getModelID(solver), dbManager.getEnvironmentID(), getSeed(), new Timestamp(System.currentTimeMillis()));
+		// TODO - Set visibility of getModelID - created 4 juil. 2011 by Arnaud Malapert
 		Integer measuresID;
 		if( solver != null) {
 			//insert measures

@@ -100,7 +100,7 @@ public class DisjunctiveModel extends DisjunctiveGraph<TemporalConstraint> {
 	 * @return deleteC
 	 */
 	public boolean safeAddArc(TemporalConstraint c) {
-		assert c.IsFixed();
+		assert c.isFixed();
 		final int i = c.getOHook();
 		final int j = c.getDHook();
 		if(c.getDirVal() == ITemporalRelation.BWD) {

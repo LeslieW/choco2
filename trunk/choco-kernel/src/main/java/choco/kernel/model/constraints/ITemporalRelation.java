@@ -40,7 +40,7 @@ public interface ITemporalRelation<T extends ITaskVariable<V>, V> { //extends ID
 
 	V getDirection();
 	
-	boolean IsFixed();
+	boolean isFixed();
 	
 	int getDirVal();
 	
