@@ -27,9 +27,11 @@
 
 package choco.kernel.model.variables.integer;
 
-import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.IConstraintList;
-import choco.kernel.model.variables.*;
+import choco.kernel.model.variables.ComponentVariable;
+import choco.kernel.model.variables.IntBoundedVariable;
+import choco.kernel.model.variables.Operator;
+import choco.kernel.model.variables.VariableType;
 
 /*
  * Created by IntelliJ IDEA.
@@ -62,7 +64,7 @@ public class IntegerExpressionVariable extends ComponentVariable implements IntB
 	}
 
 	private void initializeBounds(){
-		if(operator!=null){
+		if(operator!=null && !operator.equals(Operator.NONE)){
 			computeBounds();
 		}
 	}
