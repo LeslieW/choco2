@@ -27,9 +27,7 @@
 
 package choco.cp.solver.variables.integer;
 
-import choco.cp.common.util.iterators.IntDomainIterator;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.common.util.iterators.OneValueIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.PropagationEngine;
@@ -72,16 +70,17 @@ public abstract class AbstractIntDomain implements IntDomain {
 
     }
 
+    @Override
+    public int fastNextValue(int x) {
+        return this.getNextValue(x);
+    }
+
+    @Override
+    public int fastPrevValue(int x) {
+        return this.getPrevValue(x);
+    }
+
     /**
-	 * Returns an getIterator.
-	 */
-
-	public DisposableIntIterator getIterator() {
-        if(getSize() == 1) return OneValueIterator.getIterator(getInf());
-        return IntDomainIterator.getIterator(this);
-	}
-
-	/**
 	 * Internal var: update on the variable upper bound caused by its i-th
 	 * constraint.
 	 * Returns a boolean indicating whether the call indeed added new information.
@@ -385,5 +384,4 @@ public abstract class AbstractIntDomain implements IntDomain {
     public final IDeltaDomain copyDelta() {
         return deltaDom.copy();
     }
-
 }

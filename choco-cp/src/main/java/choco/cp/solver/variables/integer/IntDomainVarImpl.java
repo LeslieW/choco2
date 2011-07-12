@@ -27,6 +27,7 @@
 
 package choco.cp.solver.variables.integer;
 
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.structure.Couple;
 import choco.kernel.memory.structure.PartiallyStoredIntCstrList;
@@ -62,7 +63,6 @@ public class IntDomainVarImpl<C extends AbstractSConstraint & IntPropagator> ext
     @SuppressWarnings({"unchecked"})
     protected <C extends AbstractIntSConstraint & IntPropagator> IntDomainVarImpl(Solver solver, String name) {
         super(solver, name, new PartiallyStoredIntCstrList<C>(solver.getEnvironment(), IntVarEvent.EVENTS));
-        this.event = new IntVarEvent(this);
     }
 
     /**
@@ -104,6 +104,7 @@ public class IntDomainVarImpl<C extends AbstractSConstraint & IntPropagator> ext
                 domain = new IntervalIntDomain(this, a, b, solver.getEnvironment(), propagationEngine);
                 break;
         }
+        this.event = new IntVarEvent<C>(this);
     }
 
     public IntDomainVarImpl(Solver solver, String name, int domainType, int[] distinctSortedValues) {
@@ -128,6 +129,7 @@ public class IntDomainVarImpl<C extends AbstractSConstraint & IntPropagator> ext
                 domain = new BitSetIntDomain(this, distinctSortedValues, solver.getEnvironment(), propagationEngine);
                 break;
         }
+        this.event = new IntVarEvent<C>(this);
     }
 
     public final DisposableIterator<Couple<C>> getActiveConstraints(int evtType, C cstrCause) {
@@ -265,11 +267,15 @@ public class IntDomainVarImpl<C extends AbstractSConstraint & IntPropagator> ext
                 if (!this.hasEnumeratedDomain() || !x.hasEnumeratedDomain())
                     return true;
                 else {
-                    int ub = this.getSup();
-                    for (int val = this.getInf(); val <= ub; val = this.getNextDomainValue(val)) {
-                        if (x.canBeInstantiatedTo(val))
+                    DisposableIntIterator it = this.getDomain().getIterator();
+                    for (; it.hasNext();) {
+                        int v = it.next();
+                        if (x.canBeInstantiatedTo(v)){
+                            it.dispose();
                             return true;
+                        }
                     }
+                    it.dispose();
                     return false;
                 }
             } else
@@ -334,6 +340,10 @@ public class IntDomainVarImpl<C extends AbstractSConstraint & IntPropagator> ext
             return domain.getNextValue(currentv);
     }
 
+    @Override
+    public int fastNextDomainValue(int i) {
+        return domain.fastNextValue(i);
+    }
 
     /**
      * Gets the previous value in the domain.
@@ -346,6 +356,11 @@ public class IntDomainVarImpl<C extends AbstractSConstraint & IntPropagator> ext
             return currentv - 1;
         else
             return domain.getPrevValue(currentv);
+    }
+
+    @Override
+    public int fastPrevDomainValue(int i) {
+        return domain.fastPrevValue(i);
     }
 
     @Deprecated
@@ -515,8 +530,4 @@ public class IntDomainVarImpl<C extends AbstractSConstraint & IntPropagator> ext
 	public String pretty() {
 		return (this.toString() + '[' + this.domain.getSize() + ']' + this.domain.pretty());// +" ~ "+ Arrays.toString(this.extensions);
 	}
-
-	
-
-
 }

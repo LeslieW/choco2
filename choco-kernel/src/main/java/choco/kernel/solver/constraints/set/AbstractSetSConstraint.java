@@ -59,13 +59,9 @@ public abstract class AbstractSetSConstraint extends AbstractSConstraint<SetVar>
 
     public void awakeOnEnvRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
         if (deltaDomain != null) {
-            try {
-                for (; deltaDomain.hasNext();) {
-                    int val = deltaDomain.next();
-                    awakeOnEnv(idx, val);
-                }
-            } finally {
-                deltaDomain.dispose();
+            for (; deltaDomain.hasNext(); ) {
+                int val = deltaDomain.next();
+                awakeOnEnv(idx, val);
             }
         } else {
             throw new SolverException("deltaDomain should not be null in awakeOnEnvRemovals");
@@ -74,13 +70,9 @@ public abstract class AbstractSetSConstraint extends AbstractSConstraint<SetVar>
 
     public void awakeOnkerAdditions(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
         if (deltaDomain != null) {
-            try {
-                for (; deltaDomain.hasNext();) {
-                    int val = deltaDomain.next();
-                    awakeOnKer(idx, val);
-                }
-            } finally {
-                deltaDomain.dispose();
+            for (; deltaDomain.hasNext(); ) {
+                int val = deltaDomain.next();
+                awakeOnKer(idx, val);
             }
         } else {
             throw new SolverException("deltaDomain should not be null in awakeOnKerAdditions");

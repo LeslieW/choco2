@@ -46,7 +46,6 @@ public interface IntDomain extends Domain {
 
 	public DisposableIntIterator getIterator();
 
-
 	/**
 	 * Access the minimal value stored in the domain.
 	 */
@@ -125,6 +124,22 @@ public interface IntDomain extends Domain {
 
 	public int getNextValue(int x);
 
+    /**
+	 * Accessing the smallest value stored in the domain and strictly greater
+	 * than <i>x</i>, assuming <i>x</i> is greater or equal to the lower bound.
+     * <p/>
+     * To iterate over the values in a <code>IntDomain</code>,
+     * use the following loop:
+     *
+     * <pre>
+     * int ub = dom.getSup();
+     * for (int val = dom.getInf(); val <= ub; val = dom.fastNextValue(val)) {
+     *     // operate on value 'val' here
+     * }</pre>
+     *
+	 */
+    public int fastNextValue(int x);
+
 
 	/**
 	 * Accessing the largest value stored in the domain and strictly smaller
@@ -144,6 +159,21 @@ public interface IntDomain extends Domain {
 
 	public int getPrevValue(int x);
 
+    /**
+	 * Accessing the largest value stored in the domain and strictly smaller
+	 * than <i>x</i>, assuming <i>x</i> is less or equal to the upper bound.
+     *
+     * <p/>
+     * To iterate over the values in a <code>IntDomain</code>,
+     * use the following loop:
+     *
+     * <pre>
+     * int lb = dom.getInf();
+     * for (int val = dom.getSup(); val >= lb; val = dom.fastPrevValue(val)) {
+     *     // operate on value 'val' here
+     * }</pre>
+	 */
+    public int fastPrevValue(int x);
 
 	/**
 	 * Testing whether there are values in the domain that are strictly greater

@@ -73,6 +73,7 @@ public final class IntArrayIterator extends DisposableIntIterator {
      * Freeze the iterator, cannot be reused.
      */
     public void init(final int[] someElements, final int from, final int to) {
+        super.init();
         this.elements = someElements;
         this.endIdx = to;
         curentIdx = from;
@@ -105,6 +106,7 @@ public final class IntArrayIterator extends DisposableIntIterator {
 
     @Override
     public void dispose() {
+        super.dispose();
         manager.get().returnE(this);
     }
 }

@@ -36,11 +36,23 @@ package choco.kernel.common.util.disposable;
  * An interface to declare disposable object, ie object that can be reused (iterators,...)
  */
 public abstract class Disposable {
+
+    private boolean canBeReuse; // wether this object can be reused, or not
+
+    protected void init() {
+        canBeReuse = false;
+    }
+
     /**
      * This method allows to declare that an object is not used anymore. It
      * can be reused by another object.
      */
-    @SuppressWarnings({"unchecked"})
-    public abstract void dispose();
+    public void dispose() {
+        canBeReuse = true;
+    }
+
+    public final boolean reusable() {
+        return canBeReuse;
+    }
 
 }

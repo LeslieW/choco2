@@ -28,7 +28,6 @@
 package choco.cp.common.util.iterators;
 
 import choco.cp.solver.variables.integer.BooleanDomain;
-import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 
 /**
@@ -39,34 +38,18 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
  */
 public final class BooleanDomainIterator extends DisposableIntIterator {
 
-    private static final ThreadLocal<PoolManager<BooleanDomainIterator>> manager = new ThreadLocal<PoolManager<BooleanDomainIterator>>();
-
     private BooleanDomain domain;
     private int nextValue;
 
 
-    private BooleanDomainIterator() {
-    }
-
-    @SuppressWarnings({"unchecked"})
-    public static BooleanDomainIterator getIterator(final BooleanDomain aDomain) {
-        PoolManager<BooleanDomainIterator> tmanager = manager.get();
-        if (tmanager == null) {
-            tmanager = new PoolManager<BooleanDomainIterator>();
-            manager.set(tmanager);
-        }
-        BooleanDomainIterator it = tmanager.getE();
-        if (it == null) {
-            it = new BooleanDomainIterator();
-        }
-        it.init(aDomain);
-        return it;
+    public BooleanDomainIterator() {
     }
 
     /**
      * Freeze the iterator, cannot be reused.
      */
     public void init(final BooleanDomain aDomain) {
+        super.init();
         this.domain = aDomain;
         nextValue = aDomain.getInf();
     }
@@ -99,11 +82,5 @@ public final class BooleanDomainIterator extends DisposableIntIterator {
             nextValue = 2;
         }
         return v;
-    }
-
-
-    @Override
-    public void dispose() {
-        manager.get().returnE(this);
     }
 }

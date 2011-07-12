@@ -27,7 +27,6 @@
 
 package choco.kernel.model.variables.integer.iterators;
 
-import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 
 /**
@@ -38,34 +37,18 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
  */
 public final class IVIterator extends DisposableIntIterator {
 
-    private static final ThreadLocal<PoolManager<IVIterator>> manager = new ThreadLocal<PoolManager<IVIterator>>();
-
     private int upp;
     private int value;
     private int[] values;
 
-    private IVIterator() {
-    }
-
-    @SuppressWarnings({"unchecked"})
-    public static IVIterator getIterator(final int theLow, final int theUpp, final int[] theValues) {
-        PoolManager<IVIterator> tmanager = manager.get();
-        if (tmanager == null) {
-            tmanager = new PoolManager<IVIterator>();
-            manager.set(tmanager);
-        }
-        IVIterator it = tmanager.getE();
-        if (it == null) {
-            it = new IVIterator();
-        }
-        it.init(theLow, theUpp, theValues);
-        return it;
+    public IVIterator() {
     }
 
     /**
      * Freeze the iterator, cannot be reused.
      */
     public void init(final int theLow, final int theUpp, final int[] theValues) {
+        super.init();
         this.upp = theUpp;
         this.values = theValues;
         if (values != null) {
@@ -105,11 +88,6 @@ public final class IVIterator extends DisposableIntIterator {
         } else {
             return values[value++];
         }
-    }
-
-    @Override
-    public void dispose() {
-        manager.get().returnE(this);
     }
 
 }

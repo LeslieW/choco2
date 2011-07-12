@@ -101,6 +101,8 @@ public final class SetVarImpl <C extends AbstractSConstraint & SetPropagator> ex
      */
     public SetVarImpl(Solver solver, String name, int[] sortedValues, IntDomainVar card, int type) {
         super(solver, name, new PartiallyStoredSetCstrList<C>(solver.getEnvironment()));
+        boolean constant = (type == BOUNDSET_CONSTANT);
+        this.domain = new SetDomainImpl(this, sortedValues, constant, solver.getEnvironment(), propagationEngine);
 		this.event = new SetVarEvent<C>(this);
         int size = sortedValues.length;
         if(card ==null){
@@ -115,8 +117,6 @@ public final class SetVarImpl <C extends AbstractSConstraint & SetPropagator> ex
         }else{
             this.card = card;
         }
-        boolean constant = (type == BOUNDSET_CONSTANT);
-        this.domain = new SetDomainImpl(this, sortedValues, constant, solver.getEnvironment(), propagationEngine);
 	}
 
     @SuppressWarnings({"unchecked"})

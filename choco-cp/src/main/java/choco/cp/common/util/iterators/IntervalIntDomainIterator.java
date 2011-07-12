@@ -28,7 +28,6 @@
 package choco.cp.common.util.iterators;
 
 import choco.cp.solver.variables.integer.IntervalIntDomain;
-import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 
 /**
@@ -39,34 +38,18 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
  */
 public final class IntervalIntDomainIterator extends DisposableIntIterator {
 
-    private static final ThreadLocal<PoolManager<IntervalIntDomainIterator>> manager = new ThreadLocal<PoolManager<IntervalIntDomainIterator>>();
-
-    private IntervalIntDomain domain;
     private int value;
+    private int upperb;
 
-    private IntervalIntDomainIterator() {
-    }
-
-    @SuppressWarnings({"unchecked"})
-    public static IntervalIntDomainIterator getIterator(final IntervalIntDomain aDomain) {
-        PoolManager<IntervalIntDomainIterator> tmanager = manager.get();
-        if (tmanager == null) {
-            tmanager = new PoolManager<IntervalIntDomainIterator>();
-            manager.set(tmanager);
-        }
-        IntervalIntDomainIterator it = tmanager.getE();
-        if (it == null) {
-            it = new IntervalIntDomainIterator();
-        }
-        it.init(aDomain);
-        return it;
+    public IntervalIntDomainIterator() {
     }
 
     /**
      * Freeze the iterator, cannot be reused.
      */
     public void init(final IntervalIntDomain aDomain) {
-        this.domain = aDomain;
+        super.init();
+        upperb = aDomain.getSup();
         value = aDomain.getInf() - 1;
     }
 
@@ -79,7 +62,7 @@ public final class IntervalIntDomainIterator extends DisposableIntIterator {
      */
     @Override
     public boolean hasNext() {
-        return value < domain.getSup();
+        return value < upperb;
     }
 
     /**
@@ -92,11 +75,5 @@ public final class IntervalIntDomainIterator extends DisposableIntIterator {
     @Override
     public int next() {
         return ++value;
-    }
-
-
-    @Override
-    public void dispose() {
-        manager.get().returnE(this);
     }
 }

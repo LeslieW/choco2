@@ -27,7 +27,6 @@
 
 package choco.kernel.memory.structure.iterators;
 
-import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.IStateInt;
 
@@ -36,25 +35,6 @@ import java.util.NoSuchElementException;
 import static choco.kernel.common.Constant.STORED_OFFSET;
 
 public final class PSVIterator<E> extends DisposableIterator<E> {
-
-    private static final ThreadLocal<PoolManager<PSVIterator>> manager = new ThreadLocal<PoolManager<PSVIterator>>();
-
-    @SuppressWarnings({"unchecked"})
-    public static <E> DisposableIterator getIterator(final int theNStaticObjects, final E[] theStaticObjects,
-                                                     final IStateInt theNStoredObjects, final E[] theStoredObjects) {
-        PoolManager<PSVIterator> tmanager = manager.get();
-        if (tmanager == null) {
-            tmanager = new PoolManager<PSVIterator>();
-            manager.set(tmanager);
-        }
-        PSVIterator it = tmanager.getE();
-        if (it == null) {
-            it = new PSVIterator();
-        }
-        it.init(theNStaticObjects, theStaticObjects, theNStoredObjects, theStoredObjects);
-        return it;
-
-    }
 
     private int nStaticObjects;
 
@@ -66,7 +46,7 @@ public final class PSVIterator<E> extends DisposableIterator<E> {
 
     private int idx;
 
-    private PSVIterator() {
+    public PSVIterator() {
     }
 
     /**
@@ -74,6 +54,7 @@ public final class PSVIterator<E> extends DisposableIterator<E> {
      */
     public void init(final int theNStaticObjects, final E[] theStaticObjects,
                      final IStateInt theNStoredObjects, final E[] theStoredObjects) {
+        super.init();
         idx = -1;
         this.nStaticObjects = theNStaticObjects;
         this.staticObjects = theStaticObjects;
@@ -108,10 +89,5 @@ public final class PSVIterator<E> extends DisposableIterator<E> {
         } else {
             throw new NoSuchElementException();
         }
-    }
-
-    @Override
-    public void dispose() {
-        manager.get().returnE(this);
     }
 }

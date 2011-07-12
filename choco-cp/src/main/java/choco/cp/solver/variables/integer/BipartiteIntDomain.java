@@ -30,7 +30,6 @@ package choco.cp.solver.variables.integer;
 import choco.cp.common.util.iterators.BipartiteIntDomainIterator;
 import choco.cp.solver.variables.delta.BipartiteDeltaDomain;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.common.util.iterators.OneValueIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
@@ -95,35 +94,37 @@ public class BipartiteIntDomain extends AbstractIntDomain {
      */
     private int offset;
 
+    protected BipartiteIntDomainIterator _iterator = null;
+
     /**
      * Constructs a new domain for the specified variable and bounds.
      *
-     * @param v   The involved variable.
-     * @param sortedValues arry of sorted values.
+     * @param v                 The involved variable.
+     * @param sortedValues      arry of sorted values.
      * @param environment
      * @param propagationEngine
      */
     public BipartiteIntDomain(final IntDomainVarImpl v, final int[] sortedValues, final IEnvironment environment, final PropagationEngine propagationEngine) {
         super(v, propagationEngine);
-        assert(v!=null);
-        assert(sortedValues!=null);
+        assert (v != null);
+        assert (sortedValues != null);
         init(sortedValues, environment);
     }
 
     /**
      * Constructs a new domain for the specified variable and bounds.
      *
-     * @param v   The involved variable.
-     * @param low Minimal value.
-     * @param up  Maximal value.
+     * @param v                 The involved variable.
+     * @param low               Minimal value.
+     * @param up                Maximal value.
      * @param environment
      * @param propagationEngine
      */
     public BipartiteIntDomain(final IntDomainVarImpl v, final int low, final int up, final IEnvironment environment, final PropagationEngine propagationEngine) {
         super(v, propagationEngine);
         // Pre-condition
-        assert(v!=null);
-        assert(low <= up);
+        assert (v != null);
+        assert (low <= up);
         final int[] sortedValues = new int[up - low + 1];
         for (int i = 0; i < sortedValues.length; i++) {
             sortedValues[i] = low + i;
@@ -244,12 +245,11 @@ public class BipartiteIntDomain extends AbstractIntDomain {
     }
 
 
-
     /**
      * Removing a value from the domain of a variable. Returns true if this
      * was a real modification on the domain.
      *
-     * @param x the value to remove
+     * @param x     the value to remove
      * @param cause
      * @return wether the removal has been done
      * @throws ContradictionException contradiction excpetion
@@ -361,8 +361,14 @@ public class BipartiteIntDomain extends AbstractIntDomain {
     }
 
     public DisposableIntIterator getIterator() {
-        if(getSize() == 1) return OneValueIterator.getIterator(getInf());
-        return BipartiteIntDomainIterator.getIterator(valuesInDomainNumber.get(), values);
+        if (_iterator == null) {
+            _iterator = new BipartiteIntDomainIterator();
+        } else if (!_iterator.reusable()) {
+//            assert false;
+            _iterator = new BipartiteIntDomainIterator();
+        }
+        _iterator.init(valuesInDomainNumber.get(), values);
+        return _iterator;
     }
 
 
@@ -381,7 +387,7 @@ public class BipartiteIntDomain extends AbstractIntDomain {
 
         int current = this.getInf();
         buf.append(current);
-        while(count < maxDisplay && this.hasNextValue(current)){
+        while (count < maxDisplay && this.hasNextValue(current)) {
             current = this.getNextValue(current);
             count++;
             if (count > 0) buf.append(", ");

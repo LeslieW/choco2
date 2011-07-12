@@ -42,145 +42,152 @@ import choco.kernel.model.variables.integer.iterators.IVIterator;
  */
 public class IntegerVariable extends IntegerExpressionVariable {
 
-	protected int[] values;
-		
-	protected IntegerVariable(final VariableType variableType, final int[] parameters,
-			final boolean enableOption, final IConstraintList constraints) {
-		super(variableType, parameters, enableOption, constraints);
-		if(parameters.length>0) {
-			this.lowB = parameters[0];
-			this.uppB = parameters[parameters.length-1];
-		}
-		setVariables(this);
-	}
+    protected int[] values;
+    protected IVIterator _iterator;
 
-	
-	public IntegerVariable(final String name, final int binf, final int bsup) {
-		//noinspection NullArgumentToVariableArgMethod
-		this(VariableType.INTEGER, new int[]{binf, bsup}, true, new ConstraintsDataStructure());
-		this.setName(name);
-	}
-
-	public IntegerVariable(final String name, final int[] theValues) {
-		//noinspection NullArgumentToVariableArgMethod
-		this(VariableType.INTEGER, theValues, true, new ConstraintsDataStructure());
-		this.values = theValues;
-		this.setName(name);
-	}
-
-	public final int[] getValues() {
-		return values;
-	}
-
-	public final int getDomainSize() {
-		if (values != null) {
-			return values.length;
-		} else {
-			return getUppB() - getLowB() + 1;
-		}
-	}
-
-	public final boolean canBeEqualTo(final int v) {
-		if (values != null) {
-			for (final int value : values) {
-				if (value == v) {
-					return true;
-				}
-			}
-			return false;
-		} else {
-			return v >= getLowB() && v <= getUppB();
-		}
-	}
+    protected IntegerVariable(final VariableType variableType, final int[] parameters,
+                              final boolean enableOption, final IConstraintList constraints) {
+        super(variableType, parameters, enableOption, constraints);
+        if (parameters.length > 0) {
+            this.lowB = parameters[0];
+            this.uppB = parameters[parameters.length - 1];
+        }
+        setVariables(this);
+    }
 
 
-	public final boolean isBoolean(){
-		return (getLowB()==0 && ( getUppB() == 0 || getUppB()==1) )||
-		(getLowB()==1 && getUppB()==1);
-	}
+    public IntegerVariable(final String name, final int binf, final int bsup) {
+        //noinspection NullArgumentToVariableArgMethod
+        this(VariableType.INTEGER, new int[]{binf, bsup}, true, new ConstraintsDataStructure());
+        this.setName(name);
+    }
 
-	public final boolean isConstant(){
-		return getLowB() == getUppB();
-	}
+    public IntegerVariable(final String name, final int[] theValues) {
+        //noinspection NullArgumentToVariableArgMethod
+        this(VariableType.INTEGER, theValues, true, new ConstraintsDataStructure());
+        this.values = theValues;
+        this.setName(name);
+    }
 
-	/**
-	 * pretty printing of the object. This String is not constant and may depend on the context.
-	 *
-	 * @return a readable string representation of the object
-	 */
-	@Override
-	public String pretty() {
-		return name+" ["+getLowB()+", "+getUppB()+ ']';
-	}
+    public final int[] getValues() {
+        return values;
+    }
 
-	public final DisposableIntIterator getDomainIterator() {
-		return IVIterator.getIterator(lowB, uppB, values);
-	}
+    public final int getDomainSize() {
+        if (values != null) {
+            return values.length;
+        } else {
+            return getUppB() - getLowB() + 1;
+        }
+    }
 
-	/**
-	 * Extract first level sub-variables of a variable
-	 * and return an array of non redundant sub-variable.
-	 * In simple variable case, return a an array
-	 * with just one element.
-	 * Really usefull when expression variables.
-	 * @return a hashset of every sub variables contained in the Variable.
-	 */
-	 @Override
-	 public Variable[] doExtractVariables() {
-		 return getVariables();
-	 }
-
-	 //    public IntegerExpressionVariable[] getVariables() {
-	 //        return new IntegerVariable[]{IntegerVariable.this};
-	 //    }
-
-	 public final void removeVal(final int remvalue){
-		 if(this.canBeEqualTo(remvalue)){
-			 final int size;
-			 final int[] vals;
-			 if(values == null){
-				 size = this.getUppB() - this.getLowB();
-				 vals = new int[size];
-				 int idx  =0;
-				 int val = this.getLowB();
-				 while(idx < size){
-					 if(val!=remvalue){
-						 vals[idx++] = val;
-					 }
-					 val++;
-				 }
-			 }else{
-				 size = values.length-1;
-				 vals = new int[size];
-				 int idx = 0;
-				 for (final int value : values) {
-					 if (value != remvalue) {
-						 vals[idx++] = value;
-					 }
-				 }
-			 }
-			 this.values = vals;
-			 this.setLowB(values[0]);
-			 this.setUppB(values[size-1]);
-		 }
-	 }
+    public final boolean canBeEqualTo(final int v) {
+        if (values != null) {
+            for (final int value : values) {
+                if (value == v) {
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            return v >= getLowB() && v <= getUppB();
+        }
+    }
 
 
-	 /**
-	  * Return the enumerated values of a domain
-	  * @return the enumerated values of a domain
-	  */
-	 public final int[] enumVal(){
-		 if(values == null){
-			 final int[] val = new int[getUppB()-getLowB()+1];
-			 for(int o = 0; o < val.length; o++){
-				 val[o] = getLowB()+o;
-			 }
-			 return val;
-		 }else if(values.length==2 && values[0]==values[1]){
-			 return new int[]{values[0]};
-		 }
-		 return values;
-	 }
+    public final boolean isBoolean() {
+        return (getLowB() == 0 && (getUppB() == 0 || getUppB() == 1)) ||
+                (getLowB() == 1 && getUppB() == 1);
+    }
+
+    public final boolean isConstant() {
+        return getLowB() == getUppB();
+    }
+
+    /**
+     * pretty printing of the object. This String is not constant and may depend on the context.
+     *
+     * @return a readable string representation of the object
+     */
+    @Override
+    public String pretty() {
+        return name + " [" + getLowB() + ", " + getUppB() + ']';
+    }
+
+    public final DisposableIntIterator getDomainIterator() {
+        if (_iterator == null || !_iterator.reusable()) {
+            _iterator = new IVIterator();
+        }
+        _iterator.init(lowB, uppB, values);
+        return _iterator;
+    }
+
+    /**
+     * Extract first level sub-variables of a variable
+     * and return an array of non redundant sub-variable.
+     * In simple variable case, return a an array
+     * with just one element.
+     * Really usefull when expression variables.
+     *
+     * @return a hashset of every sub variables contained in the Variable.
+     */
+    @Override
+    public Variable[] doExtractVariables() {
+        return getVariables();
+    }
+
+    //    public IntegerExpressionVariable[] getVariables() {
+    //        return new IntegerVariable[]{IntegerVariable.this};
+    //    }
+
+    public final void removeVal(final int remvalue) {
+        if (this.canBeEqualTo(remvalue)) {
+            final int size;
+            final int[] vals;
+            if (values == null) {
+                size = this.getUppB() - this.getLowB();
+                vals = new int[size];
+                int idx = 0;
+                int val = this.getLowB();
+                while (idx < size) {
+                    if (val != remvalue) {
+                        vals[idx++] = val;
+                    }
+                    val++;
+                }
+            } else {
+                size = values.length - 1;
+                vals = new int[size];
+                int idx = 0;
+                for (final int value : values) {
+                    if (value != remvalue) {
+                        vals[idx++] = value;
+                    }
+                }
+            }
+            this.values = vals;
+            this.setLowB(values[0]);
+            this.setUppB(values[size - 1]);
+        }
+    }
+
+
+    /**
+     * Return the enumerated values of a domain
+     *
+     * @return the enumerated values of a domain
+     */
+    public final int[] enumVal() {
+        if (values == null) {
+            final int[] val = new int[getUppB() - getLowB() + 1];
+            for (int o = 0; o < val.length; o++) {
+                val[o] = getLowB() + o;
+            }
+            return val;
+        } else if (values.length == 2 && values[0] == values[1]) {
+            return new int[]{values[0]};
+        }
+        return values;
+    }
 
 }

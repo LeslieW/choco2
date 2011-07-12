@@ -27,7 +27,6 @@
 
 package choco.cp.solver.variables.delta.iterators;
 
-import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 
 /**
@@ -38,27 +37,9 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
  */
 public final class IntervalIntIterator extends DisposableIntIterator {
 
-    private static final ThreadLocal<PoolManager<IntervalIntIterator>> manager = new ThreadLocal<PoolManager<IntervalIntIterator>>();
-
     private int current, currentInfPropagated, currentSupPropagated, lastSupPropagated;
 
-    private IntervalIntIterator() {
-    }
-
-    @SuppressWarnings({"unchecked"})
-    public static IntervalIntIterator getIterator(final int theCurrentInfPropagated, final int theCurrentSupPropagated,
-                                                  final int theLastIntPropagated, final int theLastSupPropagated) {
-        PoolManager<IntervalIntIterator> tmanager = manager.get();
-        if (tmanager == null) {
-            tmanager = new PoolManager<IntervalIntIterator>();
-            manager.set(tmanager);
-        }
-        IntervalIntIterator it = tmanager.getE();
-        if (it == null) {
-            it = new IntervalIntIterator();
-        }
-        it.init(theCurrentInfPropagated, theCurrentSupPropagated, theLastIntPropagated, theLastSupPropagated);
-        return it;
+    public IntervalIntIterator() {
     }
 
     /**
@@ -66,6 +47,7 @@ public final class IntervalIntIterator extends DisposableIntIterator {
      */
     public void init(final int theCurrentInfPropagated, final int theCurrentSupPropagated,
                      final int theLastIntPropagated, final int theLastSupPropagated) {
+        super.init();
         current = theLastIntPropagated - 1;
         this.currentInfPropagated = theCurrentInfPropagated;
         this.currentSupPropagated = theCurrentSupPropagated;
@@ -100,11 +82,5 @@ public final class IntervalIntIterator extends DisposableIntIterator {
             current = currentSupPropagated + 1;
         }
         return current;
-    }
-
-
-    @Override
-    public void dispose() {
-        manager.get().returnE(this);
     }
 }

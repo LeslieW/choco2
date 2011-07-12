@@ -27,7 +27,6 @@
 
 package choco.kernel.memory.structure.iterators;
 
-import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateInt;
 
@@ -39,8 +38,6 @@ import choco.kernel.memory.IStateInt;
  */
 public final class BipartiteListIterator extends DisposableIntIterator {
 
-    private static final ThreadLocal<PoolManager<BipartiteListIterator>> manager = new ThreadLocal<PoolManager<BipartiteListIterator>>();
-
     private int[] list;
 
     private IStateInt last;
@@ -49,28 +46,14 @@ public final class BipartiteListIterator extends DisposableIntIterator {
 
     private int idx;
 
-    private BipartiteListIterator() {
-    }
-
-    @SuppressWarnings({"unchecked"})
-    public static BipartiteListIterator getIterator(final int[] aList, final IStateInt aLast) {
-        PoolManager<BipartiteListIterator> tmanager = manager.get();
-        if (tmanager == null) {
-            tmanager = new PoolManager<BipartiteListIterator>();
-            manager.set(tmanager);
-        }
-        BipartiteListIterator it = tmanager.getE();
-        if (it == null) {
-            it = new BipartiteListIterator();
-        }
-        it.init(aList, aLast);
-        return it;
+    public BipartiteListIterator() {
     }
 
     /**
      * Freeze the iterator, cannot be reused.
      */
     public void init(final int[] aList, final IStateInt aLast) {
+        super.init();
         this.list = aList;
         this.last = aLast;
         this.nlast = aLast.get();
@@ -123,10 +106,5 @@ public final class BipartiteListIterator extends DisposableIntIterator {
         list[idx] = temp;
         last.add(-1);
         nlast--;
-    }
-
-    @Override
-    public void dispose() {
-        manager.get().returnE(this);
     }
 }

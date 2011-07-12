@@ -27,7 +27,6 @@
 
 package choco.cp.solver.variables.set;
 
-import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 
 /**
@@ -38,34 +37,18 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
  */
 public final class SetDomainIterator extends DisposableIntIterator {
 
-    private static final ThreadLocal<PoolManager<SetDomainIterator>> manager = new ThreadLocal<PoolManager<SetDomainIterator>>();
-
     private int currentValue;
 
     private BitSetEnumeratedDomain domain;
 
-    private SetDomainIterator() {
-    }
-
-    @SuppressWarnings({"unchecked"})
-    public static SetDomainIterator getIterator(final BitSetEnumeratedDomain aDomain) {
-        PoolManager<SetDomainIterator> tmanager = manager.get();
-        if (tmanager == null) {
-            tmanager = new PoolManager<SetDomainIterator>();
-            manager.set(tmanager);
-        }
-        SetDomainIterator it = tmanager.getE();
-        if (it == null) {
-            it = new SetDomainIterator();
-        }
-        it.init(aDomain);
-        return it;
+    public SetDomainIterator() {
     }
 
     /**
      * Freeze the iterator, cannot be reused.
      */
     public void init(final BitSetEnumeratedDomain aDomain) {
+        super.init();
         domain = aDomain;
         currentValue = Integer.MIN_VALUE;
     }
@@ -93,10 +76,5 @@ public final class SetDomainIterator extends DisposableIntIterator {
     public int next() {
         currentValue = (Integer.MIN_VALUE == currentValue) ? domain.getFirstVal() : domain.getNextValue(currentValue);
         return currentValue;
-    }
-
-     @Override
-    public void dispose() {
-        manager.get().returnE(this);
     }
 }

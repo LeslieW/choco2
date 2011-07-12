@@ -231,6 +231,7 @@ public final class GACstrPositiveLargeSConstraint extends CspLargeSConstraint {
                 it.remove();
             }
         }
+        it.dispose();
     }
 
 

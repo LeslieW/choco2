@@ -151,6 +151,7 @@ public final class AtMostNValue extends AbstractLargeIntSConstraint {
 		final DisposableIntIterator vdom = v.getDomain().getIterator();
 		while (vdom.hasNext()) {
 			if (gval.get(vdom.next() + offset)){
+                vdom.dispose();
                 return false;
             }
 		}

@@ -66,6 +66,8 @@ public final class IntervalDeltaDomain implements IDeltaDomain {
 
     private final AbstractIntDomain domain;
 
+    private IntervalIntIterator _iterator;
+
     public IntervalDeltaDomain(final AbstractIntDomain domain, final int lastInfPropagated, final int lastSupPropagated) {
         this.domain = domain;
         this.lastInfPropagated = lastInfPropagated;
@@ -154,8 +156,17 @@ public final class IntervalDeltaDomain implements IDeltaDomain {
      * @return delta iterator
      */
     public DisposableIntIterator iterator() {
-        return IntervalIntIterator.getIterator(currentInfPropagated, currentSupPropagated, 
+        if (_iterator == null) {
+            _iterator = new IntervalIntIterator();
+        }else if (!_iterator.reusable()) {
+            assert false;
+            _iterator = new IntervalIntIterator();
+        }
+        _iterator.init(currentInfPropagated, currentSupPropagated,
                 lastInfPropagated, lastSupPropagated);
+        return _iterator;
+
+
       }
 
     @Override

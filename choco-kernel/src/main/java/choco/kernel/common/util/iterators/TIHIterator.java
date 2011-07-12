@@ -28,7 +28,6 @@
 package choco.kernel.common.util.iterators;
 
 import choco.kernel.common.IIndex;
-import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.objects.DeterministicIndicedList;
 import gnu.trove.TIntHashSet;
 
@@ -40,35 +39,18 @@ import gnu.trove.TIntHashSet;
  */
 public final class TIHIterator<E extends IIndex> extends DisposableIterator<E> {
 
-    private static final ThreadLocal<PoolManager<TIHIterator>> manager = new ThreadLocal<PoolManager<TIHIterator>>();
-
     private int current;
     private int[] indices;
     private DeterministicIndicedList<E> elements;
 
-    private TIHIterator() {
-    }
-
-    @SuppressWarnings({"unchecked"})
-    public static <E extends IIndex> TIHIterator<E> getIterator(final TIntHashSet indices,
-                                                                final DeterministicIndicedList<E> elements) {
-        PoolManager<TIHIterator> tmanager = manager.get();
-        if (tmanager == null) {
-            tmanager = new PoolManager<TIHIterator>();
-            manager.set(tmanager);
-        }
-        TIHIterator it = tmanager.getE();
-        if (it == null) {
-            it = new TIHIterator();
-        }
-        it.init(indices, elements);
-        return it;
+    public TIHIterator() {
     }
 
     /**
      * Freeze the iterator, cannot be reused.
      */
     public void init(final TIntHashSet theIndices, final DeterministicIndicedList<E> theElements) {
+        super.init();
         current = 0;
         indices = theIndices.toArray();
         elements = theElements;
@@ -96,11 +78,5 @@ public final class TIHIterator<E extends IIndex> extends DisposableIterator<E> {
     @Override
     public E next() {
         return elements.get(indices[current++]);
-    }
-
-
-    @Override
-    public void dispose() {
-        manager.get().returnE(this);
     }
 }

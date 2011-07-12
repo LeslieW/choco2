@@ -42,12 +42,12 @@ import choco.kernel.solver.variables.Var;
  * SetConstraint and IntConstraint and implements a default behaviour
  * for all events awakeOn...
  */
-public abstract class AbstractMixedSetIntSConstraint extends AbstractSConstraint<Var> implements SetPropagator, IntPropagator{
+public abstract class AbstractMixedSetIntSConstraint extends AbstractSConstraint<Var> implements SetPropagator, IntPropagator {
 
     /**
-     * Constructs a constraint with the specified priority.
+     * Constructs a mixed set-int constraint
      *
-     * @param priority The wished priority.
+     * @param vars list of variables
      */
     protected AbstractMixedSetIntSConstraint(Var[] vars) {
         super(vars);
@@ -55,43 +55,44 @@ public abstract class AbstractMixedSetIntSConstraint extends AbstractSConstraint
 
 
     /**
-	 * The default implementation of propagation when a variable has been modified
-	 * consists in iterating all values that have been removed (the delta domain)
-	 * and propagate them one after another, incrementally.
-	 *
-	 * @param idx
-	 * @throws choco.kernel.solver.ContradictionException
-	 */
-	public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
-		if (deltaDomain != null) {
-            try{
-			for (; deltaDomain.hasNext();) {
-				int val = deltaDomain.next();
-				awakeOnRem(idx, val);
-			}
-            }finally {
+     * The default implementation of propagation when a variable has been modified
+     * consists in iterating all values that have been removed (the delta domain)
+     * and propagate them one after another, incrementally.
+     *
+     * @param idx
+     * @throws choco.kernel.solver.ContradictionException
+     *
+     */
+    public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
+        if (deltaDomain != null) {
+            try {
+                for (; deltaDomain.hasNext(); ) {
+                    int val = deltaDomain.next();
+                    awakeOnRem(idx, val);
+                }
+            } finally {
                 deltaDomain.dispose();
             }
-		}
-	}
+        }
+    }
 
-	public void awakeOnBounds(int varIndex) throws ContradictionException {
-		awakeOnInf(varIndex);
-		awakeOnSup(varIndex);
-	}
+    public void awakeOnBounds(int varIndex) throws ContradictionException {
+        awakeOnInf(varIndex);
+        awakeOnSup(varIndex);
+    }
 
 
-	public void awakeOnKer(int varIdx, int x) throws ContradictionException {
-		propagate();
-	}
+    public void awakeOnKer(int varIdx, int x) throws ContradictionException {
+        propagate();
+    }
 
-	public void awakeOnEnv(int varIdx, int x) throws ContradictionException {
-		propagate();
-	}
+    public void awakeOnEnv(int varIdx, int x) throws ContradictionException {
+        propagate();
+    }
 
-	public void awakeOnInst(int varIdx) throws ContradictionException {
-		propagate();
-	}
+    public void awakeOnInst(int varIdx) throws ContradictionException {
+        propagate();
+    }
 
     /**
      * Default propagation on one value removal: propagation on domain revision.
@@ -118,39 +119,31 @@ public abstract class AbstractMixedSetIntSConstraint extends AbstractSConstraint
     }
 
     public void awakeOnEnvRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
-		if (deltaDomain != null) {
-            try{
-			for (; deltaDomain.hasNext();) {
-				int val = deltaDomain.next();
-				awakeOnEnv(idx, val);
-			}
-            }finally {
-                deltaDomain.dispose();
+        if (deltaDomain != null) {
+            for (; deltaDomain.hasNext(); ) {
+                int val = deltaDomain.next();
+                awakeOnEnv(idx, val);
             }
-		} else {
-			throw new SolverException("deltaDomain should not be null in awakeOnEnvRemovals");
-		}
-	}
+        } else {
+            throw new SolverException("deltaDomain should not be null in awakeOnEnvRemovals");
+        }
+    }
 
-	public void awakeOnkerAdditions(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
-		if (deltaDomain != null) {
-            try{
-			for (; deltaDomain.hasNext();) {
-				int val = deltaDomain.next();
-				awakeOnKer(idx, val);
-			}
-            }finally {
-                deltaDomain.dispose();
+    public void awakeOnkerAdditions(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
+        if (deltaDomain != null) {
+            for (; deltaDomain.hasNext(); ) {
+                int val = deltaDomain.next();
+                awakeOnKer(idx, val);
             }
-		} else {
-			throw new SolverException("deltaDomain should not be null in awakeOnKerAdditions");
-		}
-	}
+        } else {
+            throw new SolverException("deltaDomain should not be null in awakeOnKerAdditions");
+        }
+    }
 
 
-	public boolean isSatisfied(int[] tuple) {
-		throw new UnsupportedOperationException(this + " needs to implement isSatisfied(int[] tuple) to be embedded in reified constraints");
-	}
+    public boolean isSatisfied(int[] tuple) {
+        throw new UnsupportedOperationException(this + " needs to implement isSatisfied(int[] tuple) to be embedded in reified constraints");
+    }
 
     @Override
     public SConstraintType getConstraintType() {

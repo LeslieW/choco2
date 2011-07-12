@@ -27,11 +27,12 @@
 
 package choco.cp.solver.search.integer.varselector.ratioselector.ratios.degree;
 
-import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.getFineDegree;
-import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.hasAtLeastTwoNotInstVars;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.getFineDegree;
+import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.hasAtLeastTwoNotInstVars;
 
 public final class DomDynDegRatio extends DomDegRatio {
 
@@ -50,6 +51,7 @@ public final class DomDynDegRatio extends DomDegRatio {
 				ddeg+= getFineDegree(var, ct, cIdx);
 			}
 		}
+        it.dispose();
 		return ddeg;
 	}
 	

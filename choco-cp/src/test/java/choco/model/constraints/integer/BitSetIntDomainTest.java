@@ -175,6 +175,7 @@ public class BitSetIntDomainTest {
             DisposableIntIterator it = yDom.getDeltaIterator();
             assertFalse(it.hasNext());
             assertTrue(yDom.releaseDeltaDomain());
+            it.dispose();
         }
         yDom.remove(3);
         yDom.remove(5);
@@ -185,6 +186,7 @@ public class BitSetIntDomainTest {
         for (DisposableIntIterator it = yDom.getDeltaIterator(); it.hasNext();) {
             int val = it.next();
             tmp357.add(new Integer(val));
+            it.dispose();
         }
         assertEquals(expectedSet357, tmp357);
         assertFalse(yDom.releaseDeltaDomain());
@@ -193,6 +195,7 @@ public class BitSetIntDomainTest {
         for (DisposableIntIterator it = yDom.getDeltaIterator(); it.hasNext();) {
             int val = it.next();
             tmp9.add(new Integer(val));
+            it.dispose();
         }
         assertEquals(expectedSet9, tmp9);
         assertTrue(yDom.releaseDeltaDomain());

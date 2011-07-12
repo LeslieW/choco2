@@ -27,11 +27,12 @@
 
 package choco.kernel.memory.structure;
 
-import static choco.kernel.common.Constant.*;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.structure.iterators.PSIVIterator;
+
+import static choco.kernel.common.Constant.*;
 
 
 /**
@@ -49,6 +50,7 @@ public final class PartiallyStoredIntVector {
 
     private int nStaticInts;
     private final IStateInt nStoredInts;
+    private PSIVIterator _iterator;
 
     public PartiallyStoredIntVector(final IEnvironment env) {
         staticInts = new int[INITIAL_STATIC_CAPACITY];
@@ -117,7 +119,15 @@ public final class PartiallyStoredIntVector {
     }
 
     public DisposableIntIterator getIndexIterator() {
-        return PSIVIterator.getIterator(nStaticInts, nStoredInts);
+        if (_iterator == null) {
+            _iterator = new PSIVIterator();
+        }else if (!_iterator.reusable()) {
+            assert false;
+            _iterator = new PSIVIterator();
+        }
+        _iterator.init(nStaticInts, nStoredInts);
+        return _iterator;
+
     }
 
     public static boolean isStaticIndex(final int idx) {

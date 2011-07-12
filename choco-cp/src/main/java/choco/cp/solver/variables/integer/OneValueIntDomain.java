@@ -27,6 +27,8 @@
 
 package choco.cp.solver.variables.integer;
 
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.iterators.OneValueIterator;
 import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -36,15 +38,15 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Date : 31 mars 2010br/>
  * Since : Choco 2.1.1<br/>
  */
-final class OneValueIntDomain extends AbstractIntDomain{
+final class OneValueIntDomain extends AbstractIntDomain {
 
     private final int value;
 
     private final boolean isBoolean;
-    
+
     OneValueIntDomain(final IntDomainVar aVariable, final int theValue, final PropagationEngine propagationEngine) {
         super(aVariable, propagationEngine);
-        value  = theValue;
+        value = theValue;
         isBoolean = (value == 0 || value == 1);
     }
 
@@ -117,6 +119,10 @@ final class OneValueIntDomain extends AbstractIntDomain{
         return 1;
     }
 
+    public DisposableIntIterator getIterator() {
+        return OneValueIterator.getIterator(value);
+    }
+
     /**
      * Accessing the smallest value stored in the domain and strictly greater
      * than <i>x</i>.
@@ -124,9 +130,9 @@ final class OneValueIntDomain extends AbstractIntDomain{
      */
     @Override
     public int getNextValue(final int x) {
-        if(x < value){
+        if (x < value) {
             return value;
-        }else{
+        } else {
             return Integer.MAX_VALUE;
         }
     }
@@ -138,9 +144,9 @@ final class OneValueIntDomain extends AbstractIntDomain{
      */
     @Override
     public int getPrevValue(final int x) {
-        if(x > value){
+        if (x > value) {
             return value;
-        }else{
+        } else {
             return Integer.MIN_VALUE;
         }
     }
@@ -193,6 +199,6 @@ final class OneValueIntDomain extends AbstractIntDomain{
      */
     @Override
     public String pretty() {
-        return String.valueOf('['+value+']');
+        return String.valueOf('[' + value + ']');
     }
 }

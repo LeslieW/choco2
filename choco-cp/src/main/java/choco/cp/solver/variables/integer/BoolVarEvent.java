@@ -27,10 +27,13 @@
 
 package choco.cp.solver.variables.integer;
 
+import choco.kernel.solver.constraints.AbstractSConstraint;
+import choco.kernel.solver.propagation.listener.IntPropagator;
+
 /**
  * An event dedicated to boolean variables
  **/
-public class BoolVarEvent extends IntVarEvent {
+public class BoolVarEvent<C extends AbstractSConstraint & IntPropagator> extends IntVarEvent<C> {
 
     public BoolVarEvent(IntDomainVarImpl var) {
         super(var);

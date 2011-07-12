@@ -42,12 +42,18 @@ import choco.kernel.solver.propagation.listener.RealPropagator;
 */
 public final class PartiallyStoredRealCstrList<C extends AbstractSConstraint & RealPropagator> extends APartiallyStoredCstrList<C> {
 
+    private PSCLIterator<C> _iterator;
+
     public PartiallyStoredRealCstrList(IEnvironment env) {
         super(env);
     }
 
     @SuppressWarnings({"unchecked"})
-    public DisposableIterator<Couple<C>> getActiveConstraint(C cstrCause){
-        return PSCLIterator.getIterator(elements, indices, cstrCause, elements.getIndexIterator());
+    public DisposableIterator<Couple<C>> getActiveConstraint(C cstrCause) {
+        if (_iterator == null || !_iterator.reusable()) {
+            _iterator = new PSCLIterator<C>();
+        }
+        _iterator.init(elements, indices, cstrCause, elements.getIndexIterator());
+        return _iterator;
     }
 }

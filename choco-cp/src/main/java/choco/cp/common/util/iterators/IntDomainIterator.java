@@ -28,7 +28,6 @@
 package choco.cp.common.util.iterators;
 
 import choco.cp.solver.variables.integer.AbstractIntDomain;
-import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 
 /**
@@ -39,34 +38,18 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
  */
 public final class IntDomainIterator extends DisposableIntIterator {
 
-    private static final ThreadLocal<PoolManager<IntDomainIterator>> manager = new ThreadLocal<PoolManager<IntDomainIterator>>();
-
     private AbstractIntDomain domain;
     private int nextValue;
     private int supBound = -1;
 
-    private IntDomainIterator() {
-    }
-
-    @SuppressWarnings({"unchecked"})
-    public static IntDomainIterator getIterator(final AbstractIntDomain aDomain) {
-        PoolManager<IntDomainIterator> tmanager = manager.get();
-        if (tmanager == null) {
-            tmanager = new PoolManager<IntDomainIterator>();
-            manager.set(tmanager);
-        }
-        IntDomainIterator it = tmanager.getE();
-        if (it == null) {
-            it = new IntDomainIterator();
-        }
-        it.init(aDomain);
-        return it;
+    public IntDomainIterator() {
     }
 
     /**
      * Freeze the iterator, cannot be reused.
      */
     public void init(final AbstractIntDomain dom) {
+        super.init();
         domain = dom;
         if (domain.getSize() >= 1) {
             nextValue = domain.getInf();
@@ -100,14 +83,8 @@ public final class IntDomainIterator extends DisposableIntIterator {
     @Override
     public int next() {
         final int v = nextValue;
-        nextValue = domain.getNextValue(nextValue);
+        nextValue = domain.fastNextValue(nextValue);
         return v;
-    }
-
-
-    @Override
-    public void dispose() {
-        manager.get().returnE(this);
     }
 
 }

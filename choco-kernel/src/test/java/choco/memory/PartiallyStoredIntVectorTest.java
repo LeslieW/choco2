@@ -35,12 +35,13 @@ import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.memory.trailing.EnvironmentTrailing;
 import org.junit.After;
 import org.junit.Assert;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.logging.Logger;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class PartiallyStoredIntVectorTest {
   
@@ -122,6 +123,7 @@ public class PartiallyStoredIntVectorTest {
     public void test2(){
         DisposableIntIterator it = vector.getIndexIterator();
         Assert.assertFalse(it.hasNext());
+        it.dispose();
 
         vector.staticAdd(5);
         it = vector.getIndexIterator();
@@ -130,6 +132,7 @@ public class PartiallyStoredIntVectorTest {
         Assert.assertEquals(0, ind);
         Assert.assertEquals(5, vector.get(ind));
         Assert.assertFalse(it.hasNext());
+        it.dispose();
 
         vector.remove(0);
         vector.add(5);
@@ -139,6 +142,7 @@ public class PartiallyStoredIntVectorTest {
         Assert.assertEquals(Constant.STORED_OFFSET, ind);
         Assert.assertEquals(5, vector.get(ind));
         Assert.assertFalse(it.hasNext());
+        it.dispose();
 
         vector.staticAdd(4);
         it = vector.getIndexIterator();

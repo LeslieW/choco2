@@ -55,8 +55,20 @@ public interface SetPropagator {
      */
     public void awakeOnInst(int varIdx) throws ContradictionException;
 
+    /**
+     * BEWARE: No need to dipose the iterator, this done in the calling methode
+     * @param varIdx
+     * @param deltaDomain
+     * @throws ContradictionException
+     */
     public void awakeOnkerAdditions(int varIdx, DisposableIntIterator deltaDomain) throws ContradictionException;
 
+    /**
+     * BEWARE: No need to dipose the iterator, this done in the calling methode
+     * @param varIdx
+     * @param deltaDomain
+     * @throws ContradictionException
+     */
     public void awakeOnEnvRemovals(int varIdx, DisposableIntIterator deltaDomain) throws ContradictionException;
 
 }

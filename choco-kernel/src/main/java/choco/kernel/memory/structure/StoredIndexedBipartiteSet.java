@@ -73,6 +73,8 @@ public class StoredIndexedBipartiteSet implements IStateIntVector {
      */
     protected IStateInt last;
 
+    protected BipartiteSetIterator _iterator;
+
     /**
      * @param environment
      * @param values:     a set of DIFFERENT positive integer values !
@@ -117,7 +119,7 @@ public class StoredIndexedBipartiteSet implements IStateIntVector {
         this.list = values;
         int maxElt = 0;
         for (int i = 0; i < values.length; i++) {
-            if (values[i] > maxElt){
+            if (values[i] > maxElt) {
                 maxElt = values[i];
             }
         }
@@ -131,13 +133,14 @@ public class StoredIndexedBipartiteSet implements IStateIntVector {
     /**
      * Create a stored bipartite set with a size.
      * Thus the value stored will go from 0 to nbValues.
+     *
      * @param environment
      * @param nbValues
      */
     public StoredIndexedBipartiteSet(final IEnvironment environment, final int nbValues) {
-        final int[]values = new int[nbValues];
-        for(int i = 0; i < nbValues; i++){
-            values[i]=i;
+        final int[] values = new int[nbValues];
+        for (int i = 0; i < nbValues; i++) {
+            values[i] = i;
         }
         buildList(environment, values);
     }
@@ -146,28 +149,29 @@ public class StoredIndexedBipartiteSet implements IStateIntVector {
      * Increase the number of value watched.
      * BEWARE: be sure your are correctly calling this method.
      * It deletes everything already declared
+     *
      * @param gap the gap the reach the expected size
      */
-    public final void increaseSize(final int gap){
+    public final void increaseSize(final int gap) {
         final int l = list.length;
-        final int[]newList = new int[l+gap];
-        for(int i = 0; i < l+gap; i++){
+        final int[] newList = new int[l + gap];
+        for (int i = 0; i < l + gap; i++) {
             newList[i] = i;
         }
         int maxElt = 0;
         for (int i = 0; i < newList.length; i++) {
-            if (newList[i] > maxElt){
+            if (newList[i] > maxElt) {
                 maxElt = newList[i];
             }
         }
-        final int[]newPosition = new int[maxElt + 1];
+        final int[] newPosition = new int[maxElt + 1];
         for (int i = 0; i < newList.length; i++) {
             newPosition[newList[i]] = i;
         }
         // record already removed values
-        final int end = last.get()+1;
+        final int end = last.get() + 1;
         final int[] removed = new int[list.length - end];
-        System.arraycopy(list, end, removed, 0, list.length-end);
+        System.arraycopy(list, end, removed, 0, list.length - end);
 
         this.list = newList;
         this.position = newPosition;
@@ -247,15 +251,23 @@ public class StoredIndexedBipartiteSet implements IStateIntVector {
 
     @Override
     public final int quickSet(final int index, final int val) {
-        return set(index,val);
+        return set(index, val);
     }
 
     public final DisposableIntIterator getIterator() {
-        return BipartiteSetIterator.getIterator(list, position, last, idxToObjects);
+        if (_iterator == null || !_iterator.reusable()) {
+            _iterator = new BipartiteSetIterator();
+        }
+        _iterator.init(list, position, last, idxToObjects);
+        return _iterator;
     }
 
     public final BipartiteSetIterator getObjectIterator() {
-        return BipartiteSetIterator.getIterator(list, position, last, idxToObjects);
+        if (_iterator == null || !_iterator.reusable()) {
+            _iterator = new BipartiteSetIterator();
+        }
+        _iterator.init(list, position, last, idxToObjects);
+        return _iterator;
     }
 
     public final String pretty() {
@@ -273,11 +285,10 @@ public class StoredIndexedBipartiteSet implements IStateIntVector {
         return list.length - position[a];
     }
 
-   /**
-    *  DO NOT USE : FOR MEMORY OPTIM ONLY
-    */
-    public final int[] _getStructure()
-    {
-      return list;
+    /**
+     * DO NOT USE : FOR MEMORY OPTIM ONLY
+     */
+    public final int[] _getStructure() {
+        return list;
     }
 }

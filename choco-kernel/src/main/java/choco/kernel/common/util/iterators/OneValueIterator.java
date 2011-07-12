@@ -66,6 +66,7 @@ public final class OneValueIterator extends DisposableIntIterator {
      * Freeze the iterator, cannot be reused.
      */
     public void init(final int aValue) {
+        super.init();
         this.value = aValue;
         next = true;
     }
@@ -98,6 +99,7 @@ public final class OneValueIterator extends DisposableIntIterator {
 
     @Override
     public void dispose() {
+        super.dispose();
         manager.get().returnE(this);
     }
 }

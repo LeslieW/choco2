@@ -76,6 +76,7 @@ public final class ArrayIterator<E> extends DisposableIterator<E> {
      * Freeze the iterator, cannot be reused.
      */
     private void init(final E[] someElements, final int aSize) {
+        super.init();
         this.elements = someElements;
         this.size = aSize;
         cursor = 0;
@@ -107,6 +108,7 @@ public final class ArrayIterator<E> extends DisposableIterator<E> {
 
     @Override
     public void dispose() {
+        super.dispose();
         manager.get().returnE(this);
     }
 }

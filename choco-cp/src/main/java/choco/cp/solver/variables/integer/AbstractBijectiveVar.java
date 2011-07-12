@@ -68,6 +68,16 @@ public abstract class AbstractBijectiveVar extends AbstractVar implements IntDom
     }
 
     @Override
+    public int fastNextDomainValue(int i) {
+        return variable.getNextDomainValue(i);
+    }
+
+    @Override
+    public int fastPrevDomainValue(int i) {
+        return variable.getPrevDomainValue(i);
+    }
+
+    @Override
     public boolean hasEnumeratedDomain() {
         return variable.hasEnumeratedDomain();
     }

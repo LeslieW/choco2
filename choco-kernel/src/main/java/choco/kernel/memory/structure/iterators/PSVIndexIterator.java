@@ -27,7 +27,6 @@
 
 package choco.kernel.memory.structure.iterators;
 
-import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateInt;
 
@@ -41,8 +40,6 @@ import static choco.kernel.common.Constant.STORED_OFFSET;
  */
 public final class PSVIndexIterator<E> extends DisposableIntIterator {
 
-    private static final ThreadLocal<PoolManager<PSVIndexIterator>> manager = new ThreadLocal<PoolManager<PSVIndexIterator>>();
-
     private int nStaticObjects;
 
     private int nStoredObjects;
@@ -51,29 +48,14 @@ public final class PSVIndexIterator<E> extends DisposableIntIterator {
 
     private int idx;
 
-    private PSVIndexIterator() {
-    }
-
-    @SuppressWarnings({"unchecked"})
-    public static <E> PSVIndexIterator getIterator(final int theNStaticObjects, final E[] theStaticObjects,
-                                                   final IStateInt theNStoredObjects) {
-        PoolManager<PSVIndexIterator> tmanager = manager.get();
-        if (tmanager == null) {
-            tmanager = new PoolManager<PSVIndexIterator>();
-            manager.set(tmanager);
-        }
-        PSVIndexIterator it = tmanager.getE();
-        if (it == null) {
-            it = new PSVIndexIterator();
-        }
-        it.init(theNStaticObjects, theStaticObjects, theNStoredObjects);
-        return it;
+    public PSVIndexIterator() {
     }
 
     /**
      * Freeze the iterator, cannot be reused.
      */
     public void init(final int theNStaticObjects, final E[] theStaticObjects, final IStateInt theNStoredObjects) {
+        super.init();
         idx = -1;
         this.nStaticObjects = theNStaticObjects;
         this.staticObjects = theStaticObjects;
@@ -120,11 +102,5 @@ public final class PSVIndexIterator<E> extends DisposableIntIterator {
             throw new java.util.NoSuchElementException();
         }
         return idx;
-    }
-
-
-    @Override
-    public void dispose() {
-        manager.get().returnE(this);
     }
 }

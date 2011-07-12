@@ -33,7 +33,6 @@ public final class SingleElementIterator<E> extends DisposableIterator<E> {
 
     private static final ThreadLocal<PoolManager<SingleElementIterator>> manager = new ThreadLocal<PoolManager<SingleElementIterator>>();
 
-
     private E elem;
 
     private boolean hnext;
@@ -59,7 +58,8 @@ public final class SingleElementIterator<E> extends DisposableIterator<E> {
     /**
      * Freeze the iterator, cannot be reused.
      */
-    public void init(final E anElement) {
+    private void init(final E anElement) {
+        super.init();
         this.elem = anElement;
         hnext = true;
     }
@@ -77,6 +77,7 @@ public final class SingleElementIterator<E> extends DisposableIterator<E> {
 
     @Override
     public void dispose() {
+        super.dispose();
         manager.get().returnE(this);
     }
 }

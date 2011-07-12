@@ -151,11 +151,14 @@ public final class MaxOfASet extends AbstractBoundOfASet {
 	protected final void updateKernelSup() throws ContradictionException {
 		final int maxValue = ivars[BOUND_INDEX].getSup();
 		DisposableIntIterator iter= svars[SET_INDEX].getDomain().getKernelIterator();
-		while(iter.hasNext()) {
+		try{
+        while(iter.hasNext()) {
 			final int i = VARS_OFFSET+iter.next();
 			ivars[i].updateSup(maxValue, this, false);
 		}
-		iter.dispose();
+        }finally {
+            iter.dispose();
+        }
 	}
 
 	/**
@@ -322,6 +325,7 @@ public final class MaxOfASet extends AbstractBoundOfASet {
 		do {
 			v = Math.max(v, ivars[VARS_OFFSET +iter.next()].getVal());
 		}while(iter.hasNext());
+        iter.dispose();
 		return v;
 	}
 

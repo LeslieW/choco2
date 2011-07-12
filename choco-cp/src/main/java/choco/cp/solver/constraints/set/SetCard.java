@@ -165,7 +165,6 @@ public final class SetCard extends AbstractBinSetIntSConstraint {
 			v0.updateInf(kerSize, this, false);
 			reactOnSupAndKerEvents(kerSize);
 		}
-        deltaDomain.dispose();
 	}
 
 	public void awakeOnEnvRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
@@ -174,7 +173,6 @@ public final class SetCard extends AbstractBinSetIntSConstraint {
 			v0.updateSup(envSize, this, false);
 			reactOnInfAndEnvEvents(envSize);
 		}
-        deltaDomain.dispose();
 	}
 
 

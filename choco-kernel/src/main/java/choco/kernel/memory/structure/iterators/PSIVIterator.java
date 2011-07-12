@@ -27,7 +27,6 @@
 
 package choco.kernel.memory.structure.iterators;
 
-import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateInt;
 
@@ -41,8 +40,6 @@ import static choco.kernel.common.Constant.STORED_OFFSET;
  */
 public final class PSIVIterator extends DisposableIntIterator {
 
-    private static final ThreadLocal<PoolManager<PSIVIterator>> manager = new ThreadLocal<PoolManager<PSIVIterator>>();
-
     private int nStaticInts;
 
     private int nStoredInts;
@@ -53,25 +50,11 @@ public final class PSIVIterator extends DisposableIntIterator {
 
     private boolean storeds;
 
-    @SuppressWarnings({"unchecked"})
-    public static PSIVIterator getIterator(final int theNStaticInts, final IStateInt theNStoredInts) {
-        PoolManager<PSIVIterator> tmanager = manager.get();
-        if (tmanager == null) {
-            tmanager = new PoolManager<PSIVIterator>();
-            manager.set(tmanager);
-        }
-        PSIVIterator it = tmanager.getE();
-        if (it == null) {
-            it = new PSIVIterator();
-        }
-        it.init(theNStaticInts, theNStoredInts);
-        return it;
-    }
-
     /**
      * Freeze the iterator, cannot be reused.
      */
     public void init(final int theNStaticInts, final IStateInt theNStoredInts) {
+        super.init();
         this.nStaticInts = theNStaticInts;
         this.nStoredInts = theNStoredInts.get();
         stats = (nStaticInts > 0);
@@ -111,10 +94,5 @@ public final class PSIVIterator extends DisposableIntIterator {
             idx = STORED_OFFSET;
         }
         return idx;
-    }
-
-    @Override
-    public void dispose() {
-        manager.get().returnE(this);
     }
 }

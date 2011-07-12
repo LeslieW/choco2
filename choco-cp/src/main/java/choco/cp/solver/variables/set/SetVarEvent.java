@@ -35,6 +35,7 @@ import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.propagation.listener.SetPropagator;
+import choco.kernel.solver.variables.set.SetSubDomain;
 
 /*
  * Created by IntelliJ IDEA.
@@ -66,8 +67,12 @@ public class SetVarEvent<C extends AbstractSConstraint & SetPropagator> extends 
     @Deprecated
     public static final int INSTSETEVENT = INSTSET_MASK;
 
+    private final SetSubDomain _kdomain, _edomain;
+
     public SetVarEvent(SetVarImpl var) {
         super(var);
+        _kdomain = modifiedVar.getDomain().getKernelDomain();
+        _edomain = modifiedVar.getDomain().getEnveloppeDomain();
         eventType = EMPTYEVENT;
     }
 
@@ -88,34 +93,27 @@ public class SetVarEvent<C extends AbstractSConstraint & SetPropagator> extends 
     public void clear() {
         this.eventType = EMPTYEVENT;
         cause = null;
-        (modifiedVar.getDomain()).getEnveloppeDomain().clearDeltaDomain();
-        (modifiedVar.getDomain()).getKernelDomain().clearDeltaDomain();
+        _edomain.clearDeltaDomain();
+        _kdomain.clearDeltaDomain();
     }
 
 
     protected void freeze() {
-        (modifiedVar.getDomain()).getEnveloppeDomain().freezeDeltaDomain();
-        (modifiedVar.getDomain()).getKernelDomain().freezeDeltaDomain();
+        _edomain.freezeDeltaDomain();
+        _kdomain.freezeDeltaDomain();
         cause = null;
         eventType = 0;
+
     }
 
     protected boolean release() {
-        return modifiedVar.getDomain().getEnveloppeDomain().releaseDeltaDomain() &&
-                modifiedVar.getDomain().getKernelDomain().releaseDeltaDomain();
+        return _edomain.releaseDeltaDomain() &&
+                _kdomain.releaseDeltaDomain();
     }
 
     public boolean getReleased() {
-        return (modifiedVar.getDomain()).getEnveloppeDomain().getReleasedDeltaDomain() &&
-                (modifiedVar.getDomain()).getKernelDomain().getReleasedDeltaDomain();
-    }
-
-    public DisposableIntIterator getEnvEventIterator() {
-        return (modifiedVar.getDomain()).getEnveloppeDomain().getDeltaIterator();
-    }
-
-    public DisposableIntIterator getKerEventIterator() {
-        return (modifiedVar.getDomain()).getKernelDomain().getDeltaIterator();
+        return _edomain.getReleasedDeltaDomain() &&
+                _kdomain.getReleasedDeltaDomain();
     }
 
     /**
@@ -181,11 +179,15 @@ public class SetVarEvent<C extends AbstractSConstraint & SetPropagator> extends 
     public void propagateKernelEvents(C evtCause) throws ContradictionException {
         SetVarImpl v = getModifiedVar();
         DisposableIterator<Couple<C>> cit = v.getActiveConstraints(evtCause);
-
         try {
             while (cit.hasNext()) {
                 Couple<C> cc = cit.next();
-                cc.c.awakeOnkerAdditions(cc.i, this.getKerEventIterator());
+                DisposableIntIterator kit = _kdomain.getDeltaIterator();
+                try {
+                    cc.c.awakeOnkerAdditions(cc.i, kit);
+                } finally {
+                    kit.dispose();
+                }
             }
         } finally {
             cit.dispose();
@@ -198,12 +200,15 @@ public class SetVarEvent<C extends AbstractSConstraint & SetPropagator> extends 
     public void propagateEnveloppeEvents(C evtCause) throws ContradictionException {
         SetVarImpl v = getModifiedVar();
         DisposableIterator<Couple<C>> cit = v.getActiveConstraints(evtCause);
-
         try {
             while (cit.hasNext()) {
                 Couple<C> cc = cit.next();
-                cc.c.awakeOnEnvRemovals(cc.i, this.getEnvEventIterator());
-
+                DisposableIntIterator eit = _edomain.getDeltaIterator();
+                try {
+                    cc.c.awakeOnEnvRemovals(cc.i, eit);
+                } finally {
+                    eit.dispose();
+                }
             }
         } finally {
             cit.dispose();

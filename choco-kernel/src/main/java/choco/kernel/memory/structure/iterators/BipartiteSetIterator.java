@@ -27,7 +27,6 @@
 
 package choco.kernel.memory.structure.iterators;
 
-import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.structure.IndexedObject;
@@ -40,8 +39,6 @@ import choco.kernel.memory.structure.IndexedObject;
  */
 public final class BipartiteSetIterator extends DisposableIntIterator {
 
-    private static final ThreadLocal<PoolManager<BipartiteSetIterator>> manager = new ThreadLocal<PoolManager<BipartiteSetIterator>>();
-
     private int[] list;
 
     private int[] position;
@@ -52,23 +49,7 @@ public final class BipartiteSetIterator extends DisposableIntIterator {
 
     private int nlast, idx;
 
-    private BipartiteSetIterator() {
-    }
-
-    @SuppressWarnings({"unchecked"})
-    public static BipartiteSetIterator getIterator(final int[] aList, final int[] aPosition,
-                                                   final IStateInt aLast, final IndexedObject[] idxToObjects) {
-        PoolManager<BipartiteSetIterator> tmanager = manager.get();
-        if (tmanager == null) {
-            tmanager = new PoolManager<BipartiteSetIterator>();
-            manager.set(tmanager);
-        }
-        BipartiteSetIterator it = tmanager.getE();
-        if (it == null) {
-            it = new BipartiteSetIterator();
-        }
-        it.init(aList, aPosition, aLast, idxToObjects);
-        return it;
+    public BipartiteSetIterator() {
     }
 
     /**
@@ -142,10 +123,5 @@ public final class BipartiteSetIterator extends DisposableIntIterator {
             last.add(-1);
             nlast--;
         }
-    }
-
-    @Override
-    public void dispose() {
-        manager.get().returnE(this);
     }
 }

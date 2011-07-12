@@ -308,6 +308,7 @@ public final class MinOfASet extends AbstractBoundOfASet {
 		do {
 			v = Math.min(v, ivars[VARS_OFFSET +iter.next()].getVal());
 		}while(iter.hasNext());
+        iter.dispose();
 		return v;
 	}
 	
