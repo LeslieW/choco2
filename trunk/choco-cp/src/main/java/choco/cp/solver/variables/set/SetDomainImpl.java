@@ -27,7 +27,6 @@
 
 package choco.cp.solver.variables.set;
 
-import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.solver.ContradictionException;
@@ -55,9 +54,9 @@ public final class SetDomainImpl implements SetDomain {
 
     private final BitSetEnumeratedDomain enveloppe;
 
-//  protected SetDomainIterator lastIterator;
+    private SetDomainIterator _kiterator, _eiterator;
 
-//    protected SetOpenDomainIterator openiterator;
+    protected SetOpenDomainIterator _oiterator;
 
     public SetDomainImpl(final SetVar v, final int a, final int b, final IEnvironment environment, final PropagationEngine propagationEngine) {
         variable = v;
@@ -278,35 +277,42 @@ public final class SetDomainImpl implements SetDomain {
     // ============================================
 
     public DisposableIntIterator getKernelIterator() {
-        return SetDomainIterator.getIterator(this.kernel);
+//        return SetDomainIterator.getIterator(this.kernel);
+        if (_kiterator == null) {
+            _kiterator = new SetDomainIterator();
+        }else if (!_kiterator.reusable()) {
+//            assert false;
+            _kiterator = new SetDomainIterator();
+        }
+        _kiterator.init(kernel);
+        return _kiterator;
+
     }
 
     public DisposableIntIterator getEnveloppeIterator() {
-        return SetDomainIterator.getIterator(this.enveloppe);
+        if (_eiterator == null) {
+            _eiterator = new SetDomainIterator();
+        }else if (!_eiterator.reusable()) {
+//            assert false;
+            _eiterator = new SetDomainIterator();
+        }
+        _eiterator.init(enveloppe);
+        return _eiterator;
     }
 
     public DisposableIntIterator getOpenDomainIterator() {
-        return SetOpenDomainIterator.getIterator(this.enveloppe, this.kernel);
+        if (_oiterator == null) {
+            _oiterator = new SetOpenDomainIterator();
+        }else if (!_oiterator.reusable()) {
+//            assert false;
+            _oiterator = new SetOpenDomainIterator();
+        }
+        _oiterator.init(enveloppe, kernel);
+        return _oiterator;
+
     }
 
     protected static final class SetOpenDomainIterator extends DisposableIntIterator {
-
-        private static final ThreadLocal<PoolManager<SetOpenDomainIterator>> manager = new ThreadLocal<PoolManager<SetOpenDomainIterator>>();
-
-        @SuppressWarnings({"unchecked"})
-        public static SetOpenDomainIterator getIterator(final BitSetEnumeratedDomain dom1, final BitSetEnumeratedDomain dom2) {
-            PoolManager<SetOpenDomainIterator> tmanager = manager.get();
-            if (tmanager == null) {
-                tmanager = new PoolManager<SetOpenDomainIterator>();
-                manager.set(tmanager);
-            }
-            SetOpenDomainIterator it = tmanager.getE();
-            if (it == null) {
-                it = new SetOpenDomainIterator();
-            }
-            it.init(dom1, dom2);
-            return it;
-        }
 
         private BitSetEnumeratedDomain envdomain;
         private BitSetEnumeratedDomain kerdomain;
@@ -317,6 +323,7 @@ public final class SetDomainImpl implements SetDomain {
         }
 
         public void init(final BitSetEnumeratedDomain dom1, final BitSetEnumeratedDomain dom2) {
+            super.init();
             envdomain = dom1;
             kerdomain = dom2;
             currentValue = Integer.MIN_VALUE;
@@ -345,11 +352,6 @@ public final class SetDomainImpl implements SetDomain {
             } else {
                 throw new UnsupportedOperationException();
             }
-        }
-
-        @Override
-        public void dispose() {
-            manager.get().returnE(this);
         }
     }
 }

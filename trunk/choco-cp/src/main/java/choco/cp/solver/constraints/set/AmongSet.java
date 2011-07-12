@@ -122,6 +122,7 @@ public final class AmongSet extends AbstractMixedSetIntSConstraint {
             int val = it.next();
             outKinE.set(val - envInf, !s.isInDomainKernel(val));
         }
+        it.dispose();
 
         // init lb[0], glb[0], ub[0], lub[0]
         computeForAllVar();

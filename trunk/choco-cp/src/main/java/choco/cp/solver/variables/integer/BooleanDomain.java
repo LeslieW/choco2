@@ -30,7 +30,6 @@ package choco.cp.solver.variables.integer;
 import choco.cp.common.util.iterators.BooleanDomainIterator;
 import choco.cp.solver.variables.delta.BooleanDeltaDomain;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.common.util.iterators.OneValueIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
 import choco.kernel.solver.ContradictionException;
@@ -75,10 +74,12 @@ public final class BooleanDomain extends AbstractIntDomain {
 
     private final StoredIndexedBipartiteSet notInstanciated;
 
+    protected BooleanDomainIterator _iterator = null;
+
     /**
      * Constructs a new domain for the specified variable and bounds.
      *
-     * @param v The involved variable.
+     * @param v                 The involved variable.
      * @param environment
      * @param propagationEngine
      */
@@ -159,10 +160,10 @@ public final class BooleanDomain extends AbstractIntDomain {
      */
 
     public final boolean contains(final int x) {
-        if(!notInstanciated.contain(offset)){
-            return value ==x;
+        if (!notInstanciated.contain(offset)) {
+            return value == x;
         }
-        return x==0||x==1;
+        return x == 0 || x == 1;
     }
 
     /**
@@ -178,7 +179,7 @@ public final class BooleanDomain extends AbstractIntDomain {
 
     public final void restrict(final int x) {
         notInstanciated.remove(offset);
-        deltaDom.remove(1-x);
+        deltaDom.remove(1 - x);
         value = x;
     }
 
@@ -187,14 +188,19 @@ public final class BooleanDomain extends AbstractIntDomain {
      */
 
     public final int getSize() {
-        return (notInstanciated.contain(offset)?2:1);
+        return (notInstanciated.contain(offset) ? 2 : 1);
     }
 
     public DisposableIntIterator getIterator() {
-        if(getSize() == 1) return OneValueIterator.getIterator(getInf());
-        return BooleanDomainIterator.getIterator(this);
+        if (_iterator == null) {
+            _iterator = new BooleanDomainIterator();
+        } else if (!_iterator.reusable()) {
+            //assert false;
+            _iterator = new BooleanDomainIterator();
+        }
+        _iterator.init(this);
+        return _iterator;
     }
-
 
     /**
      * Returns the value following <code>x</code>
@@ -207,7 +213,7 @@ public final class BooleanDomain extends AbstractIntDomain {
         } else {
             if (x < 0) return 0;
             if (x == 0) return 1;
-            return Integer.MAX_VALUE;            
+            return Integer.MAX_VALUE;
         }
     }
 
@@ -217,8 +223,8 @@ public final class BooleanDomain extends AbstractIntDomain {
      */
 
     public final int getPrevValue(final int x) {
-        if(x > getSup())return getSup();
-        if(x > getInf())return getInf();
+        if (x > getSup()) return getSup();
+        if (x > getInf()) return getInf();
         return Integer.MIN_VALUE;
     }
 
@@ -252,7 +258,7 @@ public final class BooleanDomain extends AbstractIntDomain {
             return random.nextInt(2);
         }
     }
- 
+
     public boolean isEnumerated() {
         return true;
     }
@@ -275,7 +281,7 @@ public final class BooleanDomain extends AbstractIntDomain {
      * constraint.
      * Returns a boolean indicating whether the call indeed added new information.
      *
-     * @param x   The new upper bound
+     * @param x          The new upper bound
      * @param cause
      * @param forceAwake
      * @return a boolean indicating whether the call indeed added new information.
@@ -295,7 +301,7 @@ public final class BooleanDomain extends AbstractIntDomain {
      * constraint.
      * Returns a boolean indicating whether the call indeed added new information
      *
-     * @param x   The new lower bound.
+     * @param x          The new lower bound.
      * @param cause
      * @param forceAwake
      * @return a boolean indicating whether the call indeed added new information
@@ -320,7 +326,7 @@ public final class BooleanDomain extends AbstractIntDomain {
      * about such a new var.
      * Returns a boolean indicating whether the call indeed added new information.
      *
-     * @param x   The removed value
+     * @param x          The removed value
      * @param cause
      * @param forceAwake
      * @return a boolean indicating whether the call indeed added new information.
@@ -339,7 +345,7 @@ public final class BooleanDomain extends AbstractIntDomain {
      * Internal var: instantiation of the variable caused by its i-th constraint
      * Returns a boolean indicating whether the call indeed added new information.
      *
-     * @param x   the new upper bound
+     * @param x          the new upper bound
      * @param cause
      * @param forceAwake
      * @return a boolean indicating whether the call indeed added new information.
@@ -357,20 +363,20 @@ public final class BooleanDomain extends AbstractIntDomain {
     private void failOnIndex(final SConstraint cause) throws ContradictionException {
         propagationEngine.raiseContradiction(cause);
     }
-    
+
 
     /**
      * Instantiating a variable to an search value. Returns true if this was
      * a real modification or not
      *
-     * @param x the new instantiate value
+     * @param x     the new instantiate value
      * @param cause
      * @return wether it is a real modification or not
      * @throws choco.kernel.solver.ContradictionException
      *          contradiction exception
      */
     @Override
-       protected final boolean _instantiate(final int x, final SConstraint cause) throws ContradictionException {
+    protected final boolean _instantiate(final int x, final SConstraint cause) throws ContradictionException {
         if (!notInstanciated.contain(offset)) {
             if (value != x) {
                 failOnIndex(cause);
@@ -385,13 +391,13 @@ public final class BooleanDomain extends AbstractIntDomain {
                 return false;
             }
         }
-       }
+    }
 
 
     /**
      * Improving the lower bound.
      *
-     * @param x the new lower bound
+     * @param x     the new lower bound
      * @param cause
      * @return a boolean indicating wether the update has been done
      * @throws choco.kernel.solver.ContradictionException
@@ -400,70 +406,70 @@ public final class BooleanDomain extends AbstractIntDomain {
     @Override
     protected final boolean _updateInf(final int x, final SConstraint cause) throws ContradictionException {
         if (isInstantiated()) {
-           if (value < x) {
-            failOnIndex(cause);
-           }
-           return false;
+            if (value < x) {
+                failOnIndex(cause);
+            }
+            return false;
         } else {
-           if (x > 1) {
-            failOnIndex(cause);
-           } else if (x == 1) {
-               restrict(1);
-               //variable.value.set(1);
-               return true;
-           }
+            if (x > 1) {
+                failOnIndex(cause);
+            } else if (x == 1) {
+                restrict(1);
+                //variable.value.set(1);
+                return true;
+            }
         }
         return false;
     }
 
 
     /**
-      * Improving the upper bound.
-      *
-      * @param x the new upper bound
-      * @param cause
+     * Improving the upper bound.
+     *
+     * @param x     the new upper bound
+     * @param cause
      * @return wether the update has been done
-      * @throws choco.kernel.solver.ContradictionException
-      *          contradiction exception
-      */
-     @Override
-     protected final boolean _updateSup(final int x, final SConstraint cause) throws ContradictionException {
-         if (isInstantiated()) {
+     * @throws choco.kernel.solver.ContradictionException
+     *          contradiction exception
+     */
+    @Override
+    protected final boolean _updateSup(final int x, final SConstraint cause) throws ContradictionException {
+        if (isInstantiated()) {
             if (value > x) {
-             failOnIndex(cause);
+                failOnIndex(cause);
             }
             return false;
-         } else {
+        } else {
             if (x < 0) {
-             failOnIndex(cause);
+                failOnIndex(cause);
             } else if (x == 0) {
                 restrict(0);
                 //variable.value.set(0);
                 return true;
             }
-         }
-         return false;
-     }
+        }
+        return false;
+    }
 
 
     /**
-      * Removing a value from the domain of a variable. Returns true if this
-      * was a real modification on the domain.
-      *
-      * @param x the value to remove
-      * @param cause
+     * Removing a value from the domain of a variable. Returns true if this
+     * was a real modification on the domain.
+     *
+     * @param x     the value to remove
+     * @param cause
      * @return wether the removal has been done
-      * @throws choco.kernel.solver.ContradictionException
-      *          contradiction excpetion
-      */
-     @Override
-     protected final boolean _removeVal(final int x, final SConstraint cause) throws ContradictionException {
+     * @throws choco.kernel.solver.ContradictionException
+     *          contradiction excpetion
+     */
+    @Override
+    protected final boolean _removeVal(final int x, final SConstraint cause) throws ContradictionException {
         if (isInstantiated()) {
             if (value == x) {
-             failOnIndex(cause);
+                failOnIndex(cause);
             }
             return false;
-         } else {
+        } else {
             if (x == 0) {
                 restrict(1);
                 //variable.value.set(1);
@@ -473,11 +479,11 @@ public final class BooleanDomain extends AbstractIntDomain {
                 //variable.value.set(0);
                 return true;
             }
-         }
-         return false;
-     }
+        }
+        return false;
+    }
 
     public final int getOffset() {
-         return offset;
-     }
+        return offset;
+    }
 }

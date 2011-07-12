@@ -27,7 +27,6 @@
 
 package choco.kernel.memory.structure.iterators;
 
-import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.structure.Couple;
@@ -43,8 +42,6 @@ import choco.kernel.solver.constraints.AbstractSConstraint;
  */
 public final class PSCLIterator<C extends AbstractSConstraint> extends DisposableIterator<Couple<C>> {
 
-    private static final ThreadLocal<PoolManager<PSCLIterator>> manager = new ThreadLocal<PoolManager<PSCLIterator>>();
-
     private C cstrCause;
 
     private DisposableIntIterator cit;
@@ -56,25 +53,7 @@ public final class PSCLIterator<C extends AbstractSConstraint> extends Disposabl
     private final Couple<C> cc = new Couple<C>();
 
 
-    private PSCLIterator() {
-    }
-
-    @SuppressWarnings({"unchecked"})
-    public static <C extends AbstractSConstraint> PSCLIterator getIterator(
-            final PartiallyStoredVector<C> someElements,
-            final PartiallyStoredIntVector someIndices,
-            final C aCause, final DisposableIntIterator aCit) {
-        PoolManager<PSCLIterator> tmanager = manager.get();
-        if (tmanager == null) {
-            tmanager = new PoolManager<PSCLIterator>();
-            manager.set(tmanager);
-        }
-        PSCLIterator it = tmanager.getE();
-        if (it == null) {
-            it = new PSCLIterator();
-        }
-        it.init(someElements, someIndices, aCause, aCit);
-        return it;
+    public PSCLIterator() {
     }
 
     /**
@@ -123,8 +102,8 @@ public final class PSCLIterator<C extends AbstractSConstraint> extends Disposabl
 
     @Override
     public void dispose() {
+        super.dispose();
         cit.dispose();
-        manager.get().returnE(this);
     }
 
 }

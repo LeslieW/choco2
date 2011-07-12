@@ -45,11 +45,13 @@ import static choco.kernel.solver.propagation.event.TaskVarEvent.HYPDOMMODbitvec
 * Since : Choco 2.1.0
 * Update : Choco 2.1.0
 */
-public final class PartiallyStoredTaskCstrList<C extends AbstractSConstraint & TaskPropagator> extends APartiallyStoredCstrList<C>{
+public final class PartiallyStoredTaskCstrList<C extends AbstractSConstraint & TaskPropagator> extends APartiallyStoredCstrList<C> {
 
     private final PartiallyStoredIntVector events;
 
     private final IStateInt priority;
+
+    private PSCLEIterator<C> _iterator;
 
     public PartiallyStoredTaskCstrList(IEnvironment env) {
         super(env);
@@ -59,60 +61,65 @@ public final class PartiallyStoredTaskCstrList<C extends AbstractSConstraint & T
 
 
     /**
-	 * Adds a new constraints on the stack of constraints
-	 * the addition can be dynamic (undone upon backtracking) or not.
-	 *
-	 * @param c               the constraint to add
-	 * @param varIdx          the variable index accrding to the added constraint
-	 * @param dynamicAddition states if the addition is definitic (cut) or
-	 *                        subject to backtracking (standard constraint)
-	 * @return the index affected to the constraint according to this variable
-	 */
-	public int addConstraint(SConstraint c, int varIdx, boolean dynamicAddition) {
-		int constraintIdx = super.addConstraint(c, varIdx, dynamicAddition);
-        AbstractSConstraint ic = ((AbstractSConstraint)c);
-		int mask = ic.getFilteredEventMask(varIdx);
-        if((mask & HYPDOMMODbitvector) != 0){
-            addEvent(dynamicAddition, constraintIdx);
-		}
-		return constraintIdx;
-	}
-
-    /**
-	 * Add event to the correct partially stored int vector
-	 * @param dynamicAddition static or dynamic constraint
-     * @param constraintIdx index of the constraint
+     * Adds a new constraints on the stack of constraints
+     * the addition can be dynamic (undone upon backtracking) or not.
+     *
+     * @param c               the constraint to add
+     * @param varIdx          the variable index accrding to the added constraint
+     * @param dynamicAddition states if the addition is definitic (cut) or
+     *                        subject to backtracking (standard constraint)
+     * @return the index affected to the constraint according to this variable
      */
-	private void addEvent(boolean dynamicAddition, int constraintIdx) {
-		if (dynamicAddition) {
-			events.add(constraintIdx);
-		} else {
-			events.staticAdd(constraintIdx);
-		}
-	}
+    public int addConstraint(SConstraint c, int varIdx, boolean dynamicAddition) {
+        int constraintIdx = super.addConstraint(c, varIdx, dynamicAddition);
+        AbstractSConstraint ic = ((AbstractSConstraint) c);
+        int mask = ic.getFilteredEventMask(varIdx);
+        if ((mask & HYPDOMMODbitvector) != 0) {
+            addEvent(dynamicAddition, constraintIdx);
+        }
+        return constraintIdx;
+    }
 
     /**
-	 * Removes (permanently) a constraint from the list of constraints
-	 * connected to the variable.
-	 *
-	 * @param c the constraint that should be removed from the list this variable
-	 *          maintains.
-	 */
-	public int eraseConstraint(SConstraint c) {
-		int idx = super.eraseConstraint(c);
-		int mask = ((AbstractIntSConstraint)c).getFilteredEventMask(indices.get(idx));
-		if((mask & HYPDOMMODbitvector) != 0){
-			events.remove(idx);
-		}
-        return idx;
-	}
+     * Add event to the correct partially stored int vector
+     *
+     * @param dynamicAddition static or dynamic constraint
+     * @param constraintIdx   index of the constraint
+     */
+    private void addEvent(boolean dynamicAddition, int constraintIdx) {
+        if (dynamicAddition) {
+            events.add(constraintIdx);
+        } else {
+            events.staticAdd(constraintIdx);
+        }
+    }
 
-    public PartiallyStoredIntVector getEventsVector(){
-		return events;
-	}
+    /**
+     * Removes (permanently) a constraint from the list of constraints
+     * connected to the variable.
+     *
+     * @param c the constraint that should be removed from the list this variable
+     *          maintains.
+     */
+    public int eraseConstraint(SConstraint c) {
+        int idx = super.eraseConstraint(c);
+        int mask = ((AbstractIntSConstraint) c).getFilteredEventMask(indices.get(idx));
+        if ((mask & HYPDOMMODbitvector) != 0) {
+            events.remove(idx);
+        }
+        return idx;
+    }
+
+    public PartiallyStoredIntVector getEventsVector() {
+        return events;
+    }
 
     @SuppressWarnings({"unchecked"})
-    public DisposableIterator<Couple<C>> getActiveConstraint(C cstrCause){
-        return PSCLEIterator.getIterator(events,cstrCause, this.elements, this.indices);
+    public DisposableIterator<Couple<C>> getActiveConstraint(C cstrCause) {
+        if (_iterator == null || !_iterator.reusable()) {
+            _iterator = new PSCLEIterator<C>();
+        }
+        _iterator.init(cstrCause, events, elements, indices);
+        return _iterator;
     }
 }

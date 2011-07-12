@@ -35,6 +35,7 @@ import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.propagation.listener.IntPropagator;
+import choco.kernel.solver.variables.integer.IntDomain;
 
 @SuppressWarnings({"unchecked"})
 public class IntVarEvent<C extends AbstractSConstraint & IntPropagator> extends VarEvent<IntDomainVarImpl> {
@@ -99,11 +100,14 @@ public class IntVarEvent<C extends AbstractSConstraint & IntPropagator> extends 
     @Deprecated
     public static final int INSTINTbitvector = INSTINT_MASK;
 
+    final IntDomain _domain;
+
 
     public static final int[] EVENTS = new int[]{INCINF_MASK, DECSUP_MASK, REMVAL_MASK, INSTINT_MASK};
 
     public IntVarEvent(IntDomainVarImpl var) {
         super(var);
+        _domain = var.getDomain();
         eventType = EMPTYEVENT;
     }
 
@@ -126,7 +130,7 @@ public class IntVarEvent<C extends AbstractSConstraint & IntPropagator> extends 
         this.eventType = EMPTYEVENT;
 //        oldCause = NOEVENT;
         cause = null;
-        modifiedVar.getDomain().clearDeltaDomain();
+        _domain.clearDeltaDomain();
     }
 
     /**
@@ -145,27 +149,18 @@ public class IntVarEvent<C extends AbstractSConstraint & IntPropagator> extends 
         // boolean anyUpdateSinceFreeze = ((eventType != EMPTYEVENT) || (cause != NOEVENT));  // note: these two tests should be equivalent
         // anyUpdateSinceFreeze = (anyUpdateSinceFreeze || !(getIntVar().getDomain().releaseDeltaDomain()));
         // return !anyUpdateSinceFreeze;
-        return modifiedVar.getDomain().releaseDeltaDomain();
+        return _domain.releaseDeltaDomain();
     }
 
     protected void freeze() {
-        modifiedVar.getDomain().freezeDeltaDomain();
+        _domain.freezeDeltaDomain();
 //        oldCause = NOEVENT;
         cause = null;
         eventType = EMPTYEVENT;
     }
 
     public boolean getReleased() {
-        return modifiedVar.getDomain().getReleasedDeltaDomain();
-    }
-
-    /**
-     * Returns an iterator over the set of removed values
-     *
-     * @return an iterator over the set of values that have been removed from the domain
-     */
-    public DisposableIntIterator getEventIterator() {
-        return modifiedVar.getDomain().getDeltaIterator();
+        return _domain.getReleasedDeltaDomain();
     }
 
     /**
@@ -180,7 +175,7 @@ public class IntVarEvent<C extends AbstractSConstraint & IntPropagator> extends 
         // first, mark event
         int evtType = eventType;
 //        int evtCause = oldCause;
-        C evtCause = (C)cause;
+        C evtCause = (C) cause;
         freeze();
 
         if ((propagatedEvents & INSTINT_MASK) != 0 && (evtType & INSTINT_MASK) != 0)
@@ -254,7 +249,7 @@ public class IntVarEvent<C extends AbstractSConstraint & IntPropagator> extends 
         try {
             while (cit.hasNext()) {
                 Couple<C> cc = cit.next();
-                DisposableIntIterator iter = this.getEventIterator();
+                DisposableIntIterator iter = _domain.getDeltaIterator();
                 try {
                     cc.c.awakeOnRemovals(cc.i, iter);
                 } finally {
@@ -292,7 +287,7 @@ public class IntVarEvent<C extends AbstractSConstraint & IntPropagator> extends 
 //            assert((cause == null));
             // the varevent is reduced to basicEvt, and the cause is recorded
             eventType = promoteEvent(basicEvt);
-            if(!forceAwake){
+            if (!forceAwake) {
                 cause = constraint;
             }
 //            cause = constraint;

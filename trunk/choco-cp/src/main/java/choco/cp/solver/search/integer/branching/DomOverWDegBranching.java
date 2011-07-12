@@ -59,7 +59,7 @@ import java.util.logging.Logger;
 /**
  * WARNING ! This implementation suppose that the variables will not change. It copies all variables in an array
  * at the beginning !!
- * @deprecated use {@link DomOverWDegBranching2}
+ * @deprecated use {@link choco.cp.solver.search.integer.branching.domwdeg.DomOverWDegBranchingNew}
  */
 public class DomOverWDegBranching extends AbstractLargeIntBranchingStrategy implements PropagationEngineListener {
 	protected static final int ABSTRACTCONTRAINT_EXTENSION =
@@ -184,6 +184,7 @@ public class DomOverWDegBranching extends AbstractLargeIntBranchingStrategy impl
 					weight += cstr.getExtension(ABSTRACTCONTRAINT_EXTENSION).get() + cstr.getFineDegree(v.getVarIndex(idx));
 				}
 			}
+            c.dispose();
 			v.getExtension(ABSTRACTVAR_EXTENSION).set(weight);
 		}
 		//logWeights(ChocoLogging.getChocoLogger(), Level.INFO);
@@ -263,7 +264,8 @@ public class DomOverWDegBranching extends AbstractLargeIntBranchingStrategy impl
 	IntDomainVar v;
 	public void setFirstBranch(final IntBranchingDecision decision) {
 		v = decision.getBranchingIntVar();
-		for (Iterator<SConstraint> iter = v.getConstraintsIterator(); iter.hasNext();) {
+        DisposableIterator<SConstraint> iter = v.getConstraintsIterator();
+		for (; iter.hasNext();) {
 			reuseCstr = (AbstractSConstraint) iter.next();
 			if (SConstraintType.INTEGER.equals(reuseCstr.getConstraintType())) {
 				if (reuseCstr.getNbVarNotInst() == 2) {
@@ -276,6 +278,7 @@ public class DomOverWDegBranching extends AbstractLargeIntBranchingStrategy impl
 				}
 			}
 		}
+        iter.dispose();
 		if (_valIterator != null) {
 			decision.setBranchingValue( _valIterator.getFirstVal(v));
 		} else {
@@ -296,7 +299,8 @@ public class DomOverWDegBranching extends AbstractLargeIntBranchingStrategy impl
 			v = decision.getBranchingIntVar();
 			final boolean finished = !_valIterator.hasNextVal(v, decision.getBranchingValue());
 			if (finished) {
-				for (Iterator<SConstraint> iter = v.getConstraintsIterator(); iter.hasNext();) {
+                DisposableIterator<SConstraint> iter = v.getConstraintsIterator();
+				for (; iter.hasNext();) {
 					reuseCstr = (AbstractSConstraint) iter.next();
 					if (SConstraintType.INTEGER.equals(reuseCstr.getConstraintType())) {
 						if (reuseCstr.getNbVarNotInst() == 2) {
@@ -309,6 +313,7 @@ public class DomOverWDegBranching extends AbstractLargeIntBranchingStrategy impl
 						}
 					}
 				}
+                iter.dispose();
 			}
 			return finished;
 		} else {

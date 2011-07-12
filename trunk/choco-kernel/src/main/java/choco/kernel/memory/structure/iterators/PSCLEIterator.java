@@ -27,7 +27,6 @@
 
 package choco.kernel.memory.structure.iterators;
 
-import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.structure.Couple;
@@ -43,8 +42,6 @@ import choco.kernel.solver.constraints.AbstractSConstraint;
  */
 public final class PSCLEIterator<C extends AbstractSConstraint> extends DisposableIterator<Couple<C>> {
 
-    private static final ThreadLocal<PoolManager<PSCLEIterator>> manager = new ThreadLocal<PoolManager<PSCLEIterator>>();
-
     private C cstrCause;
 
     private DisposableIntIterator cit;
@@ -57,26 +54,10 @@ public final class PSCLEIterator<C extends AbstractSConstraint> extends Disposab
 
     private final Couple<C> cc = new Couple<C>();
 
-    @SuppressWarnings({"unchecked"})
-    public static <C extends AbstractSConstraint> PSCLEIterator getIterator(
-            final PartiallyStoredIntVector event, final C cstrCause,
-            final PartiallyStoredVector<C> elements,
-            final PartiallyStoredIntVector indices) {
-        PoolManager<PSCLEIterator> tmanager = manager.get();
-        if (tmanager == null) {
-            tmanager = new PoolManager<PSCLEIterator>();
-            manager.set(tmanager);
-        }
-        PSCLEIterator it = tmanager.getE();
-        if (it == null) {
-            it = new PSCLEIterator();
-        }
-        it.init(cstrCause, event, elements, indices);
-        return it;
-    }
 
-    private void init(final C aCause, final PartiallyStoredIntVector anEvent,
+    public void init(final C aCause, final PartiallyStoredIntVector anEvent,
                       final PartiallyStoredVector<C> someElements, final PartiallyStoredIntVector someIndices) {
+        super.init();
         this.event = anEvent;
         this.cit = this.event.getIndexIterator();
         this.cstrCause = aCause;
@@ -138,7 +119,7 @@ public final class PSCLEIterator<C extends AbstractSConstraint> extends Disposab
 
     @Override
     public void dispose() {
+        super.dispose();
         cit.dispose();
-        manager.get().returnE(this);
     }
 }

@@ -49,6 +49,8 @@ public final class BitSetDeltaDomain implements IDeltaDomain {
 
     private int offset;
 
+    private BitSetIterator _iterator;
+
 
     private BitSetDeltaDomain() {}
 
@@ -119,7 +121,15 @@ public final class BitSetDeltaDomain implements IDeltaDomain {
      */
     @Override
     public DisposableIntIterator iterator() {
-        return BitSetIterator.getIterator(offset, removedValuesToPropagate);
+        if (_iterator == null) {
+            _iterator = new BitSetIterator();
+        }else if (!_iterator.reusable()) {
+            assert false;
+            _iterator = new BitSetIterator();
+        }
+        _iterator.init(offset, removedValuesToPropagate);
+        return _iterator;
+
       }
 
     @Override

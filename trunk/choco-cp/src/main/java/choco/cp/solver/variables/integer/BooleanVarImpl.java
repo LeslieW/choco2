@@ -29,14 +29,16 @@ package choco.cp.solver.variables.integer;
 
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.propagation.listener.IntPropagator;
 import choco.kernel.solver.variables.integer.IntDomain;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
  * A variable implementation dedicated to boolean domains
  **/
-public class BooleanVarImpl extends IntDomainVarImpl {
+public class BooleanVarImpl<C extends AbstractSConstraint & IntPropagator> extends IntDomainVarImpl<C> {
 //<hca> I remove the final here to facilitate extention
     /**
      * A reference to the domain
@@ -46,7 +48,7 @@ public class BooleanVarImpl extends IntDomainVarImpl {
     public BooleanVarImpl(Solver solver, String name) {
         super(solver,name);
         this.booldomain = new BooleanDomain(this, solver.getEnvironment(), propagationEngine);
-        this.event = new BoolVarEvent(this);
+        this.event = new BoolVarEvent<C>(this);
     }
 
     // ============================================

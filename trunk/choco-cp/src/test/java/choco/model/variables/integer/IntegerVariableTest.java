@@ -27,24 +27,27 @@
 
 package choco.model.variables.integer;
 
-import choco.Choco;
 import choco.Options;
+import choco.cp.common.util.iterators.IntervalIntDomainIterator;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.TimesXYZ;
 import choco.cp.solver.constraints.integer.bool.sat.ClauseStore;
+import choco.cp.solver.search.BranchingFactory;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.cp.solver.variables.integer.IntervalIntDomain;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.iterators.OneValueIterator;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import org.junit.Assert;
+import junit.framework.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -280,8 +283,8 @@ public class IntegerVariableTest {
     @Test
     public void testOnUndefinedVariable() {
         Model m = new CPModel();
-        IntegerVariable v = Choco.makeIntVar("v", Integer.MIN_VALUE, Integer.MAX_VALUE);
-        IntegerVariable w = Choco.makeIntVar("w");
+        IntegerVariable v = makeIntVar("v", Integer.MIN_VALUE, Integer.MAX_VALUE);
+        IntegerVariable w = makeIntVar("w");
         m.addVariables(v, w);
         Solver s = new CPSolver();
         try {
@@ -452,7 +455,7 @@ public class IntegerVariableTest {
     }
 
     @Test
-    public void testNotBoolVar(){
+    public void testNotBoolVar() {
         CPSolver solver = new CPSolver();
         IntDomainVar move = solver.createBooleanVar("move");
         IntDomainVar stay = solver.createNotBooleanVar("stay", move);
@@ -461,18 +464,18 @@ public class IntegerVariableTest {
     }
 
     @Test
-    public void testNotBoolVar2(){
+    public void testNotBoolVar2() {
         Random random = new Random();
-        for(int seed = 0; seed < 20; seed ++){
+        for (int seed = 0; seed < 20; seed++) {
             random.setSeed(seed);
-            CPSolver solver1  = new CPSolver();
+            CPSolver solver1 = new CPSolver();
             int n = random.nextInt(20);
-            IntDomainVar[] bvars = new IntDomainVar[n*2];
-            for(int i = 0; i < n; i++){
+            IntDomainVar[] bvars = new IntDomainVar[n * 2];
+            for (int i = 0; i < n; i++) {
                 bvars[i] = solver1.createBooleanVar(String.format("b_%s", i));
             }
-            for(int i = 0; i < n; i++){
-                bvars[i+n] = solver1.createNotBooleanVar(String.format("nb_%s", i), bvars[i]);
+            for (int i = 0; i < n; i++) {
+                bvars[i + n] = solver1.createNotBooleanVar(String.format("nb_%s", i), bvars[i]);
             }
             solver1.post(new ClauseStore(bvars, solver1.getEnvironment()));
             Assert.assertEquals(0, solver1.getSolutionCount());
@@ -480,18 +483,18 @@ public class IntegerVariableTest {
     }
 
     @Test
-    public void iterationTest(){
+    public void iterationTest() {
         Random rand = new Random();
         Solver solver = new CPSolver();
-        for(int seed = 3; seed  < 500; seed++){
+        for (int seed = 3; seed < 500; seed++) {
             //System.out.printf("seed: %d\n", seed);
             rand.setSeed(seed);
             int type = rand.nextInt(4);
-            int a  = -200 + rand.nextInt(200);
+            int a = -200 + rand.nextInt(200);
             int b = a + rand.nextInt(200);
             IntDomainVar var = new IntDomainVarImpl(solver, "", type, a, b);
             DisposableIntIterator it = var.getDomain().getIterator();
-            for(int i  = var.getInf(); i <= var.getSup(); i = var.getNextDomainValue(i)){
+            for (int i = var.getInf(); i <= var.getSup(); i = var.getNextDomainValue(i)) {
                 Assert.assertTrue(it.hasNext());
                 Assert.assertEquals(it.next(), i);
             }
@@ -500,45 +503,182 @@ public class IntegerVariableTest {
     }
 
     @Test
-    public void iterationTest2(){
+    public void iterationTest2() {
+        for (int i = 0; i < 2; i++) {
+            Solver solver = new CPSolver();
+            int n = 999999;
+            IntDomainVar ivar = solver.createBoundIntVar("iv", -n, n);
+            long t1 = -System.currentTimeMillis();
+            for(int k = 0; k <999; k++){
+                iterate1(ivar);
+            }
+            t1+= System.currentTimeMillis();
+
+            long t2 = -System.currentTimeMillis();
+            for(int k = 0; k <19999; k++){
+                iterate2(ivar);
+            }
+            t2+= System.currentTimeMillis();
+
+            long t3 = -System.currentTimeMillis();
+            for(int k = 0; k <19999; k++){
+                iterate3(ivar);
+            }
+            t3+= System.currentTimeMillis();
+
+            System.out.printf("%dms, %dms, %dms\n", t1, t2, t3);
+        }
+
+    }
+
+    @Test
+    public void iterationTest3() throws ContradictionException {
+        for (int i = 0; i < 10; i++) {
+            Solver solver = new CPSolver();
+            int[] values = new int[99999];
+            for(int j = 1; j < 99999; j++){
+                values[j] = values[j-1] + 2;
+            }
+            IntDomainVar ivar = solver.createEnumIntVar("iv", values);
+            ivar.remVal(0);
+            long t1 = -System.currentTimeMillis();
+            /*for(int k = 0; k <9999; k++){
+                iterate1(ivar);
+            }*/
+            t1+= System.currentTimeMillis();
+
+            long t2 = -System.currentTimeMillis();
+            for(int k = 0; k <9999; k++){
+                iterate2(ivar);
+            }
+            t2+= System.currentTimeMillis();
+
+            long t3 = -System.currentTimeMillis();
+            for(int k = 0; k <9999; k++){
+                iterate3(ivar);
+            }
+            t3+= System.currentTimeMillis();
+
+            System.out.printf("%dms, %dms, %dms\n", t1, t2, t3);
+        }
+
+    }
+
+    @Test
+    public void iterationTest4() throws ContradictionException {
+        for (int i = 64; i < 9999999; i*=2) {
+            Solver solver = new CPSolver();
+            IntDomainVar ivar1 = solver.createBoundIntVar("iv", 0, i);
+            IntDomainVar ivar2 = solver.createEnumIntVar("iv", 0, i);
+            long t2 = -System.currentTimeMillis();
+            for(int k = 0; k <99; k++){
+                iterate3(ivar1);
+            }
+            t2+= System.currentTimeMillis();
+
+            long t3 = -System.currentTimeMillis();
+            for(int k = 0; k <99; k++){
+                iterate3(ivar2);
+            }
+            t3+= System.currentTimeMillis();
+
+            System.out.printf("fn %d: %dms, %dms x%f\n", i, t2, t3, t3/(t2==0?.1:t2));
+
+            t2 = -System.currentTimeMillis();
+            for(int k = 0; k <99; k++){
+                iterate2(ivar1);
+            }
+            t2+= System.currentTimeMillis();
+
+            t3 = -System.currentTimeMillis();
+            for(int k = 0; k <99; k++){
+                iterate2(ivar2);
+            }
+            t3+= System.currentTimeMillis();
+
+            System.out.printf("fn %d: %dms, %dms x%f\n", i, t2, t3, t3/(t2==0?.1:t2));
+        }
+
+    }
+
+    @Test
+    public void iterationTest5() throws ContradictionException {
+        for (int i = 0; i < 10; i++) {
+            Solver solver = new CPSolver();
+            IntDomainVar ivar = solver.createBoundIntVar("iv", 2, 2);
+            OneValueIterator oit = OneValueIterator.getIterator(2);
+            long t2 = -System.currentTimeMillis();
+            int m = 0;
+            for(int k = 0; k <9999999; k++){
+                IntervalIntDomainIterator it= new IntervalIntDomainIterator();
+                it.init((IntervalIntDomain) ivar.getDomain());
+                while(it.hasNext()){
+                    m += it.next();
+                }
+                it.dispose();
+            }
+            t2+= System.currentTimeMillis();
+
+            long t3 = -System.currentTimeMillis();
+            m = 0;
+            for(int k = 0; k <9999999; k++){
+                oit.init(2);
+                while(oit.hasNext()){
+                    m += oit.next();
+                }
+                oit.dispose();
+            }
+            t3+= System.currentTimeMillis();
+
+            System.out.printf("%dms, %dms\n", t2, t3);
+        }
+
+    }
+
+    private int iterate1(IntDomainVar var) {
+        int ub = var.getSup(), k = 0;
+        for (int val = var.getInf(); val <= ub; val = var.getNextDomainValue(val)) {
+            k += val;
+        }
+        return k;
+    }
+
+    private int iterate2(IntDomainVar var) {
+        int k = 0;
+        DisposableIntIterator it = var.getDomain().getIterator();
+        while(it.hasNext()){
+            k+= it.next();
+        }
+        it.dispose();
+        return k;
+    }
+
+    private int iterate3(IntDomainVar var) {
+        int ub = var.getSup(), k = 0;
+        for (int val = var.getInf(); val <= ub; val = var.fastNextDomainValue(val)) {
+            k += val;
+        }
+        return k;
+    }
+
+    @Test
+    public void testDummy(){
+        Model model = new CPModel();
+        int n = 999;
+        IntegerVariable x = makeIntVar("x", 0, n, Options.V_BOUND);
+        IntegerVariable y = makeIntVar("y", 0, n, Options.V_BOUND);
+        IntegerVariable z = makeIntVar("z", 0, n, Options.V_BOUND);
+
+        model.addConstraint(eq(x, z));
+        model.addConstraint(eq(y, z));
+        model.addConstraint(neq(x, y));
+
         Solver solver = new CPSolver();
-        int n = 199999;
-        IntDomainVar i1 = solver.createEnumIntVar("i1", -n, n);
-        long t2 = -System.currentTimeMillis();
-        for(int i = 0; i < 999; i++){
-            int k = 0;
-            DisposableIntIterator it = i1.getDomain().getIterator();
-            while(it.hasNext()){
-                it.next();
-                k++;
-            }
-            it.dispose();
-            Assert.assertEquals(i1.getDomainSize(), k);
-        }
-        t2 += System.currentTimeMillis();
-        long t1 = -System.currentTimeMillis();
-        for(int i = 0; i < 999; i++){
-            int k = 0;
-            int ub = i1.getSup();
-            for (int val = i1.getInf(); val <= ub; val = i1.getNextDomainValue(val)) {
-                //if(i1.canBeInstantiatedTo(val))
-                k++;
-            }
-            Assert.assertEquals(i1.getDomainSize(), k);
-        }
-        t1 += System.currentTimeMillis();
-        long t3 = -System.currentTimeMillis();
-        for(int i = 0; i < 999; i++){
-            int k = 0;
-            int ub = i1.getSup();
-            for (int val = i1.getInf(); val <= ub; val ++) {
-                if(i1.canBeInstantiatedTo(val))
-                k++;
-            }
-            Assert.assertEquals(i1.getDomainSize(), k);
-        }
-        t3 += System.currentTimeMillis();
-        System.out.printf("%d vs. %d vs. %d\n", t1, t2, t3);
+        solver.read(model);
+        solver.addGoal(BranchingFactory.lexicographic(solver, solver.getVar(new IntegerVariable[]{x,y,z})));
+        solver.solve();
+
+
     }
 
 }

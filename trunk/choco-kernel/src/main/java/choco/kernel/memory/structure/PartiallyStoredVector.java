@@ -67,6 +67,10 @@ public final class PartiallyStoredVector<E> {
      */
     private final IStateInt nStoredObjects;
 
+    private PSVIndexIterator<E> _iterator1;
+
+    private PSVIterator<E> _iterator2;
+
     /**
      * Constructor
      *
@@ -133,7 +137,7 @@ public final class PartiallyStoredVector<E> {
      */
     public int staticInsert(final int ind, final E o) {
         ensureStaticCapacity(nStaticObjects++);
-        System.arraycopy(staticObjects, ind, staticObjects, ind+1, nStaticObjects-ind);
+        System.arraycopy(staticObjects, ind, staticObjects, ind + 1, nStaticObjects - ind);
         staticObjects[ind] = o;
         return nStaticObjects - 1;
     }
@@ -184,7 +188,7 @@ public final class PartiallyStoredVector<E> {
                 return i;
             }
         }
-        if(nStoredObjects.getEnvironment().getWorldIndex() == 0){
+        if (nStoredObjects.getEnvironment().getWorldIndex() == 0) {
             for (int i = 0; i < nStoredObjects.get(); i++) {
                 final Object storedObject = storedObjects[i];
                 if (storedObject == o) {
@@ -192,7 +196,7 @@ public final class PartiallyStoredVector<E> {
                     return i;
                 }
             }
-        }else{
+        } else {
             throw new MemoryException("impossible to remove the object (a constraint ?) from the dynamic part of the collection (root node ?)");
         }
 
@@ -240,7 +244,7 @@ public final class PartiallyStoredVector<E> {
      */
     public int insert(final int ind, final E o) {
         ensureStoredCapacity(nStoredObjects.get() + 1);
-        System.arraycopy(storedObjects, ind, storedObjects, ind+1, nStoredObjects.get()-ind);
+        System.arraycopy(storedObjects, ind, storedObjects, ind + 1, nStoredObjects.get() - ind);
 //
 //        for (int i = nStoredObjects.get() + 1; i > ind; i--) {
 //            storedObjects[i] = storedObjects[i - 1];
@@ -300,12 +304,28 @@ public final class PartiallyStoredVector<E> {
         return (nStaticObjects + nStoredObjects.get());
     }
 
-    public DisposableIntIterator getIndexIterator(){
-        return PSVIndexIterator.getIterator(nStaticObjects, staticObjects, nStoredObjects);
+    public DisposableIntIterator getIndexIterator() {
+        if (_iterator1 == null) {
+            _iterator1 = new PSVIndexIterator<E>();
+        }else if (!_iterator1.reusable()) {
+            assert false;
+            _iterator1 = new PSVIndexIterator<E>();
+        }
+        _iterator1.init(nStaticObjects, staticObjects, nStoredObjects);
+        return _iterator1;
+
     }
 
-    public DisposableIterator getIterator(){
-        return PSVIterator.getIterator(nStaticObjects, staticObjects, nStoredObjects, storedObjects);
+    public DisposableIterator getIterator() {
+        if (_iterator2 == null) {
+            _iterator2 = new PSVIterator<E>();
+        }else if (!_iterator2.reusable()) {
+            assert false;
+            _iterator2 = new PSVIterator<E>();
+        }
+        _iterator2.init(nStaticObjects, staticObjects, nStoredObjects, storedObjects);
+        return _iterator2;
+
     }
 
     /**
@@ -356,7 +376,7 @@ public final class PartiallyStoredVector<E> {
      */
     public static int getFirstStaticIndex() {
         return 0;
-  }
+    }
 
 
     /**
@@ -364,7 +384,7 @@ public final class PartiallyStoredVector<E> {
      *
      * @return
      */
-    public int getLastStoredIndex(){
-        return nStoredObjects.get()-1;
+    public int getLastStoredIndex() {
+        return nStoredObjects.get() - 1;
     }
 }

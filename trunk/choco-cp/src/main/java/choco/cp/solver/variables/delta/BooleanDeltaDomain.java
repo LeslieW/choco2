@@ -40,9 +40,11 @@ import choco.kernel.solver.variables.delta.IDeltaDomain;
 * Since : Choco 2.1.1
 * Update : Choco 2.1.1
 */
-public final class BooleanDeltaDomain implements IDeltaDomain{
+public final class BooleanDeltaDomain implements IDeltaDomain {
 
     private int valueToPropagate;
+
+    protected OneValueIterator _iterator;
 
     public BooleanDeltaDomain() {
         valueToPropagate = Integer.MIN_VALUE;
@@ -59,6 +61,7 @@ public final class BooleanDeltaDomain implements IDeltaDomain{
 
     /**
      * Update the delta domain
+     *
      * @param value removed
      */
     @Override

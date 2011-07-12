@@ -59,8 +59,8 @@ public final class AC3BinSConstraint extends CspBinSConstraint {
         int right = left;
         DisposableIntIterator itv1 = v1.getDomain().getIterator();
         while (itv1.hasNext()) {
-            DisposableIntIterator itv0 = v0.getDomain().getIterator();
             int val1 = itv1.next();
+            DisposableIntIterator itv0 = v0.getDomain().getIterator();
             while (itv0.hasNext()) {
                 int val0 = itv0.next();
                 if (relation.isConsistent(val0, val1)) {
@@ -91,8 +91,8 @@ public final class AC3BinSConstraint extends CspBinSConstraint {
         int right = left;
         DisposableIntIterator itv0 = v0.getDomain().getIterator();
         while (itv0.hasNext()) {
-            DisposableIntIterator itv1 = v1.getDomain().getIterator();
             int val0 = itv0.next();
+            DisposableIntIterator itv1 = v1.getDomain().getIterator();
             while (itv1.hasNext()) {
                 int val1 = itv1.next();
                 if (relation.isConsistent(val0, val1)) {

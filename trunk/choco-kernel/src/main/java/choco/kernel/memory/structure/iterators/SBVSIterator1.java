@@ -27,7 +27,6 @@
 
 package choco.kernel.memory.structure.iterators;
 
-import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.structure.StoredBipartiteVarSet;
@@ -41,37 +40,20 @@ import choco.kernel.solver.variables.Var;
  */
 public final class SBVSIterator1<E extends Var> extends DisposableIterator<E> {
 
-    private static final ThreadLocal<PoolManager<SBVSIterator1>> manager = new ThreadLocal<PoolManager<SBVSIterator1>>();
-
     private int i = -1;
     private StoredBipartiteVarSet storedBipartiteVarSet;
     private E[] elements;
     private IStateInt last;
     private int nlast;
 
-    private SBVSIterator1() {
-    }
-
-    @SuppressWarnings({"unchecked"})
-    public synchronized static <E extends Var> SBVSIterator1 getIterator(final StoredBipartiteVarSet aStoredBipartiteVarSet,
-                                                                         final E[] someElements, final IStateInt last) {
-        PoolManager<SBVSIterator1> tmanager = manager.get();
-        if (tmanager == null) {
-            tmanager = new PoolManager<SBVSIterator1>();
-            manager.set(tmanager);
-        }
-        SBVSIterator1 it = tmanager.getE();
-        if (it == null) {
-            it = new SBVSIterator1();
-        }
-        it.init(aStoredBipartiteVarSet, someElements, last);
-        return it;
+    public SBVSIterator1() {
     }
 
     /**
      * Freeze the iterator, cannot be reused.
      */
     public void init(final StoredBipartiteVarSet aStoredBipartiteVarSet, final E[] someElements, final IStateInt aLast) {
+        super.init();
         this.storedBipartiteVarSet = aStoredBipartiteVarSet;
         this.elements = someElements;
         this.last = aLast;
@@ -106,10 +88,5 @@ public final class SBVSIterator1<E extends Var> extends DisposableIterator<E> {
     @Override
     public E next() {
         return elements[i];
-    }
-
-    @Override
-    public void dispose() {
-        manager.get().returnE(this);
     }
 }

@@ -30,7 +30,6 @@ package choco.cp.solver.variables.integer;
 import choco.cp.common.util.iterators.BitSetIntDomainIterator;
 import choco.cp.solver.variables.delta.BitSetDeltaDomain;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.common.util.iterators.OneValueIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
@@ -84,6 +83,9 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
      * the initial size of the domain (never increases)
      */
     private final int capacity;
+
+
+    protected BitSetIntDomainIterator _iterator = null;
 
     /**
      * Constructs a new domain for the specified variable and bounds.
@@ -250,9 +252,16 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
         return size.get();
     }
 
+
     public DisposableIntIterator getIterator() {
-        if (getSize() == 1) return OneValueIterator.getIterator(getInf());
-        return BitSetIntDomainIterator.getIterator(offset, contents);
+        if (_iterator == null) {
+            _iterator = new BitSetIntDomainIterator();
+        }else if (!_iterator.reusable()) {
+//            assert false;
+            _iterator = new BitSetIntDomainIterator();
+        }
+        _iterator.init(offset, contents);
+        return _iterator;
     }
 
     /**
@@ -267,6 +276,13 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
         else return bit + offset;
     }
 
+    @Override
+    public final int fastNextValue(int x) {
+        int bit = contents.nextSetBit(x - offset + 1);
+        if (bit < 0)
+            return Integer.MAX_VALUE;
+        return bit + offset;
+    }
 
     /**
      * Returns the value preceding <code>x</code>
@@ -336,7 +352,7 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
         final int maxDisplay = 15;
         int count = 0;
         final DisposableIntIterator it = this.getIterator();
-        for (; (it.hasNext() && count < maxDisplay);) {
+        for (; (it.hasNext() && count < maxDisplay); ) {
             final int val = it.next();
             count++;
             if (count > 1) buf.append(", ");

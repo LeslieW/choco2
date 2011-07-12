@@ -56,6 +56,7 @@ public final class SetNotEq extends AbstractBinSetSConstraint {
 			DisposableIntIterator it1 = v0.getDomain().getKernelIterator();
 			while (it1.hasNext()) {
 				if (!v1.isInDomainKernel(it1.next())) {
+                    it1.dispose();
 					return false;
 				}
 			}
@@ -88,7 +89,6 @@ public final class SetNotEq extends AbstractBinSetSConstraint {
 			}
 		}
 		it1.dispose();
-
 		return false;
 	}
 
@@ -180,6 +180,7 @@ public final class SetNotEq extends AbstractBinSetSConstraint {
 				final DisposableIntIterator it1 = v0.getDomain().getKernelIterator();
 				while (it1.hasNext()) {
 					if (! v1.isInDomainKernel(it1.next())) {
+                        it1.dispose();
 						return true;
 					}
 				}

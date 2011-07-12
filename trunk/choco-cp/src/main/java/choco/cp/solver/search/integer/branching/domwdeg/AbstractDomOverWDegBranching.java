@@ -32,6 +32,7 @@ import choco.cp.solver.search.integer.varselector.ratioselector.IntVarRatioSelec
 import choco.cp.solver.search.integer.varselector.ratioselector.MinRatioSelector;
 import choco.cp.solver.search.integer.varselector.ratioselector.RandMinRatioSelector;
 import choco.cp.solver.search.integer.varselector.ratioselector.ratios.IntRatio;
+import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.AbstractLargeIntBranchingStrategy;
@@ -40,8 +41,6 @@ import choco.kernel.solver.constraints.SConstraintType;
 import choco.kernel.solver.propagation.listener.PropagationEngineListener;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.Var;
-
-import java.util.Iterator;
 
 import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.*;
 
@@ -140,24 +139,26 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 
 	protected final void increaseVarWeights(final Var currentVar) {
 		updateWeightsCount--;
-		final Iterator<SConstraint> iter = currentVar.getConstraintsIterator();
+		final DisposableIterator<SConstraint> iter = currentVar.getConstraintsIterator();
 		while(iter.hasNext()) {
 			final SConstraint cstr = iter.next();
 			if (isDisconnected(cstr) ) {
 				updateVarWeights(currentVar, cstr, getConstraintExtension(cstr).get());
 			}
 		}
+        iter.dispose();
 	}
 
 	protected final void decreaseVarWeights(final Var currentVar) {
 		updateWeightsCount++;
-		final Iterator<SConstraint> iter = currentVar.getConstraintsIterator();
+		final DisposableIterator<SConstraint> iter = currentVar.getConstraintsIterator();
 		while(iter.hasNext()) {
 			final SConstraint cstr = iter.next();
 			if (isDisconnected(cstr) ) {
 				updateVarWeights(currentVar, cstr, - getConstraintExtension(cstr).get());
 			}
 		}
+        iter.dispose();
 	}
 
 	@Override

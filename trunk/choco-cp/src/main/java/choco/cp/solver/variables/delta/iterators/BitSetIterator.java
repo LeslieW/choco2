@@ -27,7 +27,6 @@
 
 package choco.cp.solver.variables.delta.iterators;
 
-import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 
 import java.util.BitSet;
@@ -40,36 +39,18 @@ import java.util.BitSet;
  */
 public class BitSetIterator extends DisposableIntIterator {
 
-    private static final ThreadLocal<PoolManager<BitSetIterator>> manager = new ThreadLocal<PoolManager<BitSetIterator>>();
-
     private int nextValue;
     private int offset;
     private BitSet contents;
 
-    private BitSetIterator() {
-    }
-
-
-    @SuppressWarnings({"unchecked"})
-    public static BitSetIterator getIterator(final int theOffset,
-                                             final BitSet theContents) {
-        PoolManager<BitSetIterator> tmanager = manager.get();
-        if (tmanager == null) {
-            tmanager = new PoolManager<BitSetIterator>();
-            manager.set(tmanager);
-        }
-        BitSetIterator it = tmanager.getE();
-        if (it == null) {
-            it = new BitSetIterator();
-        }
-        it.init(theOffset, theContents);
-        return it;
+    public BitSetIterator() {
     }
 
     /**
      * Freeze the iterator, cannot be reused.
      */
     public void init(final int theOffset, final BitSet theContents) {
+        super.init();
         this.contents = theContents;
         this.offset = theOffset;
         nextValue = theContents.nextSetBit(0);
@@ -99,11 +80,5 @@ public class BitSetIterator extends DisposableIntIterator {
         final int v = nextValue;
         nextValue = contents.nextSetBit(nextValue + 1);
         return v + offset;
-    }
-
-
-    @Override
-    public void dispose() {
-        manager.get().returnE(this);
     }
 }

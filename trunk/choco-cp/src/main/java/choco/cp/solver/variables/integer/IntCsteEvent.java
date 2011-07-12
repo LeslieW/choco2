@@ -27,7 +27,6 @@
 
 package choco.cp.solver.variables.integer;
 
-import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.propagation.listener.IntPropagator;
@@ -78,15 +77,6 @@ public class IntCsteEvent<C extends AbstractSConstraint & IntPropagator> extends
     }
 
     public boolean getReleased() {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Returns an iterator over the set of removed values
-     *
-     * @return an iterator over the set of values that have been removed from the domain
-     */
-    public DisposableIntIterator getEventIterator() {
         throw new UnsupportedOperationException();
     }
 

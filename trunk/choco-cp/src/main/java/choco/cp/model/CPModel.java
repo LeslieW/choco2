@@ -114,6 +114,8 @@ public class CPModel implements Model {
 
     protected ComponentConstraintWithSubConstraints clausesStore = null;
 
+    protected TIHIterator<Constraint> _iterator;
+
     /**
      * Properties file
      */
@@ -169,7 +171,7 @@ public class CPModel implements Model {
      * between mutliple models. This prevents from alive references of useless constraints within variables which
      * consequences can be slowing down execution and large memory usage with useless calls to gc.
      */
-    public void removeConstraints(){
+    public void removeConstraints() {
         DisposableIterator<Constraint> itc = constraints.iterator();
         while (itc.hasNext()) {
             this.remove(itc.next());
@@ -377,7 +379,11 @@ public class CPModel implements Model {
     public DisposableIterator<Constraint> getConstraintByType(final ConstraintType t) {
         final TIntHashSet hs = constraintsByType.get(t);
         if (hs != null) {
-            return TIHIterator.getIterator(hs, constraints);
+            if (_iterator == null || !_iterator.reusable()) {
+                _iterator = new TIHIterator<Constraint>();
+            }
+            _iterator.init(hs, constraints);
+            return _iterator;
         }
         return EmptyIterator.get();
     }
@@ -617,7 +623,7 @@ public class CPModel implements Model {
             case INTEGER:
                 final IntegerVariable vi = (IntegerVariable) v;
                 intVars.remove(vi);
-                if(vi.isBoolean())nbBoolVar--;
+                if (vi.isBoolean()) nbBoolVar--;
                 break;
             case SET:
                 final SetVariable sv = (SetVariable) v;

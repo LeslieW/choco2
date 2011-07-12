@@ -27,6 +27,7 @@
 
 package choco.cp.solver.variables.integer;
 
+import choco.cp.common.util.iterators.IntDomainIterator;
 import choco.cp.solver.variables.delta.StackDeltaDomain;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
@@ -92,12 +93,14 @@ public class LinkedIntDomain extends AbstractIntDomain {
 
     private final TIntIntHashMap val2ind;
 
+    protected IntDomainIterator _iterator;
+
     /**
      * Constructs a new domain for the specified variable and bounds.
      *
-     * @param v The involved variable.
-     * @param a Minimal value.
-     * @param b Maximal value.
+     * @param v                 The involved variable.
+     * @param a                 Minimal value.
+     * @param b                 Maximal value.
      * @param environment
      * @param propagationEngine
      */
@@ -323,6 +326,17 @@ public class LinkedIntDomain extends AbstractIntDomain {
         return size.get();
     }
 
+    public DisposableIntIterator getIterator() {
+        if (_iterator == null) {
+            _iterator = new IntDomainIterator();
+        }else if (!_iterator.reusable()) {
+            //assert false;
+            _iterator = new IntDomainIterator();
+        }
+        _iterator.init(this);
+        return _iterator;
+    }
+
     /**
      * Looks for the value after x in the domain. It is safe with value out of the domain.
      * <p/>
@@ -434,7 +448,7 @@ public class LinkedIntDomain extends AbstractIntDomain {
         int maxDisplay = 15;
         int count = 0;
         DisposableIntIterator it = this.getIterator();
-        for (; (it.hasNext() && count < maxDisplay);) {
+        for (; (it.hasNext() && count < maxDisplay); ) {
             int val = it.next();
             count++;
             if (count > 1) buf.append(", ");

@@ -27,7 +27,6 @@
 
 package choco.cp.common.util.iterators;
 
-import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateBitSet;
 
@@ -39,35 +38,18 @@ import choco.kernel.memory.IStateBitSet;
  */
 public final class BitSetIntDomainIterator extends DisposableIntIterator {
 
-    private static final ThreadLocal<PoolManager<BitSetIntDomainIterator>> manager = new ThreadLocal<PoolManager<BitSetIntDomainIterator>>();
-
     private int nextValue;
     private int offset;
     private IStateBitSet contents;
 
-    private BitSetIntDomainIterator() {
-    }
-
-    @SuppressWarnings({"unchecked"})
-    public static BitSetIntDomainIterator getIterator(final int theOffset,
-                                                      final IStateBitSet theContents) {
-        PoolManager<BitSetIntDomainIterator> tmanager = manager.get();
-        if (tmanager == null) {
-            tmanager = new PoolManager<BitSetIntDomainIterator>();
-            manager.set(tmanager);
-        }
-        BitSetIntDomainIterator it = tmanager.getE();
-        if (it == null) {
-            it = new BitSetIntDomainIterator();
-        }
-        it.init(theOffset, theContents);
-        return it;
+    public BitSetIntDomainIterator() {
     }
 
     /**
      * Freeze the iterator, cannot be reused.
      */
     public void init(final int theOffset, final IStateBitSet theContents) {
+        super.init();
         this.contents = theContents;
         this.offset = theOffset;
         nextValue = theContents.nextSetBit(0);
@@ -97,10 +79,5 @@ public final class BitSetIntDomainIterator extends DisposableIntIterator {
         final int v = nextValue;
         nextValue = contents.nextSetBit(nextValue + 1);
         return v + offset;
-    }
-
-    @Override
-    public void dispose() {
-        manager.get().returnE(this);
     }
 }

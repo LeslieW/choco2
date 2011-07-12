@@ -55,6 +55,8 @@ public final class StoredIntBipartiteList implements IStateIntVector {
      */
     private final IStateInt last;
 
+    private BipartiteListIterator _iterator;
+
 
     public StoredIntBipartiteList(final IEnvironment environment, final int[] values) {
         this.list = values;
@@ -94,8 +96,8 @@ public final class StoredIntBipartiteList implements IStateIntVector {
     @Override
     public boolean contain(final int val) {
         final int llast = last.get();
-        for (int i = 0; i< llast; i++){
-            if(val == list[i]){
+        for (int i = 0; i < llast; i++) {
+            if (val == list[i]) {
                 return true;
             }
         }
@@ -108,11 +110,19 @@ public final class StoredIntBipartiteList implements IStateIntVector {
 
     @Override
     public int quickSet(final int index, final int val) {
-        return set(index,val);
+        return set(index, val);
     }
 
     public DisposableIntIterator getIterator() {
-        return BipartiteListIterator.getIterator(list, last); 
+        if (_iterator == null) {
+            _iterator = new BipartiteListIterator();
+        }else if (!_iterator.reusable()) {
+            assert false;
+            _iterator = new BipartiteListIterator();
+        }
+        _iterator.init(list, last);
+        return _iterator;
+
     }
 
     public String pretty() {

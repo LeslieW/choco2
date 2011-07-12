@@ -27,7 +27,6 @@
 
 package choco.kernel.memory.structure.iterators;
 
-import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.solver.variables.Var;
 
@@ -39,35 +38,18 @@ import choco.kernel.solver.variables.Var;
  */
 public final class SBVSIterator2<E extends Var> extends DisposableIterator<E> {
 
-    private static final ThreadLocal<PoolManager<SBVSIterator2>> manager = new ThreadLocal<PoolManager<SBVSIterator2>>();
-
     private int i = -1;
     private E[] elements;
     private int size;
 
-    private SBVSIterator2() {
-    }
-
-    @SuppressWarnings({"unchecked"})
-    public static <E extends Var> SBVSIterator2 getIterator(
-            final E[] someElements, final int last) {
-        PoolManager<SBVSIterator2> tmanager = manager.get();
-        if (tmanager == null) {
-            tmanager = new PoolManager<SBVSIterator2>();
-            manager.set(tmanager);
-        }
-        SBVSIterator2 it = tmanager.getE();
-        if (it == null) {
-            it = new SBVSIterator2();
-        }
-        it.init(someElements, last);
-        return it;
+    public SBVSIterator2() {
     }
 
     /**
      * Freeze the iterator, cannot be reused.
      */
     public void init(final E[] someElements, final int aSize) {
+        super.init();
         this.elements = someElements;
         this.size = aSize;
         i = -1;
@@ -99,10 +81,5 @@ public final class SBVSIterator2<E extends Var> extends DisposableIterator<E> {
     @Override
     public E next() {
         return elements[i];
-    }
-
-    @Override
-    public void dispose() {
-        manager.get().returnE(this);
     }
 }

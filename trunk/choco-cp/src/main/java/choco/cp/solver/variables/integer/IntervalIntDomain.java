@@ -30,7 +30,6 @@ package choco.cp.solver.variables.integer;
 import choco.cp.common.util.iterators.IntervalIntDomainIterator;
 import choco.cp.solver.variables.delta.IntervalDeltaDomain;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.common.util.iterators.OneValueIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
@@ -59,6 +58,8 @@ public class IntervalIntDomain extends AbstractIntDomain {
 
     private final IStateInt sup;
 
+    protected IntervalIntDomainIterator _iterator = null;
+
     public IntervalIntDomain(final IntDomainVarImpl v, final int a, final int b, final IEnvironment environment, final PropagationEngine propagationEngine) {
         super(v, propagationEngine);
         inf = environment.makeInt(a);
@@ -79,6 +80,11 @@ public class IntervalIntDomain extends AbstractIntDomain {
         } else {
             return Integer.MAX_VALUE;
         }
+    }
+
+    @Override
+    public final int fastNextValue(int x) {
+        return x + 1;
     }
 
     public int getPrevValue(final int x) {
@@ -109,18 +115,16 @@ public class IntervalIntDomain extends AbstractIntDomain {
         return (x > getInf());
     }
 
-    protected DisposableIntIterator _iterator = null;
-
-    /**
-     * @deprecated replaced by iteration over domain with the {@code IntervalIntDomain.getNextValue, IntervalIntDomain.getPrevValue}
-     * @see choco.kernel.solver.variables.integer.IntDomainVar#getNextDomainValue(int)
-     * @see choco.kernel.solver.variables.integer.IntDomainVar#getPrevDomainValue(int)
-     * @see IntervalIntDomain#getNextValue(int)
-     * @see IntervalIntDomain#getPrevValue(int)
-     */
     public DisposableIntIterator getIterator() {
-        if (getSize() == 1) return OneValueIterator.getIterator(getInf());
-        return IntervalIntDomainIterator.getIterator(this);
+        if (_iterator == null) {
+            _iterator = new IntervalIntDomainIterator();
+        }else
+        if (!_iterator.reusable()) {
+            //assert false;
+            _iterator = new IntervalIntDomainIterator();
+        }
+        _iterator.init(this);
+        return _iterator;
     }
 
     public boolean remove(final int x) {

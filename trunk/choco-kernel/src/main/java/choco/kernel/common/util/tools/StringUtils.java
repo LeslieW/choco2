@@ -39,7 +39,6 @@ import choco.kernel.solver.variables.scheduling.ITask;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Queue;
 
 /*
  * User : charles
@@ -101,16 +100,6 @@ public class StringUtils {
 				@Override
 				public void remove() {
 					throw new UnsupportedOperationException("Immutable");
-				}
-
-
-				/**
-				 * Get the containerof disposable objects where free ones are available
-				 *
-				 * @return a {@link java.util.Deque}
-				 */
-				public Queue getContainer() {
-					return null;
 				}
 
 				/**

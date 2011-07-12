@@ -28,7 +28,6 @@
 package choco.kernel.memory.trailing;
 
 
-import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateBinaryTree;
 import choco.kernel.memory.trailing.trail.StoredBinaryTreeTrail;
@@ -55,6 +54,8 @@ public final class StoredBinaryTree implements IStateBinaryTree {
     private boolean remLeft = true;
 
     protected final StoredBinaryTreeTrail myTrail;
+
+    private TreeIterator _iterator;
 
 
     public StoredBinaryTree(final EnvironmentTrailing anEnvironment, final int a, final int b) {
@@ -431,28 +432,15 @@ public final class StoredBinaryTree implements IStateBinaryTree {
         return buf.toString();
     }
 
-    public DisposableIntIterator getIterator() {
-        return TreeIterator.getIterator(this);
+    public final DisposableIntIterator getIterator() {
+        if (_iterator == null || !_iterator.reusable()) {
+            _iterator = new TreeIterator();
+        }
+        _iterator.init(this);
+        return _iterator;
     }
 
     protected static final class TreeIterator extends DisposableIntIterator {
-
-        private static final ThreadLocal<PoolManager<TreeIterator>> manager = new ThreadLocal<PoolManager<TreeIterator>>();
-
-        @SuppressWarnings({"unchecked"})
-        public static TreeIterator getIterator(final StoredBinaryTree tree) {
-            PoolManager<TreeIterator> tmanager = manager.get();
-            if (tmanager == null) {
-                tmanager = new PoolManager<TreeIterator>();
-                manager.set(tmanager);
-            }
-            TreeIterator it = tmanager.getE();
-            if (it == null) {
-                it = new TreeIterator();
-            }
-            it.init(tree);
-            return it;
-        }
 
         private StoredBinaryTree tree;
         private int currentValue;
@@ -460,6 +448,7 @@ public final class StoredBinaryTree implements IStateBinaryTree {
         private Node lastNode;
 
         public void init(final StoredBinaryTree tree) {
+            super.init();
             this.tree = tree;
             currentValue = Integer.MIN_VALUE;
             currentNode = tree.getFirstNode();
@@ -488,11 +477,6 @@ public final class StoredBinaryTree implements IStateBinaryTree {
             currentNode = tree.nextNode(currentValue);
             lastNode = tree.getLastNode();
 
-        }
-
-        @Override
-        public void dispose() {
-            manager.get().returnE(this);
         }
     }
 

@@ -27,7 +27,6 @@
 
 package choco.kernel.common.util.objects;
 
-import choco.kernel.common.util.disposable.PoolManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 
 
@@ -38,6 +37,7 @@ public class IntList {
     protected final int[] content;
     protected int size;
     protected int currentIdx;
+    private IntListIterator _iterator;
 
     public IntList(int size) {
         this.size = size;
@@ -92,36 +92,23 @@ public class IntList {
         return new String(b);
     }
 
-    public DisposableIntIterator iterator() {
-        return IntListIterator.getIterator(this);
+    public final DisposableIntIterator iterator() {
+        if (_iterator == null || !_iterator.reusable()) {
+            _iterator = new IntListIterator();
+        }
+        _iterator.init(this);
+        return _iterator;
     }
 
 
     protected static class IntListIterator extends DisposableIntIterator {
-
-        private static final ThreadLocal<PoolManager<IntListIterator>> manager = new ThreadLocal<PoolManager<IntListIterator>>();
-
-        @SuppressWarnings({"unchecked"})
-        public static IntListIterator getIterator(final IntList list) {
-            PoolManager<IntListIterator> tmanager = manager.get();
-            if (tmanager == null) {
-                tmanager = new PoolManager<IntListIterator>();
-                manager.set(tmanager);
-            }
-            IntListIterator it = tmanager.getE();
-            if (it == null) {
-                it = new IntListIterator();
-            }
-            it.init(list);
-            return it;
-        }
-
 
         int currentIdx;
 
         IntList list;
 
         public void init(final IntList list) {
+            super.init();
             this.list = list;
             currentIdx = 0;
         }
@@ -147,11 +134,6 @@ public class IntList {
          */
         public int read() {
             return list.content[currentIdx];
-        }
-
-        @Override
-        public void dispose() {
-            manager.get().returnE(this);
         }
     }
 }
