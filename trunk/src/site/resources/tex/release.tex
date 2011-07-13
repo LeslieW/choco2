@@ -68,16 +68,16 @@ $>mvn test -DtestFailureIgnore=true
 \end{lstlisting}
 The \mylst{-DtestFailureIgnore=true} option avoids hard stop on a failed test. 
 
-At that point, you should consider the failed tests (if exist) and fix them if necessary. 
+At that point, you should consider the failed tests (if any) and fix them if necessary. 
 
 \vspace{.5cm}
 Make sure the \mylst{./src/changes/changes.xml} file has been correctly updated since the last release. The changes html file is created during the \mylst{mvn:site} command. 
 
 \vspace{.5cm}
-Prepare and perform release on SCM repository:
+Prepare and perform release on SCM repository (don't forget to mount the release directory):
 \begin{lstlisting}
-$>mvn release:prepare -DpreparationGoals=clean
-$>mvn release:perform // TO VERIFY
+$>mvn release:prepare -DpreparationGoals=clean -Dusername=sf_log -Dpassword=sf_pwd
+$>mvn release:perform -DpreparationGoals=clean
 \end{lstlisting}
 At that point the source repository is up-to-date. Now the released files (ZIP and TAR.GZ) can be created on the newly tagged version.
 
@@ -90,7 +90,12 @@ $>mvn package -DskipTests
 $>mvn assembly:assembly -DskipTests
 \end{lstlisting}
 
-\textbf{TODO} prepare \mylst{choco-solver} and \mylst{choco-solver-cpviz} for \mylst{deploy} command.
+\vspace{.5cm}
+Checkout the last release version (ex: 2.1.2), then update sourceforge website via SFTP:
+\begin{lstlisting}
+username,choco@frs.sourceforge.net
+/home/frs/project/c/ch/choco/choco/
+\end{lstlisting}
 
 %\subsection{}
 

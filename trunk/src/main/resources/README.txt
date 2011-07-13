@@ -53,7 +53,7 @@
  RELEASE
  -------
 
- The choco-X.y.z-VERSION.zip file is composed of the following directories and files:
+ The choco-${project.version}.zip file is composed of the following directories and files:
 
  > choco-solver: a JAR file providing tools for modeling and solving problems using CP (the heart of CHOCO)
  > choco-solver-cpviz: choco-solver + CP-Viz wrapper (using AOP), a JAR file providing tool for modeling and solving
@@ -69,16 +69,16 @@
 
 -------------------------
  choco-${project.version}.zip
- |-- apidocs-${project.version}             	        // javadoc files
- |-- choco-doc-${project.version}.pdf			        // Documentation
- |-- choco-solver-${project.version}.jar		        // CHOCO solver
+ |-- apidocs			             	        // javadoc files
+ |-- choco-doc-${project.version}.pdf		        // Documentation
+ |-- choco-solver-${project.version}.jar	        // CHOCO solver
  |-- choco-solver-${project.version}-with-sources.jar   // Sources of CHOCO solver
- |-- choco-solver-cpviz-${project.version}.jar  	    // CHOCO solver + CP Viz logs
+ |-- choco-solver-cpviz-${project.version}.jar		// CHOCO solver + CP Viz logs
  |-- extra
- |	|-- choco-db-${project.version}.jar 	    	    // Database insertion tool
- |	|-- choco-parsers-${project.version}.jar    	    // Parsers interfaces + MZN + FCSP
- |	|-- choco-cli-${project.version}.jar                // Command Line Interpreter
- |	`-- choco-visu-${project.version}.jar               // Visualization tool box
- |-- samples-${project.version}.jar			            // Samples of CHOCO programs
+ |	|-- choco-db-${project.version}.jar 	    	// Database insertion tool
+ |	|-- choco-parsers-${project.version}.jar    	// Parsers interfaces + MZN + FCSP
+ |	|-- choco-cli-${project.version}.jar            // Command Line Interpreter
+ |	`-- choco-visu-${project.version}.jar           // Visualization tool box
+ |-- samples-${project.version}.jar			// Samples of CHOCO programs
  `-- README
  -------------------------

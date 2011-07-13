@@ -43,8 +43,8 @@
                 </p>
                 <p>
                     increasingSum(IntegerVariable[] x, IntegerVariable s):
-                    Given a sequence of variables X = x0, x1, . . . , xn−1, the increasingSum constraint imposes that
-                    &#8704; i &#8712; [0, n − 2], xi &#8804; xi+1 and xi &#8712; X xi = s,
+                    Given a sequence of variables X = x0, x1, . . . , xn-1, the increasingSum constraint imposes that
+                    &#8704; i &#8712; [0, n-2], xi &#8804; xi+1 and xi &#8712; X xi = s,
                     build on an O(n) bound-consistency algorithm.
                 </p>
                 <p>

@@ -3,19 +3,16 @@
 			---
 			CHOCO Development Team
 			---
-			11/05/2009
+			13/07/2011
 
 Download CHOCO
 
 * Most recent jar files:
 
-    * {{{http://sourceforge.net/projects/choco/files/choco/2.1.1/SNAPSHOT/20101108/choco-2.1.1-20101108.160635-17.jar}choco-2.1.1.jar}}
+    * Download a {{{http://sourceforge.net/projects/choco/files/choco/2.1.2/choco-2.1.2.tar.gz/download}TAR.GZ file}} or a {{{http://sourceforge.net/projects/choco/files/choco/2.1.2/choco-2.1.2.zip/download}ZIP file}} of Choco-2.1.2
 
-    * {{{http://sourceforge.net/projects/choco/files/choco/2.1.1/SNAPSHOT/20101108/choco-solver-2.1.1-20101108.160543-4.jar}choco-solver-2.1.1.jar}}
-    
-    * {{{http://sourceforge.net/projects/choco/files/choco/2.1.1/SNAPSHOT/20101108/}jars, md5 and sources}}
-
-    
+    * Or download a particular file in {{{https://sourceforge.net/projects/choco/files/choco/2.1.2/choco-2.1.2/}choco-2.1.2}}
+        
     You can also read the {{{./changes-report.html}changes report}}.    
 
 * Previous files
@@ -37,74 +34,3 @@ Download CHOCO
   * <<Disk>> - <no minimum requirement>
 
   * <<Operating System>> - Should be able to run on any system that provides a compatible JAVA environment.
-
-
-* Project structure
-
-    There are different <jar> files available:
-
-    * A single <jar> that only contains the minimum required to solve CP problems : <choco-solver-X.x.x>. This archive should be used
-    if you want to integrate CHOCO as a library.
-
-    * A single <jar> that contains the whole project and dependencies (every modules) : <choco-X.x.x> .
-     This archive should be used if you want to integrate CHOCO as a library and use graphical tools, parser tools, test beta
-     developments and use CPVisu log generator.
-
-    * A single <jar> for each module of CHOCO :
-
-        * <choco-kernel-X.x.x>,
-
-        * <choco-cp-X.x.x> ,
-
-        * <choco-db-X.x.x>,
-
-        * <choco-parsers-X.x.x>,
-
-        * <choco-cli-X.x.x>,
-
-        * <choco-visu-X.x.x>
-
-        * <choco-contribs-X.x.x>,
-
-        * <samples-X.x.x>,
-
-        * and <cpvisu-tracer-X.x.x>.
-
-   These archives should be used if you want to integrate your own class-path.
-
----
-choco
-|-- pom.xml
-|-- choco-solver
-|	|-- pom.xml
-|	|-- choco-kernel
-|	|	|-- pom.xml
-|	|	`-- src
-|	`-- choco-cp
-|		|-- pom.xml
-|		`-- src
-|-- choco-tools
-|	|-- pom.xml
-|	|-- choco-db
-|	|	|-- pom.xml
-|	|	`-- src
-|	|-- choco-parsers
-|	|	|-- pom.xml
-|	|	`-- src
-|	`-- choco-cli
-|		|-- pom.xml
-|		`-- src
-|----choco-visu
-|	|-- pom.xml
-|	`-- src
-|----choco-contribs
-|	|-- pom.xml
-|	`-- src
-|----samples
-|	|-- pom.xml
-|	`-- src
-`----cpvisu-tracer
-	|-- pom.xml
-	`-- src
----
-

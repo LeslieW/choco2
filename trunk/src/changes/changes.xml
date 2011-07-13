@@ -6,7 +6,7 @@
         <author email="choco@emn.com">Choco team</author>
     </properties>
     <body>
-        <release version="Trunk (not yet released)" date="2011-06-28" description="Strong release (rev. 1768)">
+        <release version="2.1.2" date="2011-07-13" description="Strong release (rev. 1782)">
             <action dev="Charles Prud'homme" type="update">
                 Update class file headers.
             </action>
