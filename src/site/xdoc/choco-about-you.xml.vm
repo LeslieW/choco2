@@ -37,7 +37,7 @@
                             <tr>
                                 <td colspan="2">What are you going to use CHOCO for ?
                                     <br/>
-                                    <textarea COLS="50" ROWS="6" name="comments"/>
+                                    <textarea COLS="50" ROWS="6" name="comments"></textarea>
                                 </td>
                             </tr>
                         </table>

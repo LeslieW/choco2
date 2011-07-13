@@ -5,7 +5,9 @@
         <author>CHOCO Development Team</author>
     </properties>
     <body>
-
+	<p/>
+	<b>Choco 2.1.2 is now available!</b> 
+	Visit <a href="choco-download.html">download page</a>, <a href="choco-news.html">news page</a> and <a href="changes-report.html">changes report</a>.
         <section name="Welcome">
 
             <p>

@@ -223,7 +223,9 @@
                <artifactId>maven-release-plugin</artifactId>
                <version>2.1</version>
                <configuration>
-                   <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <preparationGoals>clean install</preparationGoals> 
+                    <goals>deploy -P admin</goals>
                </configuration>
            </plugin>
         </plugins>
@@ -249,6 +251,11 @@
                     </reportSet>
                 </reportSets>
             </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+        <version>2.9</version>
+      </plugin>
         </plugins>
     </reporting>
     <developers>
