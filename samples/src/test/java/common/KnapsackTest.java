@@ -50,6 +50,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static choco.Choco.*;
+
 /**
  * <br/>
  *
@@ -245,6 +247,28 @@ public class KnapsackTest {
         solver.maximize(true);
 
 
+    }
+
+    @Test
+    public void testEquation() {
+        int n = 3;
+        IntegerVariable[] bvars = makeIntVarArray("b", n, 0, 2, Options.V_ENUM);
+        int[] coefs = new int[]{-1, 2, 3};
+        int charge = 5;
+        Constraint knapsack = equation(charge, bvars, coefs);
+
+        CPModel m = new CPModel();
+        m.addConstraint(knapsack);
+        CPSolver s = new CPSolver();
+        s.read(m);
+        s.solveAll();
+
+        CPModel m2 = new CPModel();
+        m2.addConstraint(Choco.eq(charge, scalar(coefs, bvars)));
+        CPSolver s2 = new CPSolver();
+        s2.read(m2);
+        s2.solveAll();
+        org.junit.Assert.assertEquals(s.getSolutionCount(), s2.getSolutionCount());
     }
 
 }
