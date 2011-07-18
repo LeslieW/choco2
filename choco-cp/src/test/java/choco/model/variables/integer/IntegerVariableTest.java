@@ -596,7 +596,7 @@ public class IntegerVariableTest {
             }
             t3+= System.currentTimeMillis();
 
-            System.out.printf("fn %d: %dms, %dms x%f\n", i, t2, t3, t3/(t2==0?.1:t2));
+            System.out.printf("it %d: %dms, %dms x%f\n", i, t2, t3, t3/(t2==0?.1:t2));
         }
 
     }
