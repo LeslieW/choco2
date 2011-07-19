@@ -1,3 +1,4 @@
+%!TEX root = ../content-doc.tex
 %\part{advanced}
 \label{advanced}
 \hypertarget{advanced}{}
@@ -1038,7 +1039,8 @@ Very few \mylst{AbstractDetector} just analyze the model, without any side effec
 
 
 \begin{itemize}
-\item[] \mylst{AbstractDetector analysis(CPModel m)}
+\item[] \mylst{AbstractDetector analysis(CPModel m)} 
+Analyze the model \mylst{m}, and print out messages about general statistics: very large domain variables, inappropriate domain type variables, free variables (variables not involved in any constraints), etc. 
 \item[] \mylst{AbstractDetector intVarEqDet(CPModel m)}
 \item[] \mylst{AbstractDetector taskVarEqDet(CPModel m)}
 \item[] \mylst{AbstractDetector cliqueDetector(CPModel m, boolean breakSymetries)}
