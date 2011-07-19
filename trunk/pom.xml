@@ -62,7 +62,7 @@
     </dependencies>
 
     <modules>
-        <module>choco-kernel</module>
+        <module>choco-solver</module>
         <module>choco-cp</module>
         <module>cpvisu-tracer</module>
         <module>choco-db</module>

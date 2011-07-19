@@ -229,68 +229,6 @@
             </answer>
         </faq>
 
-        <faq id="maven">
-            <question>How do I install CHOCO using Maven?</question>
-            <answer>
-                <p>
-                    Once you obtained the latest sources, there are a few steps you can do to deal with those.
-                    <i>It is assumed that you already set up Maven on your local system.
-                        If you did not, then please refer to
-                        <a href="http://maven.apache.org/download.html" target="_blank">Maven's Download and
-                            Installation Instructions
-                        </a>
-                        before continuing.
-                    </i>
-                    Go to the CHOCO directory.
-                </p>
-                <ul>
-                    <li>To install CHOCO, run the maven command:</li>
-                    <code>
-                        mvn clean install -Dmaven.test.skip=true
-                    </code>
-                    <li>To build the project for your IDE:</li>
-                    <ul>
-                        <li>Intellij IDEA (CHOCO's favourite IDE):</li>
-                        <code>
-                            mvn idea:idea
-                        </code>
-                        <li>Eclipse:</li>
-                        <code>
-                            mvn eclipse:eclipse
-                        </code>
-                    </ul>
-                    <li>To build the differents JAR files of CHOCO:</li>
-                    <ul>
-                        <li>Basic content (choco-kernel + choco-cp and dependencies):</li>
-                        <code>
-                            mvn clean package assembly:assembly -Ddescriptor=./src/descriptors/basic.xml
-                        </code>
-                        <li>Basic content and visu (choco-kernel + choco-cp + choco-visu and dependencies):</li>
-                        <code>
-                            mvn clean package assembly:assembly -Ddescriptor=./src/descriptors/basic+visu.xml
-                        </code>
-                        <li>Beta content (choco-kernel + choco-cp + choco-visu + choco-contribs and dependencies):</li>
-                        <code>
-                            mvn clean package assembly:assembly -Ddescriptor=./src/descriptors/beta.xml
-                        </code>
-                    </ul>
-                </ul>
-                <p>
-                    Please refer to
-                    <a href="http://maven.apache.org/plugins/maven-assembly-plugin/" target="_blank">Assembly plugin web
-                        site
-                    </a>
-                    for further information.
-                    <br/>
-                </p>
-                <p>
-                    Please refer to the
-                    <a href="http://maven.apache.org/" target="_blank">Maven web site</a>
-                    for other life cycle command.
-                </p>
-            </answer>
-        </faq>
-
         <faq id="eclipse_source">
             <question>I'm working with the sources in Eclipse environment, and I get "new
                 sun.security.action.GetPropertyAction("line.separator"));" error

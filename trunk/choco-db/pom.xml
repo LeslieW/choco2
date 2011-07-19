@@ -12,7 +12,7 @@
     <dependencies>
         <dependency>
             <groupId>choco</groupId>
-            <artifactId>choco-kernel</artifactId>
+            <artifactId>choco-solver</artifactId>
             <version>${project.version}</version>
         </dependency>
          <dependency>

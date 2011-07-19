@@ -1,10 +1,10 @@
  ------
- Choco-kernel
+ choco-solver
  ------
  CHOCO development team
  ------
  ------
 
-Welcome to Choco-kernel
+Welcome to choco-solver
 
- Choco-kernel defines the common APIs for CHOCO.
+ choco-solver regroups modules of constraint programming solver.

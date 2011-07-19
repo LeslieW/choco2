@@ -12,13 +12,13 @@
     <dependencies>
         <dependency>
             <groupId>choco</groupId>
-            <artifactId>choco-kernel</artifactId>
+            <artifactId>choco-solver</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>choco</groupId>
-            <artifactId>choco-kernel</artifactId>
+            <artifactId>choco-solver</artifactId>
             <version>${project.version}</version>
             <classifier>sources</classifier>
             <scope>runtime</scope>
@@ -83,7 +83,7 @@
                     <weaveDependencies>
                         <weaveDependency>
                             <groupId>choco</groupId>
-                            <artifactId>choco-kernel</artifactId>
+                            <artifactId>choco-solver</artifactId>
                         </weaveDependency>
                         <weaveDependency>
                             <groupId>choco</groupId>
