@@ -17,7 +17,7 @@
         </dependency>
         <dependency>
             <groupId>choco</groupId>
-            <artifactId>choco-cp</artifactId>
+            <artifactId>choco-modeler</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

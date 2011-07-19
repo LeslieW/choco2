@@ -63,7 +63,7 @@
 
     <modules>
         <module>choco-solver</module>
-        <module>choco-cp</module>
+        <module>choco-modeler</module>
         <module>cpvisu-tracer</module>
         <module>choco-db</module>
         <module>choco-parsers</module>
