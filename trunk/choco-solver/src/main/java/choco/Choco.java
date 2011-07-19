@@ -4454,7 +4454,7 @@ public class Choco {
      * @return a constraint
      */
     public static Constraint equation(String option, IntegerVariable z, IntegerVariable[] vars, int[] coeffs) {
-        return (option.equals("cp:bc")) ? eq(z, Choco.scalar(coeffs, vars)) : Choco.equation(z, vars, coeffs);
+        return (option.equals("cp:bc")) ? Choco.eq(z, Choco.scalar(coeffs, vars)) : Choco.equation(z, vars, coeffs);
     }
 
     /**
