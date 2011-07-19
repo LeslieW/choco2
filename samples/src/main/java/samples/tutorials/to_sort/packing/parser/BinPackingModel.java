@@ -32,18 +32,13 @@ import static choco.Options.C_PACK_DLB;
 import static choco.Options.C_PACK_FB;
 import static choco.Options.C_PACK_LBE;
 import static choco.Options.V_OBJECTIVE;
-
-
 import gnu.trove.TIntArrayList;
-
-
 import parser.instances.AbstractMinimizeModel;
 import parser.instances.BasicSettings;
 import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.constraints.global.pack.PackSConstraint;
 import choco.cp.solver.search.BranchingFactory;
-import choco.kernel.common.opres.heuristics.IHeuristic;
 import choco.kernel.common.opres.pack.LowerBoundFactory;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
@@ -81,18 +76,21 @@ public class BinPackingModel extends AbstractMinimizeModel {
 
 	@Override
 	public Boolean preprocess() {
-		final BinPackingFileParser pr = (BinPackingFileParser) parser;
-		setHeuristic(new CompositeHeuristics1BP(pr));
-		// TODO - can reuse heuristic object - created 6 juil. 2011 by Arnaud Malapert
+		BinPackingFileParser p = (BinPackingFileParser) parser;
+		TIntArrayList items = new TIntArrayList(p.sizes);
+		//heuristics and lower bounds use an increasing size order for a better compatibility with trove4j
+		items.sort(); 
+		CompositeHeuristics1BP h = new CompositeHeuristics1BP(items, p.capacity);
+		setHeuristic(h);
 		Boolean b = super.preprocess();
 		if(b != null && Boolean.valueOf(b)) {
-			// FIXME - Check the order of items - created 5 juil. 2011 by Arnaud Malapert
 			nbBins = getHeuristic().getObjectiveValue().intValue();
-			setComputedLowerBound(LowerBoundFactory.memComputeAllMDFF(new TIntArrayList(pr.sizes), pr.capacity, nbBins));
+			// DONE 18 juil. 2011 - sorted items - created 5 juil. 2011 by Arnaud Malapert
+			setComputedLowerBound(LowerBoundFactory.memComputeAllMDFF(items, p.capacity, nbBins));
 			nbBins--;
 		}else {
 			setComputedLowerBound(0);
-			nbBins = pr.sizes.length;
+			nbBins = items.size();
 		}
 		return b;
 	}

@@ -31,6 +31,7 @@ import static choco.Choco.allDifferent;
 import static choco.Choco.constantArray;
 import static choco.Choco.eq;
 import static choco.Choco.geq;
+import static choco.Choco.leq;
 import static choco.Choco.makeIntVar;
 import static choco.Choco.makeIntVarArray;
 import static choco.Choco.makeSetVarArray;
@@ -47,9 +48,11 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import choco.Choco;
 import choco.kernel.common.util.comparator.IPermutation;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.common.util.tools.VariableUtils;
+import choco.kernel.model.Model;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Variable;
@@ -64,7 +67,7 @@ import choco.kernel.model.variables.set.SetVariable;
  * @version 2.0.1</br>
  */
 public final class PackModel {
-
+	// TODO - Clean up deprecated methods - created 18 juil. 2011 by Arnaud Malapert
 	public final IPermutation permutation;
 
 	public final IntegerVariable[] bins;
@@ -82,11 +85,11 @@ public final class PackModel {
 	public PackModel(int[] sizes, int nbBins, int capacity) {
 		this(StringUtils.randomName(),sizes, nbBins, capacity);
 	}
-	
+
 	public PackModel(String name, int[] sizes, int nbBins, int capacity) {
 		this(name, constantArray(sizes), nbBins, capacity);
 	}
-	
+
 	public PackModel(String prefix, IntegerConstantVariable[] sizes, int nbBins, int capacity) {
 		super();
 		this.bins = makeIntVarArray(prefix+"B", sizes.length, 0, nbBins-1,V_ENUM);
@@ -132,7 +135,7 @@ public final class PackModel {
 			SetVariable[] items) {
 		this(bins, sizes, loads, items, makeIntVar(StringUtils.randomName()+"-NbNE",0, loads.length,V_BOUND));
 	}
-	
+
 	public PackModel(IntegerVariable[] bins,
 			IntegerConstantVariable[] sizes, IntegerVariable[] loads,
 			SetVariable[] items, IntegerVariable nbNonEmpty) {
@@ -156,7 +159,7 @@ public final class PackModel {
 	private IPermutation makePermutation(IntegerConstantVariable[] sizes) {
 		return replaceByIdentity( getSortingPermuation(sizes,true));
 	}
-	
+
 	private static int computeMax(IntegerVariable[] vars) {
 		int maxCapa = Integer.MIN_VALUE;
 		for (IntegerVariable v : vars) {
@@ -166,11 +169,11 @@ public final class PackModel {
 		return maxCapa;
 	}
 
-	
+
 	private void checkArrays(Object[] o1, Object[] o2) {
 		if(o1.length!= o2.length) throw new ModelException("Invalid Arrays sizes.");
 	}
-	
+
 
 	public final Variable[] getVariables() {
 		final int n= getNbItems();
@@ -188,7 +191,7 @@ public final class PackModel {
 		vars[vars.length-1]=nbNonEmpty;
 		return vars;
 	}
-	
+
 	public final int getNbBins() {
 		return loads.length;
 	}
@@ -222,17 +225,32 @@ public final class PackModel {
 	 * Symmetry Breaking : equal-sized items are ordered according to their indices.
 	 * If the relation sizes[i] = sizes[i+1] holds, then it states the constraint bins[i] <= bins[i+1].
 	 */
+	@Deprecated
 	public Constraint[] orderEqualSizedItems(int fromIndex) {
 		final List<Constraint> cstr = new ArrayList<Constraint>();
-		int oldS = -1;
-		int idx = fromIndex;
-		while(idx< bins.length) {
-			final int newS = sizes[idx].getValue();
-			if(newS==oldS) {cstr.add(geq(bins[idx],bins[idx-1]));}
-			else {oldS=newS;}
-			idx++;
+		final int n = getNbItems() - 1;
+		for (int i = fromIndex; i < n; i++) {
+			if(sizes[i].getValue() == sizes[i+1].getValue()) {
+				cstr.add(leq(bins[i],bins[i + 1]));
+			}
 		}
 		return cstr.toArray(new Constraint[cstr.size()]);
+	}
+	
+	/**
+	 * Symmetry Breaking : equal-sized items are ordered according to their indices.
+	 * If the relation sizes[i] = sizes[i+1] holds, then it states the constraint bins[i] <= bins[i+1].
+	 */
+	public int orderEqualSizedItems(Model model, int fromIndex) {
+		final int n = getNbItems() - 1;
+		int nbC = 0;
+		for (int i = fromIndex; i < n; i++) {
+			if(sizes[i].getValue() == sizes[i+1].getValue()) {
+				model.addConstraint(leq(bins[i],bins[i + 1]));
+				nbC++;
+			}
+		}
+		return nbC;
 	}
 
 
@@ -241,17 +259,16 @@ public final class PackModel {
 	}
 
 	private boolean isAdditionalLargeItem(int idx) {
-		//the capacity is even and the size of the item is C/2.
-		//So, for any previous items s_i + s_j >= C/2 (C/2+1) >= C+1
-		return idx < bins.length && 
-		sizes[idx].getValue() == maxCapacity/2 && 
-		maxCapacity % 2 == 0;
+		return idx == 0 || //the first item can be packed into the first bin
+		// or it cannot be packed into any preceding bins
+		idx < bins.length && sizes[idx].getValue() + sizes[idx-1].getValue() > maxCapacity;
 	}
 
 	/**
-	 * Symmetry Breaking : pack the k-th largest items into the first bins.
-	 * k = max{ q | sizes[q] + sizes[q+1] > maxCapacity} where the sizes are sorted according to decreasing sizes.
+	 * Symmetry Breaking : pack the k largest items into the first bins.
+	 * k = max{ q | sizes[q] + sizes[q-1] > maxCapacity} where the sizes are sorted according to decreasing sizes.
 	 */
+	@Deprecated
 	public final Constraint[] packLargeItems() {
 		final List<Constraint> cstr = new ArrayList<Constraint>();
 		int nbP=0;
@@ -261,9 +278,25 @@ public final class PackModel {
 		}
 		if( isAdditionalLargeItem(nbP)) {
 			cstr.add( eq(bins[nbP],nbP));
+		}
+		return cstr.isEmpty() ? null : cstr.toArray(new Constraint[cstr.size()]);
+	}
+
+
+	/**
+	 * Symmetry Breaking : pack the k largest items into the first bins.
+	 * k = max{ q | sizes[q] + sizes[q-1] > maxCapacity} where the sizes are sorted according to decreasing sizes.
+	 */
+	public final int packLargeItems(Model m) {
+		int nbP=0;
+		while( isLargeItem(nbP)) {
+			m.addConstraint(eq(bins[nbP],nbP));
 			nbP++;
 		}
-		return cstr.toArray(new Constraint[cstr.size()]);
+		if( isAdditionalLargeItem(nbP)) {
+			m.addConstraint( eq(bins[nbP],nbP));
+		}
+		return nbP;
 	}
 
 
@@ -280,34 +313,60 @@ public final class PackModel {
 		if( isAdditionalLargeItem(nbP)) {
 			vars.add( bins[nbP++]);
 		}
-		return allDifferent(vars.toArray(new IntegerVariable[nbP]));
+		return vars.isEmpty() ? Choco.TRUE : allDifferent(vars.toArray(new IntegerVariable[nbP]));
 	}
 
 	/**
 	 * Symmetry Breaking: bins are sorted according to non increasing loads. 
 	 */
+	@Deprecated
 	public final Constraint[] decreasingLoads(int fromIndex) {
 		return symBreakDecreasingOrder(loads, fromIndex);
 	}
 
 	/**
+	 * Symmetry Breaking: bins are sorted according to non increasing loads. 
+	 */
+	public final int decreasingLoads(Model model, int fromIndex) {
+		return symBreakDecreasingOrder(model, loads, fromIndex);
+	}
+
+	/**
 	 * Symmetry Breaking: bins are sorted according to non increasing cardinalities. 
 	 */
+	@Deprecated
 	public final Constraint[] decreasingCardinalities(int fromIndex) {
 		return symBreakDecreasingOrder(VariableUtils.getCardinalities(items), fromIndex);
 	}
+	
+	/**
+	 * Symmetry Breaking: bins are sorted according to non increasing cardinalities. 
+	 */
+	public final int decreasingCardinalities(Model model, int fromIndex) {
+		return symBreakDecreasingOrder(model, VariableUtils.getCardinalities(items), fromIndex);
+	}
 
 	private final static Constraint[] symBreakDecreasingOrder(IntegerVariable[] vars,int fromIndex) {
-		final int nb = vars.length - fromIndex - 1;
-		if(nb>0) {
+		// FIXME - Index issues between nb and the loop - created 18 juil. 2011 by Arnaud Malapert
+		final int nb =vars.length - fromIndex - 1; 
+		if(nb > 0) {
 			final Constraint[] cstr= new Constraint[nb];
-			for (int i = fromIndex; i < vars.length-1; i++) {
+			final int n = vars.length-1;
+			for (int i = fromIndex; i < n; i++) {
 				cstr[i-fromIndex] = geq(vars[i], vars[i+1]);
 			}
 			return cstr;
 		} else {return null;}
 	}
-
+	
+	private final static int symBreakDecreasingOrder(Model model, IntegerVariable[] vars,int fromIndex) {
+		// FIXME - Index issues between nb and the loop - created 18 juil. 2011 by Arnaud Malapert
+		final int n = vars.length-1;
+		for (int i = fromIndex; i < n; i++) {
+			model.addConstraint(geq(vars[i], vars[i+1]));
+		}
+		return vars.length - fromIndex;
+	}
 
 
 }

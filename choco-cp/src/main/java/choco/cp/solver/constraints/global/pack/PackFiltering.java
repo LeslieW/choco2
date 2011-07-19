@@ -175,6 +175,22 @@ public final class PackFiltering {
 	/**
 	 * The minimum and maximum load of each bin {@link PackFiltering#loads } is maintained according to the domains of the bin assignment variables.
 	 *
+	 * @param bin the bin
+	 *
+	 * @throws ContradictionException the contradiction exception
+	 */
+	protected final void loadAndSizeCoherence(final int bin) throws ContradictionException {
+		final Point p = loadSum.getBounds(bin);
+		updateInfLoad(bin, p.x);
+		updateSupLoad(bin, p.y);
+	}
+
+	protected final void cardAndItemsCoherence(final int bin) throws ContradictionException {
+		// TODO - cardAndItemsCoherence(int) - created 12 juil. 2011 by Arnaud Malapert
+	}
+	/**
+	 * The minimum and maximum load of each bin {@link PackFiltering#loads } is maintained according to the domains of the bin assignment variables.
+	 *
 	 * @param bin the index of the bin
 	 *
 	 * @throws ContradictionException the contradiction exception
@@ -184,19 +200,9 @@ public final class PackFiltering {
 		updateSupLoad(bin,reuseStatus.getMaximumLoad());
 	}
 
-	/**
-	 * The minimum and maximum load of each bin {@link PackFiltering#loads } is maintained according to the domains of the bin assignment variables.
-	 *
-	 * @param bin the bin
-	 *
-	 * @throws ContradictionException the contradiction exception
-	 */
-	protected final void loadSizeAndCoherence(final int bin) throws ContradictionException {
-		final Point p = loadSum.getBounds(bin);
-		updateInfLoad(bin, p.x);
-		updateSupLoad(bin, p.y);
+	protected final void cardMaintenance(final int bin) throws ContradictionException {
+		// TODO - cardMaintenance(int) - created 12 juil. 2011 by Arnaud Malapert
 	}
-
 
 	/**
 	 * Single item elimination and commitment.
@@ -216,6 +222,10 @@ public final class PackFiltering {
 				reuseStatus.pack(iter, item);
 				pack(item, bin);
 			}
+			// FIXME - Add break statement ? - Arnaud Malapert - 4 juil. 2011
+			//			else {	
+			//break;
+			//			}
 		}
 	}
 
@@ -238,6 +248,7 @@ public final class PackFiltering {
 				reuseStatus.pack(iter, item);
 				pack(item, bin);
 			} 
+			// TODO - Improve completion if a single item can fit into the bin - created 10 juil. 2011 by Arnaud Malapert
 			// FIXME - Add break statement ? - Arnaud Malapert - 4 juil. 2011
 			//			else {	
 			//break;
@@ -335,7 +346,7 @@ public final class PackFiltering {
 	 * @throws ContradictionException the contradiction exception
 	 */
 	private void propagate(final int bin) throws ContradictionException {
-		loadSizeAndCoherence(bin);
+		loadAndSizeCoherence(bin);
 		reuseStatus = cstr.getStatus(bin);
 		loadMaintenance(bin);
 		if(flags.contains(PackSConstraint.FILL_BIN)) {singleItemEliminationAndCommitmentAndFill(bin);}
@@ -376,6 +387,7 @@ public final class PackFiltering {
 			}
 		}
 
+		// FIXME - why is a Point object created ? - created 12 juil. 2011 by Arnaud Malapert
 		public Point getBounds(int idx) {
 			return new Point( (int) (sumMinusSups + vars[idx].getSup()),
 					(int) (sumMinusInfs + vars[idx].getInf()));

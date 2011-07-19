@@ -46,6 +46,7 @@ public abstract class AbstractMinimizeModel extends AbstractInstanceModel {
 
 	private IHeuristic heuristics;
 
+	// TODO - Change to Integer ? - created 10 juil. 2011 by Arnaud Malapert
 	private int computedLowerBound;
 
 	private IVisuManager chartManager;
@@ -70,6 +71,10 @@ public abstract class AbstractMinimizeModel extends AbstractInstanceModel {
 		this.heuristics = heuristic;
 	}
 
+	public final void cancelLowerBound() {
+		setComputedLowerBound(Integer.MIN_VALUE);
+	}
+	
 	public int getComputedLowerBound() {
 		return computedLowerBound;
 	}
@@ -92,7 +97,7 @@ public abstract class AbstractMinimizeModel extends AbstractInstanceModel {
 	@Override
 	public void initialize() {
 		super.initialize();
-		computedLowerBound = Integer.MIN_VALUE;
+		cancelLowerBound();
 	}
 
 	@Override
@@ -113,6 +118,9 @@ public abstract class AbstractMinimizeModel extends AbstractInstanceModel {
 	@Override
 	protected void logOnDiagnostics() {
 		super.logOnDiagnostics();
+		if(computedLowerBound != Integer.MIN_VALUE) {
+			logMsg.storeDiagnostic("INITIAL_LOWER_BOUND", computedLowerBound);
+		}
 		if(heuristics != null && heuristics.hasSearched()) {
 			logMsg.storeDiagnostic("HEUR_TIME", heuristics.getTimeCount());
 			logMsg.storeDiagnostic("HEUR_ITERATION", heuristics.getIterationCount());

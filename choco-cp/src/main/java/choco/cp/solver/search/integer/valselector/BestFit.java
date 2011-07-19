@@ -53,6 +53,8 @@ public class BestFit implements ValSelector<IntDomainVar> {
 		int max=pack.getRemainingSpace(bin);
 		while(iter.hasNext()) {
 			final int  b =iter.next();
+			// FIXME - getRemainingSpace is not valid (for instance when packing the last items) - created 7 juil. 2011 by Arnaud Malapert
+			//We should compute capacity - getRequiredSpace 
 			final int space=pack.getRemainingSpace(b);
 			if(space<max) {
 				max =space;

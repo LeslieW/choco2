@@ -102,11 +102,12 @@ public final class LowerBoundFactory {
 	 */
 	public static final int  computeAllMDFF(final TIntArrayList items, int capacity, int upperBound) {
 		int lb = computeF0(items, capacity, upperBound);
-		return lb == upperBound ? 
+		return lb >= upperBound ? 
 				lb : Math.max(lb, computeFCCM1(items, capacity, upperBound));
 	}
 
 	protected static final int computeMDDFF(final TIntArrayList items, int capacity, int upperBound, AbstractFindParameters findParameters, AbstractFunctionDFF functionDDFF) {
+		assert checkIncreasingOrder(items);
 		return computeMDDFF(items, items.toNativeArray(), capacity, upperBound, new ComputeL0(), findParameters, functionDDFF);
 	}
 
@@ -178,6 +179,7 @@ public final class LowerBoundFactory {
 	 * @return a Lower bound on the number of bins
 	 */
 	public static int memComputeF0(final TIntArrayList items, int capacity, int upperBound) {
+		assert checkIncreasingOrder(items);
 		return computeMDDFF(items, items.toNativeArray(), capacity, upperBound, COMPUTE_L0, FIND_PARAMETERS_F0, FUNCTION_F0);
 	}
 
@@ -192,6 +194,7 @@ public final class LowerBoundFactory {
 	 * @return a Lower bound on the number of bins
 	 */
 	public static int memComputeFCCM1(final TIntArrayList items, int capacity, int upperBound) {
+		assert checkIncreasingOrder(items);
 		return computeMDDFF(items, items.toNativeArray(), capacity, upperBound, COMPUTE_L0, FIND_PARAMETERS_FCCM1, FUNCTION_FCCM1);
 	}
 
@@ -205,9 +208,10 @@ public final class LowerBoundFactory {
 	 * @return a Lower bound on the number of bins
 	 */
 	public static int memComputeAllMDFF(final TIntArrayList items, int capacity, int upperBound) {
+		assert checkIncreasingOrder(items);
 		final int[] tab = items.toNativeArray();
 		int lb = computeMDDFF(items, tab, capacity, upperBound, COMPUTE_L0, FIND_PARAMETERS_F0, FUNCTION_F0);
-		return lb == upperBound ? 
+		return lb >= upperBound ? 
 				lb : Math.max(lb, computeMDDFF(items, tab, capacity, upperBound, COMPUTE_L0, FIND_PARAMETERS_FCCM1, FUNCTION_FCCM1));
 	}
 
@@ -240,5 +244,11 @@ public final class LowerBoundFactory {
 	}
 	
 	
-
+	private static boolean checkIncreasingOrder(TIntArrayList items) {
+		final int n = items.size();
+		for (int i = 1; i < n; i++) {
+			if(items.getQuick(i) < items.getQuick(i-1)) return false;
+		}
+		return true;
+	}
 }

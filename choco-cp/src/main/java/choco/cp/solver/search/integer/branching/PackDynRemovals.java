@@ -48,7 +48,7 @@ public class PackDynRemovals extends AssignVar {
 	public final PackSConstraint pack;
 
 
-	public PackDynRemovals(VarSelector varSel, ValSelector valHeuri,
+	public PackDynRemovals(VarSelector<IntDomainVar> varSel, ValSelector<IntDomainVar> valHeuri,
 			PackSConstraint pack) {
 		super(varSel, valHeuri);
 		this.pack = pack;

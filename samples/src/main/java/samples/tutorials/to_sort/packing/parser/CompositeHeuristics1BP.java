@@ -35,21 +35,20 @@ import choco.kernel.common.opres.pack.FirstFit1BP;
 
 public class CompositeHeuristics1BP extends AbstractHeuristic {
 
-	private final TIntArrayList sizes;
 	private final AbstractHeuristic1BP ff, bf;
 
-	public CompositeHeuristics1BP(BinPackingFileParser parser) {
+	public CompositeHeuristics1BP(final TIntArrayList sizes, final int capacity) {
 		super();
 		ff = new FirstFit1BP();
 		bf = new BestFit1BP();
-		ff.setCapacity(parser.capacity);
-		bf.setCapacity(parser.capacity);
-		this.sizes = new TIntArrayList(parser.sizes);
-		this.sizes.sort();
 		ff.setItems(sizes);
 		bf.setItems(sizes);
+		ff.setCapacity(capacity);
+		bf.setCapacity(capacity);
 	}
-
+	
+	
+	
 
 	@Override
 	protected int apply() {

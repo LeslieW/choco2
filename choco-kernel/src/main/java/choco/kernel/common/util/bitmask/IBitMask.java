@@ -27,6 +27,7 @@
 
 package choco.kernel.common.util.bitmask;
 
+// TODO - Replace by Enum and EnumSet ? - created 10 juil. 2011 by Arnaud Malapert
 public interface IBitMask {
 
 	long getBitMask();
