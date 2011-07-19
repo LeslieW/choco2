@@ -64,7 +64,6 @@
     <modules>
         <module>choco-kernel</module>
         <module>choco-cp</module>
-        <module>choco-solver</module>
         <module>cpvisu-tracer</module>
         <module>choco-db</module>
         <module>choco-parsers</module>
