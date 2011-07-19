@@ -48,11 +48,11 @@ public class NoSumList {
 
 	/** The required load. */
 	private int rLoad;
-	
+
 	private INoSumCell[] candidatesMap;
-	
+
 	private final TLinkedList<INoSumCell> candidatesList = new TLinkedList<INoSumCell>();
-	
+
 
 	/**
 	 * The Constructor.We assume that the items are sorted in non increasing order.
@@ -63,7 +63,7 @@ public class NoSumList {
 		super();
 		this.candidatesMap = candidates;
 	}
-	
+
 	public NoSumList(final IntDomainVar[] candidates) {
 		super();
 		this.candidatesMap = new INoSumCell[candidates.length];
@@ -71,7 +71,7 @@ public class NoSumList {
 			candidatesMap[i] = new NoSumCell(i, candidates[i]);
 		}
 	}
-	
+
 	public NoSumList(final int[] candidates) {
 		super();
 		this.candidatesMap = new INoSumCell[candidates.length];
@@ -80,14 +80,14 @@ public class NoSumList {
 		}
 	}
 
-	
-	
+
+
 	public final void clear() {
 		rLoad=0;
 		cLoad=0;
 		candidatesList.clear();
 	}
-	
+
 	public final int getNbCandidates() {
 		return candidatesList.size();
 	}
@@ -100,7 +100,7 @@ public class NoSumList {
 		}
 
 	}
-	
+
 	public final void setCandidatesFromVar(final SetVar svar) {
 		clear();
 		DisposableIntIterator iter=svar.getDomain().getKernelIterator();
@@ -114,6 +114,7 @@ public class NoSumList {
 			candidatesList.add(candidatesMap[item]);
 			cLoad+=candidatesMap[item].getVal();
 		}
+
 		iter.dispose();
 	}
 
@@ -143,13 +144,13 @@ public class NoSumList {
 	public final int getMaximumLoad() {
 		return rLoad + cLoad;
 	}
-	
+
 	public final void remove(final int item) {
 		if(candidatesList.remove( candidatesMap[item])) {
-		cLoad-= candidatesMap[item].getVal();
+			cLoad-= candidatesMap[item].getVal();
 		}
 	}
-	
+
 	public final void pack(final int item) {
 		remove(item);
 		packRemoved(item);
@@ -158,27 +159,27 @@ public class NoSumList {
 	public final ListIterator<INoSumCell> listIterator() {
 		return candidatesList.listIterator();
 	}
-	
+
 	public final void remove(ListIterator<INoSumCell> iter, final int item) {
 		iter.remove();
 		cLoad -= candidatesMap[item].getVal();
 	}
-	
+
 	public final void pack(ListIterator<INoSumCell> iter, final int item) {
 		remove(iter, item);
 		packRemoved(item);
 	}
-	
+
 	public final void undoRemove(ListIterator<INoSumCell> iter, final int item) {
 		iter.add(candidatesMap[item]);
 		cLoad += candidatesMap[item].getVal();
 	}
-	
+
 	public final void packRemoved(final int item) {
 		rLoad += candidatesMap[item].getVal();
 	}
-	
-	
+
+
 
 
 	/**

@@ -411,7 +411,7 @@ public abstract class AbstractInstanceModel {
 			logMsg.appendDiagnostics("RESTARTS", solver.getRestartCount(), rtime);
 			if(solver.isOptimizationSolver()) {
 				//best lower bound on the objective
-				logMsg.appendDiagnostic("BEST_LOWER_BOUND", solver.getSearchStrategy().getObjectiveManager().getObjectiveFloor());
+				logMsg.appendDiagnostic("LOWER_BOUND", solver.getSearchStrategy().getObjectiveManager().getObjectiveFloor());
 				//best solution
 				if(solver.existsSolution()) {
 					final IMeasures mes = solver.getSearchStrategy().getSolutionPool().getBestSolution().getMeasures();

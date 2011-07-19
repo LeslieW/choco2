@@ -199,15 +199,14 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 	public final boolean pack(int item, int bin) throws ContradictionException {
 		boolean res = svars[bin].addToKernel(item, this, false);
 		if(bins[item].canBeInstantiatedTo(bin)) {
-			// FIXME - Charles, is these two loops all right ? - created 7 juil. 2011 by Arnaud Malapert
-            final int ub = bins[item].getSup();
-            for (int b = bins[item].getInf(); b < bin; b = bins[item].getNextDomainValue(b)) {
-            	res |= svars[b].remFromEnveloppe(item, this, false);
-            }
-            for (int b = bins[item].getNextDomainValue(bin); b <= ub; b = bins[item].getNextDomainValue(b)) {
-            	res |= svars[b].remFromEnveloppe(item, this, false);
-            }
-            // FIXME - need only to check the last assignment (lazy) ?  - created 6 juil. 2011 by Arnaud Malapert
+			final DisposableIntIterator iter = bins[item].getDomain().getIterator();
+			while(iter.hasNext()) {
+				final int b = iter.next();
+				if(b != bin) {
+					res |= svars[b].remFromEnveloppe(item, this, false);
+				}
+			}
+			// FIXME - need only to check the last assignment (lazy) ?  - created 6 juil. 2011 by Arnaud Malapert
             res |= bins[item].instantiate(bin, this, false);
 		}else {
 			this.fail();
@@ -236,6 +235,7 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 	@Override
 	public final boolean updateNbNonEmpty(int min, int max) throws ContradictionException {
 		// TODO - Try to empty sets faster - Arnaud Malapert - 4 juil. 2011
+		//// TODO - use Rmax instead of R0 (see phd P. Schaus) - created 12 juil. 2011 by Arnaud Malapert
 		boolean res = false;
 		final int idx = ivars.length-1;
 		//LOGGER.info(min+ " "+max + " -> "+ivars[idx].pretty());
@@ -271,7 +271,7 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 
 	@Override
 	public boolean isConsistent() {
-		// really no idea. wait and propagate
+		//no idea. wait and propagate
 		return false;
 	}
 
