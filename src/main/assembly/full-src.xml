@@ -11,8 +11,7 @@
             <outputDirectory>.</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>choco-cp/src/main/java</directory>
-            <outputDirectory>.</outputDirectory>
+            <directory>choco-modeler</outputDirectory>
         </fileSet>
         <fileSet>
             <directory>choco-cli/src/main/java</directory>

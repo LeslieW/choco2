@@ -16,7 +16,7 @@
         </dependency>
         <dependency>
             <groupId>choco</groupId>
-            <artifactId>choco-cp</artifactId>
+            <artifactId>choco-modeler</artifactId>
         </dependency>
     </dependencies>
     <reporting>

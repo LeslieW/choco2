@@ -26,13 +26,13 @@
 
         <dependency>
             <groupId>choco</groupId>
-            <artifactId>choco-cp</artifactId>
+            <artifactId>choco-modeler</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>choco</groupId>
-            <artifactId>choco-cp</artifactId>
+            <artifactId>choco-modeler</artifactId>
             <version>${project.version}</version>
             <classifier>sources</classifier>
             <scope>runtime</scope>
@@ -87,7 +87,7 @@
                         </weaveDependency>
                         <weaveDependency>
                             <groupId>choco</groupId>
-                            <artifactId>choco-cp</artifactId>
+                            <artifactId>choco-modeler</artifactId>
                         </weaveDependency>
                     </weaveDependencies>
                 </configuration>

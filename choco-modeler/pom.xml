@@ -5,10 +5,10 @@
         <version>2.1.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>choco-cp</artifactId>
+    <artifactId>choco-modeler</artifactId>
     <packaging>jar</packaging>
     <name>CHOCO Constraint Programming</name>
-    <url>http://www.emn.fr/z-info/choco-solver/choco-cp</url>
+    <url>http://www.emn.fr/z-info/choco-solver/choco-modeler</url>
     <dependencies>
         <dependency>
             <groupId>choco</groupId>
@@ -78,7 +78,7 @@
     <distributionManagement>
         <site>
             <id>cp-repo</id>
-            <url>${choco-dir}/choco-cp</url>
+            <url>${choco-dir}/choco-modeler</url>
         </site>
     </distributionManagement>
 </project>
