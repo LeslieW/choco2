@@ -275,7 +275,7 @@ public class DeprecatedChoco extends Choco{
 		 */
 		@Deprecated 
 		public static Constraint preceding(TaskVariable t1, TaskVariable t2) {
-			return Choco.precedenceDisjoint(t1, t2, Choco.constant(1));
+			return precedenceDisjoint(t1, t2, constant(1));
 		}
 
 
@@ -284,7 +284,7 @@ public class DeprecatedChoco extends Choco{
 		 */
 		@Deprecated 
 		public static Constraint preceding(IntegerVariable v1, int dur1, IntegerVariable v2, int dur2, IntegerVariable bool) {
-			return Choco.precedenceDisjoint(v1, dur1, v2, dur2, bool);
+			return precedenceDisjoint(v1, dur1, v2, dur2, bool);
 		}
 
 
@@ -293,26 +293,26 @@ public class DeprecatedChoco extends Choco{
 		 */
 		@Deprecated 
 		public static Constraint preceding(TaskVariable t1, TaskVariable t2, IntegerVariable direction) {
-			return Choco.precedenceDisjoint(t1, t2, direction);
+			return precedenceDisjoint(t1, t2, direction);
 		}
 
 
 	@Deprecated
 		public static Constraint cumulative(String name, TaskVariable[] tasks, IntegerVariable[] heights, IntegerVariable capa, String... options) {
-			return Choco.cumulative(name, tasks, heights,null, Choco.constant(0),  capa, null, options);
+			return cumulative(name, tasks, heights,null, constant(0),  capa, null, options);
 		}
 
 
 		@Deprecated
 		public static Constraint cumulative(TaskVariable[] tasks, int[] heights, int capa, String... options) {
-			return Choco.cumulative(null, tasks, Choco.constantArray(heights), null, Choco.constant(0),Choco.constant(capa), null,options);
+			return cumulative(null, tasks, constantArray(heights), null, constant(0), constant(capa), null,options);
 		}
 
 
 		@Deprecated
 		public static Constraint cumulative(String name, IntegerVariable[] starts, IntegerVariable[] ends, IntegerVariable[] durations, IntegerVariable[] heights, IntegerVariable capa, String... options) {
-			final TaskVariable[] tasks = Choco.makeTaskVarArray("t", starts, ends, durations);
-			return Choco.cumulative(name, tasks, heights, Choco.constant(0), capa, options);
+			final TaskVariable[] tasks = makeTaskVarArray("t", starts, ends, durations);
+			return cumulative(name, tasks, heights, constant(0), capa, options);
 		
 		}
 
@@ -321,9 +321,9 @@ public class DeprecatedChoco extends Choco{
 		public static Constraint cumulative(IntegerVariable[] starts, IntegerVariable[] ends, IntegerVariable[] durations, IntegerVariable[] heights, IntegerVariable capa, String... options) {
 			TaskVariable[] t = new TaskVariable[starts.length];
 			for(int i = 0; i < starts.length; i++){
-				t[i] = Choco.makeTaskVar("", starts[i], ends[i], durations[i]);
+				t[i] = makeTaskVar("", starts[i], ends[i], durations[i]);
 			}
-			return Choco.cumulative(null, t, heights, Choco.constant(0), capa, options);
+			return cumulative(null, t, heights, constant(0), capa, options);
 		}
 
 
@@ -331,9 +331,9 @@ public class DeprecatedChoco extends Choco{
 		public static Constraint cumulative(IntegerVariable[] starts, IntegerVariable[] ends, IntegerVariable[] durations, int[] heights, int capa, String... options) {
 			TaskVariable[] t = new TaskVariable[starts.length];
 			for(int i = 0; i < starts.length; i++){
-				t[i] = Choco.makeTaskVar("", starts[i], ends[i], durations[i]);
+				t[i] = makeTaskVar("", starts[i], ends[i], durations[i]);
 			}
-			return Choco.cumulative(null, t, Choco.constantArray(heights), Choco.constant(0), Choco.constant(capa), options);
+			return cumulative(null, t, constantArray(heights), constant(0), constant(capa), options);
 		}
 
 
@@ -341,9 +341,9 @@ public class DeprecatedChoco extends Choco{
 		public static Constraint cumulative(IntegerVariable[] starts, IntegerVariable[] durations, IntegerVariable[] heights, IntegerVariable capa, String... options) {
 			TaskVariable[] t = new TaskVariable[starts.length];
 			for(int i = 0; i < starts.length; i++){
-				t[i] = Choco.makeTaskVar("", starts[i], durations[i]);
+				t[i] = makeTaskVar("", starts[i], durations[i]);
 			}
-			return Choco.cumulative(null, t, heights, Choco.constant(0),capa, options);
+			return cumulative(null, t, heights, constant(0),capa, options);
 		}
 
 
@@ -359,9 +359,9 @@ public class DeprecatedChoco extends Choco{
 		public static Constraint disjunctive(IntegerVariable[] starts, int[] durations,String...options) {
 			TaskVariable[] t = new TaskVariable[starts.length];
 			for(int i = 0; i < starts.length; i++){
-				t[i] = Choco.makeTaskVar("", starts[i], Choco.constant(durations[i]));
+				t[i] = makeTaskVar("", starts[i], constant(durations[i]));
 			}
-			return Choco.disjunctive(null, t,  null, options);
+			return disjunctive(null, t,  null, options);
 		}
 
 
@@ -369,9 +369,9 @@ public class DeprecatedChoco extends Choco{
 		public static Constraint disjunctive(IntegerVariable[] starts, IntegerVariable[] durations, String... options) {
 			TaskVariable[] t = new TaskVariable[starts.length];
 			for(int i = 0; i < starts.length; i++){
-				t[i] = Choco.makeTaskVar("", starts[i], durations[i]);
+				t[i] = makeTaskVar("", starts[i], durations[i]);
 			}
-			return Choco.disjunctive(null, t,  null, options);
+			return disjunctive(null, t,  null, options);
 		}
 
 
@@ -379,16 +379,16 @@ public class DeprecatedChoco extends Choco{
 		public static Constraint disjunctive(IntegerVariable[] starts, IntegerVariable[] ends, IntegerVariable[] durations,String... options) {
 			TaskVariable[] t = new TaskVariable[starts.length];
 			for(int i = 0; i < starts.length; i++){
-				t[i] = Choco.makeTaskVar("", starts[i], ends[i], durations[i]);
+				t[i] = makeTaskVar("", starts[i], ends[i], durations[i]);
 			}
-			return Choco.disjunctive(null, t,  null, options);
+			return disjunctive(null, t,  null, options);
 		}
 
 
 		@Deprecated
 		public static Constraint disjunctive(String name, IntegerVariable[] starts, IntegerVariable[] ends, IntegerVariable[] durations,IntegerVariable uppBound, String... options) {
-			final TaskVariable[] tasks = Choco.makeTaskVarArray("task-", starts, ends, durations);
-			return Choco.disjunctive(name, tasks,null, uppBound, options);
+			final TaskVariable[] tasks = makeTaskVarArray("task-", starts, ends, durations);
+			return disjunctive(name, tasks,null, uppBound, options);
 		}
 
 
