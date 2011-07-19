@@ -5,10 +5,10 @@
         <version>2.1.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>choco-kernel</artifactId>
+    <artifactId>choco-solver</artifactId>
     <packaging>jar</packaging>
-    <name>CHOCO Kernel</name>
-    <url>http://www.emn.fr/z-info/choco-solver/choco-kernel</url>
+    <name>CHOCO Solver</name>
+    <url>http://www.emn.fr/z-info/choco-solver/choco-solver</url>
     <dependencies>
         <dependency>
             <groupId>dk.brics</groupId>
@@ -85,7 +85,7 @@
     <distributionManagement>
         <site>
             <id>kernel-repo</id>
-            <url>${choco-dir}/choco-kernel</url>
+            <url>${choco-dir}/choco-solver</url>
         </site>
     </distributionManagement>
 </project>

@@ -72,7 +72,7 @@ choco$ mvn assembly:assembly -DskipTests
 
 ** Only choco-solver
 
-   Build jar file with choco-solver module only (choco-kernel and choco-cp), move to <<<choco/choco-solver/>>> directory and run:
+   Build jar file with choco-solver module only, move to <<<choco/choco-solver/>>> directory and run:
 
 ---
 choco/choco-solver$ mvn package -DskipTests

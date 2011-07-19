@@ -7,7 +7,7 @@
     <dependencySets>
         <dependencySet>
             <excludes>
-                <exclude>*:choco-kernel:*</exclude>
+                <exclude>*:choco-solver:*</exclude>
                 <exclude>*:choco-cp:*</exclude>
                 <exclude>*:choco-db:*</exclude>
             </excludes>
