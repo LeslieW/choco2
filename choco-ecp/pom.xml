@@ -12,11 +12,11 @@
     <dependencies>
         <dependency>
             <groupId>choco</groupId>
-            <artifactId>choco-solver</artifactId>
+            <artifactId>choco-kernel</artifactId>
         </dependency>
         <dependency>
             <groupId>choco</groupId>
-            <artifactId>choco-modeler</artifactId>
+            <artifactId>choco-cp</artifactId>
         </dependency>
     </dependencies>
     <reporting>

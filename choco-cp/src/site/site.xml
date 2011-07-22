@@ -23,8 +23,8 @@
       <item name="Sourceforge" href="https://sourceforge.net/projects/choco/"/>
     </links>
 
-    <menu name="About choco-modeler">
-      <item name="What is choco-modeler?" href="index.html"/>
+    <menu name="About choco-cp">
+      <item name="What is choco-cp?" href="index.html"/>
     </menu>
 
     <menu ref="reports" />

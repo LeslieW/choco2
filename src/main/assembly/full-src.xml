@@ -7,11 +7,12 @@
 
     <fileSets>
         <fileSet>
-            <directory>choco-solver/src/main/java</directory>
+            <directory>choco-kernel/src/main/java</directory>
             <outputDirectory>.</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>choco-modeler</outputDirectory>
+            <directory>choco-cp/src/main/java</directory>
+            <outputDirectory>.</outputDirectory>
         </fileSet>
         <fileSet>
             <directory>choco-cli/src/main/java</directory>
