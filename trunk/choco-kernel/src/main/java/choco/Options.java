@@ -41,7 +41,7 @@ import java.util.logging.Logger;
  * Since : Choco 2.1.1<br/>
  * <p/>
  * A class to declare options concerning variables and constraints.
- * Available for module choco-modeler only.
+ * Available for module choco-cp only.
  */
 public class Options {
 
