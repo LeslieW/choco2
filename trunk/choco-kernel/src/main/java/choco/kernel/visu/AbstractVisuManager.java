@@ -54,7 +54,7 @@ public abstract class AbstractVisuManager implements IVisuManager {
 			} else {
 				file = new File(dir, name+'.'+ getFileExtension());
 				if( file.exists()) {
-					file =  File.createTempFile(name, '.'+ getFileExtension(), dir);
+					file =  File.createTempFile(name+"-", '.'+ getFileExtension(), dir);
 				} 	
 			}
 			if( doExport(file, chart, width, height) ) {

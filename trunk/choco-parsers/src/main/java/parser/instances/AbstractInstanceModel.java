@@ -357,6 +357,7 @@ public abstract class AbstractInstanceModel {
 	}
 
 
+		
 	/**
 	 * compute the resolution status after the preprocessing stage (no solver build yet).
 	 */

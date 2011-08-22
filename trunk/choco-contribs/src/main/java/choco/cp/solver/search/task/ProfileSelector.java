@@ -27,13 +27,14 @@
 
 package choco.cp.solver.search.task;
 
+import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 
+import choco.cp.common.util.preprocessor.detector.scheduling.DisjunctiveSModel;
 import choco.cp.solver.constraints.global.scheduling.precedence.ITemporalSRelation;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintType;
-import choco.kernel.model.constraints.ITemporalRelation;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.global.scheduling.IResource;
@@ -42,32 +43,36 @@ import choco.kernel.solver.search.integer.VarValPairSelector;
 import choco.kernel.solver.variables.scheduling.ITask;
 
 
-
+// TODO - migrate from contribs to solver - created 20 août 2011 by Arnaud Malapert
 public final class ProfileSelector implements VarValPairSelector {
+
+	private final Solver solver;
 
 	private final OrderingValSelector precSelector;
 
-	private final ITemporalStore precStore;
+	private DisjunctiveSModel disjSModel;
 
 	private final ProbabilisticProfile profiles;
 
 	public final IResource<?>[] rscL;
 
-	public ProfileSelector(Solver solver, IResource<?>[] resources, ITemporalStore precStore, OrderingValSelector precSelector) {
+	public ProfileSelector(Solver solver, IResource<?>[] resources, DisjunctiveSModel disjSModel, OrderingValSelector precSelector) {
 		super();
-		this.precStore = precStore;
+		this.solver=solver;
+		this.disjSModel = disjSModel;
 		this.precSelector = precSelector;
-		profiles = new ProbabilisticProfile(solver);
-		profiles.precStore = precStore;
+		// FIXME - Set the minimal number of involved tasks - created 12 août 2011 by Arnaud Malapert
+		profiles = new ProbabilisticProfile(solver, disjSModel);
+		// FIXME - profiles.precStore = precStore; - created 12 août 2011 by Arnaud Malapert
 		rscL = resources;
 	}
-	
-	public ProfileSelector(Solver solver, ITemporalStore precStore, OrderingValSelector precSelector) {
+
+	public ProfileSelector(Solver solver, DisjunctiveSModel disjSModel, OrderingValSelector precSelector) {
 		super();
-		this.precStore = precStore;
+		this.solver=solver;
+		this.disjSModel = disjSModel;
 		this.precSelector = precSelector;
-		profiles = new ProbabilisticProfile(solver);
-		profiles.precStore = precStore;
+		profiles = new ProbabilisticProfile(solver, disjSModel);
 		rscL = new IResource<?>[solver.getModel().getNbConstraintByType(ConstraintType.DISJUNCTIVE)];
 		Iterator<Constraint> iter = solver.getModel().getConstraintByType(ConstraintType.DISJUNCTIVE);
 		int cpt = 0;
@@ -75,37 +80,39 @@ public final class ProfileSelector implements VarValPairSelector {
 			rscL[cpt++] = (IResource<?>) solver.getCstr(iter.next());
 		}
 	}
-	
+
 	@Override
 	public IntVarValPair selectVarValPair() throws ContradictionException {
 		//compute maximal contention point
 		profiles.initializeEvents();
 		profiles.computeMaximum(rscL);
 		//find best task pair
-		List<ITask> taskL = profiles.getMaxProfInvolved();
-		int c = profiles.getMaxProfileCoord();
-		ITask st1 = null,st2 = null;
-		if(taskL.size()>1) {
+		final int c = profiles.getMaxProfileCoord();
+		if(c >= 0) {
+			BitSet involved = profiles.getInvolvedInMaxProf();
+			ITemporalSRelation sdisjunct = null;
 			double maxContrib = Double.MIN_VALUE;
-			for (int i = 0; i < taskL.size(); i++) {
-				final ITask t1 =  taskL.get(i);
-				final double contribT1 = profiles.getIndividualContribution(t1,c);
-				for (int j = i+1; j < taskL.size(); j++) {
-					final ITask t2 =  taskL.get(j);
-					final double contrib = contribT1 + profiles.getIndividualContribution(t2,c);
-					if(contrib > maxContrib && precStore.isReified(t1, t2)) {
-						st1 = t1; 
-						st2 = t2;
-						maxContrib = contrib;
+			for (int i = involved.nextSetBit(0); i >= 0; i = involved.nextSetBit(i + 1)) {
+				final ITask t1 = solver.getTaskVarQuick(i);
+				assert(t1.getID() == i);
+				final double contrib1 = profiles.getIndividualContribution(t1,c);
+				for (int j = involved.nextSetBit(i+1); j >= 0; j = involved.nextSetBit(j + 1)) {
+					final ITask t2 = solver.getTaskVarQuick(j);
+					assert(t2.getID() == j);
+					final double contrib = contrib1 + profiles.getIndividualContribution(t1,c);
+					if(contrib > maxContrib && disjSModel.containsEdge(t1, t2)) {
+						final ITemporalSRelation disjunct = disjSModel.getConstraint(t1, t2);
+						if(! disjunct.isFixed()) {
+							sdisjunct=disjunct;
+							maxContrib = contrib;
+						}
 					}
 				}
 			}
-			if(st1 != null) {
-				final ITemporalSRelation prec = precStore.getTemporalRelation(st1, st2);
-				return new IntVarValPair(prec.getDirection(), precSelector.getBestVal(prec));
-			}
+			assert(sdisjunct != null );
+			return new IntVarValPair(sdisjunct.getDirection(), precSelector.getBestVal(sdisjunct));
 		}
-		assert(!precStore.containsReifiedPrecedence());
+		assert(disjSModel.isFixed());
 		return null;
 	}
 

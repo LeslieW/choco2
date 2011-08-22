@@ -357,9 +357,9 @@ public class StringUtils {
 		b.append(" \"");
 		if(format){
 			if(t.isScheduled()) {
-				b.append(", style=bold, color=firebrick");
+				b.append(", style=bold");
 			}else {
-				b.append(", style=dashed, color=navyblue");
+				b.append(", style=\"dashed,bold\"");
 			}
 		}
 		if(options!=null) {

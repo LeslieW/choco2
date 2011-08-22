@@ -29,6 +29,7 @@ package choco.cp.common.util.preprocessor.detector.scheduling;
 
 import gnu.trove.TIntIntHashMap;
 import gnu.trove.TIntObjectHashMap;
+import gnu.trove.TObjectProcedure;
 
 import java.util.BitSet;
 
@@ -119,6 +120,18 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 		setupTimes.put(getKey(j, i), backwardSetup);
 		nbEdges++;
 	}
+	
+	public final boolean isFixed() {
+		return storedConstraints.forEachValue(new TObjectProcedure<E>() {
+
+			@Override
+			public boolean execute(E arg0) {
+				return arg0.isFixed();
+			}
+
+		
+		});
+	}
 
 	public final int setupTime(int i, int j) {
 		return setupTimes.get(getKey(i, j));
@@ -196,7 +209,7 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 	
 	protected final static String ARC_COLOR = "color=forestgreen";
 	protected final static String EDGE_COLOR = "color=royalblue";
-	protected final static String STY_DOTTED = "style=dotted";
+	protected final static String STY_BOLD_DASHED= "style=\"bold,dashed\"";
 	protected final static String STY_BOLD = "style=bold";
 	protected final static String ARROW_DOT = "arrowhead=dot";
 	protected final static String ARROW_BIG = "arrowsize=1.5";
@@ -215,7 +228,7 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 	
 	
 	protected void writeArcAttributes(StringBuilder b, int i, int j) {
-		writeAttributes(b, ARC_COLOR, getArcLabel(i, j));
+		writeAttributes(b, ARC_COLOR, STY_BOLD, getArcLabel(i, j));
 	}
 
 	protected void writeEdge(StringBuilder b, E rel, int i, int j) {
@@ -228,7 +241,7 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 			writeAttributes(b, EDGE_COLOR, STY_BOLD, ARROW_BIG, 
 					(rel.getDirVal() == ITemporalRelation.FWD ? getArcLabel(i, j) : getArcLabel(j, i)));
 		} else {
-			writeAttributes(b, EDGE_COLOR, ARROW_DOT, getEdgeLabel(i, j));
+			writeAttributes(b, EDGE_COLOR, STY_BOLD_DASHED, ARROW_BIG, ARROW_DOT, getEdgeLabel(i, j));
 		}
 		
 	}

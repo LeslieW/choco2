@@ -27,12 +27,20 @@
 
 package choco.visu.components.chart;
 
+import static org.jfree.chart.plot.DefaultDrawingSupplier.DEFAULT_FILL_PAINT_SEQUENCE;
+import static org.jfree.chart.plot.DefaultDrawingSupplier.DEFAULT_OUTLINE_PAINT_SEQUENCE;
+import static org.jfree.chart.plot.DefaultDrawingSupplier.DEFAULT_OUTLINE_STROKE_SEQUENCE;
+import static org.jfree.chart.plot.DefaultDrawingSupplier.DEFAULT_SHAPE_SEQUENCE;
+import static org.jfree.chart.plot.DefaultDrawingSupplier.DEFAULT_STROKE_SEQUENCE;
+
+import java.awt.Color;
+import java.awt.Paint;
+import java.io.IOException;
+import java.net.URISyntaxException;
+
 import org.jfree.chart.ChartColor;
 import org.jfree.chart.plot.DefaultDrawingSupplier;
-import static org.jfree.chart.plot.DefaultDrawingSupplier.*;
 import org.jfree.chart.plot.DrawingSupplier;
-
-import java.awt.*;
 
 public final class ChocoColor {
 
@@ -86,20 +94,19 @@ public final class ChocoColor {
 				COLOR_124_1,	
 				COLOR_124_2,
 				COLOR_124_3, 
+				COLOR_211_4,
 				//COLOR_124_4, //almost white
-				COLOR_124_5,
-				COLOR_124_6,
 				COLOR_211_1,
 				COLOR_211_2,
+				COLOR_124_6,
+				COLOR_148_1,
 				COLOR_211_3,
-				COLOR_211_4,
-				COLOR_211_5,
-				COLOR_211_6,
-				COLOR_142_1,
 				COLOR_142_2,
-				COLOR_142_3,
+				COLOR_148_4,
 				COLOR_142_4,
+				COLOR_211_5,
 				COLOR_142_5,
+				COLOR_142_1,
 				COLOR_142_6,
 				COLOR_274_1,
 				COLOR_274_2,
@@ -107,20 +114,22 @@ public final class ChocoColor {
 				COLOR_274_4,
 				COLOR_274_5,
 				COLOR_274_6,
-				COLOR_148_1,
+				COLOR_124_5,
 				COLOR_148_2,
+				COLOR_211_6,
 				COLOR_148_3,
-				COLOR_148_4,
+				COLOR_142_3,
 				COLOR_148_5,
+				COLOR_124_5,
 				COLOR_148_6,
 		};
 	}
-	
+
 	private static Color gray(int val) {
 		return new Color(val,val,val);
 	}
 
-	
+
 	public static Paint[] createMonochromePaintArray(int start, int end,int step, int gap) {
 		int idx=0;
 		final Paint[] palette = new Paint[(end-start)/step +1];
@@ -135,7 +144,7 @@ public final class ChocoColor {
 		}
 		return palette;
 	}
-	
+
 	protected static DrawingSupplier createDrawingSupplier(Paint[] palette) {
 		return new DefaultDrawingSupplier(
 				palette, 
@@ -146,21 +155,61 @@ public final class ChocoColor {
 				DEFAULT_SHAPE_SEQUENCE);
 
 	}
-	
+
 	public static DrawingSupplier createDefaultDrawingSupplier() {
 		return createDrawingSupplier(createDefaultPaintArray());
 	}
-	
+
 	public static DrawingSupplier createMonochromeDrawingSupplier() {
 		return createDrawingSupplier(createMonochromePaintArray(120,220,10,30));
 	}
-	
+
 	public static DrawingSupplier createJFreeDrawingSupplier() {
 		return createDrawingSupplier(ChartColor.createDefaultPaintArray());
 	}
 	
-	public static void main(String[] args) {
-		createMonochromeDrawingSupplier();
+	private static String toHex(Paint paint) {
+		return Integer.toHexString(( (Color) paint).getRGB()).substring(2).toUpperCase();
+	}
+	
+	public static void browsePalette(Paint[] paints) throws IOException, URISyntaxException {
+		if(paints != null && paints.length > 0) {
+			StringBuilder b =new StringBuilder();
+			b.append("http://www.colorcombos.com/combomaker.html?design=circles&output_width=100&size_option=element&colors=");
+			b.append(toHex(paints[0]));
+			for (int i = 1; i < Math.min(30, paints.length); i++) {
+				b.append(',').append(toHex(paints[i]));
+			}
+			b.append("&background_color=FFFFFF&show_hex_flag=Y");
+			System.out.println(b.toString());
+			browse(b.toString());
+		}
+	}
+
+	public static void browse(String URI) throws IOException, URISyntaxException {
+		if( !java.awt.Desktop.isDesktopSupported() ) {
+
+			System.err.println( "Desktop is not supported (fatal)" );
+			System.exit( 1 );
+		}
+
+		java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
+
+		if( !desktop.isSupported( java.awt.Desktop.Action.BROWSE ) ) {
+
+			System.err.println( "Desktop doesn't support the browse action (fatal)" );
+			System.exit( 1 );
+		}
+		java.net.URI uri = new java.net.URI(URI);
+		desktop.browse( uri );
+	}
+
+	public static void main(String [] args) throws IOException, URISyntaxException {
+		browsePalette(createDefaultPaintArray());
+		System.out.println(toHex(COLOR_124_1));
+		System.out.println(toHex(COLOR_124_2));
+		System.out.println(toHex(COLOR_124_3));
+		System.out.println(toHex(COLOR_211_4));
 	}
 
 

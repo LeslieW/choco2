@@ -76,6 +76,7 @@ public class DomOverWDegBranchingNew extends AbstractDomOverWDegBranching {
 	throws ContradictionException {
 		//The weights are updated for the current branching object in setFirstBranch and finishedBranching.
 		//We cant use a selector yet because the condition in finishedBranching is never activated and the weights become inconsistent.
+		//// FIXME - No back-propagation ! - created 16 août 2011 by Arnaud Malapert
 
 	}
 
