@@ -27,15 +27,21 @@
 
 package choco.cp.solver.search.task;
 
-import choco.kernel.solver.Solver;
-import choco.kernel.solver.SolverException;
-import choco.kernel.solver.constraints.global.scheduling.IResource;
-import choco.kernel.solver.variables.scheduling.ITask;
-
 import gnu.trove.TIntIntHashMap;
 
 import java.lang.reflect.Array;
-import java.util.*;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+
+import choco.cp.common.util.preprocessor.detector.scheduling.DisjunctiveSModel;
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.constraints.global.scheduling.IResource;
+import choco.kernel.solver.variables.scheduling.ITask;
 
 
 
@@ -44,14 +50,13 @@ import java.util.*;
  * @author Arnaud Malapert
  *
  */
-public final class ProbabilisticProfile  {
+public class ProbabilisticProfile  {
 
 	private final TIntIntHashMap indexMap = new TIntIntHashMap();
 
+	private final List<EventRProf> function = new LinkedList<EventRProf>();
 
-	private final List<EventRPP> function = new LinkedList<EventRPP>();
-
-	private final EventDataStructure[] structL;
+	private final EventDataStructure[] structList;
 
 	private double slope;
 
@@ -59,36 +64,36 @@ public final class ProbabilisticProfile  {
 
 	private int coordinate;
 
-	private final BitSet involved = new BitSet();
+	protected final BitSet involved = new BitSet();
 
 	private final MaximumDataStruct max = new MaximumDataStruct();
 
-	public ITemporalStore precStore;
-
-	public int minimalSize = 1;
+	public final DisjunctiveSModel disjSModel;
 
 	/**
 	 *
 	 */
-	public ProbabilisticProfile(ITask[] tasks) {
-		this(Arrays.asList(tasks));
+	public ProbabilisticProfile(ITask[] tasks, DisjunctiveSModel disjSModel) {
+		this(Arrays.asList(tasks), disjSModel);
 	}
 
-	public ProbabilisticProfile(List<? extends ITask> tasks) {
+	public ProbabilisticProfile(List<? extends ITask> tasks, DisjunctiveSModel disjSModel) {
 		super();
-		structL=new EventDataStructure[tasks.size()];
-		for (int i = 0; i < structL.length; i++) {
-			structL[i] = new EventDataStructure(tasks.get(i));
+		this.disjSModel = disjSModel;
+		structList=new EventDataStructure[tasks.size()];
+		for (int i = 0; i < structList.length; i++) {
+			structList[i] = new EventDataStructure(tasks.get(i));
 			indexMap.put(tasks.get(i).getID(), i);
 		}
 	}
 
 
-	public ProbabilisticProfile(Solver solver) {
+	public ProbabilisticProfile(Solver solver, DisjunctiveSModel disjSModel) {
 		super();
-		structL=new EventDataStructure[solver.getNbTaskVars()];
-		for (int i = 0; i < structL.length; i++) {
-			structL[i] = new EventDataStructure(solver.getTaskVar(i));
+		this.disjSModel = disjSModel;
+		structList=new EventDataStructure[solver.getNbTaskVars()];
+		for (int i = 0; i < structList.length; i++) {
+			structList[i] = new EventDataStructure(solver.getTaskVar(i));
 			indexMap.put(solver.getTaskVar(i).getID(), i);
 		}
 	}
@@ -101,7 +106,7 @@ public final class ProbabilisticProfile  {
 	}
 
 	protected EventDataStructure getEDS(final ITask task) {
-		return structL[indexMap.get(task.getID())];
+		return structList[indexMap.get(task.getID())];
 	}
 
 	public final void generateEventsList(IResource<? extends ITask> rsc) {
@@ -116,13 +121,13 @@ public final class ProbabilisticProfile  {
 	protected void resetSweepData() {
 		slope=gap= 0;
 		coordinate=Integer.MIN_VALUE;
-		this.involved.clear();
+		involved.clear();
 	}
 
 
-	protected void handleEvent(final EventRPP e,final ListIterator<EventRPP> iter) {
+	protected void handleEvents(final EventRProf e,final ListIterator<EventRProf> iter) {
 		handleEvent(e);
-		EventRPP next;
+		EventRProf next;
 		while(iter.hasNext()) {
 			next=iter.next();
 			if(next.coordinate>e.coordinate) {
@@ -136,72 +141,34 @@ public final class ProbabilisticProfile  {
 
 	}
 
-	protected void handleEventMax(final EventRPP e,final ListIterator<EventRPP> iter) {
-		handleEventMax(e);
-		EventRPP next;
-		while(iter.hasNext()) {
-			next=iter.next();
-			if(next.coordinate>e.coordinate) {
-				iter.previous();
-				break;
-			}else {
-				handleEventMax(next);
-			}
 
-		}
-
-	}
-
-
-	protected void handleEvent(final EventRPP e) {
+	protected void handleEvent(final EventRProf e) {
+		slope+=e.slope;
+		gap+=e.gap;
 		switch (e.type) {
-		case EventRPP.START_EVENT : {
-			slope+=e.slope;
-			if(e.gap>0) {gap+=e.gap;}
-			break;
+		case START: involved.set(e.task.getID());break;
+		case END: involved.clear(e.task.getID());break;
 		}
-		case EventRPP.END_EVENT : {
-			slope-=e.slope;
-			if(e.gap<0) {gap+=e.gap;}
-			break;
-		}
-		default:
-			throw new IllegalArgumentException("can't handle event");
-		}
-
 	}
 
-	protected void handleEventMax(final EventRPP e) {
-		handleEvent(e);
-		if(e.task!=null) {
-			if(e.type == EventRPP.START_EVENT) {
-				involved.set(e.task.getID());
-			}else if(e.type == EventRPP.END_EVENT) {
-				involved.set(e.task.getID(), false);
-			}else {
-				throw new SolverException("unknown event");
-			}
-		}
-
-
-	}
 
 
 	public void initializeEvents() {
-		for (EventDataStructure eds : structL) {
+		for (EventDataStructure eds : structList) {
 			eds.reset();
 		}
 	}
 
 	protected final void sweep() {
-		final ListIterator<EventRPP> iter=function.listIterator();
+		final ListIterator<EventRProf> iter=function.listIterator();
 		while(iter.hasNext()) {
-			final EventRPP e=iter.next();
+			final EventRProf e=iter.next();
 			update(e.coordinate);
-			handleEventMax(e,iter);
-			if(gap>max.value && involved.cardinality() >= minimalSize && isValid() ) {
+			handleEvents(e,iter);
+			if(gap > max.value && isValidMaximum() ) {
 				max.value=gap;
 				max.coordinate=e.coordinate;
+				// FIXME - swap bitset instead od copying ! - created 12 août 2011 by Arnaud Malapert
 				max.involved.clear();
 				max.involved.or(involved);
 			} 
@@ -222,22 +189,15 @@ public final class ProbabilisticProfile  {
 	}
 
 
-	public boolean isValid() {
-		if(precStore != null) {
-			for (int i = involved.nextSetBit(0); i >= 0; i = involved
-			.nextSetBit(i + 1)) {
-				final ITask t1 = structL[ indexMap.get(i)].task;
-				for (int j = involved.nextSetBit(i+1); j >= 0; j = involved
-				.nextSetBit(j + 1)) {
-					final ITask t2 = structL[ indexMap.get(j)].task;
-					if(precStore.isReified(t1, t2)) {
-						return true;
-					}
+	protected boolean isValidMaximum() {
+		for (int i = involved.nextSetBit(0); i >= 0; i = involved.nextSetBit(i + 1)) {
+			for (int j = involved.nextSetBit(i+1); j >= 0; j = involved.nextSetBit(j + 1)) {
+				if(disjSModel.containsEdge(i, j) &&  ! disjSModel.getConstraint(i, j).isFixed() ) {
+					return true;
 				}
 			}
-			return false;
 		}
-		return true;
+		return false;
 	}
 
 	public double getMaxProfileValue() {
@@ -248,19 +208,15 @@ public final class ProbabilisticProfile  {
 		return max.coordinate;
 	}
 
-	public List<ITask> getMaxProfInvolved() {
-		List<ITask> list = new LinkedList<ITask>();
-		for (int i = max.involved.nextSetBit(0); i >= 0; i = max.involved.nextSetBit(i + 1)) {
-			list.add( structL[ indexMap.get(i)].task);
-		}
-		return list;
+	public BitSet getInvolvedInMaxProf() {
+		return max.involved;
 	}
-
+	
 	public double compute(final int x) {
 		this.resetSweepData();
-		final ListIterator<EventRPP> iter=function.listIterator();
+		final ListIterator<EventRProf> iter=function.listIterator();
 		while(iter.hasNext()) {
-			final EventRPP e=iter.next();
+			final EventRProf e=iter.next();
 			if(e.coordinate<=x) {
 				update(e.coordinate);
 				handleEvent(e);
@@ -287,12 +243,12 @@ public final class ProbabilisticProfile  {
 	public StringBuilder draw() {
 		this.resetSweepData();
 		final StringBuilder buffer=new StringBuilder();
-		final ListIterator<EventRPP> iter=function.listIterator();
+		final ListIterator<EventRProf> iter=function.listIterator();
 		while(iter.hasNext()) {
-			final EventRPP e=iter.next();
+			final EventRProf e=iter.next();
 			update(e.coordinate);
 			drawPoint(buffer);
-			handleEvent(e,iter);
+			handleEvents(e,iter);
 			drawPoint(buffer);
 
 		}
@@ -302,82 +258,36 @@ public final class ProbabilisticProfile  {
 
 
 
+	protected static class MaximumDataStruct {
 
+		public int coordinate;
 
-	protected static class EventDataStructure  {
+		public double value;
 
-		protected final ITask task;
+		public final BitSet involved = new BitSet();
 
-		protected EventRPP[] events;
-
-		/**
-		 * @param task
-		 */
-		public EventDataStructure(final ITask task) {
-			super();
-			this.task = task;
-			events= (EventRPP[]) Array.newInstance(EventRPP.class, 4);
-			events[0]=new EventRPP(EventRPP.START_EVENT,task);
-			events[1]=new EventRPP(EventRPP.END_EVENT);
-			events[2]=new EventRPP(EventRPP.START_EVENT);
-			events[3]=new EventRPP(EventRPP.END_EVENT,task);
-		}
-
-
-		public double getIndividualContribution(final int x) {
-			double contrib=0;
-			if(x>=events[0].coordinate && x<events[3].coordinate) {
-				contrib+=events[0].gap;
-				contrib+= (events[0].slope)*(Math.min(x,events[1].coordinate)-events[0].coordinate);
-				if(x>=events[2].coordinate) {
-					contrib+= (events[2].slope)*(x-events[2].coordinate);
-				}
-			}
-			return contrib;
-		}
-
-
-		private void set(final int idx,final int x,final double slope,final double gap) {
-			events[idx].coordinate=x ;
-			events[idx].gap=gap;
-			events[idx].slope=slope;
-		}
 
 		public void reset() {
-			if(task.getMinDuration()>0) {
-				final double std=task.getLST()-task.getEST()+1;
-				final double gap=1/std;
-				//double slope=1/std;
-				final double slope= std<= task.getMinDuration() ? 1/std : (task.getMinDuration()-1)/(std*task.getMinDuration());
-				set(0, task.getEST(), slope, gap);
-				set(1, task.getLST(), slope,0);
-				set(2, task.getECT(), -slope,0);
-				set(3, task.getLCT(), -slope, -gap);
-
-
-			}
-
+			coordinate=Integer.MIN_VALUE;
+			value=Double.MIN_VALUE;
+			involved.clear();
 		}
-
 
 	}
 
 
+	static enum EventType {START, MID, END}
 
 	/**
 	 * Event for the resource probabilistic profile
 	 * @author Arnaud Malapert : arnaud(dot)malapert(at)emn(dot)fr
 	 *
 	 */
-	protected static class EventRPP implements Comparable<EventRPP>{
+	static class EventRProf implements Comparable<EventRProf>{
 
-		public final static int START_EVENT=0;
-
-		public final static int END_EVENT=1;
+		public final EventType type;
 
 		public final ITask task;
-
-		public final int type;
 
 		public int coordinate;
 
@@ -385,11 +295,11 @@ public final class ProbabilisticProfile  {
 
 		public double gap;
 
-		public EventRPP(final int type) {
-			this(type, 0, 0, 0,null);
+		public EventRProf(final EventType type) {
+			this(type, null);
 		}
 
-		public EventRPP(final int type,final ITask task) {
+		public EventRProf(final EventType type,final ITask task) {
 			this(type, 0, 0, 0,task);
 		}
 
@@ -399,7 +309,7 @@ public final class ProbabilisticProfile  {
 		 * @param slope
 		 * @param gap
 		 */
-		public EventRPP(final int type, final int coordinates, final double slope, final double gap,final ITask task) {
+		public EventRProf(final EventType type, final int coordinates, final double slope, final double gap,final ITask task) {
 			super();
 			this.type = type;
 			this.coordinate = coordinates;
@@ -431,14 +341,8 @@ public final class ProbabilisticProfile  {
 		@Override
 		public String toString() {
 			final StringBuilder buffer=new StringBuilder();
-			switch (type) {
-			case START_EVENT: buffer.append("START ");break;
-			case END_EVENT: buffer.append("END ");break;
-			default:
-				buffer.append("ERROR");
-			break;
-			}
-			buffer.append(coordinate).append(" (");
+			buffer.append(type);
+			buffer.append(coordinate).append("(");
 			buffer.append(slope).append(',').append(gap).append(')');
 			return buffer.toString();
 		}
@@ -448,7 +352,7 @@ public final class ProbabilisticProfile  {
 		 * @see java.lang.Comparable#compareTo(java.lang.Object)
 		 */
 		@Override
-		public int compareTo(final EventRPP o) {
+		public int compareTo(final EventRProf o) {
 			final int x1=coordinate;
 			final int x2=o.getCoordinates();
 			if(x1<x2) {return -1;}
@@ -459,22 +363,75 @@ public final class ProbabilisticProfile  {
 		}
 	}
 
-	protected static class MaximumDataStruct {
 
-		public int coordinate;
+	protected static class EventDataStructure  {
 
-		public double value;
+		public final static int EST=0, LST=1, ECT=2, LCT=3;
 
-		public final BitSet involved = new BitSet();
+		protected final ITask task;
 
+		protected EventRProf[] events;
 
-		public void reset() {
-			coordinate=Integer.MIN_VALUE;
-			value=Double.MIN_VALUE;
-			involved.clear();
+		/**
+		 * @param task
+		 */
+		public EventDataStructure(final ITask task) {
+			super();
+			this.task = task;
+			events= (EventRProf[]) Array.newInstance(EventRProf.class, 4);
+			events[EST]=new EventRProf(EventType.START,task);
+			events[LST]=new EventRProf(EventType.MID);
+			events[ECT]=new EventRProf(EventType.MID);
+			events[LCT]=new EventRProf(EventType.END,task);
 		}
 
+
+		public double getIndividualContribution(final int x) {
+			double contrib=0;
+			if(x>=events[EST].coordinate && x<events[LCT].coordinate) {
+				contrib+=events[EST].gap;
+				if(! task.isScheduled()) {
+					contrib+= (events[EST].slope)*(Math.min(x,events[LST].coordinate)-events[EST].coordinate);
+					if(x>=events[ECT].coordinate) {
+						contrib+= (events[ECT].slope)*(x-events[ECT].coordinate);
+					}
+				}
+			}
+			return contrib;
+		}
+
+
+		private void set(final int idx,final int x,final double slope,final double gap) {
+			events[idx].coordinate=x ;
+			events[idx].gap=gap;
+			events[idx].slope=slope;
+		}
+
+		public void reset() {
+			final int dur = task.getMinDuration();
+			assert(dur>0);
+			final int est = task.getEST();
+			// TODO - Simplify computation and event management - created 12 août 2011 by Arnaud Malapert
+//			if(task.isScheduled()) {
+//				set(EST, est, 0, 1);
+//				set(LCT, task.getLCT(), 0,-1);
+//			} else {
+				final int lst = task.getLST();
+				final double std=lst - est +1;
+				final double gap=1/std;
+				//double slope=1/std;
+				final double slope= std<= dur ? 1/std : (dur-1)/(std*dur);
+				set(EST, est, slope, gap);
+				set(LST, lst, -slope,0);
+				set(ECT, task.getECT(), -slope,0);
+				set(LCT, task.getLCT(), slope, -gap);
+//			}
+		}
 	}
+
+
+
+
 
 
 }

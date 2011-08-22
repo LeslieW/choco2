@@ -50,111 +50,28 @@ import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.ITask;
 import choco.kernel.visu.VisuFactory;
 
-///////////////////// REMOVE class (import problem with cp.test) ///////////////////
+class SizedMaxProbabilisticProfile extends ProbabilisticProfile {
+
+	public int minNbInvolved = 1;
 
 
-//class SimpleTask extends AbstractTask {
-//
-//	private static int nextID=0;
-//
-//	private final Point domain;
-//
-//	private final int duration;
-//
-//
-//    /**
-//     *
-//     * @param est
-//     * @param lst
-//     * @param duration
-//     */
-//	public SimpleTask(int est,int lst, int duration) {
-//		super(nextID++, "T"+nextID);
-//		this.domain = new Point(est, lst>=est ? lst :est);
-//		this.duration = duration>0 ? duration : 0;
-//	}
-//
-//
-//	/**
-//	 * @see ITask#getECT()
-//	 */
-//	@Override
-//	public int getECT() {
-//		return domain.x+duration;
-//	}
-//
-//	/**
-//	 * @see ITask#getEST()
-//	 */
-//	@Override
-//	public int getEST() {
-//		return domain.x;
-//	}
-//
-//	/**
-//	 * @see ITask#getLCT()
-//	 */
-//	@Override
-//	public int getLCT() {
-//		return domain.y+duration;
-//	}
-//
-//	/**
-//	 * @see ITask#getLST()
-//	 */
-//	@Override
-//	public int getLST() {
-//		return domain.y;
-//	}
-//
-//	/**
-//	 * @see ITask#getMinDuration()
-//	 */
-//	@Override
-//	public int getMinDuration() {
-//		return duration;
-//	}
-//
-//	/**
-//	 * @see ITask#hasConstantDuration()
-//	 */
-//	@Override
-//	public boolean hasConstantDuration() {
-//		return true;
-//	}
-//
-//	/**
-//	 * @see ITask#isScheduled()
-//	 */
-//	@Override
-//	public boolean isScheduled() {
-//		return domain.x==domain.y;
-//	}
-//
-//	/**
-//	 * @see ITask#getMaxDuration()
-//	 */
-//	@Override
-//	public int getMaxDuration() {
-//		return getMinDuration();
-//	}
-//
-//
-//}
+	public SizedMaxProbabilisticProfile(List<? extends ITask> tasks) {
+		super(tasks, null);
+	}
+
+	@Override
+	protected boolean isValidMaximum() {
+		return involved.cardinality() >= minNbInvolved;
+	}
 
 
-
-
-///////////////////////////////////////////////////////////////////////////////////////
-
-
-
+}
 
 public class TestProbProfile {
 
 	private final static double DELTA=0.01;
 
-	private final static boolean DISPLAY=false;
+	private final static boolean DISPLAY=true;
 
 	private IResource<SimpleTask> rsc;
 
@@ -175,21 +92,25 @@ public class TestProbProfile {
 		case 3 : l.add(new SimpleTask(0,0,15));break;
 		default:
 			System.err.println("error while creating profile");
-		break;
+			break;
 		}
 	}
 
 	protected IResource<SimpleTask> createResource(List<SimpleTask> taskL) {
 		return new FakeResource<SimpleTask>(taskL.toArray(new SimpleTask[taskL.size()]));
 	}
-	
+
 	public void initialize(boolean[] tasks) {
+		initialize(tasks, true);
+	}
+
+	public void initialize(boolean[] tasks, boolean probProf) {
 		List<SimpleTask> l=new LinkedList<SimpleTask>();
 		for (int i = 0; i < tasks.length; i++) {
 			if(tasks[i]) {setTask(i, l);}
 		}
 		rsc= createResource(l);
-		profile=new ProbabilisticProfile(l);
+		profile= probProf ? new ProbabilisticProfile(l, null) : new SizedMaxProbabilisticProfile(l);
 		profile.initializeEvents();
 		profile.generateEventsList(rsc);
 	}
@@ -246,14 +167,17 @@ public class TestProbProfile {
 
 	protected void testProfile(boolean[] involved) {
 		for (int i = 0; i < involved.length; i++) {
-			assertEquals("prof. max involved "+i+" : ", involved[i],profile.getMaxProfInvolved().contains(rsc.getTask(i)));
+			assertEquals("prof. max involved "+i+" : ", involved[i],profile.getInvolvedInMaxProf().get(rsc.getTask(i).getID()));
 		}
 	}
+
+
+
 
 	@Test
 	public void testProfile() {
 		boolean[] t={true,true,true,false};
-		initialize(t);
+		initialize(t, false);
 		display();
 		SimpleTask task = rsc.getTask(0);
 		assertEquals("ind. contrib. : ",0,profile.getIndividualContribution(task, 9),DELTA);
@@ -264,7 +188,7 @@ public class TestProbProfile {
 		profile.computeMaximum(rsc);
 		testProfile(35,1.35);
 		testProfile(new boolean[]{true,true,false});
-		profile.minimalSize=2;
+		((SizedMaxProbabilisticProfile) profile).minNbInvolved=2;
 		profile.computeMaximum(rsc);
 		testProfile(35,1.35);
 		testProfile(new boolean[]{true,true,false});
@@ -277,12 +201,12 @@ public class TestProbProfile {
 		l.add(new SimpleTask(10,20,12));
 		l.add(new SimpleTask(28,38,15));
 		rsc= createResource(l);
-		profile=new ProbabilisticProfile(l);
+		profile=new SizedMaxProbabilisticProfile(l);
 		profile.initializeEvents();
 		profile.computeMaximum(rsc);
 		testProfile(0,1);
 		testProfile(new boolean[]{true,false,false});
-		profile.minimalSize=2;
+		((SizedMaxProbabilisticProfile) profile).minNbInvolved=2;
 		profile.computeMaximum(rsc);
 		testProfile(28,0.54);
 		testProfile(new boolean[]{false,true,true});
@@ -300,12 +224,12 @@ class SimpleTask extends AbstractTask {
 	private final int duration;
 
 
-    /**
-     *
-     * @param est
-     * @param lst
-     * @param duration
-     */
+	/**
+	 *
+	 * @param est
+	 * @param lst
+	 * @param duration
+	 */
 	public SimpleTask(int est,int lst, int duration) {
 		super(nextID++, "T"+nextID);
 		this.domain = new Point(est, lst>=est ? lst :est);
@@ -383,14 +307,15 @@ class SimpleTask extends AbstractTask {
 
 class SimpleResource implements ICumulativeResource<SimpleTask> {
 
-	
+	private static final long serialVersionUID = 1L;
+
 	public final List<SimpleTask> tasksL;
 
 	public int[] heights;
-	
+
 	public int capacity;
-	
-	
+
+
 	public SimpleResource(List<SimpleTask> tasksL, int[] heights, int capacity) {
 		super();
 		this.tasksL = tasksL;
@@ -406,7 +331,7 @@ class SimpleResource implements ICumulativeResource<SimpleTask> {
 		Arrays.fill(heights, 1);
 	}
 
-	
+
 	@Override
 	public IRTask getRTask(int idx) {
 		return null;
@@ -431,7 +356,7 @@ class SimpleResource implements ICumulativeResource<SimpleTask> {
 	public Iterator<SimpleTask> getTaskIterator() {
 		return tasksL.listIterator();
 	}
-	
+
 	@Override
 	public List<SimpleTask> asTaskList() {
 		return Collections.unmodifiableList(tasksL);
@@ -441,13 +366,13 @@ class SimpleResource implements ICumulativeResource<SimpleTask> {
 	public Iterator<IRTask> getRTaskIterator() {
 		return asRTaskList().iterator();
 	}
-	
+
 	@Override
 	public IntDomainVar getCapacity() {
 		return null;
 	}
 	@Override
-	
+
 	public int getMaxCapacity() {
 		return capacity;
 	}
@@ -460,8 +385,8 @@ class SimpleResource implements ICumulativeResource<SimpleTask> {
 	public IntDomainVar getHeight(int idx) {
 		return null;
 	}
-	
-	
+
+
 	@Override
 	public IntDomainVar getConsumption() {
 		return null;
@@ -501,8 +426,8 @@ class SimpleResource implements ICumulativeResource<SimpleTask> {
 	public List<IRTask> asRTaskList() {
 		return Collections.<IRTask>emptyList();
 	}
-	
-	
+
+
 }
 
 

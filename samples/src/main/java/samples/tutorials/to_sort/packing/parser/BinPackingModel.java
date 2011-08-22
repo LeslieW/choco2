@@ -63,6 +63,7 @@ public class BinPackingModel extends AbstractMinimizeModel {
 
 	public BinPackingModel(Configuration configuration) {
 		super(new BinPackingFileParser(), configuration);
+		setChartManager(ChocoChartFactory.getJFreeChartManager());
 	}
 
 	@Override

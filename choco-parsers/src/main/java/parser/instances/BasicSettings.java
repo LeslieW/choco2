@@ -34,7 +34,7 @@ import choco.kernel.solver.search.limit.Limit;
 import java.io.File;
 import java.io.IOException;
 
-
+// TODO - Rename with Configuration suffix - created 12 août 2011 by Arnaud Malapert
 public class BasicSettings extends PreProcessConfiguration{
 
 	private static final long serialVersionUID = 7557235241412627008L;

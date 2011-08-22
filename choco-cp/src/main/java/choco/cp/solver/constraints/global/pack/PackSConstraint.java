@@ -420,6 +420,7 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 	}
 
 	private void handleNbBinsEvent(int varIdx) throws ContradictionException {
+		// TODO - Try to empty sets faster - Arnaud Malapert - 4 juil. 2011
 		if(varIdx == getNbVars() - 1 &&
 				flags.contains(PackSConstraint.LAST_BINS_EMPTY)) {
 			for (int b = ivars[ivars.length - 1].getSup(); b < getNbBins(); b++) {

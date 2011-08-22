@@ -178,7 +178,7 @@ class GnuplotManager extends AbstractVisuManager {
 
 	@Override
 	protected String getFileExtension() {
-		return "gpl";
+		return "dat";
 	}
 
 	@Override
@@ -199,7 +199,7 @@ class GnuplotManager extends AbstractVisuManager {
 	protected boolean doShow(Object chart, int width, int height) {
 		File file = export(null, null, chart, width, height);
 		if(file != null) {
-			VisuFactory.launchCommand(false, "/bin/sh", "-c", "echo \"plot \'"+file.getAbsolutePath()+"\' with linespoints\" | gnuplot -persist");
+			VisuFactory.launchCommand(false, "/bin/sh", "-c", "echo \"set key off; plot \'"+file.getAbsolutePath()+"\' title \'\' with linespoints\" | gnuplot -persist");
 			return true;
 		} else return false;
 	}

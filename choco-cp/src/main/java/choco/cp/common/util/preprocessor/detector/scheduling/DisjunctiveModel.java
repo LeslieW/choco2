@@ -184,7 +184,7 @@ public class DisjunctiveModel extends DisjunctiveGraph<TemporalConstraint> {
 	@Override
 	protected void writeArcAttributes(StringBuilder b, int i, int j) {
 		if(containsConstraint(i, j)) super.writeArcAttributes(b, i, j);
-		else writeAttributes(b, ARC_COLOR, STY_DOTTED);
+		else writeAttributes(b, ARC_COLOR, STY_BOLD_DASHED);
 	}
 
 	@Override

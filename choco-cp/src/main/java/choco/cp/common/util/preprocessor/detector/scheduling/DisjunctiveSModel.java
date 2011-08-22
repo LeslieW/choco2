@@ -30,6 +30,7 @@ package choco.cp.common.util.preprocessor.detector.scheduling;
 import gnu.trove.TIntIntHashMap;
 import gnu.trove.TIntObjectHashMap;
 import gnu.trove.TIntObjectProcedure;
+import gnu.trove.TObjectProcedure;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -41,10 +42,13 @@ import choco.kernel.model.variables.MultipleVariables;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
+import choco.kernel.solver.variables.scheduling.ITask;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 
 public class DisjunctiveSModel extends DisjunctiveGraph<ITemporalSRelation> {
 
+	private ITemporalSRelation[] reuseDisjuncts;
+	
 	public final Solver solver;
 
 	public DisjunctiveSModel(PreProcessCPSolver solver) {
@@ -83,7 +87,40 @@ public class DisjunctiveSModel extends DisjunctiveGraph<ITemporalSRelation> {
 	public final Solver getSolver() {
 		return solver;
 	}
+	
+	public final boolean containsEdge(ITask t1, ITask t2) {
+		return containsEdge(t1.getID(), t2.getID());
+	}
+	
+	public final ITemporalSRelation getConstraint(ITask t1, ITask t2) {
+		return getConstraint(t1.getID(), t2.getID());
+	}
+	
+		
 
+	public final ITemporalSRelation[] getEdges() {
+		return getEdges(false);
+	}
+	
+	public final ITemporalSRelation[] getEdges(boolean forceComputation) {
+		final int n = getNbEdges();
+		if(forceComputation || reuseDisjuncts == null || reuseDisjuncts.length != n ) {
+			reuseDisjuncts = new ITemporalSRelation[n];
+			storedConstraints.forEachValue(new TObjectProcedure<ITemporalSRelation>() {
+				private int idx=0;
+				@Override
+				public boolean execute(ITemporalSRelation arg0) {
+					if( ! arg0.isFixed() ) {
+						reuseDisjuncts[idx++]=arg0;
+					}
+					return true;
+				}
+			});
+			// TODO - sort disjuncts according to which criteria ?- created 12 août 2011 by Arnaud Malapert
+		}
+		
+		return reuseDisjuncts;
+	}
 
 	@Override
 	protected StringBuilder toDottyNodes() {
@@ -96,6 +133,6 @@ public class DisjunctiveSModel extends DisjunctiveGraph<ITemporalSRelation> {
 		return b;
 	}
 
-
+	
 
 }

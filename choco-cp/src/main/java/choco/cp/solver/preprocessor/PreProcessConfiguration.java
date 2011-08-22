@@ -39,7 +39,7 @@ import choco.kernel.solver.Solver;
  * Specific {@link Configuration} extension for {@link PreProcessCPSolver}.
  */
 public class PreProcessConfiguration extends Configuration {
-
+		
 	private static final long serialVersionUID = 683407604054648550L;
 
 	/**

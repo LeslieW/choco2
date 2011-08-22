@@ -103,6 +103,7 @@ public class NoSumList {
 
 	public final void setCandidatesFromVar(final SetVar svar) {
 		clear();
+		// FIXME - Iterate over enveloppe and check manually the kernel  - created 17 août 2011 by Arnaud Malapert
 		DisposableIntIterator iter=svar.getDomain().getKernelIterator();
 		while( iter.hasNext()) {
 			rLoad+=candidatesMap[iter.next()].getVal();		

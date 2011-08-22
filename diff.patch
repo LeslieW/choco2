@@ -1,0 +1,1781 @@
+Index: choco-visu/src/main/java/choco/visu/components/chart/ChocoChartFactory.java
+===================================================================
+--- choco-visu/src/main/java/choco/visu/components/chart/ChocoChartFactory.java	(révision 1792)
++++ choco-visu/src/main/java/choco/visu/components/chart/ChocoChartFactory.java	(copie de travail)
+@@ -544,9 +544,9 @@
+ 	//*******************  Util **************************************//
+ 	//***************************************************************//
+ 
+-	private final static int DEFAULT_WIDTH = 800;
++	protected final static int DEFAULT_WIDTH = 800;
+ 
+-	private final static int DEFAULT_HEIGHT = 600;
++	protected final static int DEFAULT_HEIGHT = 600;
+ 
+ 	public static void createAndShowGUI(final String title,final int width,final int height, final LayoutManager layout, final Component... components) {
+ 		//Schedule a job for the event dispatch thread:
+@@ -590,8 +590,8 @@
+ 		createAndShowGUI(title, DEFAULT_WIDTH, DEFAULT_HEIGHT, null, new ChocoChartPanel(solver));
+ 	}
+ 	
+-	public static void getJFreeChartManager() {
+-		JFreeChartManager.getInstance();
++	public static JFreeChartManager getJFreeChartManager() {
++		return JFreeChartManager.getInstance();
+ 	}
+ 
+ 	
+@@ -628,6 +628,8 @@
+ 	 */
+ 	private JFreeChartManager() {
+ 		super();
++		setDefaultWidth(ChocoChartFactory.DEFAULT_WIDTH);
++		setDefaultHeight(ChocoChartFactory.DEFAULT_HEIGHT);
+ 	}
+ 
+ 	/** 
+Index: choco-visu/src/main/java/choco/visu/components/chart/ChocoColor.java
+===================================================================
+--- choco-visu/src/main/java/choco/visu/components/chart/ChocoColor.java	(révision 1792)
++++ choco-visu/src/main/java/choco/visu/components/chart/ChocoColor.java	(copie de travail)
+@@ -27,13 +27,21 @@
+ 
+ package choco.visu.components.chart;
+ 
++import static org.jfree.chart.plot.DefaultDrawingSupplier.DEFAULT_FILL_PAINT_SEQUENCE;
++import static org.jfree.chart.plot.DefaultDrawingSupplier.DEFAULT_OUTLINE_PAINT_SEQUENCE;
++import static org.jfree.chart.plot.DefaultDrawingSupplier.DEFAULT_OUTLINE_STROKE_SEQUENCE;
++import static org.jfree.chart.plot.DefaultDrawingSupplier.DEFAULT_SHAPE_SEQUENCE;
++import static org.jfree.chart.plot.DefaultDrawingSupplier.DEFAULT_STROKE_SEQUENCE;
++
++import java.awt.Color;
++import java.awt.Paint;
++import java.io.IOException;
++import java.net.URISyntaxException;
++
+ import org.jfree.chart.ChartColor;
+ import org.jfree.chart.plot.DefaultDrawingSupplier;
+-import static org.jfree.chart.plot.DefaultDrawingSupplier.*;
+ import org.jfree.chart.plot.DrawingSupplier;
+ 
+-import java.awt.*;
+-
+ public final class ChocoColor {
+ 
+ 	//http://www.colorcombos.com/color-scheme-124.html
+@@ -86,20 +94,19 @@
+ 				COLOR_124_1,	
+ 				COLOR_124_2,
+ 				COLOR_124_3, 
++				COLOR_211_4,
+ 				//COLOR_124_4, //almost white
+-				COLOR_124_5,
+-				COLOR_124_6,
+ 				COLOR_211_1,
+ 				COLOR_211_2,
++				COLOR_124_6,
++				COLOR_148_1,
+ 				COLOR_211_3,
+-				COLOR_211_4,
+-				COLOR_211_5,
+-				COLOR_211_6,
+-				COLOR_142_1,
+ 				COLOR_142_2,
+-				COLOR_142_3,
++				COLOR_148_4,
+ 				COLOR_142_4,
++				COLOR_211_5,
+ 				COLOR_142_5,
++				COLOR_142_1,
+ 				COLOR_142_6,
+ 				COLOR_274_1,
+ 				COLOR_274_2,
+@@ -107,20 +114,22 @@
+ 				COLOR_274_4,
+ 				COLOR_274_5,
+ 				COLOR_274_6,
+-				COLOR_148_1,
++				COLOR_124_5,
+ 				COLOR_148_2,
++				COLOR_211_6,
+ 				COLOR_148_3,
+-				COLOR_148_4,
++				COLOR_142_3,
+ 				COLOR_148_5,
++				COLOR_124_5,
+ 				COLOR_148_6,
+ 		};
+ 	}
+-	
++
+ 	private static Color gray(int val) {
+ 		return new Color(val,val,val);
+ 	}
+ 
+-	
++
+ 	public static Paint[] createMonochromePaintArray(int start, int end,int step, int gap) {
+ 		int idx=0;
+ 		final Paint[] palette = new Paint[(end-start)/step +1];
+@@ -135,7 +144,7 @@
+ 		}
+ 		return palette;
+ 	}
+-	
++
+ 	protected static DrawingSupplier createDrawingSupplier(Paint[] palette) {
+ 		return new DefaultDrawingSupplier(
+ 				palette, 
+@@ -146,22 +155,62 @@
+ 				DEFAULT_SHAPE_SEQUENCE);
+ 
+ 	}
+-	
++
+ 	public static DrawingSupplier createDefaultDrawingSupplier() {
+ 		return createDrawingSupplier(createDefaultPaintArray());
+ 	}
+-	
++
+ 	public static DrawingSupplier createMonochromeDrawingSupplier() {
+ 		return createDrawingSupplier(createMonochromePaintArray(120,220,10,30));
+ 	}
+-	
++
+ 	public static DrawingSupplier createJFreeDrawingSupplier() {
+ 		return createDrawingSupplier(ChartColor.createDefaultPaintArray());
+ 	}
+ 	
+-	public static void main(String[] args) {
+-		createMonochromeDrawingSupplier();
++	private static String toHex(Paint paint) {
++		return Integer.toHexString(( (Color) paint).getRGB()).substring(2).toUpperCase();
+ 	}
++	
++	public static void browsePalette(Paint[] paints) throws IOException, URISyntaxException {
++		if(paints != null && paints.length > 0) {
++			StringBuilder b =new StringBuilder();
++			b.append("http://www.colorcombos.com/combomaker.html?design=circles&output_width=100&size_option=element&colors=");
++			b.append(toHex(paints[0]));
++			for (int i = 1; i < Math.min(30, paints.length); i++) {
++				b.append(',').append(toHex(paints[i]));
++			}
++			b.append("&background_color=FFFFFF&show_hex_flag=Y");
++			System.out.println(b.toString());
++			browse(b.toString());
++		}
++	}
+ 
++	public static void browse(String URI) throws IOException, URISyntaxException {
++		if( !java.awt.Desktop.isDesktopSupported() ) {
+ 
++			System.err.println( "Desktop is not supported (fatal)" );
++			System.exit( 1 );
++		}
++
++		java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
++
++		if( !desktop.isSupported( java.awt.Desktop.Action.BROWSE ) ) {
++
++			System.err.println( "Desktop doesn't support the browse action (fatal)" );
++			System.exit( 1 );
++		}
++		java.net.URI uri = new java.net.URI(URI);
++		desktop.browse( uri );
++	}
++
++	public static void main(String [] args) throws IOException, URISyntaxException {
++		browsePalette(createDefaultPaintArray());
++		System.out.println(toHex(COLOR_124_1));
++		System.out.println(toHex(COLOR_124_2));
++		System.out.println(toHex(COLOR_124_3));
++		System.out.println(toHex(COLOR_211_4));
++	}
++
++
+ }
+\ No newline at end of file
+Index: choco-cp/src/main/java/choco/cp/common/util/preprocessor/detector/scheduling/DisjunctiveModel.java
+===================================================================
+--- choco-cp/src/main/java/choco/cp/common/util/preprocessor/detector/scheduling/DisjunctiveModel.java	(révision 1792)
++++ choco-cp/src/main/java/choco/cp/common/util/preprocessor/detector/scheduling/DisjunctiveModel.java	(copie de travail)
+@@ -184,7 +184,7 @@
+ 	@Override
+ 	protected void writeArcAttributes(StringBuilder b, int i, int j) {
+ 		if(containsConstraint(i, j)) super.writeArcAttributes(b, i, j);
+-		else writeAttributes(b, ARC_COLOR, STY_DOTTED);
++		else writeAttributes(b, ARC_COLOR, STY_BOLD_DASHED);
+ 	}
+ 
+ 	@Override
+Index: choco-cp/src/main/java/choco/cp/common/util/preprocessor/detector/scheduling/DisjunctiveGraph.java
+===================================================================
+--- choco-cp/src/main/java/choco/cp/common/util/preprocessor/detector/scheduling/DisjunctiveGraph.java	(révision 1792)
++++ choco-cp/src/main/java/choco/cp/common/util/preprocessor/detector/scheduling/DisjunctiveGraph.java	(copie de travail)
+@@ -29,6 +29,7 @@
+ 
+ import gnu.trove.TIntIntHashMap;
+ import gnu.trove.TIntObjectHashMap;
++import gnu.trove.TObjectProcedure;
+ 
+ import java.util.BitSet;
+ 
+@@ -119,7 +120,19 @@
+ 		setupTimes.put(getKey(j, i), backwardSetup);
+ 		nbEdges++;
+ 	}
++	
++	public final boolean isFixed() {
++		return storedConstraints.forEachValue(new TObjectProcedure<E>() {
+ 
++			@Override
++			public boolean execute(E arg0) {
++				return arg0.isFixed();
++			}
++
++		
++		});
++	}
++
+ 	public final int setupTime(int i, int j) {
+ 		return setupTimes.get(getKey(i, j));
+ 	}
+@@ -196,7 +209,7 @@
+ 	
+ 	protected final static String ARC_COLOR = "color=forestgreen";
+ 	protected final static String EDGE_COLOR = "color=royalblue";
+-	protected final static String STY_DOTTED = "style=dotted";
++	protected final static String STY_BOLD_DASHED= "style=\"bold,dashed\"";
+ 	protected final static String STY_BOLD = "style=bold";
+ 	protected final static String ARROW_DOT = "arrowhead=dot";
+ 	protected final static String ARROW_BIG = "arrowsize=1.5";
+@@ -215,7 +228,7 @@
+ 	
+ 	
+ 	protected void writeArcAttributes(StringBuilder b, int i, int j) {
+-		writeAttributes(b, ARC_COLOR, getArcLabel(i, j));
++		writeAttributes(b, ARC_COLOR, STY_BOLD, getArcLabel(i, j));
+ 	}
+ 
+ 	protected void writeEdge(StringBuilder b, E rel, int i, int j) {
+@@ -228,7 +241,7 @@
+ 			writeAttributes(b, EDGE_COLOR, STY_BOLD, ARROW_BIG, 
+ 					(rel.getDirVal() == ITemporalRelation.FWD ? getArcLabel(i, j) : getArcLabel(j, i)));
+ 		} else {
+-			writeAttributes(b, EDGE_COLOR, ARROW_DOT, getEdgeLabel(i, j));
++			writeAttributes(b, EDGE_COLOR, STY_BOLD_DASHED, ARROW_BIG, ARROW_DOT, getEdgeLabel(i, j));
+ 		}
+ 		
+ 	}
+Index: choco-cp/src/main/java/choco/cp/common/util/preprocessor/detector/scheduling/DisjunctiveSModel.java
+===================================================================
+--- choco-cp/src/main/java/choco/cp/common/util/preprocessor/detector/scheduling/DisjunctiveSModel.java	(révision 1792)
++++ choco-cp/src/main/java/choco/cp/common/util/preprocessor/detector/scheduling/DisjunctiveSModel.java	(copie de travail)
+@@ -30,6 +30,7 @@
+ import gnu.trove.TIntIntHashMap;
+ import gnu.trove.TIntObjectHashMap;
+ import gnu.trove.TIntObjectProcedure;
++import gnu.trove.TObjectProcedure;
+ 
+ import java.util.Arrays;
+ import java.util.Iterator;
+@@ -41,10 +42,13 @@
+ import choco.kernel.model.variables.scheduling.TaskVariable;
+ import choco.kernel.solver.Solver;
+ import choco.kernel.solver.SolverException;
++import choco.kernel.solver.variables.scheduling.ITask;
+ import choco.kernel.solver.variables.scheduling.TaskVar;
+ 
+ public class DisjunctiveSModel extends DisjunctiveGraph<ITemporalSRelation> {
+ 
++	private ITemporalSRelation[] reuseDisjuncts;
++	
+ 	public final Solver solver;
+ 
+ 	public DisjunctiveSModel(PreProcessCPSolver solver) {
+@@ -83,7 +87,40 @@
+ 	public final Solver getSolver() {
+ 		return solver;
+ 	}
++	
++	public final boolean containsEdge(ITask t1, ITask t2) {
++		return containsEdge(t1.getID(), t2.getID());
++	}
++	
++	public final ITemporalSRelation getConstraint(ITask t1, ITask t2) {
++		return getConstraint(t1.getID(), t2.getID());
++	}
++	
++		
+ 
++	public final ITemporalSRelation[] getEdges() {
++		return getEdges(false);
++	}
++	
++	public final ITemporalSRelation[] getEdges(boolean forceComputation) {
++		final int n = getNbEdges();
++		if(forceComputation || reuseDisjuncts == null || reuseDisjuncts.length != n ) {
++			reuseDisjuncts = new ITemporalSRelation[n];
++			storedConstraints.forEachValue(new TObjectProcedure<ITemporalSRelation>() {
++				private int idx=0;
++				@Override
++				public boolean execute(ITemporalSRelation arg0) {
++					if( ! arg0.isFixed() ) {
++						reuseDisjuncts[idx++]=arg0;
++					}
++					return true;
++				}
++			});
++			// TODO - sort disjuncts according to which criteria ?- created 12 août 2011 by Arnaud Malapert
++		}
++		
++		return reuseDisjuncts;
++	}
+ 
+ 	@Override
+ 	protected StringBuilder toDottyNodes() {
+@@ -96,6 +133,6 @@
+ 		return b;
+ 	}
+ 
++	
+ 
+-
+ }
+Index: choco-cp/src/main/java/choco/cp/solver/search/integer/branching/domwdeg/DomOverWDegBranchingNew.java
+===================================================================
+--- choco-cp/src/main/java/choco/cp/solver/search/integer/branching/domwdeg/DomOverWDegBranchingNew.java	(révision 1792)
++++ choco-cp/src/main/java/choco/cp/solver/search/integer/branching/domwdeg/DomOverWDegBranchingNew.java	(copie de travail)
+@@ -76,6 +76,7 @@
+ 	throws ContradictionException {
+ 		//The weights are updated for the current branching object in setFirstBranch and finishedBranching.
+ 		//We cant use a selector yet because the condition in finishedBranching is never activated and the weights become inconsistent.
++		//// FIXME - No back-propagation ! - created 16 août 2011 by Arnaud Malapert
+ 
+ 	}
+ 
+Index: choco-cp/src/main/java/choco/cp/solver/preprocessor/PreProcessConfiguration.java
+===================================================================
+--- choco-cp/src/main/java/choco/cp/solver/preprocessor/PreProcessConfiguration.java	(révision 1792)
++++ choco-cp/src/main/java/choco/cp/solver/preprocessor/PreProcessConfiguration.java	(copie de travail)
+@@ -39,7 +39,7 @@
+  * Specific {@link Configuration} extension for {@link PreProcessCPSolver}.
+  */
+ public class PreProcessConfiguration extends Configuration {
+-
++		
+ 	private static final long serialVersionUID = 683407604054648550L;
+ 
+ 	/**
+Index: choco-cp/src/main/java/choco/cp/solver/constraints/global/pack/PackSConstraint.java
+===================================================================
+--- choco-cp/src/main/java/choco/cp/solver/constraints/global/pack/PackSConstraint.java	(révision 1793)
++++ choco-cp/src/main/java/choco/cp/solver/constraints/global/pack/PackSConstraint.java	(copie de travail)
+@@ -420,6 +420,7 @@
+ 	}
+ 
+ 	private void handleNbBinsEvent(int varIdx) throws ContradictionException {
++		// TODO - Try to empty sets faster - Arnaud Malapert - 4 juil. 2011
+ 		if(varIdx == getNbVars() - 1 &&
+ 				flags.contains(PackSConstraint.LAST_BINS_EMPTY)) {
+ 			for (int b = ivars[ivars.length - 1].getSup(); b < getNbBins(); b++) {
+Index: samples/src/main/java/samples/tutorials/to_sort/packing/parser/BinPackingModel.java
+===================================================================
+--- samples/src/main/java/samples/tutorials/to_sort/packing/parser/BinPackingModel.java	(révision 1793)
++++ samples/src/main/java/samples/tutorials/to_sort/packing/parser/BinPackingModel.java	(copie de travail)
+@@ -63,6 +63,7 @@
+ 
+ 	public BinPackingModel(Configuration configuration) {
+ 		super(new BinPackingFileParser(), configuration);
++		setChartManager(ChocoChartFactory.getJFreeChartManager());
+ 	}
+ 
+ 	@Override
+Index: choco-parsers/src/main/java/parser/instances/BasicSettings.java
+===================================================================
+--- choco-parsers/src/main/java/parser/instances/BasicSettings.java	(révision 1792)
++++ choco-parsers/src/main/java/parser/instances/BasicSettings.java	(copie de travail)
+@@ -34,7 +34,7 @@
+ import java.io.File;
+ import java.io.IOException;
+ 
+-
++// TODO - Rename with Configuration suffix - created 12 août 2011 by Arnaud Malapert
+ public class BasicSettings extends PreProcessConfiguration{
+ 
+ 	private static final long serialVersionUID = 7557235241412627008L;
+Index: choco-parsers/src/main/java/parser/instances/AbstractMinimizeModel.java
+===================================================================
+--- choco-parsers/src/main/java/parser/instances/AbstractMinimizeModel.java	(révision 1793)
++++ choco-parsers/src/main/java/parser/instances/AbstractMinimizeModel.java	(copie de travail)
+@@ -31,6 +31,7 @@
+ package parser.instances;
+ 
+ import choco.cp.solver.CPSolver;
++import choco.cp.solver.preprocessor.PreProcessConfiguration;
+ import choco.kernel.common.opres.heuristics.IHeuristic;
+ import choco.kernel.common.opres.heuristics.NoHeuristic;
+ import choco.kernel.solver.Configuration;
+@@ -50,7 +51,8 @@
+ 	private int computedLowerBound;
+ 
+ 	private IVisuManager chartManager;
+-
++	// FIXME - Not instantiated in all subclasses - created 20 juil. 2011 by Arnaud Malapert
++	
+ 	public AbstractMinimizeModel(InstanceFileParser parser, Configuration settings) {
+ 		super(parser, settings);
+ 		cancelHeuristic();
+@@ -74,7 +76,7 @@
+ 	public final void cancelLowerBound() {
+ 		setComputedLowerBound(Integer.MIN_VALUE);
+ 	}
+-	
++
+ 	public int getComputedLowerBound() {
+ 		return computedLowerBound;
+ 	}
+@@ -157,25 +159,25 @@
+ 
+ 	protected abstract Object makeSolutionChart();
+ 
+-	protected void makeChart(Object chart, IVisuManager chartManager) {
+-		if( defaultConf.readBoolean(BasicSettings.SOLUTION_REPORT) ) {
+-			if( chart == null) {
+-				LOGGER.config("visu...[chart][FAIL]");
+-			}else {
+-				if( defaultConf.readBoolean(BasicSettings.SOLUTION_EXPORT)) {
+-					chartManager.export(getOutputDirectory(), getInstanceName(), chart);
+-				} else {
+-					chartManager.show(chart);
+-
+-				}
++	protected final void displayChart(Object chart, IVisuManager chartManager) {
++		if( chart == null || chartManager == null) {
++			LOGGER.config("visu...[chart][FAIL]");
++		}else {
++			if( defaultConf.readBoolean(BasicSettings.SOLUTION_EXPORT)) {
++				chartManager.export(getOutputDirectory(), getInstanceName(), chart);
++			} else {
++				chartManager.show(chart);
+ 			}
+ 		}
+ 	}
+-	
++
+ 	@Override
+ 	public void makeReports() {
+ 		super.makeReports();
+-		makeChart(makeSolutionChart(), chartManager);
++		// DONE 19 juil. 2011 - Regression : throw an exception with non graphical session (X11). Fix : chart are created only if necessary (option activated) - created 19 juil. 2011 by Arnaud Malapert
++		if( defaultConf.readBoolean(BasicSettings.SOLUTION_REPORT) ) {
++			displayChart(makeSolutionChart(), getChartManager());
++		}
+ 	}
+ 
+ }
+Index: choco-parsers/src/main/java/parser/instances/ResolutionStatus.java
+===================================================================
+--- choco-parsers/src/main/java/parser/instances/ResolutionStatus.java	(révision 1793)
++++ choco-parsers/src/main/java/parser/instances/ResolutionStatus.java	(copie de travail)
+@@ -31,7 +31,7 @@
+ 
+ 	UNSAT("UNSATISFIABLE"),
+ 	SAT("SATISFIABLE"),
+-	OPTIMUM("OPTIMUM"),
++	OPTIMUM("OPTIMUM_FOUND"),
+ 	TIMEOUT("TIMEOUT"),
+ 	UNKNOWN("UNKNOWN"),
+ 	ERROR("ERROR"),
+Index: choco-parsers/src/main/java/parser/instances/AbstractInstanceModel.java
+===================================================================
+--- choco-parsers/src/main/java/parser/instances/AbstractInstanceModel.java	(révision 1793)
++++ choco-parsers/src/main/java/parser/instances/AbstractInstanceModel.java	(copie de travail)
+@@ -357,6 +357,7 @@
+ 	}
+ 
+ 
++		
+ 	/**
+ 	 * compute the resolution status after the preprocessing stage (no solver build yet).
+ 	 */
+Index: choco-kernel/src/main/java/choco/kernel/visu/AbstractVisuManager.java
+===================================================================
+--- choco-kernel/src/main/java/choco/kernel/visu/AbstractVisuManager.java	(révision 1792)
++++ choco-kernel/src/main/java/choco/kernel/visu/AbstractVisuManager.java	(copie de travail)
+@@ -54,7 +54,7 @@
+ 			} else {
+ 				file = new File(dir, name+'.'+ getFileExtension());
+ 				if( file.exists()) {
+-					file =  File.createTempFile(name, '.'+ getFileExtension(), dir);
++					file =  File.createTempFile(name+"-", '.'+ getFileExtension(), dir);
+ 				} 	
+ 			}
+ 			if( doExport(file, chart, width, height) ) {
+Index: choco-kernel/src/main/java/choco/kernel/visu/VisuFactory.java
+===================================================================
+--- choco-kernel/src/main/java/choco/kernel/visu/VisuFactory.java	(révision 1792)
++++ choco-kernel/src/main/java/choco/kernel/visu/VisuFactory.java	(copie de travail)
+@@ -178,7 +178,7 @@
+ 
+ 	@Override
+ 	protected String getFileExtension() {
+-		return "gpl";
++		return "dat";
+ 	}
+ 
+ 	@Override
+@@ -199,7 +199,7 @@
+ 	protected boolean doShow(Object chart, int width, int height) {
+ 		File file = export(null, null, chart, width, height);
+ 		if(file != null) {
+-			VisuFactory.launchCommand(false, "/bin/sh", "-c", "echo \"plot \'"+file.getAbsolutePath()+"\' with linespoints\" | gnuplot -persist");
++			VisuFactory.launchCommand(false, "/bin/sh", "-c", "echo \"set key off; plot \'"+file.getAbsolutePath()+"\' title \'\' with linespoints\" | gnuplot -persist");
+ 			return true;
+ 		} else return false;
+ 	}
+Index: choco-kernel/src/main/java/choco/kernel/common/opres/nosum/NoSumList.java
+===================================================================
+--- choco-kernel/src/main/java/choco/kernel/common/opres/nosum/NoSumList.java	(révision 1793)
++++ choco-kernel/src/main/java/choco/kernel/common/opres/nosum/NoSumList.java	(copie de travail)
+@@ -103,6 +103,7 @@
+ 
+ 	public final void setCandidatesFromVar(final SetVar svar) {
+ 		clear();
++		// FIXME - Iterate over enveloppe and check manually the kernel  - created 17 août 2011 by Arnaud Malapert
+ 		DisposableIntIterator iter=svar.getDomain().getKernelIterator();
+ 		while( iter.hasNext()) {
+ 			rLoad+=candidatesMap[iter.next()].getVal();		
+Index: choco-kernel/src/main/java/choco/kernel/common/util/tools/StringUtils.java
+===================================================================
+--- choco-kernel/src/main/java/choco/kernel/common/util/tools/StringUtils.java	(révision 1792)
++++ choco-kernel/src/main/java/choco/kernel/common/util/tools/StringUtils.java	(copie de travail)
+@@ -357,9 +357,9 @@
+ 		b.append(" \"");
+ 		if(format){
+ 			if(t.isScheduled()) {
+-				b.append(", style=bold, color=firebrick");
++				b.append(", style=bold");
+ 			}else {
+-				b.append(", style=dashed, color=navyblue");
++				b.append(", style=\"dashed,bold\"");
+ 			}
+ 		}
+ 		if(options!=null) {
+Index: choco-kernel/src/main/java/choco/kernel/solver/constraints/global/scheduling/IPrecedenceNetwork.java
+===================================================================
+--- choco-kernel/src/main/java/choco/kernel/solver/constraints/global/scheduling/IPrecedenceNetwork.java	(révision 1792)
++++ choco-kernel/src/main/java/choco/kernel/solver/constraints/global/scheduling/IPrecedenceNetwork.java	(copie de travail)
+@@ -1,50 +0,0 @@
+-/**
+- *  Copyright (c) 1999-2010, Ecole des Mines de Nantes
+- *  All rights reserved.
+- *  Redistribution and use in source and binary forms, with or without
+- *  modification, are permitted provided that the following conditions are met:
+- *
+- *      * Redistributions of source code must retain the above copyright
+- *        notice, this list of conditions and the following disclaimer.
+- *      * Redistributions in binary form must reproduce the above copyright
+- *        notice, this list of conditions and the following disclaimer in the
+- *        documentation and/or other materials provided with the distribution.
+- *      * Neither the name of the Ecole des Mines de Nantes nor the
+- *        names of its contributors may be used to endorse or promote products
+- *        derived from this software without specific prior written permission.
+- *
+- *  THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND ANY
+- *  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+- *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+- *  DISCLAIMED. IN NO EVENT SHALL THE REGENTS AND CONTRIBUTORS BE LIABLE FOR ANY
+- *  DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+- *  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+- *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+- *  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+- *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+- *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+- */
+-
+-package choco.kernel.solver.constraints.global.scheduling;
+-
+-import choco.kernel.common.IDotty;
+-import choco.kernel.solver.ContradictionException;
+-import choco.kernel.solver.Solver;
+-import choco.kernel.solver.variables.scheduling.TaskVar;
+-
+-/**
+- * @author Arnaud Malapert</br> 
+- * @since 16 mars 2009 version 2.0.3</br>
+- * @version 2.0.3</br>
+- */
+-public interface IPrecedenceNetwork extends IDotty {
+-
+-	boolean isConnected(TaskVar t1, TaskVar t2);
+-
+-	boolean isOrdered(TaskVar t1, TaskVar t2);
+-		
+-	void firePrecedenceAdded(TaskVar t1, TaskVar t2) throws ContradictionException;
+-	
+-	void addStaticPrecedence(Solver solver, TaskVar t1, TaskVar t2);
+-}
+-
+Index: choco-contribs/src/test/java/choco/scheduling/TestProbProfile.java
+===================================================================
+--- choco-contribs/src/test/java/choco/scheduling/TestProbProfile.java	(révision 1792)
++++ choco-contribs/src/test/java/choco/scheduling/TestProbProfile.java	(copie de travail)
+@@ -50,111 +50,28 @@
+ import choco.kernel.solver.variables.scheduling.ITask;
+ import choco.kernel.visu.VisuFactory;
+ 
+-///////////////////// REMOVE class (import problem with cp.test) ///////////////////
++class SizedMaxProbabilisticProfile extends ProbabilisticProfile {
+ 
++	public int minNbInvolved = 1;
+ 
+-//class SimpleTask extends AbstractTask {
+-//
+-//	private static int nextID=0;
+-//
+-//	private final Point domain;
+-//
+-//	private final int duration;
+-//
+-//
+-//    /**
+-//     *
+-//     * @param est
+-//     * @param lst
+-//     * @param duration
+-//     */
+-//	public SimpleTask(int est,int lst, int duration) {
+-//		super(nextID++, "T"+nextID);
+-//		this.domain = new Point(est, lst>=est ? lst :est);
+-//		this.duration = duration>0 ? duration : 0;
+-//	}
+-//
+-//
+-//	/**
+-//	 * @see ITask#getECT()
+-//	 */
+-//	@Override
+-//	public int getECT() {
+-//		return domain.x+duration;
+-//	}
+-//
+-//	/**
+-//	 * @see ITask#getEST()
+-//	 */
+-//	@Override
+-//	public int getEST() {
+-//		return domain.x;
+-//	}
+-//
+-//	/**
+-//	 * @see ITask#getLCT()
+-//	 */
+-//	@Override
+-//	public int getLCT() {
+-//		return domain.y+duration;
+-//	}
+-//
+-//	/**
+-//	 * @see ITask#getLST()
+-//	 */
+-//	@Override
+-//	public int getLST() {
+-//		return domain.y;
+-//	}
+-//
+-//	/**
+-//	 * @see ITask#getMinDuration()
+-//	 */
+-//	@Override
+-//	public int getMinDuration() {
+-//		return duration;
+-//	}
+-//
+-//	/**
+-//	 * @see ITask#hasConstantDuration()
+-//	 */
+-//	@Override
+-//	public boolean hasConstantDuration() {
+-//		return true;
+-//	}
+-//
+-//	/**
+-//	 * @see ITask#isScheduled()
+-//	 */
+-//	@Override
+-//	public boolean isScheduled() {
+-//		return domain.x==domain.y;
+-//	}
+-//
+-//	/**
+-//	 * @see ITask#getMaxDuration()
+-//	 */
+-//	@Override
+-//	public int getMaxDuration() {
+-//		return getMinDuration();
+-//	}
+-//
+-//
+-//}
+ 
++	public SizedMaxProbabilisticProfile(List<? extends ITask> tasks) {
++		super(tasks, null);
++	}
+ 
++	@Override
++	protected boolean isValidMaximum() {
++		return involved.cardinality() >= minNbInvolved;
++	}
+ 
+ 
+-///////////////////////////////////////////////////////////////////////////////////////
++}
+ 
+-
+-
+-
+ public class TestProbProfile {
+ 
+ 	private final static double DELTA=0.01;
+ 
+-	private final static boolean DISPLAY=false;
++	private final static boolean DISPLAY=true;
+ 
+ 	private IResource<SimpleTask> rsc;
+ 
+@@ -175,21 +92,25 @@
+ 		case 3 : l.add(new SimpleTask(0,0,15));break;
+ 		default:
+ 			System.err.println("error while creating profile");
+-		break;
++			break;
+ 		}
+ 	}
+ 
+ 	protected IResource<SimpleTask> createResource(List<SimpleTask> taskL) {
+ 		return new FakeResource<SimpleTask>(taskL.toArray(new SimpleTask[taskL.size()]));
+ 	}
+-	
++
+ 	public void initialize(boolean[] tasks) {
++		initialize(tasks, true);
++	}
++
++	public void initialize(boolean[] tasks, boolean probProf) {
+ 		List<SimpleTask> l=new LinkedList<SimpleTask>();
+ 		for (int i = 0; i < tasks.length; i++) {
+ 			if(tasks[i]) {setTask(i, l);}
+ 		}
+ 		rsc= createResource(l);
+-		profile=new ProbabilisticProfile(l);
++		profile= probProf ? new ProbabilisticProfile(l, null) : new SizedMaxProbabilisticProfile(l);
+ 		profile.initializeEvents();
+ 		profile.generateEventsList(rsc);
+ 	}
+@@ -246,14 +167,17 @@
+ 
+ 	protected void testProfile(boolean[] involved) {
+ 		for (int i = 0; i < involved.length; i++) {
+-			assertEquals("prof. max involved "+i+" : ", involved[i],profile.getMaxProfInvolved().contains(rsc.getTask(i)));
++			assertEquals("prof. max involved "+i+" : ", involved[i],profile.getInvolvedInMaxProf().get(rsc.getTask(i).getID()));
+ 		}
+ 	}
+ 
++
++
++
+ 	@Test
+ 	public void testProfile() {
+ 		boolean[] t={true,true,true,false};
+-		initialize(t);
++		initialize(t, false);
+ 		display();
+ 		SimpleTask task = rsc.getTask(0);
+ 		assertEquals("ind. contrib. : ",0,profile.getIndividualContribution(task, 9),DELTA);
+@@ -264,7 +188,7 @@
+ 		profile.computeMaximum(rsc);
+ 		testProfile(35,1.35);
+ 		testProfile(new boolean[]{true,true,false});
+-		profile.minimalSize=2;
++		((SizedMaxProbabilisticProfile) profile).minNbInvolved=2;
+ 		profile.computeMaximum(rsc);
+ 		testProfile(35,1.35);
+ 		testProfile(new boolean[]{true,true,false});
+@@ -277,12 +201,12 @@
+ 		l.add(new SimpleTask(10,20,12));
+ 		l.add(new SimpleTask(28,38,15));
+ 		rsc= createResource(l);
+-		profile=new ProbabilisticProfile(l);
++		profile=new SizedMaxProbabilisticProfile(l);
+ 		profile.initializeEvents();
+ 		profile.computeMaximum(rsc);
+ 		testProfile(0,1);
+ 		testProfile(new boolean[]{true,false,false});
+-		profile.minimalSize=2;
++		((SizedMaxProbabilisticProfile) profile).minNbInvolved=2;
+ 		profile.computeMaximum(rsc);
+ 		testProfile(28,0.54);
+ 		testProfile(new boolean[]{false,true,true});
+@@ -300,12 +224,12 @@
+ 	private final int duration;
+ 
+ 
+-    /**
+-     *
+-     * @param est
+-     * @param lst
+-     * @param duration
+-     */
++	/**
++	 *
++	 * @param est
++	 * @param lst
++	 * @param duration
++	 */
+ 	public SimpleTask(int est,int lst, int duration) {
+ 		super(nextID++, "T"+nextID);
+ 		this.domain = new Point(est, lst>=est ? lst :est);
+@@ -383,14 +307,15 @@
+ 
+ class SimpleResource implements ICumulativeResource<SimpleTask> {
+ 
+-	
++	private static final long serialVersionUID = 1L;
++
+ 	public final List<SimpleTask> tasksL;
+ 
+ 	public int[] heights;
+-	
++
+ 	public int capacity;
+-	
+-	
++
++
+ 	public SimpleResource(List<SimpleTask> tasksL, int[] heights, int capacity) {
+ 		super();
+ 		this.tasksL = tasksL;
+@@ -406,7 +331,7 @@
+ 		Arrays.fill(heights, 1);
+ 	}
+ 
+-	
++
+ 	@Override
+ 	public IRTask getRTask(int idx) {
+ 		return null;
+@@ -431,7 +356,7 @@
+ 	public Iterator<SimpleTask> getTaskIterator() {
+ 		return tasksL.listIterator();
+ 	}
+-	
++
+ 	@Override
+ 	public List<SimpleTask> asTaskList() {
+ 		return Collections.unmodifiableList(tasksL);
+@@ -441,13 +366,13 @@
+ 	public Iterator<IRTask> getRTaskIterator() {
+ 		return asRTaskList().iterator();
+ 	}
+-	
++
+ 	@Override
+ 	public IntDomainVar getCapacity() {
+ 		return null;
+ 	}
+ 	@Override
+-	
++
+ 	public int getMaxCapacity() {
+ 		return capacity;
+ 	}
+@@ -460,8 +385,8 @@
+ 	public IntDomainVar getHeight(int idx) {
+ 		return null;
+ 	}
+-	
+-	
++
++
+ 	@Override
+ 	public IntDomainVar getConsumption() {
+ 		return null;
+@@ -501,8 +426,8 @@
+ 	public List<IRTask> asRTaskList() {
+ 		return Collections.<IRTask>emptyList();
+ 	}
+-	
+-	
++
++
+ }
+ 
+ 
+Index: choco-contribs/src/main/java/choco/cp/solver/search/task/ProfileSelector.java
+===================================================================
+--- choco-contribs/src/main/java/choco/cp/solver/search/task/ProfileSelector.java	(révision 1792)
++++ choco-contribs/src/main/java/choco/cp/solver/search/task/ProfileSelector.java	(copie de travail)
+@@ -27,13 +27,14 @@
+ 
+ package choco.cp.solver.search.task;
+ 
++import java.util.BitSet;
+ import java.util.Iterator;
+ import java.util.List;
+ 
++import choco.cp.common.util.preprocessor.detector.scheduling.DisjunctiveSModel;
+ import choco.cp.solver.constraints.global.scheduling.precedence.ITemporalSRelation;
+ import choco.kernel.model.constraints.Constraint;
+ import choco.kernel.model.constraints.ConstraintType;
+-import choco.kernel.model.constraints.ITemporalRelation;
+ import choco.kernel.solver.ContradictionException;
+ import choco.kernel.solver.Solver;
+ import choco.kernel.solver.constraints.global.scheduling.IResource;
+@@ -42,32 +43,37 @@
+ import choco.kernel.solver.variables.scheduling.ITask;
+ 
+ 
+-
++// TODO - migrate from contribs to solver - created 20 août 2011 by Arnaud Malapert
+ public final class ProfileSelector implements VarValPairSelector {
+ 
++	private final Solver solver;
++
+ 	private final OrderingValSelector precSelector;
+ 
+-	private final ITemporalStore precStore;
++	// DONE 18 août 2011 - Integrate disjSModel to Profile branching - created 12 août 2011 by Arnaud Malapert
++	private DisjunctiveSModel disjSModel;
+ 
+ 	private final ProbabilisticProfile profiles;
+ 
+ 	public final IResource<?>[] rscL;
+ 
+-	public ProfileSelector(Solver solver, IResource<?>[] resources, ITemporalStore precStore, OrderingValSelector precSelector) {
++	public ProfileSelector(Solver solver, IResource<?>[] resources, DisjunctiveSModel disjSModel, OrderingValSelector precSelector) {
+ 		super();
+-		this.precStore = precStore;
++		this.solver=solver;
++		this.disjSModel = disjSModel;
+ 		this.precSelector = precSelector;
+-		profiles = new ProbabilisticProfile(solver);
+-		profiles.precStore = precStore;
++		// FIXME - Set the minimal number of involved tasks - created 12 août 2011 by Arnaud Malapert
++		profiles = new ProbabilisticProfile(solver, disjSModel);
++		// FIXME - profiles.precStore = precStore; - created 12 août 2011 by Arnaud Malapert
+ 		rscL = resources;
+ 	}
+-	
+-	public ProfileSelector(Solver solver, ITemporalStore precStore, OrderingValSelector precSelector) {
++
++	public ProfileSelector(Solver solver, DisjunctiveSModel disjSModel, OrderingValSelector precSelector) {
+ 		super();
+-		this.precStore = precStore;
++		this.solver=solver;
++		this.disjSModel = disjSModel;
+ 		this.precSelector = precSelector;
+-		profiles = new ProbabilisticProfile(solver);
+-		profiles.precStore = precStore;
++		profiles = new ProbabilisticProfile(solver, disjSModel);
+ 		rscL = new IResource<?>[solver.getModel().getNbConstraintByType(ConstraintType.DISJUNCTIVE)];
+ 		Iterator<Constraint> iter = solver.getModel().getConstraintByType(ConstraintType.DISJUNCTIVE);
+ 		int cpt = 0;
+@@ -75,37 +81,39 @@
+ 			rscL[cpt++] = (IResource<?>) solver.getCstr(iter.next());
+ 		}
+ 	}
+-	
++
+ 	@Override
+ 	public IntVarValPair selectVarValPair() throws ContradictionException {
+ 		//compute maximal contention point
+ 		profiles.initializeEvents();
+ 		profiles.computeMaximum(rscL);
+ 		//find best task pair
+-		List<ITask> taskL = profiles.getMaxProfInvolved();
+-		int c = profiles.getMaxProfileCoord();
+-		ITask st1 = null,st2 = null;
+-		if(taskL.size()>1) {
++		final int c = profiles.getMaxProfileCoord();
++		if(c >= 0) {
++			BitSet involved = profiles.getInvolvedInMaxProf();
++			ITemporalSRelation sdisjunct = null;
+ 			double maxContrib = Double.MIN_VALUE;
+-			for (int i = 0; i < taskL.size(); i++) {
+-				final ITask t1 =  taskL.get(i);
+-				final double contribT1 = profiles.getIndividualContribution(t1,c);
+-				for (int j = i+1; j < taskL.size(); j++) {
+-					final ITask t2 =  taskL.get(j);
+-					final double contrib = contribT1 + profiles.getIndividualContribution(t2,c);
+-					if(contrib > maxContrib && precStore.isReified(t1, t2)) {
+-						st1 = t1; 
+-						st2 = t2;
+-						maxContrib = contrib;
++			for (int i = involved.nextSetBit(0); i >= 0; i = involved.nextSetBit(i + 1)) {
++				final ITask t1 = solver.getTaskVarQuick(i);
++				assert(t1.getID() == i);
++				final double contrib1 = profiles.getIndividualContribution(t1,c);
++				for (int j = involved.nextSetBit(i+1); j >= 0; j = involved.nextSetBit(j + 1)) {
++					final ITask t2 = solver.getTaskVarQuick(j);
++					assert(t2.getID() == j);
++					final double contrib = contrib1 + profiles.getIndividualContribution(t1,c);
++					if(contrib > maxContrib && disjSModel.containsEdge(t1, t2)) {
++						final ITemporalSRelation disjunct = disjSModel.getConstraint(t1, t2);
++						if(! disjunct.isFixed()) {
++							sdisjunct=disjunct;
++							maxContrib = contrib;
++						}
+ 					}
+ 				}
+ 			}
+-			if(st1 != null) {
+-				final ITemporalSRelation prec = precStore.getTemporalRelation(st1, st2);
+-				return new IntVarValPair(prec.getDirection(), precSelector.getBestVal(prec));
+-			}
++			assert(sdisjunct != null );
++			return new IntVarValPair(sdisjunct.getDirection(), precSelector.getBestVal(sdisjunct));
+ 		}
+-		assert(!precStore.containsReifiedPrecedence());
++		assert(disjSModel.isFixed());
+ 		return null;
+ 	}
+ 
+Index: choco-contribs/src/main/java/choco/cp/solver/search/task/ProbabilisticProfile.java
+===================================================================
+--- choco-contribs/src/main/java/choco/cp/solver/search/task/ProbabilisticProfile.java	(révision 1792)
++++ choco-contribs/src/main/java/choco/cp/solver/search/task/ProbabilisticProfile.java	(copie de travail)
+@@ -27,68 +27,73 @@
+ 
+ package choco.cp.solver.search.task;
+ 
+-import choco.kernel.solver.Solver;
+-import choco.kernel.solver.SolverException;
+-import choco.kernel.solver.constraints.global.scheduling.IResource;
+-import choco.kernel.solver.variables.scheduling.ITask;
+-
+ import gnu.trove.TIntIntHashMap;
+ 
+ import java.lang.reflect.Array;
+-import java.util.*;
++import java.util.Arrays;
++import java.util.BitSet;
++import java.util.Collections;
++import java.util.Iterator;
++import java.util.LinkedList;
++import java.util.List;
++import java.util.ListIterator;
+ 
++import choco.cp.common.util.preprocessor.detector.scheduling.DisjunctiveSModel;
++import choco.kernel.solver.Solver;
++import choco.kernel.solver.constraints.global.scheduling.IResource;
++import choco.kernel.solver.variables.scheduling.ITask;
+ 
+ 
++
+ /**
+  * Probabilistic profile of an unary resource.
+  * @author Arnaud Malapert
+  *
+  */
+-public final class ProbabilisticProfile  {
++public class ProbabilisticProfile  {
+ 
+ 	private final TIntIntHashMap indexMap = new TIntIntHashMap();
+ 
++	private final List<EventRProf> function = new LinkedList<EventRProf>();
+ 
+-	private final List<EventRPP> function = new LinkedList<EventRPP>();
++	private final EventDataStructure[] structList;
+ 
+-	private final EventDataStructure[] structL;
+-
+ 	private double slope;
+ 
+ 	private double gap;
+ 
+ 	private int coordinate;
+ 
+-	private final BitSet involved = new BitSet();
++	protected final BitSet involved = new BitSet();
+ 
+ 	private final MaximumDataStruct max = new MaximumDataStruct();
+ 
+-	public ITemporalStore precStore;
++	public final DisjunctiveSModel disjSModel;
+ 
+-	public int minimalSize = 1;
+-
+ 	/**
+ 	 *
+ 	 */
+-	public ProbabilisticProfile(ITask[] tasks) {
+-		this(Arrays.asList(tasks));
++	public ProbabilisticProfile(ITask[] tasks, DisjunctiveSModel disjSModel) {
++		this(Arrays.asList(tasks), disjSModel);
+ 	}
+ 
+-	public ProbabilisticProfile(List<? extends ITask> tasks) {
++	public ProbabilisticProfile(List<? extends ITask> tasks, DisjunctiveSModel disjSModel) {
+ 		super();
+-		structL=new EventDataStructure[tasks.size()];
+-		for (int i = 0; i < structL.length; i++) {
+-			structL[i] = new EventDataStructure(tasks.get(i));
++		this.disjSModel = disjSModel;
++		structList=new EventDataStructure[tasks.size()];
++		for (int i = 0; i < structList.length; i++) {
++			structList[i] = new EventDataStructure(tasks.get(i));
+ 			indexMap.put(tasks.get(i).getID(), i);
+ 		}
+ 	}
+ 
+ 
+-	public ProbabilisticProfile(Solver solver) {
++	public ProbabilisticProfile(Solver solver, DisjunctiveSModel disjSModel) {
+ 		super();
+-		structL=new EventDataStructure[solver.getNbTaskVars()];
+-		for (int i = 0; i < structL.length; i++) {
+-			structL[i] = new EventDataStructure(solver.getTaskVar(i));
++		this.disjSModel = disjSModel;
++		structList=new EventDataStructure[solver.getNbTaskVars()];
++		for (int i = 0; i < structList.length; i++) {
++			structList[i] = new EventDataStructure(solver.getTaskVar(i));
+ 			indexMap.put(solver.getTaskVar(i).getID(), i);
+ 		}
+ 	}
+@@ -101,7 +106,7 @@
+ 	}
+ 
+ 	protected EventDataStructure getEDS(final ITask task) {
+-		return structL[indexMap.get(task.getID())];
++		return structList[indexMap.get(task.getID())];
+ 	}
+ 
+ 	public final void generateEventsList(IResource<? extends ITask> rsc) {
+@@ -116,13 +121,13 @@
+ 	protected void resetSweepData() {
+ 		slope=gap= 0;
+ 		coordinate=Integer.MIN_VALUE;
+-		this.involved.clear();
++		involved.clear();
+ 	}
+ 
+ 
+-	protected void handleEvent(final EventRPP e,final ListIterator<EventRPP> iter) {
++	protected void handleEvents(final EventRProf e,final ListIterator<EventRProf> iter) {
+ 		handleEvent(e);
+-		EventRPP next;
++		EventRProf next;
+ 		while(iter.hasNext()) {
+ 			next=iter.next();
+ 			if(next.coordinate>e.coordinate) {
+@@ -136,72 +141,34 @@
+ 
+ 	}
+ 
+-	protected void handleEventMax(final EventRPP e,final ListIterator<EventRPP> iter) {
+-		handleEventMax(e);
+-		EventRPP next;
+-		while(iter.hasNext()) {
+-			next=iter.next();
+-			if(next.coordinate>e.coordinate) {
+-				iter.previous();
+-				break;
+-			}else {
+-				handleEventMax(next);
+-			}
+ 
+-		}
+-
+-	}
+-
+-
+-	protected void handleEvent(final EventRPP e) {
++	protected void handleEvent(final EventRProf e) {
++		slope+=e.slope;
++		gap+=e.gap;
+ 		switch (e.type) {
+-		case EventRPP.START_EVENT : {
+-			slope+=e.slope;
+-			if(e.gap>0) {gap+=e.gap;}
+-			break;
++		case START: involved.set(e.task.getID());break;
++		case END: involved.clear(e.task.getID());break;
+ 		}
+-		case EventRPP.END_EVENT : {
+-			slope-=e.slope;
+-			if(e.gap<0) {gap+=e.gap;}
+-			break;
+-		}
+-		default:
+-			throw new IllegalArgumentException("can't handle event");
+-		}
+-
+ 	}
+ 
+-	protected void handleEventMax(final EventRPP e) {
+-		handleEvent(e);
+-		if(e.task!=null) {
+-			if(e.type == EventRPP.START_EVENT) {
+-				involved.set(e.task.getID());
+-			}else if(e.type == EventRPP.END_EVENT) {
+-				involved.set(e.task.getID(), false);
+-			}else {
+-				throw new SolverException("unknown event");
+-			}
+-		}
+ 
+ 
+-	}
+-
+-
+ 	public void initializeEvents() {
+-		for (EventDataStructure eds : structL) {
++		for (EventDataStructure eds : structList) {
+ 			eds.reset();
+ 		}
+ 	}
+ 
+ 	protected final void sweep() {
+-		final ListIterator<EventRPP> iter=function.listIterator();
++		final ListIterator<EventRProf> iter=function.listIterator();
+ 		while(iter.hasNext()) {
+-			final EventRPP e=iter.next();
++			final EventRProf e=iter.next();
+ 			update(e.coordinate);
+-			handleEventMax(e,iter);
+-			if(gap>max.value && involved.cardinality() >= minimalSize && isValid() ) {
++			handleEvents(e,iter);
++			if(gap > max.value && isValidMaximum() ) {
+ 				max.value=gap;
+ 				max.coordinate=e.coordinate;
++				// FIXME - swap bitset instead od copying ! - created 12 août 2011 by Arnaud Malapert
+ 				max.involved.clear();
+ 				max.involved.or(involved);
+ 			} 
+@@ -222,22 +189,15 @@
+ 	}
+ 
+ 
+-	public boolean isValid() {
+-		if(precStore != null) {
+-			for (int i = involved.nextSetBit(0); i >= 0; i = involved
+-			.nextSetBit(i + 1)) {
+-				final ITask t1 = structL[ indexMap.get(i)].task;
+-				for (int j = involved.nextSetBit(i+1); j >= 0; j = involved
+-				.nextSetBit(j + 1)) {
+-					final ITask t2 = structL[ indexMap.get(j)].task;
+-					if(precStore.isReified(t1, t2)) {
+-						return true;
+-					}
++	protected boolean isValidMaximum() {
++		for (int i = involved.nextSetBit(0); i >= 0; i = involved.nextSetBit(i + 1)) {
++			for (int j = involved.nextSetBit(i+1); j >= 0; j = involved.nextSetBit(j + 1)) {
++				if(disjSModel.containsEdge(i, j) &&  ! disjSModel.getConstraint(i, j).isFixed() ) {
++					return true;
+ 				}
+ 			}
+-			return false;
+ 		}
+-		return true;
++		return false;
+ 	}
+ 
+ 	public double getMaxProfileValue() {
+@@ -248,19 +208,15 @@
+ 		return max.coordinate;
+ 	}
+ 
+-	public List<ITask> getMaxProfInvolved() {
+-		List<ITask> list = new LinkedList<ITask>();
+-		for (int i = max.involved.nextSetBit(0); i >= 0; i = max.involved.nextSetBit(i + 1)) {
+-			list.add( structL[ indexMap.get(i)].task);
+-		}
+-		return list;
++	public BitSet getInvolvedInMaxProf() {
++		return max.involved;
+ 	}
+-
++	
+ 	public double compute(final int x) {
+ 		this.resetSweepData();
+-		final ListIterator<EventRPP> iter=function.listIterator();
++		final ListIterator<EventRProf> iter=function.listIterator();
+ 		while(iter.hasNext()) {
+-			final EventRPP e=iter.next();
++			final EventRProf e=iter.next();
+ 			if(e.coordinate<=x) {
+ 				update(e.coordinate);
+ 				handleEvent(e);
+@@ -287,12 +243,12 @@
+ 	public StringBuilder draw() {
+ 		this.resetSweepData();
+ 		final StringBuilder buffer=new StringBuilder();
+-		final ListIterator<EventRPP> iter=function.listIterator();
++		final ListIterator<EventRProf> iter=function.listIterator();
+ 		while(iter.hasNext()) {
+-			final EventRPP e=iter.next();
++			final EventRProf e=iter.next();
+ 			update(e.coordinate);
+ 			drawPoint(buffer);
+-			handleEvent(e,iter);
++			handleEvents(e,iter);
+ 			drawPoint(buffer);
+ 
+ 		}
+@@ -302,94 +258,48 @@
+ 
+ 
+ 
++	protected static class MaximumDataStruct {
+ 
++		public int coordinate;
+ 
+-	protected static class EventDataStructure  {
++		public double value;
+ 
+-		protected final ITask task;
++		public final BitSet involved = new BitSet();
+ 
+-		protected EventRPP[] events;
+ 
+-		/**
+-		 * @param task
+-		 */
+-		public EventDataStructure(final ITask task) {
+-			super();
+-			this.task = task;
+-			events= (EventRPP[]) Array.newInstance(EventRPP.class, 4);
+-			events[0]=new EventRPP(EventRPP.START_EVENT,task);
+-			events[1]=new EventRPP(EventRPP.END_EVENT);
+-			events[2]=new EventRPP(EventRPP.START_EVENT);
+-			events[3]=new EventRPP(EventRPP.END_EVENT,task);
+-		}
+-
+-
+-		public double getIndividualContribution(final int x) {
+-			double contrib=0;
+-			if(x>=events[0].coordinate && x<events[3].coordinate) {
+-				contrib+=events[0].gap;
+-				contrib+= (events[0].slope)*(Math.min(x,events[1].coordinate)-events[0].coordinate);
+-				if(x>=events[2].coordinate) {
+-					contrib+= (events[2].slope)*(x-events[2].coordinate);
+-				}
+-			}
+-			return contrib;
+-		}
+-
+-
+-		private void set(final int idx,final int x,final double slope,final double gap) {
+-			events[idx].coordinate=x ;
+-			events[idx].gap=gap;
+-			events[idx].slope=slope;
+-		}
+-
+ 		public void reset() {
+-			if(task.getMinDuration()>0) {
+-				final double std=task.getLST()-task.getEST()+1;
+-				final double gap=1/std;
+-				//double slope=1/std;
+-				final double slope= std<= task.getMinDuration() ? 1/std : (task.getMinDuration()-1)/(std*task.getMinDuration());
+-				set(0, task.getEST(), slope, gap);
+-				set(1, task.getLST(), slope,0);
+-				set(2, task.getECT(), -slope,0);
+-				set(3, task.getLCT(), -slope, -gap);
+-
+-
+-			}
+-
++			coordinate=Integer.MIN_VALUE;
++			value=Double.MIN_VALUE;
++			involved.clear();
+ 		}
+ 
+-
+ 	}
+ 
+ 
++	static enum EventType {START, MID, END}
+ 
+ 	/**
+ 	 * Event for the resource probabilistic profile
+ 	 * @author Arnaud Malapert : arnaud(dot)malapert(at)emn(dot)fr
+ 	 *
+ 	 */
+-	protected static class EventRPP implements Comparable<EventRPP>{
++	static class EventRProf implements Comparable<EventRProf>{
+ 
+-		public final static int START_EVENT=0;
++		public final EventType type;
+ 
+-		public final static int END_EVENT=1;
+-
+ 		public final ITask task;
+ 
+-		public final int type;
+-
+ 		public int coordinate;
+ 
+ 		public double slope;
+ 
+ 		public double gap;
+ 
+-		public EventRPP(final int type) {
+-			this(type, 0, 0, 0,null);
++		public EventRProf(final EventType type) {
++			this(type, null);
+ 		}
+ 
+-		public EventRPP(final int type,final ITask task) {
++		public EventRProf(final EventType type,final ITask task) {
+ 			this(type, 0, 0, 0,task);
+ 		}
+ 
+@@ -399,7 +309,7 @@
+ 		 * @param slope
+ 		 * @param gap
+ 		 */
+-		public EventRPP(final int type, final int coordinates, final double slope, final double gap,final ITask task) {
++		public EventRProf(final EventType type, final int coordinates, final double slope, final double gap,final ITask task) {
+ 			super();
+ 			this.type = type;
+ 			this.coordinate = coordinates;
+@@ -431,14 +341,8 @@
+ 		@Override
+ 		public String toString() {
+ 			final StringBuilder buffer=new StringBuilder();
+-			switch (type) {
+-			case START_EVENT: buffer.append("START ");break;
+-			case END_EVENT: buffer.append("END ");break;
+-			default:
+-				buffer.append("ERROR");
+-			break;
+-			}
+-			buffer.append(coordinate).append(" (");
++			buffer.append(type);
++			buffer.append(coordinate).append("(");
+ 			buffer.append(slope).append(',').append(gap).append(')');
+ 			return buffer.toString();
+ 		}
+@@ -448,7 +352,7 @@
+ 		 * @see java.lang.Comparable#compareTo(java.lang.Object)
+ 		 */
+ 		@Override
+-		public int compareTo(final EventRPP o) {
++		public int compareTo(final EventRProf o) {
+ 			final int x1=coordinate;
+ 			final int x2=o.getCoordinates();
+ 			if(x1<x2) {return -1;}
+@@ -459,23 +363,76 @@
+ 		}
+ 	}
+ 
+-	protected static class MaximumDataStruct {
+ 
+-		public int coordinate;
++	protected static class EventDataStructure  {
+ 
+-		public double value;
++		public final static int EST=0, LST=1, ECT=2, LCT=3;
+ 
+-		public final BitSet involved = new BitSet();
++		protected final ITask task;
+ 
++		protected EventRProf[] events;
+ 
+-		public void reset() {
+-			coordinate=Integer.MIN_VALUE;
+-			value=Double.MIN_VALUE;
+-			involved.clear();
++		/**
++		 * @param task
++		 */
++		public EventDataStructure(final ITask task) {
++			super();
++			this.task = task;
++			events= (EventRProf[]) Array.newInstance(EventRProf.class, 4);
++			events[EST]=new EventRProf(EventType.START,task);
++			events[LST]=new EventRProf(EventType.MID);
++			events[ECT]=new EventRProf(EventType.MID);
++			events[LCT]=new EventRProf(EventType.END,task);
+ 		}
+ 
++
++		public double getIndividualContribution(final int x) {
++			double contrib=0;
++			if(x>=events[EST].coordinate && x<events[LCT].coordinate) {
++				contrib+=events[EST].gap;
++				if(! task.isScheduled()) {
++					contrib+= (events[EST].slope)*(Math.min(x,events[LST].coordinate)-events[EST].coordinate);
++					if(x>=events[ECT].coordinate) {
++						contrib+= (events[ECT].slope)*(x-events[ECT].coordinate);
++					}
++				}
++			}
++			return contrib;
++		}
++
++
++		private void set(final int idx,final int x,final double slope,final double gap) {
++			events[idx].coordinate=x ;
++			events[idx].gap=gap;
++			events[idx].slope=slope;
++		}
++
++		public void reset() {
++			final int dur = task.getMinDuration();
++			assert(dur>0);
++			final int est = task.getEST();
++			// TODO - Simplify computation and event management - created 12 août 2011 by Arnaud Malapert
++//			if(task.isScheduled()) {
++//				set(EST, est, 0, 1);
++//				set(LCT, task.getLCT(), 0,-1);
++//			} else {
++				final int lst = task.getLST();
++				final double std=lst - est +1;
++				final double gap=1/std;
++				//double slope=1/std;
++				final double slope= std<= dur ? 1/std : (dur-1)/(std*dur);
++				set(EST, est, slope, gap);
++				set(LST, lst, -slope,0);
++				set(ECT, task.getECT(), -slope,0);
++				set(LCT, task.getLCT(), slope, -gap);
++//			}
++		}
+ 	}
+ 
+ 
++
++
++
++
+ }
+ 
+Index: choco-contribs/src/main/java/choco/cp/solver/search/task/ITemporalStore.java
+===================================================================
+--- choco-contribs/src/main/java/choco/cp/solver/search/task/ITemporalStore.java	(révision 1792)
++++ choco-contribs/src/main/java/choco/cp/solver/search/task/ITemporalStore.java	(copie de travail)
+@@ -1,49 +0,0 @@
+-/**
+- *  Copyright (c) 1999-2010, Ecole des Mines de Nantes
+- *  All rights reserved.
+- *  Redistribution and use in source and binary forms, with or without
+- *  modification, are permitted provided that the following conditions are met:
+- *
+- *      * Redistributions of source code must retain the above copyright
+- *        notice, this list of conditions and the following disclaimer.
+- *      * Redistributions in binary form must reproduce the above copyright
+- *        notice, this list of conditions and the following disclaimer in the
+- *        documentation and/or other materials provided with the distribution.
+- *      * Neither the name of the Ecole des Mines de Nantes nor the
+- *        names of its contributors may be used to endorse or promote products
+- *        derived from this software without specific prior written permission.
+- *
+- *  THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND ANY
+- *  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+- *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+- *  DISCLAIMED. IN NO EVENT SHALL THE REGENTS AND CONTRIBUTORS BE LIABLE FOR ANY
+- *  DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+- *  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+- *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+- *  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+- *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+- *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+- */
+-
+-package choco.cp.solver.search.task;
+-
+-import choco.cp.solver.constraints.global.scheduling.precedence.ITemporalSRelation;
+-import choco.kernel.common.IDotty;
+-import choco.kernel.solver.variables.integer.IntDomainVar;
+-import choco.kernel.solver.variables.scheduling.ITask;
+-
+-public interface ITemporalStore extends IDotty {
+-
+-	ITemporalSRelation getTemporalRelation(ITask t1, ITask t2);
+-	
+-	void addPrecedence(ITask t1, ITask t2, IntDomainVar direction);
+-
+-	boolean isReified(ITask t1, ITask t2);
+-	
+-	int getNbReifiedPrecedence();
+-	
+-	boolean containsReifiedPrecedence();
+-
+-	ITemporalSRelation[] getValues();
+-}
+-
+Index: choco-contribs/src/main/java/choco/cp/solver/search/task/PrecedenceStore.java
+===================================================================
+--- choco-contribs/src/main/java/choco/cp/solver/search/task/PrecedenceStore.java	(révision 1792)
++++ choco-contribs/src/main/java/choco/cp/solver/search/task/PrecedenceStore.java	(copie de travail)
+@@ -1,169 +0,0 @@
+-/**
+- *  Copyright (c) 1999-2010, Ecole des Mines de Nantes
+- *  All rights reserved.
+- *  Redistribution and use in source and binary forms, with or without
+- *  modification, are permitted provided that the following conditions are met:
+- *
+- *      * Redistributions of source code must retain the above copyright
+- *        notice, this list of conditions and the following disclaimer.
+- *      * Redistributions in binary form must reproduce the above copyright
+- *        notice, this list of conditions and the following disclaimer in the
+- *        documentation and/or other materials provided with the distribution.
+- *      * Neither the name of the Ecole des Mines de Nantes nor the
+- *        names of its contributors may be used to endorse or promote products
+- *        derived from this software without specific prior written permission.
+- *
+- *  THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND ANY
+- *  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+- *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+- *  DISCLAIMED. IN NO EVENT SHALL THE REGENTS AND CONTRIBUTORS BE LIABLE FOR ANY
+- *  DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+- *  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+- *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+- *  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+- *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+- *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+- */
+-package choco.cp.solver.search.task;
+-
+-import choco.cp.solver.constraints.global.scheduling.precedence.ITemporalSRelation;
+-import choco.kernel.solver.SolverException;
+-import choco.kernel.solver.variables.integer.IntDomainVar;
+-import choco.kernel.solver.variables.scheduling.ITask;
+-import gnu.trove.TIntObjectHashMap;
+-import gnu.trove.TObjectProcedure;
+-
+-import java.util.HashSet;
+-
+-public class PrecedenceStore implements ITemporalStore {
+-
+-	private final static ReifiedChecker CHECK = new ReifiedChecker();
+-
+-	private final static ReifiedCounter COUNT = new ReifiedCounter();
+-
+-	private final TIntObjectHashMap<ITemporalSRelation> precMap = new TIntObjectHashMap<ITemporalSRelation>();
+-
+-	private final int offset;
+-
+-	public PrecedenceStore(int n) {
+-		super();
+-		offset = n;
+-	}
+-
+-	protected int getTaskPairKey(ITask t1, ITask t2) {
+-		return t1.getID() < t2.getID() ? t1.getID() * offset + t2.getID() : t2.getID() * offset + t1.getID();
+-	}
+-
+-	@Override
+-	public ITemporalSRelation getTemporalRelation(ITask t1, ITask t2) {
+-		return precMap.get(getTaskPairKey(t1, t2));
+-	}
+-
+-
+-	@Override
+-	public void addPrecedence(ITask t1, ITask t2, IntDomainVar direction) {
+-		final int key = getTaskPairKey(t1, t2);
+-		if(precMap.contains(key)) {
+-			throw new SolverException("duplicate or opposite precedence");
+-		}
+-		// FIXME - precMap.put(key, new StoredPrecedence(t1, t2, direction)); - created 4 juil. 2011 by Arnaud Malapert
+-	}
+-
+-	
+-	@Override
+-	public boolean isReified(ITask t1, ITask t2) {
+-		final ITemporalSRelation prec = getTemporalRelation(t1, t2);
+-		if(prec == null) {return false;}
+-		return ! prec.getDirection().isInstantiated();
+-	}
+-
+-	
+-
+-	@Override
+-	public boolean containsReifiedPrecedence() {
+-		return !precMap.forEachValue(CHECK);
+-	}
+-
+-	@Override
+-	public int getNbReifiedPrecedence() {
+-		COUNT.count=0;
+-		precMap.forEachValue(COUNT);
+-		return COUNT.count;
+-	}
+-
+-
+-
+-	@Override
+-	public ITemporalSRelation[] getValues() {
+-		return precMap.getValues(new ITemporalSRelation[precMap.size()]);
+-	}
+-
+-	@Override
+-	public String toDotty() {
+-		final DotProcedure td = new DotProcedure();
+-		precMap.forEachValue(td);
+-		return td.toString();
+-	}
+-	
+-	private static class ReifiedCounter implements TObjectProcedure<ITemporalSRelation> {
+-
+-		public int count = 0;
+-		
+-		@Override
+-		public boolean execute(ITemporalSRelation arg0) {
+-			if(!arg0.getDirection().isInstantiated()) {count++;}
+-			return true;
+-		}
+-	}
+-
+-	private static class ReifiedChecker implements TObjectProcedure<ITemporalSRelation> {
+-
+-		@Override
+-		public boolean execute(ITemporalSRelation arg0) {
+-			return arg0.getDirection().isInstantiated();
+-		}
+-	}
+-
+-	private static final class DotProcedure implements TObjectProcedure<ITemporalSRelation> {
+-
+-		private final StringBuilder dotGraph = new StringBuilder();
+-		private final HashSet<ITask> nodeM = new HashSet<ITask>();
+-		
+-		
+-		public void clear() {
+-			dotGraph.delete(0, dotGraph.length());
+-			nodeM.clear();
+-		}
+-		
+-		private void writeNode(ITask t) {
+-			//dotGraph.append(t.toDotty()).append("\n");
+-		}
+-
+-		private void writeArc(ITask t1, ITask t2) {
+-			//dotGraph.append(StringUtils.getDotArc(t2, t1));
+-		}
+-		
+-		
+-		@Override
+-		public boolean execute(ITemporalSRelation arg0) {
+-//			if( nodeM.add(arg0.getOrigin()) ) writeNode(arg0.getOrigin());
+-//			if( nodeM.add(arg0.getDestination()) ) writeNode(arg0.getDestination());
+-//			if(arg0.getDirection().isInstantiatedTo(0)) writeArc(arg0.getOrigin(), arg0.getDestination());
+-//			else if(arg0.getDirection().isInstantiatedTo(1)) writeArc(arg0.getDestination(), arg0.getOrigin());
+-//			else dotGraph.append(StringUtils.getDotEdge(arg0.getOrigin(), arg0.getDestination()));
+-//			dotGraph.append('\n');
+-			return true;
+-		}
+-
+-		@Override
+-		public String toString() {
+-			return dotGraph.toString();
+-		}
+-		
+-		
+-	}
+-	
+-	
+-
+-	
+-}

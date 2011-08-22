@@ -31,6 +31,7 @@
 package parser.instances;
 
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.preprocessor.PreProcessConfiguration;
 import choco.kernel.common.opres.heuristics.IHeuristic;
 import choco.kernel.common.opres.heuristics.NoHeuristic;
 import choco.kernel.solver.Configuration;
@@ -50,7 +51,8 @@ public abstract class AbstractMinimizeModel extends AbstractInstanceModel {
 	private int computedLowerBound;
 
 	private IVisuManager chartManager;
-
+	// FIXME - Not instantiated in all subclasses - created 20 juil. 2011 by Arnaud Malapert
+	
 	public AbstractMinimizeModel(InstanceFileParser parser, Configuration settings) {
 		super(parser, settings);
 		cancelHeuristic();
@@ -74,7 +76,7 @@ public abstract class AbstractMinimizeModel extends AbstractInstanceModel {
 	public final void cancelLowerBound() {
 		setComputedLowerBound(Integer.MIN_VALUE);
 	}
-	
+
 	public int getComputedLowerBound() {
 		return computedLowerBound;
 	}
@@ -157,25 +159,24 @@ public abstract class AbstractMinimizeModel extends AbstractInstanceModel {
 
 	protected abstract Object makeSolutionChart();
 
-	protected void makeChart(Object chart, IVisuManager chartManager) {
-		if( defaultConf.readBoolean(BasicSettings.SOLUTION_REPORT) ) {
-			if( chart == null) {
-				LOGGER.config("visu...[chart][FAIL]");
-			}else {
-				if( defaultConf.readBoolean(BasicSettings.SOLUTION_EXPORT)) {
-					chartManager.export(getOutputDirectory(), getInstanceName(), chart);
-				} else {
-					chartManager.show(chart);
-
-				}
+	protected final void displayChart(Object chart, IVisuManager chartManager) {
+		if( chart == null || chartManager == null) {
+			LOGGER.config("visu...[chart][FAIL]");
+		}else {
+			if( defaultConf.readBoolean(BasicSettings.SOLUTION_EXPORT)) {
+				chartManager.export(getOutputDirectory(), getInstanceName(), chart);
+			} else {
+				chartManager.show(chart);
 			}
 		}
 	}
-	
+
 	@Override
 	public void makeReports() {
 		super.makeReports();
-		makeChart(makeSolutionChart(), chartManager);
+		if( defaultConf.readBoolean(BasicSettings.SOLUTION_REPORT) ) {
+			displayChart(makeSolutionChart(), getChartManager());
+		}
 	}
 
 }

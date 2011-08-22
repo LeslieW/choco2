@@ -544,9 +544,9 @@ public final class ChocoChartFactory {
 	//*******************  Util **************************************//
 	//***************************************************************//
 
-	private final static int DEFAULT_WIDTH = 800;
+	protected final static int DEFAULT_WIDTH = 800;
 
-	private final static int DEFAULT_HEIGHT = 600;
+	protected final static int DEFAULT_HEIGHT = 600;
 
 	public static void createAndShowGUI(final String title,final int width,final int height, final LayoutManager layout, final Component... components) {
 		//Schedule a job for the event dispatch thread:
@@ -590,8 +590,8 @@ public final class ChocoChartFactory {
 		createAndShowGUI(title, DEFAULT_WIDTH, DEFAULT_HEIGHT, null, new ChocoChartPanel(solver));
 	}
 	
-	public static void getJFreeChartManager() {
-		JFreeChartManager.getInstance();
+	public static JFreeChartManager getJFreeChartManager() {
+		return JFreeChartManager.getInstance();
 	}
 
 	
@@ -628,6 +628,8 @@ class JFreeChartManager extends AbstractVisuManager {
 	 */
 	private JFreeChartManager() {
 		super();
+		setDefaultWidth(ChocoChartFactory.DEFAULT_WIDTH);
+		setDefaultHeight(ChocoChartFactory.DEFAULT_HEIGHT);
 	}
 
 	/** 
