@@ -60,6 +60,8 @@ public final class BoundGcc extends BoundGccVar {
 		super(vars, null, firstDomainValue, lastDomainValue, environment);
 		this.maxOccurrences = maxOccurrences;
 		this.minOccurrences = minOccurrences;
+        l.compute(minOccurrences);
+        u.compute(maxOccurrences);
 	}
 
 	@Override
