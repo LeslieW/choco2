@@ -37,12 +37,12 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import gnu.trove.TIntArrayList;
+import gnu.trove.TIntHashSet;
 
 /**
- * User : cprudhom
+ * User : cprudhom, fhermenie
  * Mail : cprudhom(a)emn.fr
- * Date : 22 févr. 2010
+ * Date : 22 fevr. 2010
  * Since : Choco 2.1.1
  * <p/>
  * GCCAT:
@@ -50,19 +50,23 @@ import gnu.trove.TIntArrayList;
  * <br/><a href="http://www.emn.fr/x-info/sdemasse/gccat/Camong.html">gccat among</a>
  * <br/>
  * Propagator :
- * C. Bessière, E. Hebrard, B. Hnich, Z. Kiziltan, T. Walsh,
+ * C. Bessiere, E. Hebrard, B. Hnich, Z. Kiziltan, T. Walsh,
  * Among, common and disjoint Constraints
  * CP-2005
  */
 public final class AmongGAC extends AbstractLargeIntSConstraint {
 
-
-    private final TIntArrayList valuesAsList;
     private final int[] values;
     private final int nb_vars;
     private final IStateBitSet both;
     private final IStateInt LB;
     private final IStateInt UB;
+
+    private TIntHashSet setValues;
+
+    private IStateInt[] occs;
+
+    private IEnvironment env;
 
     /**
      * Constructs a constraint with the specified priority.
@@ -76,11 +80,13 @@ public final class AmongGAC extends AbstractLargeIntSConstraint {
     public AmongGAC(IntDomainVar[] vars, int[] values, IEnvironment environment) {
         super(ConstraintEvent.QUADRATIC, vars);
         nb_vars = vars.length - 1;
+        env = environment;
         this.values = values;
-        this.valuesAsList = new TIntArrayList(values);
         both = environment.makeBitSet(nb_vars);
         LB = environment.makeInt(0);
         UB = environment.makeInt(0);
+        this.setValues = new TIntHashSet(values);
+        this.occs = new IStateInt[nb_vars];
     }
 
     @Override
@@ -109,6 +115,7 @@ public final class AmongGAC extends AbstractLargeIntSConstraint {
             for (int value : values) {
                 nb += (var.canBeInstantiatedTo(value) ? 1 : 0);
             }
+            occs[i] = env.makeInt(nb);
             if (nb == var.getDomainSize()) {
                 lb++;
             } else if (nb == 0) {
@@ -171,7 +178,7 @@ public final class AmongGAC extends AbstractLargeIntSConstraint {
             if (both.get(idx)) {
                 IntDomainVar var = vars[idx];
                 int val = var.getVal();
-                if (valuesAsList.contains(val)) {
+                if (setValues.contains(val)) {
                     LB.add(1);
                     both.set(idx, false);
                     filter();
@@ -191,18 +198,16 @@ public final class AmongGAC extends AbstractLargeIntSConstraint {
     public void awakeOnRem(int varIdx, int val) throws ContradictionException {
         if (varIdx < nb_vars) {
             if (both.get(varIdx)) {
-                IntDomainVar var = vars[varIdx];
-                int nb = 0;
-                for (int value : values) {
-                    if (var.canBeInstantiatedTo(value)) {
-                        nb++;
-                    }
+                if (setValues.contains(val)) {
+                    occs[varIdx].add(-1);
                 }
-                if (nb == var.getDomainSize()) {
+                IntDomainVar var = vars[varIdx];
+                int nb = occs[varIdx].get();
+                if (nb == var.getDomainSize()) {  //Can only be instantiated to a value in the group
                     LB.add(1);
                     both.set(varIdx, false);
                     filter();
-                } else if (nb == 0) {
+                } else if (nb == 0) { //No value in the group
                     UB.add(-1);
                     both.set(varIdx, false);
                     filter();
@@ -242,6 +247,9 @@ public final class AmongGAC extends AbstractLargeIntSConstraint {
             IntDomainVar v = vars[i];
             left = right = Integer.MIN_VALUE;
             for (int value : values) {
+                if (setValues.contains(value)) {
+                    occs[i].add(-1);
+                }
                 if (value == right + 1) {
                     right = value;
                 } else {
@@ -267,7 +275,7 @@ public final class AmongGAC extends AbstractLargeIntSConstraint {
             left = right = Integer.MIN_VALUE;
             while (it.hasNext()) {
                 int value = it.next();
-                if (!valuesAsList.contains(value)) {
+                if (!setValues.contains(value)) {
                     if (value == right + 1) {
                         right = value;
                     } else {
@@ -308,7 +316,7 @@ public final class AmongGAC extends AbstractLargeIntSConstraint {
         if (isCompletelyInstantiated()) {
             int nb = 0;
             for (int i = 0; i < nb_vars; i++) {
-                if (valuesAsList.contains(vars[i].getVal())) {
+                if (setValues.contains(vars[i].getVal())) {
                     nb++;
                 }
             }
@@ -329,7 +337,7 @@ public final class AmongGAC extends AbstractLargeIntSConstraint {
     public boolean isSatisfied(int[] tuple) {
         int nb = 0;
         for (int i = 0; i < nb_vars; i++) {
-            if (valuesAsList.contains(tuple[i])) {
+            if (setValues.contains(tuple[i])) {
                 nb++;
             }
         }

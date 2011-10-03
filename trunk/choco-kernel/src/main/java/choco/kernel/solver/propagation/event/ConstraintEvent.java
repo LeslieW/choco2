@@ -102,8 +102,8 @@ public class ConstraintEvent implements PropagationEvent {
           assert (this.touchedConstraint.isActive());
           this.touchedConstraint.propagate();
       } else {
-          this.touchedConstraint.awake();
           this.touchedConstraint.setActiveSilently();
+          this.touchedConstraint.awake();
       }
       return true;
   }
