@@ -156,7 +156,7 @@ public class AmongGACTest {
     public void test1() throws IOException {
         Random r;
         for(int st = 0; st < 2; st++){
-            for(int i = 0; i < 500/*4000*/; i++){
+            for(int i = 0; i < 500; i++){
                 r = new Random(i);
                 CPModel[] ms = model(r, 5);
                 CPSolver[] ss = new CPSolver[ms.length];
