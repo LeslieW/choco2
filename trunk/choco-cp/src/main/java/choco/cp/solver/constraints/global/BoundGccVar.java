@@ -34,6 +34,9 @@ import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
+import java.util.Arrays;
+import java.util.Comparator;
+
 /**
  * User: hcambaza
  * Bound Global cardinality : Given an array of variables vars, an array of variables card to represent the cardinalities, the constraint ensures that the number of occurences
@@ -62,11 +65,11 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
     int nbVars;  //number of variables (without the cardinalities variables)
     private IntDomainVar[] card;
 
-    Interval[] minsorted;
-    Interval[] maxsorted;
+    Interval[] minsorted,maxsorted;
 
-    PartialSum l;
-    PartialSum u;
+    private final int[] minOccurrences, maxOccurrences;
+
+    PartialSum l,u;
 
     private int firstValue;
     int range;
@@ -105,13 +108,9 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
                        int lastCardValue, IEnvironment environment) {
         super(ConstraintEvent.LINEAR, makeVarTable(vars, card));
         this.card = card;
-        build(vars.length, firstCardValue, lastCardValue, environment);
-    }
-
-    public final void build(int n,
-                      int firstDomainValue,
-                      int nbCard, IEnvironment environment) {
-        int range = nbCard - firstDomainValue + 1;
+//        build(vars.length, firstCardValue, lastCardValue, environment);
+        int n = vars.length;
+        int range = lastCardValue - firstCardValue + 1;
         this.nbVars = n;
         treelinks = new int[2 * n + 2];
         d = new int[2 * n + 2];
@@ -131,8 +130,8 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
             minsorted[i] = intervals[i];
             maxsorted[i] = intervals[i];
         }
-        this.offset = firstDomainValue;
-        this.firstValue = firstDomainValue;
+        this.offset = firstCardValue;
+        this.firstValue = firstCardValue;
         this.range = range;
         val_maxOcc = new IStateInt[range];
         val_minOcc = new IStateInt[range];
@@ -140,6 +139,11 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
             val_maxOcc[i] = environment.makeInt(0);
             val_minOcc[i] = environment.makeInt(0);
         }
+
+        l = new PartialSum(firstValue, range);
+        u = new PartialSum(firstValue, range);
+        minOccurrences = new int[range];
+        maxOccurrences = new int[range];
     }
 
     public int getMaxOcc(int i) {
@@ -158,45 +162,24 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
 //        v.updateInf(ninf, VarEvent.domOverWDegIdx(cIndices[idx]));//cIndices[idx]); //<hca> why is it not idempotent ?
 //    }
 
-    //factorize this code with the boundalldiff
-    protected final void sortmin() {
-        boolean sorted = false;
-        int current = nbVars - 1;
-        while (!sorted) {
-            sorted = true;
-            for (int i = 0; i < current; i++) {
-                if (minsorted[i].var.getInf() > minsorted[i + 1].var.getInf()) {
-                    Interval t = minsorted[i];
-                    minsorted[i] = minsorted[i + 1];
-                    minsorted[i + 1] = t;
-                    sorted = false;
-                }
+    static enum SORT implements Comparator<Interval> {
+        MAX {
+            @Override
+            public int compare(Interval o1, Interval o2) {
+                return o1.var.getSup() - o2.var.getSup();
             }
-            current--;
-        }
-    }
-
-    //factorize this code with the boundalldiff
-    protected final void sortmax() {
-        boolean sorted = false;
-        int current = 0;
-        while (!sorted) {
-            sorted = true;
-            for (int i = nbVars - 1; i > current; i--) {
-                if (maxsorted[i].var.getSup() < maxsorted[i - 1].var.getSup()) {
-                    Interval t = maxsorted[i];
-                    maxsorted[i] = maxsorted[i - 1];
-                    maxsorted[i - 1] = t;
-                    sorted = false;
-                }
+        },
+        MIN {
+            @Override
+            public int compare(Interval o1, Interval o2) {
+                return o1.var.getInf() - o2.var.getInf();
             }
-            current++;
-        }
+        },;
     }
 
     protected final void sortIt() {
-        this.sortmin();
-        this.sortmax();
+        Arrays.sort(minsorted, SORT.MIN);
+        Arrays.sort(maxsorted, SORT.MAX);
 
         int min = minsorted[0].var.getInf();
         int max = maxsorted[0].var.getSup() + 1;
@@ -559,15 +542,12 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
     }
 
     public final void dynamicInitOfPartialSum() {
-        int[] minOccurrences = new int[range];//todo: maintain an accurate range
-        int[] maxOccurrences = new int[range];
-
         for (int i = 0; i < range; i++) {
             maxOccurrences[i] = card[i].getSup();
             minOccurrences[i] = card[i].getInf();
         }
-        l = new PartialSum(firstValue, range, minOccurrences);
-        u = new PartialSum(firstValue, range, maxOccurrences);
+        l.compute(minOccurrences);
+        u.compute(maxOccurrences);
     }
 
     @Override
@@ -785,27 +765,33 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
      * the filterLower{Min,Max} and filterUpper{Min,Max} functions.
      * Two elements before and after the element list will be added with a weight of 1
      */
-    protected static final class PartialSum {
+    static final class PartialSum {
         private int[] sum;
         private int[] ds;
-        private int firstValue, lastValue;
+        private int firstValue, lastValue, range;
 
-        public PartialSum(int firstValue, int count, int[] elt) {
+
+        public PartialSum(int firstValue, int count) {
+            this.range = count;
             this.sum = new int[count + 5];
+            this.ds = new int[count + 5];
             this.firstValue = firstValue - 3;
             this.lastValue = firstValue + count + 1;
+        }
+
+        public void compute(int[] elt) {
             sum[0] = 0;
             sum[1] = 1;
             sum[2] = 2;
             int i, j;
-            for (i = 2; i < count + 2; i++) {
+            for (i = 2; i < range + 2; i++) {
                 sum[i + 1] = sum[i] + elt[i - 2];
             }
             sum[i + 1] = sum[i] + 1;
             sum[i + 2] = sum[i + 1] + 1;
-            ds = new int[count + 5];
-            i = count + 3;
-            for (j = i + 1; i > 0;) {
+
+            i = range + 3;
+            for (j = i + 1; i > 0; ) {
                 while (sum[i] == sum[i - 1]) {
                     ds[i--] = j;
                 }

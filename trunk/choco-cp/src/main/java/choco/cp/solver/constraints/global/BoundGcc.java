@@ -60,9 +60,6 @@ public final class BoundGcc extends BoundGccVar {
 		super(vars, null, firstDomainValue, lastDomainValue, environment);
 		this.maxOccurrences = maxOccurrences;
 		this.minOccurrences = minOccurrences;
-		l = new PartialSum(firstDomainValue, range, minOccurrences);
-		u = new PartialSum(firstDomainValue, range, maxOccurrences);
-
 	}
 
 	@Override

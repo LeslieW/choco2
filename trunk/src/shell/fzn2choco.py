@@ -9,15 +9,17 @@ listfilename = './runner.list'
 
 
 # ENVIRONMENT VARIABLES
+
 MINIZINC_DIR = '/Users/cprudhom/Documents/Projects/_Librairies/minizinc-1.2.2'
 
-CHOCO_LIB = '/Users/cprudhom/Documents/Projects/Sources/Choco/ref/choco-parsers/src/main/resources/std_lib'
+MY_DIR = './../../'
+CHOCO_LIB = join(MY_DIR,'choco-parsers/src/main/resources/std_lib')
 
-CHOCO_HOME = '/Users/cprudhom/Documents/Projects/Sources/Choco/ref/target/choco-2.1.1-SNAPSHOT'
-CHOCO_SOLVER = join(CHOCO_HOME, 'choco-solver-2.1.1-SNAPSHOT.jar')
-CHOCO_CLI = join(CHOCO_HOME, 'extra', 'choco-cli-2.1.1-SNAPSHOT.jar')
-CHOCO_DB = join(CHOCO_HOME, 'extra', 'choco-db-2.1.1-SNAPSHOT.jar')
-CHOCO_PARSERS = join(CHOCO_HOME, 'extra', 'choco-parsers-2.1.1-SNAPSHOT.jar')
+CHOCO_HOME = 'target/choco-2.1.3-SNAPSHOT'
+CHOCO_SOLVER = join(CHOCO_HOME, 'choco-solver-2.1.3-SNAPSHOT.jar')
+CHOCO_CLI = join(CHOCO_HOME, 'extra', 'choco-cli-2.1.3-SNAPSHOT.jar')
+CHOCO_DB = join(CHOCO_HOME, 'extra', 'choco-db-2.1.3-SNAPSHOT.jar')
+CHOCO_PARSERS = join(CHOCO_HOME, 'extra', 'choco-parsers-2.1.3-SNAPSHOT.jar')
 
 JAVA_OPTS = CMD = '-Xmx256m -Xms256m -XX:+AggressiveOpts'
 

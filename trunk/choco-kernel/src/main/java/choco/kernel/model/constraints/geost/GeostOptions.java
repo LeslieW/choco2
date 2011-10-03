@@ -27,7 +27,7 @@
 
 package choco.kernel.model.constraints.geost;
 
-import choco.kernel.common.util.objects.Pair;
+import com.sun.tools.javac.util.Pair;
 
 import java.io.FileOutputStream;
 import java.io.ObjectOutput;
