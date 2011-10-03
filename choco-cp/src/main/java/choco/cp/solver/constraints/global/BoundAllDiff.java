@@ -35,6 +35,9 @@ import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
+import java.util.Arrays;
+import java.util.Comparator;
+
 public final class BoundAllDiff extends AbstractLargeIntSConstraint {
     public static boolean PROPAGATE_ON_INSTANTIATIONS = true;
     public boolean PROPAGATE_ON_BOUNDS = true;
@@ -46,8 +49,8 @@ public final class BoundAllDiff extends AbstractLargeIntSConstraint {
 
     int nbBounds;
 
-    Interval[] minsorted;
-    Interval[] maxsorted;
+    final Interval[] minsorted;
+    final Interval[] maxsorted;
 
     boolean infBoundModified = true;
     boolean supBoundModified = true;
@@ -82,43 +85,25 @@ public final class BoundAllDiff extends AbstractLargeIntSConstraint {
         // return 0x0B;
     }
 
-    protected void sortmin() {
-        boolean sorted = false;
-        int current = this.getNbVars() - 1;
-        while (!sorted) {
-            sorted = true;
-            for (int i = 0; i < current; i++) {
-                if (minsorted[i].var.getInf() > minsorted[i + 1].var.getInf()) {
-                    Interval t = minsorted[i];
-                    minsorted[i] = minsorted[i + 1];
-                    minsorted[i + 1] = t;
-                    sorted = false;
-                }
+    static enum SORT implements Comparator<Interval> {
+        MAX {
+            @Override
+            public int compare(Interval o1, Interval o2) {
+                return o1.var.getSup() - o2.var.getSup();
             }
-            current--;
-        }
-    }
-
-    protected void sortmax() {
-        boolean sorted = false;
-        int current = 0;
-        while (!sorted) {
-            sorted = true;
-            for (int i = this.getNbVars() - 1; i > current; i--) {
-                if (maxsorted[i].var.getSup() < maxsorted[i - 1].var.getSup()) {
-                    Interval t = maxsorted[i];
-                    maxsorted[i] = maxsorted[i - 1];
-                    maxsorted[i - 1] = t;
-                    sorted = false;
-                }
+        },
+        MIN {
+            @Override
+            public int compare(Interval o1, Interval o2) {
+                return o1.var.getInf() - o2.var.getInf();
             }
-            current++;
-        }
+        },;
     }
 
     protected void sortIt() {
-        this.sortmin();
-        this.sortmax();
+        Arrays.sort(minsorted, SORT.MIN);
+        Arrays.sort(maxsorted, SORT.MAX);
+
 
         int min = minsorted[0].var.getInf();
         int max = maxsorted[0].var.getSup() + 1;
@@ -329,6 +314,23 @@ public final class BoundAllDiff extends AbstractLargeIntSConstraint {
             }
         }
     }
+
+    @Override
+    public void awakeOnBounds(int idx) throws ContradictionException {
+        infBoundModified = supBoundModified = true;
+        for (int j = 0; j < vars.length; j++) {
+            if (j != idx && vars[j].isInstantiated()) {
+                int val = vars[j].getVal();
+                if (val == vars[idx].getInf()) {
+                    vars[idx].updateInf(val + 1, this, false);
+                }
+                if (val == vars[idx].getSup()) {
+                    vars[idx].updateSup(val - 1, this, false);
+                }
+            }
+        }
+    }
+
 
     @Override
     public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {

@@ -37,7 +37,7 @@ import choco.cp.solver.constraints.global.geost.geometricPrim.Point;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Region;
 import choco.cp.solver.constraints.global.geost.internalConstraints.*;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.objects.Pair;
+import com.sun.tools.javac.util.Pair;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.model.variables.geost.ShiftedBox;
 import choco.kernel.solver.ContradictionException;
