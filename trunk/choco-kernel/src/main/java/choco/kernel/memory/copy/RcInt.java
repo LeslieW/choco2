@@ -57,8 +57,9 @@ public class RcInt implements IStateInt, RecomputableElement {
 
     
     @Override
-	public final void add(int delta) {
-		set(currentValue + delta);		
+	public final int add(int delta) {
+		set(currentValue + delta);
+        return currentValue;
 	}
 
 	@Override

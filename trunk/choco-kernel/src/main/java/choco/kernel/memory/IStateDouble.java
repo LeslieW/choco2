@@ -53,7 +53,7 @@ public interface IStateDouble {
      *
      * @param delta
      */
-    void add(double delta);
+    double add(double delta);
 
     /**
    * Retrieving the environment

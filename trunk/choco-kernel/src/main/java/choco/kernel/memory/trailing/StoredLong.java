@@ -78,8 +78,9 @@ public final class StoredLong extends AbstractStoredObject implements IStateLong
 		}
 	}
 
-	public void add(final long delta) {
+	public long add(final long delta) {
 		set(currentValue + delta);
+        return currentValue;
 	}
 
 	/**

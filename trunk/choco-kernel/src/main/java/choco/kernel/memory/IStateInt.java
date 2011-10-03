@@ -72,8 +72,9 @@ public interface IStateInt {
   /**
    * Modifying a StoredInt by an increment.
    * @param delta the value to add to the current value.
+   * @return the updated value
    */
-  void add(int delta);
+  int add(int delta);
 
   /**
    * Retrieving the environment.

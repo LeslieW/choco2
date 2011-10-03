@@ -59,8 +59,9 @@ public interface IStateLong {
    * modifying a StoredInt by an increment
      *
      * @param delta
+     * @return updated value
      */
-    void add(long delta);
+    long add(long delta);
 
     /**
    * Retrieving the environment

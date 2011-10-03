@@ -77,8 +77,9 @@ public final class StoredDouble extends AbstractStoredObject implements IStateDo
 		}
 	}
 
-	public void add(final double delta) {
-		set(get() + delta);
+	public double add(final double delta) {
+		set(currentValue + delta);
+        return currentValue;
 	}
 
 	/**

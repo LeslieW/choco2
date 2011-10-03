@@ -57,8 +57,9 @@ public final class RcLong implements IStateLong, RecomputableElement {
 
 
     @Override
-	public void add(long delta) {
+	public long add(long delta) {
 		set(currentValue + delta);
+        return currentValue;
 	}
 
 	@Override
