@@ -328,15 +328,21 @@ public class CPModelToCPSolver {
     }
 
     public SConstraint[] makeSConstraintAndOpposite(final Constraint ic, final Boolean decomp) {
-        final SConstraint[] cs = new SConstraint[2];
-        cs[0] = readModelConstraint(ic, decomp);
+        SConstraint[] cs = new SConstraint[2];
+        ComponentConstraint cc = (ComponentConstraint) ic;
+        ConstraintManager cm = cc.getConstraintManager();
         try {
-            cs[1] = cs[0].opposite(cpsolver);
-        } catch (SolverException se) {
-            //HACK
-            Constraint oc = Choco.not(ic);
-            oc.findManager(CPModel.properties);
-            cs[1] = readModelConstraint(oc, decomp);
+            cs = cm.makeConstraintAndOpposite(cpsolver, cc.getVariables(), cc.getParameters(), cc.getOptions());
+        } catch (Exception e) {
+            cs[0] = readModelConstraint(ic, decomp);
+            try {
+                cs[1] = cs[0].opposite(cpsolver);
+            } catch (SolverException se) {
+                //HACK
+                Constraint oc = Choco.not(ic);
+                oc.findManager(CPModel.properties);
+                cs[1] = readModelConstraint(oc, decomp);
+            }
         }
         return cs;
     }
