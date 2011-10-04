@@ -329,7 +329,7 @@ public class CPModelToCPSolver {
         final SConstraint[] cs = new SConstraint[2];
         if (ic instanceof MetaConstraint) {
             cs[0] = createMetaConstraint(ic, decomp);
-            cs[1] = cs[0].opposite(cpsolver);
+                cs[1] = cs[0].opposite(cpsolver);
             return cs;
         }
 
@@ -430,9 +430,9 @@ public class CPModelToCPSolver {
                 return c;
             }
         } catch (ClassCastException cce) {
-            throw new UnsupportedOperationException();
-//            LOGGER.info("createGenericMetaConstraint");
-//            return createGenericMetaConstraint((MetaConstraint) ic, decomp);
+            //HACK
+            LOGGER.info("createGenericMetaConstraint");
+            return createGenericMetaConstraint((MetaConstraint) ic, decomp);
         }
     }
 
@@ -457,7 +457,7 @@ public class CPModelToCPSolver {
             breifs[i] = cpsolver.createBooleanVar(StringUtils.randomName());
             subcs[i] = ReifiedFactory.builder(breifs[i], cs[0], cs[1], cpsolver);
         }
-        IntDomainVar[] notbreifs = null;
+        IntDomainVar[] notbreifs;
         switch (mc.getConstraintType()) {
             case AND:
                 cpsolver.post(subcs);

@@ -121,11 +121,59 @@ public class ReifiedSetSomeTest {
 //        m.addConstraint(Choco.implies(eq(vars[0], vars[1]), neq(vars[1], vars[2])));
         m.addConstraint(reifiedConstraint(bool[0], eq(vars[0], vars[1]), neq(vars[0], vars[1])));
         m.addConstraint(reifiedConstraint(bool[1], neq(vars[1], vars[2]), eq(vars[1], vars[2])));
-        m.addConstraint(implies(eq(bool[0],1), eq(bool[1],1)));
+        m.addConstraint(implies(eq(bool[0], 1), eq(bool[1], 1)));
 
 
         s.read(m);
 //        ChocoLogging.toSolution();
         s.solveAll();
+    }
+
+    @Test
+    public void test4() {
+        CPModel model = new CPModel();
+        SetVariable set = Choco.makeSetVar("set", 0, 1);
+        model.addConstraint(
+                Choco.implies(Choco.member(0, set), Choco.member(1, set))
+        );
+        CPSolver solver = new CPSolver();
+        solver.read(model);
+    }
+
+    @Test
+    public void test5() {
+        Model m = new CPModel();
+        Solver s = new CPSolver();
+        SetVariable a = Choco.makeSetVar("0_R0", 0, 255, "cp:enum");
+        m.addVariable(a);
+        m.addConstraint(Choco.or(Choco.member(1, a), Choco.member(0, a)));
+        s.read(m);
+        s.solve();
+    }
+
+    @Test
+    public void test6() {
+        Model m = new CPModel();
+        Solver s = new CPSolver();
+        IntegerVariable b = Choco.makeBooleanVar("b");
+        IntegerVariable v = Choco.makeIntVar("v", 0, 3);
+        IntegerVariable w = Choco.makeIntVar("w", 0, 3);
+
+        m.addConstraint(reifiedConstraint(b, and(eq(v, 1), eq(w, 2))));
+        s.read(m);
+        s.solve();
+    }
+
+    @Test
+    public void test7() {
+        Model m = new CPModel();
+        Solver s = new CPSolver();
+        IntegerVariable b = Choco.makeBooleanVar("b");
+        IntegerVariable v = Choco.makeIntVar("v", 0, 3);
+        IntegerVariable w = Choco.makeIntVar("w", 0, 3);
+
+        m.addConstraint(reifiedConstraint(b, and(eq(v, 1), eq(w, 2)), nand(eq(v, 1), eq(w, 2))));
+        s.read(m);
+        s.solve();
     }
 }
