@@ -149,7 +149,7 @@ public class CspLargeSConstraint extends AbstractLargeIntSConstraint {
     }
 
     @Override
-    public AbstractSConstraint opposite(Solver solver) {
+    public AbstractSConstraint<IntDomainVar> opposite(Solver solver) {
         LargeRelation rela2 = (LargeRelation) ((ConsistencyRelation) relation).getOpposite();
         AbstractSConstraint ct = new CspLargeSConstraint(vars, rela2);
         return ct;

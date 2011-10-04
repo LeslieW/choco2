@@ -126,7 +126,7 @@ public final class GreaterOrEqualXC extends AbstractUnIntSConstraint {
 	}
 
 	@Override
-	public AbstractSConstraint opposite(Solver solver) {
+	public AbstractSConstraint<IntDomainVar> opposite(Solver solver) {
 		return (AbstractSConstraint) solver.lt(v0, cste);
 	}
 

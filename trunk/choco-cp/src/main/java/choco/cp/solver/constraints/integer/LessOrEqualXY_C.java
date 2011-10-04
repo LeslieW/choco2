@@ -168,7 +168,7 @@ public final class LessOrEqualXY_C extends AbstractBinIntSConstraint {
 	}
 
 	@Override
-	public AbstractSConstraint opposite(Solver solver) {
+	public AbstractSConstraint<IntDomainVar> opposite(Solver solver) {
 		return (AbstractSConstraint) solver.gt(solver.plus(v0, v1),cste);
 	}
 

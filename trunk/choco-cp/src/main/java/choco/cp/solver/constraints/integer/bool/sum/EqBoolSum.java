@@ -77,7 +77,7 @@ public final class EqBoolSum extends AbstractBoolSum {
     }
 
     @Override
-    public AbstractSConstraint opposite(Solver solver) {
+    public AbstractSConstraint<IntDomainVar> opposite(Solver solver) {
         return new NeqBoolSum(solver.getEnvironment(), Arrays.copyOf(vars, vars.length), boolSumS.bValue);
     }
 

@@ -85,7 +85,7 @@ public final class NotMemberEnum extends AbstractUnIntSConstraint {
      * @return the opposite constraint  @param solver
      */
     @Override
-    public AbstractSConstraint opposite(Solver solver) {
+    public AbstractSConstraint<IntDomainVar> opposite(Solver solver) {
         return new MemberEnum(v0, values);
     }
 

@@ -89,7 +89,7 @@ public final class GAC3rmLargeConstraint extends CspLargeSConstraint {
     }
 
     @Override
-    public AbstractSConstraint opposite(Solver solver) {
+    public AbstractSConstraint<IntDomainVar> opposite(Solver solver) {
         LargeRelation rela2 = (LargeRelation) ((ConsistencyRelation) relation).getOpposite();
         AbstractSConstraint ct = new GAC3rmLargeConstraint(vars, rela2);
         return ct;

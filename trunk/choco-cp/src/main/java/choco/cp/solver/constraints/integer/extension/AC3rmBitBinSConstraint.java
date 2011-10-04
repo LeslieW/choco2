@@ -97,7 +97,7 @@ public final class AC3rmBitBinSConstraint extends CspBinSConstraint {
         return new AC3rmBitBinSConstraint(this.v0, this.v1, (CouplesBitSetTable) this.relation);
     }
 
-    public AbstractSConstraint opposite(Solver solver) {
+    public AbstractSConstraint<IntDomainVar> opposite(Solver solver) {
         return new AC3rmBitBinSConstraint(this.v0, this.v1, (CouplesBitSetTable) ((ConsistencyRelation) this.relation).getOpposite());
     }
 

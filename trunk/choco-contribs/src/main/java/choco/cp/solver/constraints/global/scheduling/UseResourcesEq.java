@@ -27,8 +27,6 @@
 
 package choco.cp.solver.constraints.global.scheduling;
 
-import java.util.Arrays;
-
 import choco.cp.solver.constraints.integer.bool.sum.NeqBoolSum;
 import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.memory.IEnvironment;
@@ -38,6 +36,8 @@ import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.TaskVar;
+
+import java.util.Arrays;
 
 public class UseResourcesEq extends AbstractUseResourcesSConstraint {
 
@@ -72,7 +72,7 @@ public class UseResourcesEq extends AbstractUseResourcesSConstraint {
 	}
 
 	@Override
-	public AbstractSConstraint opposite(Solver solver) {
+	public AbstractSConstraint<IntDomainVar> opposite(Solver solver) {
 		return new NeqBoolSum(solver.getEnvironment(), Arrays.copyOf(boolSumS.getBoolVars(), boolSumS.getBoolVars().length), boolSumS.bValue);
 	}
 }

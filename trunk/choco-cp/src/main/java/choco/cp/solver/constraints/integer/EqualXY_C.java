@@ -196,7 +196,7 @@ public final class EqualXY_C extends AbstractBinIntSConstraint {
     }
 
     @Override
-    public final AbstractSConstraint opposite(Solver solver) {
+    public final AbstractSConstraint<IntDomainVar> opposite(Solver solver) {
         return (AbstractSConstraint) solver.neq(solver.plus(v0, v1), cste);
     }
 

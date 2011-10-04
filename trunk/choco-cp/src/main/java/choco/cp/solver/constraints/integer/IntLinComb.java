@@ -217,7 +217,7 @@ public final class IntLinComb extends AbstractLargeIntSConstraint {
      * @return the opposite constraint  @param solver
      */
     @Override
-    public AbstractSConstraint opposite(final Solver solver) {
+    public AbstractSConstraint<IntDomainVar> opposite(final Solver solver) {
         return intlincomb.opposite(solver);
     }
 
