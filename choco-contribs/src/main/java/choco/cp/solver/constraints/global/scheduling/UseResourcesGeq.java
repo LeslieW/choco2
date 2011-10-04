@@ -72,7 +72,7 @@ public class UseResourcesGeq extends AbstractUseResourcesSConstraint {
 	}
 
 	@Override
-	public AbstractSConstraint opposite(Solver solver) {
+	public AbstractSConstraint<IntDomainVar> opposite(Solver solver) {
 		return new LeqBoolSum(solver.getEnvironment(), Arrays.copyOf(boolSumS.getBoolVars(), boolSumS.getBoolVars().length), boolSumS.bValue-1);
 	}
 }

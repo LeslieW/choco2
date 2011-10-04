@@ -316,7 +316,7 @@ public final class Absolute extends AbstractBinIntSConstraint {
 		throw new UnsupportedOperationException("Absolute.isConsistent is not implemented!");
 	}
 
-	public AbstractSConstraint opposite(Solver solver) {
+	public AbstractSConstraint<IntDomainVar> opposite(Solver solver) {
 		throw new UnsupportedOperationException("Absolute.opposite is not implemented!");
 	}
 

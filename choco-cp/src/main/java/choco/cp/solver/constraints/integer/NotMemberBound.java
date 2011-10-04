@@ -73,7 +73,7 @@ public final class NotMemberBound extends AbstractUnIntSConstraint {
      * @return the opposite constraint  @param solver
      */
     @Override
-    public AbstractSConstraint opposite(final Solver solver) {
+    public AbstractSConstraint<IntDomainVar> opposite(final Solver solver) {
         return new MemberBound(v0, lower, upper);
     }
 

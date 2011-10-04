@@ -192,7 +192,7 @@ public final class SignOp extends AbstractBinIntSConstraint {
 	}
 
 	@Override
-	public AbstractSConstraint opposite(Solver solver) {
+	public AbstractSConstraint<IntDomainVar> opposite(Solver solver) {
 		return new SignOp(v0,v1,!same);
 	}
 

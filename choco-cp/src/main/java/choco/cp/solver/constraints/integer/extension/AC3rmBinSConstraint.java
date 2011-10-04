@@ -108,7 +108,7 @@ public final class AC3rmBinSConstraint extends CspBinSConstraint {
         return new AC3rmBinSConstraint(this.v0, this.v1, this.relation);
     }
 
-    public AbstractSConstraint opposite(Solver solver) {
+    public AbstractSConstraint<IntDomainVar> opposite(Solver solver) {
         return new AC3rmBinSConstraint(this.v0, this.v1, (BinRelation) ((ConsistencyRelation) this.relation).getOpposite());
     }
 
