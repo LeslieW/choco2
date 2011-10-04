@@ -27,6 +27,7 @@
 
 package choco.cp.solver;
 
+import choco.Choco;
 import choco.Options;
 import choco.cp.common.util.preprocessor.ExpressionTools;
 import choco.cp.model.CPModel;
@@ -51,6 +52,7 @@ import choco.kernel.model.variables.real.RealConstantVariable;
 import choco.kernel.model.variables.real.RealVariable;
 import choco.kernel.model.variables.set.SetConstantVariable;
 import choco.kernel.model.variables.set.SetVariable;
+import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.reified.BoolNode;
 import choco.kernel.solver.variables.Var;
@@ -327,23 +329,16 @@ public class CPModelToCPSolver {
 
     public SConstraint[] makeSConstraintAndOpposite(final Constraint ic, final Boolean decomp) {
         final SConstraint[] cs = new SConstraint[2];
-        if (ic instanceof MetaConstraint) {
-            cs[0] = createMetaConstraint(ic, decomp);
-                cs[1] = cs[0].opposite(cpsolver);
-            return cs;
+        cs[0] = readModelConstraint(ic, decomp);
+        try {
+            cs[1] = cs[0].opposite(cpsolver);
+        } catch (SolverException se) {
+            //HACK
+            Constraint oc = Choco.not(ic);
+            oc.findManager(CPModel.properties);
+            cs[1] = readModelConstraint(oc, decomp);
         }
-
-        if (ic instanceof ComponentConstraint) {
-            if (ic.getConstraintType().canContainExpression && containExpression(ic.getVariables())) {
-                cs[0] = createMetaConstraint(ic, decomp);
-                cs[1] = cs[0].opposite(cpsolver);
-                return cs;
-            }
-            final ComponentConstraint cc = (ComponentConstraint) ic;
-            final ConstraintManager cm = cc.getConstraintManager();
-            return cm.makeConstraintAndOpposite(cpsolver, cc.getVariables(), cc.getParameters(), cc.getOptions());
-        }
-        return null;
+        return cs;
     }
 
     public SConstraint[] makeSConstraintAndOpposite(final Constraint ic) {
