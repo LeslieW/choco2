@@ -63,7 +63,6 @@
                 <a href="http://www.ucc.ie/en/" target="_blank">
                     <img src="images/logos/ucc.jpeg"/>
                 </a>
-
                 <a href="http://www.univ-nantes.fr/index_flash.jsp" target="_blank">
                     <img src="images/logos/univ-nantes.jpeg"/>
                 </a>
@@ -72,6 +71,9 @@
                 </a>
                 <a href="www.tugraz.at/" target="_blank">
                     <img src="images/logos/TU_Graz.png"/>
+                </a>
+                <a href="http://www2.ulaval.ca/" target="_blank">
+                    <img src="images/logos/ulaval.png"/>
                 </a>
             </div>
         </section>

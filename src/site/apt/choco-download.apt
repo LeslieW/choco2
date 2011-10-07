@@ -3,21 +3,16 @@
 			---
 			CHOCO Development Team
 			---
-			13/07/2011
+			07/10/2011
 
 Download CHOCO
 
-* Most recent jar files:
+* Download files :
 
-    * Download a {{{http://sourceforge.net/projects/choco/files/choco/2.1.2/choco-2.1.2.tar.gz/download}TAR.GZ file}} or a {{{http://sourceforge.net/projects/choco/files/choco/2.1.2/choco-2.1.2.zip/download}ZIP file}} of Choco-2.1.2
-
-    * Or download a particular file in {{{https://sourceforge.net/projects/choco/files/choco/2.1.2/choco-2.1.2/}choco-2.1.2}}
+    * Download files on {{{http://sourceforge.net/projects/choco/files/choco/}sourceforge download page}}
         
     You can also read the {{{./changes-report.html}changes report}}.    
 
-* Previous files
-
-    You can download previsous files on {{{https://sourceforge.net/projects/choco/files/}Sourceforge}}.
 
 * Building from the sources
 

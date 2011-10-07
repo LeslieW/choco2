@@ -142,7 +142,7 @@ Thus, a variable not involved in any constraints will not be declared in the Sol
 
 \lstinputlisting{java/mconstraintdeclaration2.j2t}
 
-Available \emph{options} depend on the kind of constraint \emph{c} to add: they allow, for example, to choose the filtering algorithm to run during propagation. See \hyperlink{optionssettings}{Section options ans settings} for more details, specific APIs exist for declaring options constraints.
+Available \emph{options} depend on the kind of constraint \emph{c} to add: they allow, for example, to choose the filtering algorithm to run during propagation. See \hyperlink{optionssettings}{Section options and settings} for more details, specific APIs exist for declaring options constraints.
 
 This section presents the constraints available in the Choco API sorted by type or by domain. Related sections:
 \begin{itemize}
@@ -229,7 +229,7 @@ The following constraints allow to ensure the integrity of two redundant models 
 In the n-queen problem, for example, a domain variable by column indicates the row $j$ to place a queen in column $i$. To enhance the propagation, a redundant model can be stated by defining a domain variable by row indicating the column $i$. As columns and rows can be interchanged, the same set of constraints applies to both models, then constraint \hyperlink{inversechanneling:inversechannelingconstraint}{inverseChanneling} is set to propagate between the two models.
 \lstinputlisting{java/cinversechanneling.j2t}
 
-Channeling constraints are also useful to compose a model made of two parts as, for example, in a task-resources assignment problem where some constraints are set on the task set and some other constraints are set on the resource set.
+Channeling constraints are also useful to compose a model made up of two parts as, for example, in a task-resources assignment problem where some constraints are set on the task set and some other constraints are set on the resource set.
 
 \hyperlink{model:reifiedconstraints}{Reification} offers an other type of channeling, between a constraint and a boolean variable representing its truth value. 
 More complex channeling can be done using reification and boolean operators although they are less effective. 
@@ -521,7 +521,7 @@ See also in Global Constraint Catalog: \href{http://www.emn.fr/x-info/sdemasse/g
 
 \subsection{Things to know about \mylst{Model}, \mylst{Variable} and \mylst{Constraint}}
 
-It is important to know the relation between \mylst{Model}s, \mylst{Variable}s and \mylst{Constraint}s. \mylst{Variable}s and \mylst{Constraint}s are build without the help of a \mylst{Model}, so that they can be used natively in different \mylst{Model}s. That's why one need to add them to a \mylst{Model}, using \mylst{model.addVariable(Variable var)} and \mylst{model.addConstraint(Constraint cstr)}. On a variable addition, this one is added to the list of variables of the model. On a constraint addition, the constraint is added to the constraint network AND the constraint and its associated variables are linked. It means the constraint is now known from its variables, which was not the case before the addition.
+It is important to know the relation between \mylst{Model}s, \mylst{Variable}s and \mylst{Constraint}s. \mylst{Variable}s and \mylst{Constraints} are build without the help of a \mylst{Model}, so that they can be used natively in different \mylst{Model}s. That's why one need to add them to a \mylst{Model}, using \mylst{model.addVariable(Variable var)} and \mylst{model.addConstraint(Constraint cstr)}. On a variable addition, this one is added to the list of variables of the model. On a constraint addition, the constraint is added to the constraint network AND the constraint and its associated variables are linked. It means the constraint is now known from its variables, which was not the case before the addition.
 
 
 Now, let see a short example: one declares two constraints involving the two same variables, and add them to five different models. This implies the following references:
