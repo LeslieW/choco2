@@ -1,3 +1,4 @@
+%!TEX root = ../content-doc.tex
 \chapter{Introduction to constraint programming and Choco}\label{doc:introduction}\hypertarget{doc:introduction}{}
 
 \section{About constraint programming}\label{introduction:aboutconstraintprogramming}\hypertarget{introduction:aboutconstraintprogramming}{}
@@ -75,8 +76,8 @@ The $n$-queens problem can be modeled by a CSP in the following way:
 		\end{itemize}
 		\item queens have to be on distinct diagonals:
 		\begin{itemize}
-			\item $C_{diag1} = \{X_{i}\neq X_{j+j-i}\ |\ i,j\in [1,n], i\neq j\}$.
-			\item $C_{diag2} = \{X_{i}\neq X_{j+i-j}\ |\ i,j\in [1,n], i\neq j\}$.
+			\item $C_{diag1} = \{X_{i}\neq X_{j}+j-i\ |\ i,j\in [1,n], i\neq j\}$.
+			\item $C_{diag2} = \{X_{i}\neq X_{j}+i-j\ |\ i,j\in [1,n], i\neq j\}$.
 		\end{itemize}
 	\end{itemize}
 \end{itemize}
@@ -127,7 +128,7 @@ A magic square of order $n$ is an arrangement of $n^{2}$ numbers, usually distin
 The constant sum in every row, column and diagonal is called the magic constant or magic sum $M$. The magic constant of a classic magic square depends only on $n$ and has the value:
 $M(n)=n(n^2 +1)/2$.
 
-\href{http://en.wikipedia.org/wiki/magicsquare}{More details on the magic square problem.}
+\href{http://en.wikipedia.org/wiki/Magic_square}{More details on the magic square problem.}
 
 
 \subsection{A mathematical model}\label{introduction:mathematicalmodeling}\hypertarget{introduction:mathematicalmodeling}{}
@@ -137,10 +138,10 @@ Let $C$ be the set of constraints modeling the magic square as:
 \begin{align*}
 &x_{ij} \in [1,n^2],\ &&\forall i,j \in [1, n]\\
 &x_{ij}\ne x_{kl},\ &&\forall i,j,k,l \in [1,n], i\ne k, j\ne l\\
-&\sum_{j=1}^{n} x_{ij} = n^2,\ &&\forall i \in [1,n]\\
-&\sum_{i=1}^{n} x_{ij} = n^2,\ &&\forall j \in [1,n]\\
-&\sum_{i=1}^{n} x_{ii} = n^2&&\\
-&\sum_{i=n}^{1} x_{i(n-i)} = n^2&&\\
+&\sum_{j=1}^{n} x_{ij} = n(n^2 +1)/2,\ &&\forall i \in [1,n]\\
+&\sum_{i=1}^{n} x_{ij} = n(n^2 +1)/2,\ &&\forall j \in [1,n]\\
+&\sum_{i=1}^{n} x_{ii} = n(n^2 +1)/2&&\\
+&\sum_{i=n}^{1} x_{i(n-i)} = n(n^2 +1)/2&&\\
 \end{align*}
 
 We have all the required information to model the problem with Choco.

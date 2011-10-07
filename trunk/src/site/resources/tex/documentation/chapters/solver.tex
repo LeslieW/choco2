@@ -445,8 +445,8 @@ The second way to do it is to compute the next value at each call.
 
 %At a In a partial instantiation, when a fix point has been reached, the Solver needs to take a decision to resume the search. The way decisions are chosen has a \textbf{real impact on the resolution step efficient}. 
 \begin{note}
-\emph{The search strategy should not be overlooked!!}
-A suited search strategy can reduce: the execution time, the number of expanded nodes, the number of backtracks.
+\emph{The search strategy should not be under-estimatimated!!}
+A well-suited search strategy can reduce: the execution time, the number of expanded nodes, the number of backtracks.
 \end{note}
 Let see that small example:
 \begin{lstlisting}
@@ -774,7 +774,7 @@ Sets the restarts parameters to the default ones. This must be done if a restart
 \subsection{What about simply calling \mylst{solver.clear()}?}
 
 A call to \mylst{solver.clear()} will reset every internal structures of a \mylst{Solver}: it clears the variable list, the constraint list, the environment, the propagation engine, the model read, etc.
-This set the solver in the same state as it was just before its creation.
+This set the solver in the same state as it was just after its creation.
 
 \subsection{Things to know on \mylst{Solver} reusability}
 

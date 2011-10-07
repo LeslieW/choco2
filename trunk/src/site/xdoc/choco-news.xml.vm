@@ -7,6 +7,34 @@
     <body>
 
         <section name="News">
+            <subsection name="V 213">
+                <p>
+                    Charles Prud'homme - Oct. 07th 2011
+                </p>
+                <p>
+                    A new release with minor changes is now avalaible.
+                </p>
+                <p>
+                    Main changes are:
+                    <u>
+                        <li>IState{Int, Long, Double}#add return the updated value</li>
+                        <li>add generic opposite in Solver.read(Model)</li>
+                        <li>improve AmongGAC</li>
+                        <li>integrate disjSModel to Profile branching</li>
+                        <li>add new packing selectors (best fit, worst fit)</li>
+                        <li>fix graphical regression in parsers</li>
+                        <li>complete disjunctive graph drawings</li>
+                        <li>remove Pair.java from sources</li>
+                        <li>improve sort in BoundAllDiff and BoundGcc</li>
+                    </u>
+                </p>
+
+                <p>
+                    If you have any suggestions, please let us know.
+                </p>
+
+            </subsection>
+
             <subsection name="Refactoring">
                 <p>
                     Charles Prud'homme - July 07th 2011

@@ -6,7 +6,7 @@
     </properties>
     <body>
 	<p/>
-	<b>Choco 2.1.2 is now available!</b> 
+	<b>Choco 2.1.3 is now available!</b>
 	Visit <a href="choco-download.html">download page</a>, <a href="choco-news.html">news page</a> and <a href="changes-report.html">changes report</a>.
         <section name="Welcome">
 
@@ -57,7 +57,9 @@
                 <a href="license.html">BSD License</a>, hosted by
                 <a href="http://sourceforge.net/projects/choco/">sourceforge.net</a>
                 and developed with
-                <a href="http://www.jetbrains.com/idea/features/code_analysis.html" target="_blank">Intellij IDEA</a>.
+                <a href="http://www.jetbrains.com/idea/features/code_analysis.html" target="_blank">Intellij IDEA</a>
+                and
+                <a href="http://www.ej-technologies.com/products/jprofiler/overview.html" target="_blank">JProfiler</a>.
             </p>
 
 
@@ -67,6 +69,9 @@
                 </a>
                 <a href="http://www.jetbrains.com/idea/features/code_analysis.html" target="_blank">
                     <img src="http://www.jetbrains.com/idea/opensource/img/banners/idea468x60_white.gif"/>
+                </a>
+                <a href="http://www.ej-technologies.com/products/jprofiler/overview.html" target="_blank">
+                    <img src="http://www.ej-technologies.com/images/headlines2/3453392302.png"/>
                 </a>
             </div>
 

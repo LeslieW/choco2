@@ -5,6 +5,30 @@
         <title>Changes Choco</title>
         <author email="choco@emn.com">Choco team</author>
     </properties>
+
+    <body>
+    <release version="2.1.3" date="2011-10-10" description="Minoor release (rev. 1862)">
+        <action dev="Charles Prud'homme" type="update">
+            Update class file headers.
+        </action>
+        <action dev="Charles Prud'homme" type="update">
+            IState{Int, Long, Double}#add return the updated value.
+            Add generic opposite in Solver.read(Model).
+            Improve AmongGAC.
+            Remove Pair.java from sources.
+            Improve sort in BoundAllDiff and BoundGcc.
+            Correct some typos in documentation.
+        </action>
+        <action dev="Arnaud Malapert" type="update">
+            Integrate disjSModel to Profile branching.
+            Add new packing selectors (best fit, worst fit).
+            Fix graphical regression in parsers.
+            Complete disjunctive graph drawings.
+        </action>
+
+    </release>
+
+
     <body>
         <release version="2.1.2" date="2011-07-13" description="Strong release (rev. 1782)">
             <action dev="Charles Prud'homme" type="update">
