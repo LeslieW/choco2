@@ -48,32 +48,20 @@ public final class MinOfASet extends AbstractBoundOfASet {
 	protected final IStateInt indexOfMinimumVariable;
 
 
-	public MinOfASet(IEnvironment environment, IntDomainVar[] intvars, SetVar setvar, Integer defaultValueEmptySet) {
-		super(intvars, setvar, defaultValueEmptySet);
+	public MinOfASet(IEnvironment environment, IntDomainVar[] intvars, SetVar setvar, EmptySetPolicy emptySetPolicy) {
+		super(environment, intvars, setvar, emptySetPolicy);
 		indexOfMinimumVariable = environment.makeInt(-1);
 	}
-	
+
 	@Override
 	protected boolean removeFromEnv(int idx) throws ContradictionException {
 		return removeLowerFromEnv(idx, ivars[BOUND_INDEX].getInf());
 	}
 
-
-
 	@Override
-	protected boolean updateEnveloppe() throws ContradictionException {
-		final int maxValue = ivars[BOUND_INDEX].getInf();
-		final DisposableIntIterator iter= getSetDomain().getOpenDomainIterator();
-		boolean update = false;
-		while(iter.hasNext()) {
-			update |= removeLowerFromEnv(iter.next(), maxValue);
-		}
-        iter.dispose();
-		return update;
-	}
-
-	protected void updateIndexOfMinimumVariables() throws ContradictionException {
-		int minMin = Integer.MAX_VALUE, minMinIdx = -1;
+	protected int  updateIndexOfCandidateVariable() {
+		int minMin = Integer.MAX_VALUE;
+		int minMinIdx = -1;
 		int minMin2 = Integer.MAX_VALUE;
 		DisposableIntIterator iter= this.getSetDomain().getEnveloppeIterator();
 		while(iter.hasNext()) {
@@ -87,57 +75,33 @@ public final class MinOfASet extends AbstractBoundOfASet {
 				minMin2 = val;
 			}
 		}
-        iter.dispose();
-		if (minMin2 > ivars[BOUND_INDEX].getSup()) {
-			this.indexOfMinimumVariable.set(minMinIdx);
-		}
+		iter.dispose();
+		return minMin2 > ivars[BOUND_INDEX].getSup() ? minMinIdx : -1;
 	}
 
-
-	/**
-	 * If only one candidate to be the max of the list, some additionnal
-	 * propagation can be performed (as in usual x == y constraint).
-	 */
-	protected boolean onlyOneMinCandidatePropagation() throws ContradictionException {
-		boolean update=false;
-		if(isNotEmptySet()) {
-			//if the set could be empty : we do nothing
-			if (this.indexOfMinimumVariable.get() == -1) {
-				updateIndexOfMinimumVariables();
-			}
-			int idx = this.indexOfMinimumVariable.get();
-			if (idx != -1) {
-				update = svars[SET_INDEX].addToKernel(idx-1, this, false);
-				updateBoundSup(ivars[idx].getSup());
-				ivars[idx].updateSup(ivars[BOUND_INDEX].getSup(), this, false);}
-		}
-		return update;
-
-	}
 
 	protected final int minInf() {
 		if( isNotEmptySet()) {
-			DisposableIntIterator iter= getSetDomain().getEnveloppeIterator();
 			int min = Integer.MAX_VALUE;
+			final DisposableIntIterator iter= getSetDomain().getEnveloppeIterator();
 			while(iter.hasNext()) {
-				int val = ivars[VARS_OFFSET+iter.next()].getInf();
-				if(val<min) {min=val;}
+				int val = ivars[VARS_OFFSET + iter.next()].getInf();
+				if(val < min) min = val;
 			}
-            iter.dispose();
+			iter.dispose();
 			return min;
-		}else {return Integer.MIN_VALUE;}
+		} else return Integer.MIN_VALUE;
 	}
-
 
 	protected final int minSup() {
 		int min = Integer.MAX_VALUE;
-		//if the set could be empty : we do nothing
+		//if the set can be empty : we do nothing
 		DisposableIntIterator iter= getSetDomain().getKernelIterator();
 		while(iter.hasNext()) {
 			int val = ivars[VARS_OFFSET+iter.next()].getSup();
 			if(val<min) {min=val;}
 		}
-        iter.dispose();
+		iter.dispose();
 		return min;	
 	}
 
@@ -145,10 +109,9 @@ public final class MinOfASet extends AbstractBoundOfASet {
 		final int minValue = ivars[BOUND_INDEX].getInf();
 		DisposableIntIterator iter= svars[SET_INDEX].getDomain().getKernelIterator();
 		while(iter.hasNext()) {
-			final int i = VARS_OFFSET+iter.next();
-			ivars[i].updateInf(minValue, this, false);
+			ivars[VARS_OFFSET + iter.next()].updateInf(minValue, this, false);
 		}
-        iter.dispose();
+		iter.dispose();
 	}
 
 	/**
@@ -158,17 +121,12 @@ public final class MinOfASet extends AbstractBoundOfASet {
 	 */
 	@Override
 	public void filter() throws ContradictionException {
-		//CPSolver.flushLogs();
-		boolean noFixPoint = true;
-		while(noFixPoint) {
-			noFixPoint =false;
+		do {
 			updateBoundInf(minInf());
-			updateBoundSup(minSup());
-			updateKernelInf();
-			noFixPoint |= updateEnveloppe();
-			noFixPoint |= onlyOneMinCandidatePropagation();
-
-		}
+		} while(remFromEnveloppe());
+		updateBoundSup(minSup());
+		updateKernelInf();
+		onlyOneCandidatePropagation();
 	}
 
 	/**
@@ -182,21 +140,18 @@ public final class MinOfASet extends AbstractBoundOfASet {
 		if (idx >= 2*VARS_OFFSET) { // Variable in the list
 			final int i = idx-2*VARS_OFFSET;
 			if(isInEnveloppe(i)) {
-				if(isSetInstantiated()) {
-					//maxOfaList case
+				//maxOfaList case
+				do {
 					updateBoundInf(minInf());
-				}else {
-					if( ( isInKernel(i) && updateBoundInf(minInf()) ) || removeFromEnv(i) ) {
-						this.constAwake(false);
-					}
-				}
+				} while(remFromEnveloppe());
+				onlyOneCandidatePropagation();
 			}
 		} else { // Maximum variable
-			updateKernelInf();
-			if(updateEnveloppe()) {
-				//if the enveloppe changed, we need to propagate.
-				this.constAwake(false);
+			while( remFromEnveloppe() ) {
+				updateBoundInf(minInf());
 			}
+			updateKernelInf();
+			onlyOneCandidatePropagation();
 		}
 	}
 
@@ -211,107 +166,44 @@ public final class MinOfASet extends AbstractBoundOfASet {
 		if (idx >= 2*VARS_OFFSET) { // Variable in the list
 			final int i = idx-2*VARS_OFFSET;
 			if(isInEnveloppe(i)) {
-				if(isSetInstantiated()) {
-					//minOfaList case
+				if(isInKernel(i)) {
 					updateBoundSup(minSup());
-					onlyOneMinCandidatePropagation();
-				}else {
-					if(removeFromEnv(i) || updateBoundSup(minSup())) {
-						this.constAwake(false);
+				} else {
+					while( remFromEnveloppe() ) {
+						updateBoundInf(minInf());
 					}
 				}
 			}
-		} else { // Maximum variable
-			if(isSetInstantiated()) {
-				//maxOfaList case
-				onlyOneMinCandidatePropagation();
-			}else if(updateEnveloppe() ||  onlyOneMinCandidatePropagation()) {
-				this.constAwake(false);
-			}
-		}
-	}
-	
-	
-
-	@Override
-	protected void awakeOnInstL(int i) throws ContradictionException {
-		boolean propagate = updateBoundSup(minSup());
-		if(isInKernel(i)) {	propagate |= updateBoundInf(minInf());}
-		if(propagate && !isSetInstantiated()) {
-			this.constAwake(false);
-		}
-		
-	}
-
-	@Override
-	protected void awakeOnInstV() throws ContradictionException {
-		updateKernelInf();
-		boolean propagate = onlyOneMinCandidatePropagation();
-		if(!isSetInstantiated()) {
-			propagate |= updateEnveloppe();
-			if(propagate) {this.constAwake(false);}
-		}		
-	}
-
-//	/**
-//	 * Propagation when a variable is instantiated.
-//	 *
-//	 * @param idx the index of the modified variable.
-//	 * @throws choco.kernel.solver.ContradictionException if a domain becomes empty.
-//	 */
-//	@Override
-//	public void awakeOnInst(final int idx) throws ContradictionException {
-//		if (idx >= 2*VARS_OFFSET) { //of the list
-//			final int i = idx-2*VARS_OFFSET;
-//			if(isInEnveloppe(i)) { //of the set
-//				boolean propagate = updateBoundSup(minSup());
-//				if(isInKernel(i)) {	propagate |= updateBoundInf(minInf());}
-//				if(propagate && !isSetInstantiated()) {
-//					this.constAwake(false);
-//				}
-//			}
-//
-//		} else if (idx == VARS_OFFSET) { // Maximum variable
-//			updateKernelInf();
-//			boolean propagate = onlyOneMinCandidatePropagation();
-//			if(!isSetInstantiated()) {
-//				propagate |= updateEnveloppe();
-//				if(propagate) {this.constAwake(false);}
-//			}
-//		}else { //set is instantiated, propagate
-//			this.propagate();
-//		}
-//	}
-
-	@Override
-	public void awakeOnEnv(int varIdx, int x) throws ContradictionException {
-		if( updateBoundSup(minSup()) || onlyOneMinCandidatePropagation() ) {
-			//if the max has changed or the maximum variable was found : propagate
-			this.constAwake(false);
-		}
+		} // else // Maximum variable
+		onlyOneCandidatePropagation();
 
 	}
 
-	@Override
-	public void awakeOnKer(int varIdx, int x) throws ContradictionException {
-		if( updateBoundInf(minInf()) ) {
-			if(updateEnveloppe() || onlyOneMinCandidatePropagation()) {
-				//set has changed again
-				this.constAwake(false);
-			}
-		}
-	}
 	
 	@Override
-	protected int isSatisfiedValue(DisposableIntIterator iter) {
+	public void awakeOnRem() throws ContradictionException {
+		do {
+			updateBoundInf(minInf());
+		} while(remFromEnveloppe());
+		onlyOneCandidatePropagation();
+	}
+
+	@Override
+	public void awakeOnKer() throws ContradictionException {
+		updateBoundSup(minSup());
+		onlyOneCandidatePropagation();
+	}
+
+	@Override
+	protected int getSatisfiedValue(DisposableIntIterator iter) {
 		int v = Integer.MAX_VALUE;
 		do {
 			v = Math.min(v, ivars[VARS_OFFSET +iter.next()].getVal());
 		}while(iter.hasNext());
-        iter.dispose();
+		iter.dispose();
 		return v;
 	}
-	
+
 	@Override
 	public String pretty() {
 		return pretty("min");

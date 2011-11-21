@@ -63,7 +63,7 @@ import choco.kernel.model.variables.set.SetVariable;
 
 /**
  * @author Arnaud Malapert</br>
- * @since 4 déc. 2008 <b>version</b> 2.0.1</br>
+ * @since 4 dec. 2008 <b>version</b> 2.0.1</br>
  * @version 2.0.1</br>
  */
 public final class PackModel {
@@ -131,14 +131,14 @@ public final class PackModel {
 	}
 
 	public PackModel(IntegerVariable[] bins,
-			IntegerConstantVariable[] sizes, IntegerVariable[] loads,
-			SetVariable[] items) {
-		this(bins, sizes, loads, items, makeIntVar(StringUtils.randomName()+"-NbNE",0, loads.length,V_BOUND));
+			IntegerConstantVariable[] sizes, SetVariable[] items,
+			IntegerVariable[] loads) {
+		this(bins, sizes, items, loads, makeIntVar(StringUtils.randomName()+"-NbNE",0, loads.length,V_BOUND));
 	}
 
 	public PackModel(IntegerVariable[] bins,
-			IntegerConstantVariable[] sizes, IntegerVariable[] loads,
-			SetVariable[] items, IntegerVariable nbNonEmpty) {
+			IntegerConstantVariable[] sizes, SetVariable[] items,
+			IntegerVariable[] loads, IntegerVariable nbNonEmpty) {
 		super();
 		checkArrays(bins, sizes);
 		checkArrays(loads, items);
@@ -155,6 +155,7 @@ public final class PackModel {
 		this.nbNonEmpty = nbNonEmpty;
 		this.maxCapacity = computeMax(loads);
 	}
+
 
 	private IPermutation makePermutation(IntegerConstantVariable[] sizes) {
 		return replaceByIdentity( getSortingPermuation(sizes,true));

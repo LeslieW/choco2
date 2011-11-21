@@ -34,7 +34,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
  * @author Arnaud Malapert</br>
- * @since 7 déc. 2008 version 2.0.1</br>
+ * @since 7 dec. 2008 version 2.0.1</br>
  * @version 2.0.1</br>
  */
 public class BestFit implements ValSelector<IntDomainVar> {
@@ -53,7 +53,7 @@ public class BestFit implements ValSelector<IntDomainVar> {
 		int max=pack.getRemainingSpace(bin);
 		while(iter.hasNext()) {
 			final int  b =iter.next();
-			// FIXME - getRemainingSpace is not valid (for instance when packing the last items) - created 7 juil. 2011 by Arnaud Malapert
+			// DONE 21 sept. 2011- getRemainingSpace is not valid (for instance when packing the last items) - created 7 juil. 2011 by Arnaud Malapert
 			//We should compute capacity - getRequiredSpace 
 			final int space=pack.getRemainingSpace(b);
 			if(space<max) {

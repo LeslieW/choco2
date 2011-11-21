@@ -69,6 +69,7 @@ public final class MessageFactory {
 			return name+ ' ' + conf.readString(boundKey)+ ' ' +lim.getUnit()+"    ";
 		} else return "";
 	}
+	
 	public static String getLimitMsg(Solver solver) {
 		final Configuration conf = solver.getConfiguration();
 		return getLimitMsg(conf, "SEARCH_LIMIT", SEARCH_LIMIT, SEARCH_LIMIT_BOUND) + 

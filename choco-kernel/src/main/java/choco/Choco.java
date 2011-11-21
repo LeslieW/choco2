@@ -2120,34 +2120,23 @@ public class Choco {
     }
 
     /**
-     * Ensures the variable min to represent the minimum value in vars that occurs in the sublist associated with set.
-     * An element vars[i] belongs to the sublist if the set contains i.
-     *
-     * @param svar the set which defined the sublist
-     * @param vars List of variables
-     * @param min  Variable to represent the maximum among the sublist
-     * @return Constraint
-     */
-    public static Constraint min(SetVariable svar, IntegerVariable[] vars, IntegerVariable min) {
-        return min(svar, vars, min, null);
-    }
-
-    /**
-     * Ensures the variable min to represent the minimum value in vars that occurs in the sublist associated with set.
+     * Ensures the variable min to represent the minimum value in ivars that occurs in the sublist associated with set.
      * An element vars[i] belongs to the sublist if the set contains i.
      *
      * @param svar                 the set which defined the sublist
-     * @param vars                 List of variables
+     * @param ivars                 List of variables
      * @param min                  Variable to represent the maximum among the sublist
-     * @param defaultValueEmptySet min is instantiated to this value if the set is empty (optional).
+     * @param options 			   {@link Options#C_MINMAX_INF}, {@link Options#C_MINMAX_SUP}
      * @return Constraint
      */
-    public static Constraint min(SetVariable svar, IntegerVariable[] vars, IntegerVariable min, Integer defaultValueEmptySet) {
-        final Variable[] tmp = new Variable[vars.length + 2];
-        tmp[0] = min;
-        arraycopy(vars, 0, tmp, 1, vars.length);
-        tmp[tmp.length - 1] = svar;
-        return new ComponentConstraint(ConstraintType.MIN, new Object[]{true, defaultValueEmptySet}, tmp);
+    public static Constraint min(SetVariable svar, IntegerVariable[] ivars, IntegerVariable min, String... options) {
+        final Variable[] vars = new Variable[ivars.length + 2];
+        vars[0] = svar;
+        vars[1] = min;
+        arraycopy(ivars, 0, vars, 2, ivars.length);
+        ComponentConstraint c = new ComponentConstraint(ConstraintType.MIN, Boolean.TRUE, vars);
+        c.addOptions(options);
+        return c;
     }
 
     /**
@@ -2165,36 +2154,24 @@ public class Choco {
         return new ComponentConstraint(ConstraintType.MIN, true, tmp);
     }
 
-
     /**
-     * Ensures the variable "max" to represent the maximum value vars that occurs in the sublist associated with the set.
-     * An element vars[i] belongs to the sublist if the set contains i.
-     *
-     * @param svar the set which defined the sublist
-     * @param vars List of variables
-     * @param max  Variable to represent the maximum among the sublist
-     * @return Constraint
-     */
-    public static Constraint max(SetVariable svar, IntegerVariable[] vars, IntegerVariable max) {
-        return max(svar, vars, max, null);
-    }
-
-    /**
-     * Ensures the variable "max" to represent the maximum value vars that occurs in the sublist associated with the set.
+     * Ensures the variable min to represent the maximum value in ivars that occurs in the sublist associated with set.
      * An element vars[i] belongs to the sublist if the set contains i.
      *
      * @param svar                 the set which defined the sublist
-     * @param vars                 List of variables
-     * @param max                  Variable to represent the maximum among the sublist
-     * @param defaultValueEmptySet max is instantiated to this value if the set is empty (optional).
+     * @param ivars                 List of variables
+     * @param min                  Variable to represent the maximum among the sublist
+     * @param options 			   {@link Options#C_MINMAX_INF}, {@link Options#C_MINMAX_SUP}
      * @return Constraint
      */
-    public static Constraint max(SetVariable svar, IntegerVariable[] vars, IntegerVariable max, Integer defaultValueEmptySet) {
-        final Variable[] tmp = new Variable[vars.length + 2];
-        tmp[0] = max;
-        arraycopy(vars, 0, tmp, 1, vars.length);
-        tmp[tmp.length - 1] = svar;
-        return new ComponentConstraint(ConstraintType.MAX, new Object[]{false, defaultValueEmptySet}, tmp);
+    public static Constraint max(SetVariable svar, IntegerVariable[] ivars, IntegerVariable min, String... options) {
+        final Variable[] vars = new Variable[ivars.length + 2];
+        vars[0] = svar;
+        vars[1] = min;
+        arraycopy(ivars, 0, vars, 2, ivars.length);
+        ComponentConstraint c = new ComponentConstraint(ConstraintType.MIN, Boolean.FALSE, vars);
+        c.addOptions(options);
+        return c;
     }
 
     /**
@@ -3035,7 +3012,7 @@ public class Choco {
     }
 
     public static Constraint pack(SetVariable[] itemSets, IntegerVariable[] loads, IntegerVariable[] bins, IntegerConstantVariable[] sizes, IntegerVariable nbNonEmpty, String... options) {
-        return pack(new PackModel(bins, sizes, loads, itemSets, nbNonEmpty), options);
+        return pack(new PackModel(bins, sizes, itemSets, loads, nbNonEmpty), options);
     }
 
 

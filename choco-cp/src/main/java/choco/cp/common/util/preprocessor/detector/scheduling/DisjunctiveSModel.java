@@ -28,11 +28,8 @@
 package choco.cp.common.util.preprocessor.detector.scheduling;
 
 import gnu.trove.TIntIntHashMap;
-import gnu.trove.TIntObjectHashMap;
-import gnu.trove.TIntObjectProcedure;
 import gnu.trove.TObjectProcedure;
 
-import java.util.Arrays;
 import java.util.Iterator;
 
 import choco.cp.solver.constraints.global.scheduling.precedence.ITemporalSRelation;

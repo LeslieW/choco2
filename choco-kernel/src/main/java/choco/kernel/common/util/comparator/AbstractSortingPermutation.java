@@ -44,7 +44,6 @@ public abstract class AbstractSortingPermutation implements IPermutation, Compar
 
 	public final static IPermutation IDENTITY = Identity.SINGLETON;
 
-
 	protected boolean identity;
 
 	protected final Integer[] orderingPermutation;
@@ -56,7 +55,7 @@ public abstract class AbstractSortingPermutation implements IPermutation, Compar
 		orderingPermutation =new Integer[size];
 		reversePermutation =new Integer[size];
 		for (int i = 0; i < orderingPermutation.length; i++) {
-			orderingPermutation[i]=Integer.valueOf(i);
+			orderingPermutation[i] = Integer.valueOf(i);
 		}
 	}
 
@@ -70,6 +69,7 @@ public abstract class AbstractSortingPermutation implements IPermutation, Compar
 	}
 
 
+	@Override
 	public final <T> void applyPermutation(T[] source,T[] dest) {
 		if(source.length != orderingPermutation.length || source.length != dest.length) {
 			throw new ArrayIndexOutOfBoundsException("the two arguments should have the same length than the permutation array");
@@ -108,18 +108,21 @@ public abstract class AbstractSortingPermutation implements IPermutation, Compar
 	/**
 	 * return the original index of the idx-th element of the permuted array
 	 */
+	@Override
 	public final int getOriginalIndex(int idx) {
 		return this.orderingPermutation[idx];
 	}
 	/**
 	 * return the index in the permutation of the idx-th element
 	 */
+	@Override
 	public final int getPermutationIndex(int idx) {
 		return reversePermutation[idx];
 	}
 
 
 
+	@Override
 	public final boolean isIdentity() {
 		return identity;
 	}

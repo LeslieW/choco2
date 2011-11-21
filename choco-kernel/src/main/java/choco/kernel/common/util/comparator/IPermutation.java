@@ -47,6 +47,7 @@ public interface IPermutation {
 	
 	public <T> void applyPermutation(List<T> source,T[] dest);
 
+	//public int[] getPermutation();
 	/**
 	 * apply the permutation to the integer array
 	 * @return the permuted array

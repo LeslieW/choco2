@@ -426,44 +426,60 @@ public class Options {
 	/**
 	 * <br/><b>Goal</b> : set filtering policy to apply additional rules based on the algorithm "NoSum" (Shaw-2004)
 	 * <br/><b>Scope</b> :
-	 * {@link choco.Choco#pack(choco.kernel.model.constraints.pack.PackModel, String...),</br>
+	 * {@link choco.Choco#pack(choco.kernel.model.constraints.pack.PackModel, String...)},</br>
 	 * {@link choco.Choco#pack(choco.kernel.model.variables.set.SetVariable[], choco.kernel.model.variables.integer.IntegerVariable[], choco.kernel.model.variables.integer.IntegerVariable[], choco.kernel.model.variables.integer.IntegerConstantVariable[], choco.kernel.model.variables.integer.IntegerVariable, String...) 
-	*/
+	 */
 	public static final String C_PACK_AR = "cp:pack:additional_rules";
 
 	/**
 	 * <br/><b>Goal</b> : set filtering policy to apply a feasibility tests based on dynamic lower bounds on the number of non empty bins.
 	 * <br/><b>Scope</b> :
-	 * {@link choco.Choco#pack(choco.kernel.model.constraints.pack.PackModel, String...),</br>
+	 * {@link choco.Choco#pack(choco.kernel.model.constraints.pack.PackModel, String...)},</br>
 	 * {@link choco.Choco#pack(choco.kernel.model.variables.set.SetVariable[], choco.kernel.model.variables.integer.IntegerVariable[], choco.kernel.model.variables.integer.IntegerVariable[], choco.kernel.model.variables.integer.IntegerConstantVariable[], choco.kernel.model.variables.integer.IntegerVariable, String...) 
-	*/
+	 */
 	public static final String C_PACK_DLB = "cp:pack:dynamic_lower_bound";
 
 	/**
 	 * <br/><b>Goal</b> : set filtering policy to apply a dominance rule which pack an item which matches exactly the remaining space into a bin.
 	 * <br/><b>Scope</b> :
-	 * {@link choco.Choco#pack(choco.kernel.model.constraints.pack.PackModel, String...),</br>
+	 * {@link choco.Choco#pack(choco.kernel.model.constraints.pack.PackModel, String...)},</br>
 	 * {@link choco.Choco#pack(choco.kernel.model.variables.set.SetVariable[], choco.kernel.model.variables.integer.IntegerVariable[], choco.kernel.model.variables.integer.IntegerVariable[], choco.kernel.model.variables.integer.IntegerConstantVariable[], choco.kernel.model.variables.integer.IntegerVariable, String...) 
-	*/
+	 */
 	public static final String C_PACK_FB = "cp:pack:fill_bins";
 
 	/**
 	 * <br/><b>Goal</b> : set filtering policy to apply a symmetry breaking rule which imposes that the last bins are empty.
 	 * <br/><b>Scope</b> :
-	 * {@link choco.Choco#pack(choco.kernel.model.constraints.pack.PackModel, String...),</br>
+	 * {@link choco.Choco#pack(choco.kernel.model.constraints.pack.PackModel, String...)},</br>
 	 * {@link choco.Choco#pack(choco.kernel.model.variables.set.SetVariable[], choco.kernel.model.variables.integer.IntegerVariable[], choco.kernel.model.variables.integer.IntegerVariable[], choco.kernel.model.variables.integer.IntegerConstantVariable[], choco.kernel.model.variables.integer.IntegerVariable, String...) 
-	*/
+	 */
 	public static final String C_PACK_LBE = "cp:pack:last_bins_empty";
 
-
-	//////////////////////// ////////////////////////
+	/**
+	 * <br/><b>Goal</b> : set a policy which instantiates the minimum/maximum variable to its minimum if the set is empty.
+	 * <br/><b>Scope</b> :
+	 * {@link Choco#min(choco.kernel.model.variables.set.SetVariable, choco.kernel.model.variables.integer.IntegerVariable[], choco.kernel.model.variables.integer.IntegerVariable) }, </br>
+	 * {@link Choco#max(choco.kernel.model.variables.set.SetVariable, choco.kernel.model.variables.integer.IntegerVariable[], choco.kernel.model.variables.integer.IntegerVariable)}. 
+	 */
+	public static final String C_MINMAX_INF = "cp:min-max:inf";
 	
+	/**
+	 * <br/><b>Goal</b> : set a policy which instantiates the minimum/maximum variable to its maximum if the set is empty.
+	 * <br/><b>Scope</b> :
+	 * {@link Choco#min(choco.kernel.model.variables.set.SetVariable, choco.kernel.model.variables.integer.IntegerVariable[], choco.kernel.model.variables.integer.IntegerVariable) }, </br>
+	 * {@link Choco#max(choco.kernel.model.variables.set.SetVariable, choco.kernel.model.variables.integer.IntegerVariable[], choco.kernel.model.variables.integer.IntegerVariable)}. 
+	 */
+	public static final String C_MINMAX_SUP = "cp:min-max:sup";
+	
+	
+	//////////////////////// ////////////////////////
+
 	/**
 	 * preprocessing ignores the given constraint for detection.
 	 */
 	public final static String C_NO_DETECTION = "ppcp:no_detection";
 
-	
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -487,7 +503,7 @@ public class Options {
 
 		// EXPRESSIONS
 		categories.put(E_DECOMP, 0);
-		
+
 		// CONSTRAINTS
 		categories.put(C_EXT_AC2001, 0);
 		categories.put(C_EXT_AC2008, 0);
@@ -512,21 +528,21 @@ public class Options {
 		categories.put(C_CLAUSES_ENTAIL, 0);
 
 		categories.put(C_POST_PONED, 1);
-	
+
 		categories.put(C_NO_DETECTION, 2);
-		
+
 		categories.put(C_PACK_AR, 0);
 		//...
 		categories.put(C_PACK_DLB, 3);
 		categories.put(C_PACK_FB, 4);
 		categories.put(C_PACK_LBE, 5);
-		
+
 		categories.put(C_CUMUL_TI, 0);
 		categories.put(C_CUMUL_STI, 0);
 		//...
 		categories.put(C_CUMUL_EF, 3);
 		categories.put(C_CUMUL_VEF, 3);
-		
+
 		categories.put(C_DISJ_OC, 0);
 		categories.put(C_DISJ_EF, 0);
 		//...
@@ -534,6 +550,9 @@ public class Options {
 		categories.put(C_DISJ_DP, 4);
 		categories.put(C_DISJ_VF, 5);
 		
+		categories.put(C_MINMAX_INF, 0);
+		categories.put(C_MINMAX_SUP, 0);
+
 	}
 
 
@@ -552,7 +571,7 @@ public class Options {
 	public static int getCategorie(String name) {
 		if(!categories.contains(name)){
 			LOGGER.warning("No categorie defines for \""+ name+"\".\n See Options.create(String name, int categorie) for " +
-			"more information.");
+					"more information.");
 		}
 		return categories.get(name);
 	}
@@ -574,6 +593,6 @@ public class Options {
 			categories.put(name, categorie);
 		}
 	}
-	
-		
+
+
 }

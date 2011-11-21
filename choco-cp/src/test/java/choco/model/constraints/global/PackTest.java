@@ -474,7 +474,7 @@ public class PackTest {
 		IntegerConstantVariable[] sizes = constantArray(_sizes);
 
 
-		Constraint cc = Choco.pack(new PackModel(bins, sizes, loads, itemSets));
+		Constraint cc = Choco.pack(new PackModel(bins, sizes, itemSets, loads));
 		Model m = new CPModel();
 		m.addConstraint(cc);
 
@@ -495,7 +495,7 @@ public class PackTest {
 		Arrays.fill(_sizes, 5);
 		IntegerConstantVariable[] sizes = constantArray(_sizes);
 
-		Constraint cc = Choco.pack(new PackModel(bins, sizes, loads, itemSets));
+		Constraint cc = Choco.pack(new PackModel(bins, sizes, itemSets, loads));
 		Model m = new CPModel();
 		m.addConstraint(cc);
 

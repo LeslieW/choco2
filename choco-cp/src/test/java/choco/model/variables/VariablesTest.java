@@ -301,7 +301,7 @@ public class VariablesTest {
         for (int i = 0; i < n; i++) {
             size[i] = Choco.constant(sizes[i]);
         }
-        m.addConstraint(Choco.pack(new PackModel(items, size, load, setbin), Options.C_PACK_AR, Options.C_PACK_DLB, Options.C_PACK_FB));
+        m.addConstraint(Choco.pack(new PackModel(items, size, setbin, load), Options.C_PACK_AR, Options.C_PACK_DLB, Options.C_PACK_FB));
 
         CPSolver s = new CPSolver();
         s.read(m);
