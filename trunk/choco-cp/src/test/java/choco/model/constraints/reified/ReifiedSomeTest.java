@@ -661,7 +661,6 @@ public class ReifiedSomeTest {
         Constraint cv5 = not(and(eq((betaBlocker), (1)), eq((verapamil), (1))));
 
 
-
         m.addConstraint(cv4);
         m.addConstraint(cv5);
         s.read(m);
@@ -1855,14 +1854,14 @@ public class ReifiedSomeTest {
     @Test
     public void test_syndaegy1() {
         int NV = 3;
-                                                                            
+
         Model m = new CPModel();
         Solver s = new CPSolver();
 
         IntegerVariable[] vars = new IntegerVariable[NV];
         vars[0] = Choco.makeIntVar("v0", 0, 1);
         for (int i = 1; i < NV; i++) {
-            vars[i] = Choco.makeIntVar("v"+i, 0, 10);
+            vars[i] = Choco.makeIntVar("v" + i, 0, 10);
         }
 
         m.addConstraint(Choco.reifiedConstraint(vars[0], and(eq(vars[1], 1),
@@ -1873,4 +1872,98 @@ public class ReifiedSomeTest {
         Assert.assertEquals(121, s.getSolutionCount());
     }
 
+    @Test
+    public void test_melpen1() {
+        CPSolver s = new CPSolver();
+        CPModel m = new CPModel();
+
+        SetVariable set = Choco.constant(new int[]{1, 2});
+        IntegerVariable x = Choco.makeIntVar("x", 1, 3);
+        IntegerVariable y = Choco.makeIntVar("y", 0, 3);
+        m.addConstraint(Choco.implies(Choco.member(x, set), Choco.eq(y, 2)));
+
+        s.read(m);
+        s.solveAll();
+        Assert.assertEquals(s.getSolutionCount(), 6);
+
     }
+
+    @Test
+    public void test_melpen2() {
+        CPSolver s = new CPSolver();
+        CPModel m = new CPModel();
+
+        SetVariable set = Choco.constant(new int[]{1, 2});
+        IntegerVariable x = Choco.makeIntVar("x", 1, 3);
+        IntegerVariable y = Choco.makeIntVar("y", 0, 3);
+        m.addConstraint(Choco.ifOnlyIf(Choco.member(x, set), Choco.eq(y, 2)));
+
+        s.read(m);
+        s.solveAll();
+        Assert.assertEquals(s.getSolutionCount(), 5);
+
+    }
+
+    @Test
+    public void test_melpen3() {
+        CPSolver s = new CPSolver();
+        CPModel m = new CPModel();
+
+        SetVariable set = Choco.constant(new int[]{1, 2});
+        IntegerVariable x = Choco.makeIntVar("x", 1, 3);
+        IntegerVariable y = Choco.makeIntVar("y", 0, 3);
+        m.addConstraint(Choco.ifThenElse(Choco.member(x, set), Choco.eq(y, 2), Choco.eq(y, 3)));
+
+        s.read(m);
+        s.solveAll();
+        Assert.assertEquals(s.getSolutionCount(), 3);
+
+    }
+
+    @Test
+    public void test_melpen4() {
+        CPSolver s = new CPSolver();
+        CPModel m = new CPModel();
+
+        SetVariable set = Choco.constant(new int[]{1, 2});
+        IntegerVariable x = Choco.makeIntVar("x", 1, 3);
+        m.addConstraint(Choco.not(Choco.member(x, set)));
+
+        s.read(m);
+        s.solveAll();
+        Assert.assertEquals(s.getSolutionCount(), 1);
+    }
+
+    @Test
+    public void test_melpen5() {
+        CPSolver s = new CPSolver();
+        CPModel m = new CPModel();
+
+        SetVariable set = Choco.constant(new int[]{1, 2});
+        IntegerVariable x = Choco.makeIntVar("x", 1, 3);
+        IntegerVariable y = Choco.makeIntVar("y", 0, 3);
+        m.addConstraint(Choco.and(Choco.member(x, set), Choco.eq(y, 2)));
+
+        s.read(m);
+        s.solveAll();
+        Assert.assertEquals(s.getSolutionCount(), 2);
+
+    }
+
+     @Test
+    public void test_melpen6() {
+        CPSolver s = new CPSolver();
+        CPModel m = new CPModel();
+
+        SetVariable set = Choco.constant(new int[]{1, 2});
+        IntegerVariable x = Choco.makeIntVar("x", 1, 3);
+        IntegerVariable y = Choco.makeIntVar("y", 0, 3);
+        m.addConstraint(Choco.or(Choco.member(x, set), Choco.eq(y, 2)));
+
+        s.read(m);
+        s.solveAll();
+        Assert.assertEquals(s.getSolutionCount(), 9);
+
+    }
+
+}

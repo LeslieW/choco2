@@ -32,7 +32,6 @@ import choco.Options;
 import choco.cp.common.util.preprocessor.ExpressionTools;
 import choco.cp.model.CPModel;
 import choco.cp.solver.constraints.integer.bool.BooleanFactory;
-import choco.cp.solver.constraints.integer.channeling.ReifiedLargeOr;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
 import choco.cp.solver.constraints.reified.ReifiedFactory;
 import choco.kernel.common.logging.ChocoLogging;
@@ -468,14 +467,12 @@ public class CPModelToCPSolver {
                 return BooleanFactory.or(cpsolver.getEnvironment(), breifs);
             case NOT:
                 cpsolver.post(subcs);
-                cpsolver.post(cpsolver.eq(breifs[1], 1));
-                return cpsolver.eq(CPSolver.sum(breifs), 1);
+                return cpsolver.eq(breifs[0], 0);
             case IFONLYIF:
                 cpsolver.post(subcs);
-                cpsolver.post(cpsolver.neq(breifs[0], breifs[1]));
-                return new ReifiedLargeOr(new IntDomainVar[]{breifs[0], breifs[1]},
-                        cpsolver.getEnvironment());
+                return cpsolver.eq(breifs[0], breifs[1]);
             case IFTHENELSE:
+                cpsolver.post(subcs);
                 notbreifs = new IntDomainVar[1];
                 notbreifs[0] = cpsolver.createBooleanVar(StringUtils.randomName());
 
@@ -483,16 +480,15 @@ public class CPModelToCPSolver {
                 cpsolver.post(cpsolver.eq(breifs[0], breifs[1]));
                 cpsolver.post(cpsolver.eq(notbreifs[0], breifs[2]));
 
-                return new ReifiedLargeOr(new IntDomainVar[]{breifs[0], notbreifs[0]},
-                        cpsolver.getEnvironment());
+                return BooleanFactory.or(cpsolver.getEnvironment(), breifs[0], notbreifs[0]);
             case IMPLIES:
+                cpsolver.post(subcs);
                 notbreifs = new IntDomainVar[1];
                 notbreifs[0] = cpsolver.createBooleanVar(StringUtils.randomName());
 
                 cpsolver.post(cpsolver.neq(breifs[0], notbreifs[0]));
 
-                return new ReifiedLargeOr(new IntDomainVar[]{notbreifs[0], breifs[1]},
-                        cpsolver.getEnvironment());
+                return BooleanFactory.or(cpsolver.getEnvironment(), notbreifs[0], breifs[1]);
             default:
                 throw new UnsupportedOperationException();
         }
