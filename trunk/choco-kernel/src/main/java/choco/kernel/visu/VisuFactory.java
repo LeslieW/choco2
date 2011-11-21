@@ -56,6 +56,15 @@ public final class VisuFactory {
 	public static IVisuManager getDotManager() {
 		return DotManager.getInstance();
 	}
+
+	// DONE 31 oct. 2011 - Allow to change the file extension - created 31 oct. 2011 by Arnaud Malapert
+	public static IVisuManager getTextManager() {
+		return TextManager.getInstance();
+	}
+	
+	public static IVisuManager getSolManager() {
+		return new TextManager("sol");
+	}
 	
 	public static void launchCommand(final boolean waitFor, final String... cmd) {
 		// Win 95/98/ : pour lancer un .bat
@@ -200,6 +209,59 @@ class GnuplotManager extends AbstractVisuManager {
 		File file = export(null, null, chart, width, height);
 		if(file != null) {
 			VisuFactory.launchCommand(false, "/bin/sh", "-c", "echo \"set key off; plot \'"+file.getAbsolutePath()+"\' title \'\' with linespoints\" | gnuplot -persist");
+			return true;
+		} else return false;
+	}
+}
+
+class TextManager extends AbstractVisuManager {
+
+	/** 
+	 * The shared instance. 
+	 */
+	private final static TextManager SINGLOTON = new TextManager("txt");
+
+	private final String extension;
+	/** 
+	 * Protected constructor. 
+	 */
+	protected TextManager(String extension) {
+		super();
+		this.extension =extension;
+	}
+
+	/** 
+	 * Returns this shared instance. 
+	 * 
+	 * @returns The shared instance 
+	 */
+	public final static TextManager getInstance() {
+		return SINGLOTON;
+	}
+
+	@Override
+	protected String getFileExtension() {
+		return extension;
+	}
+
+	@Override
+	protected boolean doExport(File file, Object chart, int width, int height)
+	throws IOException {
+		if (chart instanceof String) {
+			String source = (String) chart;
+			final FileWriter fw=new FileWriter(file);
+			fw.write(source);
+			fw.close();
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	protected boolean doShow(Object chart, int width, int height) {
+		if (chart instanceof String) {
+			LOGGER.info((String) chart);
 			return true;
 		} else return false;
 	}

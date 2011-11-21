@@ -27,10 +27,13 @@
 
 package choco.cp.solver.constraints.set;
 
-import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.cp.solver.variables.set.SetVarEvent;
+import static choco.cp.solver.variables.set.SetVarEvent.*;
+import static choco.cp.solver.variables.integer.IntVarEvent.*;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.StringUtils;
+import choco.kernel.memory.IEnvironment;
+import choco.kernel.memory.IStateBool;
+import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.set.AbstractLargeSetIntSConstraint;
@@ -48,178 +51,226 @@ import choco.kernel.solver.variables.set.SetVar;
 public abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint {
 
 
-    /**
-     * Index of the set variable
-     */
-    public static final int SET_INDEX = 0;
+	public static enum EmptySetPolicy { INF, NONE, SUP};
 
-    /**
-     * Index of the maximum variable.
-     */
-    public static final int BOUND_INDEX = 0;
+	/**
+	 * Index of the set variable
+	 */
+	public static final int SET_INDEX = 0;
 
-    /**
-     * First index of the variables among which the maximum should be chosen.
-     */
-    public static final int VARS_OFFSET = 1;
+	/**
+	 * Index of the maximum variable.
+	 */
+	public static final int BOUND_INDEX = 0;
 
-    protected final static int SET_EVENTMASK = SetVarEvent.INSTSET_MASK + SetVarEvent.ADDKER_MASK + SetVarEvent.REMENV_MASK;
+	/**
+	 * First index of the variables among which the maximum should be chosen.
+	 */
+	public static final int VARS_OFFSET = 1;
 
-    protected final static int INT_EVENTMASK = IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK;
+	private final EmptySetPolicy emptySetPolicy;
 
-    protected final Integer defaultValueEmptySet;
+	private final IStateBool awakeOnFirstKer;
 
-    public AbstractBoundOfASet(IntDomainVar[] intvars, SetVar setvar, Integer defaultValueEmptySet) {
-        super(intvars, new SetVar[]{setvar});
-        this.defaultValueEmptySet = defaultValueEmptySet;
-        if (setvar.getEnveloppeInf() < 0 || setvar.getEnveloppeSup() > intvars.length - 2) {
-            throw new SolverException("The enveloppe of the set variable " + setvar.pretty() + " is greater than the array");
-        }
-    }
+	private IStateInt indexOfMinimumVariable;
 
-
-    @Override
-    public int getFilteredEventMask(int idx) {
-        return idx > 0 ? INT_EVENTMASK : SET_EVENTMASK;
-    }
+	public AbstractBoundOfASet(IEnvironment environment, IntDomainVar[] intvars, SetVar setvar, EmptySetPolicy emptySetPolicy) {
+		super(intvars, new SetVar[]{setvar});
+		this.emptySetPolicy = emptySetPolicy;
+		awakeOnFirstKer = environment.makeBool(true);
+		indexOfMinimumVariable = environment.makeInt(-1);
+		if (setvar.getEnveloppeInf() < 0 || setvar.getEnveloppeSup() > intvars.length - 2) {
+			throw new SolverException("The enveloppe of the set variable " + setvar.pretty() + " is greater than the array");
+		}
+	}
 
 
-    protected final boolean isInKernel(int idx) {
-        return svars[SET_INDEX].isInDomainKernel(idx);
-    }
+	@Override
+	public int getFilteredEventMask(int idx) {
+		return idx > 0 ? INSTINT_MASK + BOUNDS_MASK : INSTSET_MASK + ADDKER_MASK + REMENV_MASK;
+	}
 
-    protected final boolean isInEnveloppe(int idx) {
-        return svars[SET_INDEX].isInDomainEnveloppe(idx);
-    }
+	protected final boolean isInKernel(int idx) {
+		return svars[SET_INDEX].isInDomainKernel(idx);
+	}
 
-    protected final SetDomain getSetDomain() {
-        return svars[SET_INDEX].getDomain();
-    }
+	protected final boolean isInEnveloppe(int idx) {
+		return svars[SET_INDEX].isInDomainEnveloppe(idx);
+	}
 
+	protected final SetDomain getSetDomain() {
+		return svars[SET_INDEX].getDomain();
+	}
 
-    protected final boolean isEmptySet() {
-        return this.svars[SET_INDEX].getEnveloppeDomainSize() == 0;
-    }
+	protected final boolean isEmptySet() {
+		return this.svars[SET_INDEX].getEnveloppeDomainSize() == 0;
+	}
 
-    protected final boolean isNotEmptySet() {
-        return this.svars[SET_INDEX].getKernelDomainSize() > 0;
-    }
+	protected final boolean isNotEmptySet() {
+		return this.svars[SET_INDEX].getKernelDomainSize() > 0;
+	}
 
-    protected final boolean isSetInstantiated() {
-        return svars[SET_INDEX].isInstantiated();
-    }
+	protected final boolean isSetInstantiated() {
+		return svars[SET_INDEX].isInstantiated();
+	}
 
-    protected final boolean updateBoundInf(int val) throws ContradictionException {
-        return ivars[BOUND_INDEX].updateInf(val, this, false);
-    }
+	protected final boolean updateBoundInf(int val) throws ContradictionException {
+		return ivars[BOUND_INDEX].updateInf(val, this, false);
+	}
 
-    protected final boolean updateBoundSup(int val) throws ContradictionException {
-        return ivars[BOUND_INDEX].updateSup(val, this, false);
-    }
+	protected final boolean updateBoundSup(int val) throws ContradictionException {
+		return ivars[BOUND_INDEX].updateSup(val, this, false);
+	}
 
-    protected abstract boolean removeFromEnv(int idx) throws ContradictionException;
+	protected abstract boolean removeFromEnv(int idx) throws ContradictionException;
 
-    protected final boolean removeGreaterFromEnv(int idx, int maxValue) throws ContradictionException {
-        return ivars[VARS_OFFSET + idx].getInf() > maxValue && this.svars[SET_INDEX].remFromEnveloppe(idx, this, false);
-    }
+	protected final boolean removeGreaterFromEnv(int idx, int maxValue) throws ContradictionException {
+		return ivars[VARS_OFFSET + idx].getInf() > maxValue && this.svars[SET_INDEX].remFromEnveloppe(idx, this, false);
+	}
 
-    protected final boolean removeLowerFromEnv(int idx, int minValue) throws ContradictionException {
-        return ivars[VARS_OFFSET + idx].getSup() < minValue && this.svars[SET_INDEX].remFromEnveloppe(idx, this, false);
-    }
-
-    protected abstract boolean updateEnveloppe() throws ContradictionException;
-
-    @Override
-    public void awakeOnEnvRemovals(int idx, DisposableIntIterator deltaDomain)
-            throws ContradictionException {
-        if (idx == SET_INDEX && deltaDomain.hasNext()) {
-            awakeOnEnv(idx, deltaDomain.next());
-        }
-    }
+	protected final boolean removeLowerFromEnv(int idx, int minValue) throws ContradictionException {
+		return ivars[VARS_OFFSET + idx].getSup() < minValue && this.svars[SET_INDEX].remFromEnveloppe(idx, this, false);
+	}
 
 
-    @Override
-    public void awakeOnkerAdditions(int idx, DisposableIntIterator deltaDomain)
-            throws ContradictionException {
-        if (idx == SET_INDEX && deltaDomain.hasNext()) {
-            awakeOnKer(idx, deltaDomain.next());
-        }
-    }
+	protected final boolean remFromEnveloppe() throws ContradictionException {
+		final DisposableIntIterator iter= getSetDomain().getOpenDomainIterator();
+		boolean update = false;
+		while(iter.hasNext()) {
+			update |= removeFromEnv(iter.next());
+		}
+		iter.dispose();
+		return update;
+	}
 
-    @Override
-    public boolean isConsistent() {
-        return false;
-    }
-
-    protected void filterEmptySet() throws ContradictionException {
-        if (defaultValueEmptySet != null) {
-            //a default value is assigned to the variable when the set is empty
-            ivars[BOUND_INDEX].instantiate(defaultValueEmptySet, this, false);
-        }
-        setEntailed();
-    }
-
-    @Override
-    public final void propagate() throws ContradictionException {
-        if (isEmptySet()) filterEmptySet();
-        else filter();
-    }
-
-    protected abstract void filter() throws ContradictionException;
+	@Override
+	public final void awakeOnEnvRemovals(int idx, DisposableIntIterator deltaDomain)
+			throws ContradictionException {
+		assert (idx == SET_INDEX);
+		if(deltaDomain.hasNext()) awakeOnRem(); //not instantiatded
+	}
 
 
-    /**
-     * Propagation when a variable is instantiated.
-     *
-     * @param idx the index of the modified variable.
-     * @throws choco.kernel.solver.ContradictionException
-     *          if a domain becomes empty.
-     */
-    @Override
-    public final void awakeOnInst(final int idx) throws ContradictionException {
-        //CPSolver.flushLogs();
-        if (idx >= 2 * VARS_OFFSET) { //of the list
-            final int i = idx - 2 * VARS_OFFSET;
-            if (isInEnveloppe(i)) { //of the set
-                awakeOnInstL(i);
-            }
-        } else if (idx == VARS_OFFSET) { // Minimum/Maximum variable
-            awakeOnInstV();
-        } else {
-            //set is instantiated, propagate
-            propagate();
-        }
-    }
+	@Override
+	public final void awakeOnRem(int varIdx, int val) throws ContradictionException {
+		assert varIdx == SET_INDEX;
+		awakeOnRem();
+	}
+
+	protected abstract void awakeOnRem() throws ContradictionException;
+
+	@Override
+	public final void awakeOnkerAdditions(int idx, DisposableIntIterator deltaDomain)
+			throws ContradictionException {
+		assert(idx == SET_INDEX);
+		if(deltaDomain.hasNext()) {//not instantiated
+			if(awakeOnFirstKer.get()) {
+				propagate();
+				awakeOnFirstKer.set(false);
+			}
+			else awakeOnKer(); 
+		}
+	}
+
+	@Override
+	public final void awakeOnKer(int varIdx, int x) throws ContradictionException {
+		assert varIdx == SET_INDEX;
+		if(awakeOnFirstKer.get()) {
+			propagate();
+			awakeOnFirstKer.set(false);
+		}
+		else awakeOnKer(); 
+	}
+
+	protected abstract void awakeOnKer() throws ContradictionException;
 
 
-    protected abstract void awakeOnInstL(int i) throws ContradictionException;
+	@Override
+	public boolean isConsistent() {
+		return false;
+	}
 
-    protected abstract void awakeOnInstV() throws ContradictionException;
+	//	private final void filterEmptySet() throws ContradictionException {
+	//		
+	//	}
+
+	@Override
+	public final void propagate() throws ContradictionException {
+		if (isEmptySet()) {
+			switch (emptySetPolicy) {
+			case INF: ivars[BOUND_INDEX].instantiate(ivars[BOUND_INDEX].getInf(), this, false);break;
+			case SUP: ivars[BOUND_INDEX].instantiate(ivars[BOUND_INDEX].getSup(), this, false);break;
+			default:
+				break;
+			}
+			setEntailed();
+		}
+		else filter();
+	}
+
+	protected abstract void filter() throws ContradictionException;
 
 
-    protected abstract int isSatisfiedValue(DisposableIntIterator iter);
+	/**
+	 * Propagation when a variable is instantiated.
+	 *
+	 * @param idx the index of the modified variable.
+	 * @throws choco.kernel.solver.ContradictionException
+	 *          if a domain becomes empty.
+	 */
+	@Override
+	public final void awakeOnInst(final int idx) throws ContradictionException {
+		//CPSolver.flushLogs();
+		if (idx >= 2 * VARS_OFFSET) { //of the list
+			final int i = idx - 2 * VARS_OFFSET;
+			if (isInEnveloppe(i)) { //of the set
+				propagate();
+			}
+		} else propagate();
+	}
 
-    @Override
-    public boolean isSatisfied() {
-        final DisposableIntIterator iter = svars[SET_INDEX].getDomain().getKernelIterator();
-        if (iter.hasNext()) {
-            return isSatisfiedValue(iter) == ivars[BOUND_INDEX].getVal();
-        } else {
-            iter.dispose();
-            return defaultValueEmptySet == null || defaultValueEmptySet == ivars[BOUND_INDEX].getVal();
-        }
-    }
+	protected abstract int updateIndexOfCandidateVariable();
 
-    protected String pretty(String name) {
-        StringBuilder sb = new StringBuilder(32);
-        sb.append(ivars[BOUND_INDEX].pretty());
-        sb.append(" = ").append(name).append('(');
-        sb.append(svars[SET_INDEX].pretty()).append(", ");
-        sb.append(StringUtils.pretty(ivars, VARS_OFFSET, ivars.length));
-        if (defaultValueEmptySet != null) sb.append(", defVal:").append(defaultValueEmptySet);
-        sb.append(')');
-        return new String(sb);
+	/**
+	 * If only one candidate to be the max of the list, some additionnal
+	 * propagation can be performed (as in usual x == y constraint).
+	 */
+	protected void onlyOneCandidatePropagation() throws ContradictionException {
+		if(isNotEmptySet()) {
+			int idx = indexOfMinimumVariable.get();
+			if (idx == -1) {
+				idx = updateIndexOfCandidateVariable();
+			}
+			if (idx != -1) {
+				indexOfMinimumVariable.set(idx);
+				svars[SET_INDEX].addToKernel(idx- VARS_OFFSET, this, false);
+				updateBoundInf(ivars[idx].getInf());
+				updateBoundSup(ivars[idx].getSup());
+				ivars[idx].updateInf(ivars[BOUND_INDEX].getInf(), this, false);
+				ivars[idx].updateSup(ivars[BOUND_INDEX].getSup(), this, false);
+			}
+		}
+	}
 
-    }
+
+	protected abstract int getSatisfiedValue(DisposableIntIterator iter);
+
+	@Override
+	public boolean isSatisfied() {
+		return isNotEmptySet() ? 
+				getSatisfiedValue(svars[SET_INDEX].getDomain().getKernelIterator()) == ivars[BOUND_INDEX].getVal() : true;
+	}
+
+	protected String pretty(String name) {
+		StringBuilder sb = new StringBuilder(32);
+		sb.append(ivars[BOUND_INDEX].pretty());
+		sb.append(" = ").append(name).append('(');
+		sb.append(svars[SET_INDEX].pretty()).append(", ");
+		sb.append(StringUtils.pretty(ivars, VARS_OFFSET, ivars.length));
+		sb.append(", Policy:").append(emptySetPolicy);
+		sb.append(')');
+		return new String(sb);
+
+	}
 
 }

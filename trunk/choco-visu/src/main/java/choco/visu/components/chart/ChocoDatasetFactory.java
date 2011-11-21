@@ -1,5 +1,5 @@
 /**
- *  Copyright (c) 1999-2010, Ecole des Mines de Nantes
+ *  Copyright (c) 1999-2010, Ecole des Mines deM Nantes
  *  All rights reserved.
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are met:
@@ -81,13 +81,17 @@ public final class ChocoDatasetFactory {
 		return createTask(s.getVar(t));
 	}
 
-	//	public static Task createTask(BTask t) {
-	//		return new Task(t.toString(),getTimePeriod(t.startd,t.end));
-	//	}
-
-
 	public static TimePeriod getTimePeriod(final long begin,final long end) {
 		return new SimpleTimePeriod(new Date(begin), new Date(end));
+	}
+
+
+	public static TaskSeries createTaskSeries(String name, TaskVar... tasks) {
+		final TaskSeries s = new TaskSeries(name);
+		for (int i = 0; i < tasks.length; i++) {
+			s.add(createTask(tasks[i]));
+		}
+		return s;
 	}
 
 	public static TaskSeries createTaskSeries(IResource<TaskVar> rsc) {
@@ -100,6 +104,14 @@ public final class ChocoDatasetFactory {
 		return s;
 	}
 
+	public static TaskSeriesCollection createTaskCollection(Solver solver, String prefix, TaskVariable[][] tasks) {
+		TaskSeriesCollection c = new TaskSeriesCollection();
+		for (int i = 0; i < tasks.length; i++) {
+			c.add(createTaskSeries(prefix+(i+1), solver.getVar(tasks[i])));
+		}
+		return c;
+	}
+	
 	public static TaskSeriesCollection createTaskCollection(IResource<TaskVar>... resources) {
 		TaskSeriesCollection c = new TaskSeriesCollection();
 		for (IResource<TaskVar> rsc : resources) {
@@ -187,7 +199,7 @@ public final class ChocoDatasetFactory {
 		return createPackDataset(modeler.getNbBins()
 				, s.getVar(modeler.getBins())
 				, VariableUtils.getConstantValues(s.getVar(modeler.getSizes()))
-		);
+				);
 	}
 
 	//*****************************************************************//

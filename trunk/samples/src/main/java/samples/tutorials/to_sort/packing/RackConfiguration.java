@@ -119,7 +119,7 @@ public class RackConfiguration extends PatternExample {
 
         //CONSTRAINTS
         //post packing constraints
-        packMod = new PackModel(cardRacks, cardPower, rackLoads, racks);
+        packMod = new PackModel(cardRacks, cardPower, racks, rackLoads);
         model.addConstraints(pack(packMod, C_PACK_AR));
         //post connector,power and price constraints
         for (int i = 0; i < nbRacks; i++) {

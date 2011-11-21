@@ -97,6 +97,7 @@ import choco.cp.solver.constraints.global.pack.PackSConstraint;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintType;
 import choco.kernel.model.constraints.pack.PackModel;
+import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.global.scheduling.ICumulativeResource;
@@ -338,6 +339,10 @@ public final class ChocoChartFactory {
 
 	public static JFreeChart createUnaryHChart(String title, Solver scheduler, Constraint... resources) {
 		return createUnaryHChart(title, createTaskCollection(scheduler, Arrays.asList(resources).iterator()), ResourceRenderer.COLUMN);
+	}
+	
+	public static JFreeChart createUnaryHChart(String title, Solver scheduler, TaskVariable[][] resources) {
+		return createUnaryHChart(title, createTaskCollection(scheduler, "M_", resources), ResourceRenderer.COLUMN);
 	}
 
 	public static JFreeChart createUnaryVChart(String title, Solver scheduler) {

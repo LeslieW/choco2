@@ -27,6 +27,26 @@
 
 package choco.model.constraints.integer;
 
+import static choco.Choco.constantArray;
+import static choco.Choco.eq;
+import static choco.Choco.leqCard;
+import static choco.Choco.makeIntVar;
+import static choco.Choco.makeIntVarArray;
+import static choco.Choco.makeSetVar;
+import static choco.Choco.max;
+import static choco.Choco.min;
+import static java.text.MessageFormat.format;
+import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -39,17 +59,8 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.Random;
-import java.util.logging.Logger;
-
-import static choco.Choco.*;
-import static java.text.MessageFormat.format;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.kernel.solver.variables.set.SetVar;
 
 /**
  * Created by IntelliJ IDEA.
@@ -428,7 +439,7 @@ public class MaxTest {
 		IntegerVariable[] vars = constantArray(new int[]{1,2,3});
         IntegerVariable min = makeIntVar("min", 0, 3);
         SetVariable svar = makeSetVar("sv", 0, 2);
-        m.addConstraint(max(svar, vars, min, 0));
+        m.addConstraint(max(svar, vars, min, Options.C_MINMAX_SUP));
         s.read(m);
         s.solveAll();
         assertEquals("nb-sols", 8, s.getNbSolutions());        
@@ -448,4 +459,53 @@ public class MaxTest {
 		LOGGER.info("max " + s.getVar(max).getDomain().pretty());
 		assertTrue(s.getVar(max).getDomain().getSize() == 3);
 	}
+	
+	private void checkVar(IntDomainVar mv, int inf, int sup) {
+		LOGGER.info(mv.pretty()); 
+		assertEquals(inf, mv.getInf());
+		assertEquals(sup, mv.getSup());
+		assertEquals(sup-inf+1, mv.getDomainSize());
+
+	}
+
+	@Test
+	public void testSetEvents() throws ContradictionException {
+		final IntegerVariable[] vars = new IntegerVariable[]{
+				makeIntVar("v1", 0, 20),
+				makeIntVar("v2", 5, 10),
+				makeIntVar("v3", 3, 8),
+				makeIntVar("v4", 15, 18)        	
+		};
+		final IntegerVariable min = makeIntVar("min", -10, 25);
+		final SetVariable svar = makeSetVar("sv", 0, 3);
+		final Constraint c = max(svar, vars, min);
+		m.addConstraint(c);
+		s.read(m);
+		s.propagate();
+
+		final IntDomainVar mv = s.getVar(min);
+		final SetVar sv = s.getVar(svar);
+
+		ChocoLogging.getTestLogger().setLevel(Level.INFO);
+		//checkMin(mv, -1, 20);
+
+		sv.addToKernel(2, null, false);
+		s.propagate();
+		checkVar(mv, 3, 20);
+		sv.remFromEnveloppe(0, null, false);
+		s.propagate();
+		checkVar(mv, 3, 18);
+		mv.updateSup(13, null, true);
+		s.propagate();
+		assertFalse(sv.isInDomainEnveloppe(3));
+		s.getVar(vars[1]).updateSup(9, null, true);
+		s.propagate();
+		checkVar(mv, 3, 9);
+		mv.updateInf(9, null, true);
+		s.propagate();
+		checkVar(mv, 9, 9);
+		assertTrue(sv.isInDomainKernel(1));
+		LOGGER.info(s.getCstr(c).pretty());
+	};
+
 }
