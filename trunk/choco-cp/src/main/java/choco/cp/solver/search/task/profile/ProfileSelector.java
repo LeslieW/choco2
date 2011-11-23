@@ -25,7 +25,7 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package choco.cp.solver.search.task;
+package choco.cp.solver.search.task.profile;
 
 import java.util.BitSet;
 import java.util.Iterator;
@@ -33,6 +33,7 @@ import java.util.List;
 
 import choco.cp.common.util.preprocessor.detector.scheduling.DisjunctiveSModel;
 import choco.cp.solver.constraints.global.scheduling.precedence.ITemporalSRelation;
+import choco.cp.solver.search.task.OrderingValSelector;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintType;
 import choco.kernel.solver.ContradictionException;

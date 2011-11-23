@@ -30,7 +30,6 @@ package choco.scheduling;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -40,12 +39,11 @@ import java.util.List;
 
 import org.junit.Test;
 
-import choco.cp.solver.search.task.ProbabilisticProfile;
+import choco.cp.solver.search.task.profile.ProbabilisticProfile;
 import choco.kernel.solver.constraints.global.scheduling.FakeResource;
 import choco.kernel.solver.constraints.global.scheduling.ICumulativeResource;
 import choco.kernel.solver.constraints.global.scheduling.IResource;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.solver.variables.scheduling.AbstractTask;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.ITask;
 import choco.kernel.visu.VisuFactory;
@@ -213,97 +211,6 @@ public class TestProbProfile {
 	}
 
 }
-
-
-class SimpleTask extends AbstractTask {
-
-	private static int nextID=0;
-
-	private final Point domain;
-
-	private final int duration;
-
-
-	/**
-	 *
-	 * @param est
-	 * @param lst
-	 * @param duration
-	 */
-	public SimpleTask(int est,int lst, int duration) {
-		super(nextID++, "T"+nextID);
-		this.domain = new Point(est, lst>=est ? lst :est);
-		this.duration = duration>0 ? duration : 0;
-	}
-
-
-	/**
-	 * @see ITask#getECT()
-	 */
-	@Override
-	public int getECT() {
-		return domain.x+duration;
-	}
-
-	/**
-	 * @see ITask#getEST()
-	 */
-	@Override
-	public int getEST() {
-		return domain.x;
-	}
-
-	/**
-	 * @see ITask#getLCT()
-	 */
-	@Override
-	public int getLCT() {
-		return domain.y+duration;
-	}
-
-	/**
-	 * @see ITask#getLST()
-	 */
-	@Override
-	public int getLST() {
-		return domain.y;
-	}
-
-	/**
-	 * @see ITask#getMinDuration()
-	 */
-	@Override
-	public int getMinDuration() {
-		return duration;
-	}
-
-	/**
-	 * @see ITask#hasConstantDuration()
-	 */
-	@Override
-	public boolean hasConstantDuration() {
-		return true;
-	}
-
-	/**
-	 * @see ITask#isScheduled()
-	 */
-	@Override
-	public boolean isScheduled() {
-		return domain.x==domain.y;
-	}
-
-	/**
-	 * @see ITask#getMaxDuration()
-	 */
-	@Override
-	public int getMaxDuration() {
-		return getMinDuration();
-	}
-
-
-}
-
 
 class SimpleResource implements ICumulativeResource<SimpleTask> {
 
