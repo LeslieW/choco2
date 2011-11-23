@@ -27,12 +27,21 @@
 
 package choco.kernel.model.constraints.automaton;
 
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.solver.SolverException;
 import dk.brics.automaton.RegExp;
-
-import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.

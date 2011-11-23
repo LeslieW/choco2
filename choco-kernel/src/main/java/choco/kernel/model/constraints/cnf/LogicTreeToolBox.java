@@ -26,11 +26,12 @@
  */
 package choco.kernel.model.constraints.cnf;
 
-import choco.kernel.model.variables.integer.IntegerVariable;
 import gnu.trove.TLongObjectHashMap;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import choco.kernel.model.variables.integer.IntegerVariable;
 
 /**
  * <br/>

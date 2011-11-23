@@ -27,14 +27,14 @@
 
 package choco.kernel.model.constraints.automaton;
 
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.iterators.IntEnumeration;
-import choco.kernel.memory.structure.IndexedObject;
-
 import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.logging.Logger;
+
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.util.iterators.IntEnumeration;
+import choco.kernel.memory.structure.IndexedObject;
 
 /*
  * Created by IntelliJ IDEA.

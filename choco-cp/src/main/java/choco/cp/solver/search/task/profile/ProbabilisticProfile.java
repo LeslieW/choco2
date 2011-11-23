@@ -25,7 +25,7 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package choco.cp.solver.search.task;
+package choco.cp.solver.search.task.profile;
 
 import gnu.trove.TIntIntHashMap;
 
