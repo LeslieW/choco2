@@ -79,7 +79,7 @@ public abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint
 		this.emptySetPolicy = emptySetPolicy;
 		awakeOnFirstKer = environment.makeBool(true);
 		indexOfMinimumVariable = environment.makeInt(-1);
-		if (setvar.getEnveloppeInf() < 0 || setvar.getEnveloppeSup() > intvars.length - 2) {
+		if (setvar.getEnveloppeDomainSize() > 0 && (setvar.getEnveloppeInf() < 0 || setvar.getEnveloppeSup() > intvars.length - 2)) {
 			throw new SolverException("The enveloppe of the set variable " + setvar.pretty() + " is greater than the array");
 		}
 	}

@@ -148,13 +148,13 @@ public class GraphDTC implements IDotty {
 	}
 
 
-	public final boolean isTransitiveArcAdded() {
+	public final boolean acceptTransitiveArcs() {
 		return transitiveArcAdded;
 	}
 
 
-	public final void setTransitiveArcAdded(boolean transitiveArcAdded) {
-		transitiveArcAdded = transitiveArcAdded;
+	public final void setAcceptTransitiveArcs(boolean transitiveArcAdded) {
+		this.transitiveArcAdded = transitiveArcAdded;
 	}
 
 
@@ -209,7 +209,7 @@ public class GraphDTC implements IDotty {
 		}else {
 			if(successors[i].contains(j)) {
 				return EXISTING;
-			}else if( isTransitiveArcAdded()) {
+			}else if( acceptTransitiveArcs()) {
 				successors[i].add(j);
 				predecessors[j].add(i);
 				nbEdges++;
@@ -281,6 +281,16 @@ public class GraphDTC implements IDotty {
 	}
 
 	
+
+	public final int getN() {
+		return n;
+	}
+
+
+	public final int getNbEdges() {
+		return nbEdges;
+	}
+
 
 	public final boolean isEmpty() {
 		return nbEdges == 0;
