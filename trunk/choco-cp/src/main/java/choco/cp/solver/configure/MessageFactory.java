@@ -58,6 +58,7 @@ public final class MessageFactory {
                 break;
         }
 		if( conf.readBoolean(STOP_AT_FIRST_SOLUTION) ) b.append("FIRST_SOLUTION    ");
+		else b.append("ALL_SOLUTIONS    ");
 		b.append(name).append("    ");
 		b.append(conf.readString(RANDOM_SEED)).append(" SEED");
 		return b.toString();

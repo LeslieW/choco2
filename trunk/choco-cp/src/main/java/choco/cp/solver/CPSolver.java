@@ -143,7 +143,7 @@ public class CPSolver implements Solver {
     /**
      * The propagation engine to propagate during solving.
      */
-    PropagationEngine propagationEngine;
+    protected PropagationEngine propagationEngine;
 
     /**
      * an index useful for re-propagating cuts (static constraints) upon
@@ -333,6 +333,7 @@ public class CPSolver implements Solver {
     public CPSolver(Configuration configuration) {
         this(new EnvironmentTrailing(), configuration);
     }
+    
 
     public CPSolver(IEnvironment env, Configuration configuration) {
         this.environment = env;

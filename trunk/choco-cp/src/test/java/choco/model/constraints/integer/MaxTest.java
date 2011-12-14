@@ -507,5 +507,21 @@ public class MaxTest {
 		assertTrue(sv.isInDomainKernel(1));
 		LOGGER.info(s.getCstr(c).pretty());
 	};
+	
+	
+	@Test
+	public void testBug_tlapeg07() {
+		int[] indexes = new int[]{}; 
+		SetVariable set = makeSetVar("set", indexes); 
+		int[] values = new int[]{5, 10, 15}; 
+		IntegerVariable max = makeIntVar("max", values, "cp:enum"); 
+		CPModel mod = new CPModel(); 
+		mod.addConstraint(max(set, constantArray(values), max)); 
+		CPSolver s = new CPSolver(); 
+		s.read(mod); s.solve(); 
+		//buggy versions throws :
+		//Exception in thread "main" choco.kernel.solver.SolverException: 
+		//The enveloppe of the set variable set {Env[], Ker[]} is greater than the array
+	}
 
 }

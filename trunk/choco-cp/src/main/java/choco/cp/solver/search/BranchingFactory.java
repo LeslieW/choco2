@@ -111,6 +111,10 @@ public final class BranchingFactory {
 
 	//*************************************************************************//
 
+	public static AssignVar lexicographic(Solver solver) {
+		return lexicographic(solver, solver.getIntDecisionVars());
+	}
+	
 	public static AssignVar lexicographic(Solver solver, IntDomainVar[] vars) {
 		return lexicographic(solver, vars, new MinVal());
 	}
