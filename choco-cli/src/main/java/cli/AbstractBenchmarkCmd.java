@@ -83,7 +83,7 @@ public abstract class AbstractBenchmarkCmd extends AbstractCmdLine implements Fi
 	protected Integer timeLimit;
 
 	@Option(name="-v",aliases={"--verbosity"},usage="set the verbosity level")
-	public static void setGlobalVerbosity(Verbosity verbosity) {
+	public void setGlobalVerbosity(Verbosity verbosity) {
 		ChocoLogging.setVerbosity(verbosity);
 	}
 
