@@ -1710,7 +1710,7 @@ public class CPSolver implements Solver {
     
     @Override
 	public int getNbConstraints() {
-		return getNbIntConstraints() + nogoodStore.getNbClause();
+		return getNbIntConstraints() + (nogoodStore == null ? 0 : nogoodStore.getNbClause());
 	}
 
 	/**

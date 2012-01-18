@@ -107,7 +107,7 @@ public final class MessageFactory {
 	}
 
 	public static String getModellingMsg(Solver solver) {
-		return solver.getNbVars()+"VARIABLES    "+solver.getNbConstraints()+"CONSTRAINTS";
+		return solver.getNbVars()+" VARIABLES    "+solver.getNbConstraints()+" CONSTRAINTS";
 	}
 
 }
