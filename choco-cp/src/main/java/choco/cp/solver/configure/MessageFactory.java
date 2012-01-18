@@ -44,19 +44,19 @@ public final class MessageFactory {
 
 	public static String getGeneralMsg(Configuration conf, String name) {
 		final StringBuilder b = new StringBuilder(128);
-        ResolutionPolicy policy = conf.readEnum(RESOLUTION_POLICY, ResolutionPolicy.class);
-        switch (policy) {
-            case MAXIMIZE:
-                b.append("MAXIMIZE    ");
-                break;
-            case MINIMIZE:
-                b.append("MINIMIZE    ");
-                break;
-            case SATISFACTION:
-            default:
-                b.append("CSP    ");
-                break;
-        }
+		ResolutionPolicy policy = conf.readEnum(RESOLUTION_POLICY, ResolutionPolicy.class);
+		switch (policy) {
+		case MAXIMIZE:
+			b.append("MAXIMIZE    ");
+			break;
+		case MINIMIZE:
+			b.append("MINIMIZE    ");
+			break;
+		case SATISFACTION:
+		default:
+			b.append("CSP    ");
+			break;
+		}
 		if( conf.readBoolean(STOP_AT_FIRST_SOLUTION) ) b.append("FIRST_SOLUTION    ");
 		else b.append("ALL_SOLUTIONS    ");
 		b.append(name).append("    ");
@@ -70,11 +70,11 @@ public final class MessageFactory {
 			return name+ ' ' + conf.readString(boundKey)+ ' ' +lim.getUnit()+"    ";
 		} else return "";
 	}
-	
+
 	public static String getLimitMsg(Solver solver) {
 		final Configuration conf = solver.getConfiguration();
 		return getLimitMsg(conf, "SEARCH_LIMIT", SEARCH_LIMIT, SEARCH_LIMIT_BOUND) + 
-		getLimitMsg(conf, "RESTART_LIMIT", SEARCH_LIMIT, SEARCH_LIMIT_BOUND);
+				getLimitMsg(conf, "RESTART_LIMIT", SEARCH_LIMIT, SEARCH_LIMIT_BOUND);
 	}
 
 	private static String getPolicyMsg(Configuration conf, String name, String growKey) {
@@ -106,5 +106,8 @@ public final class MessageFactory {
 		return b.toString();
 	}
 
+	public static String getModellingMsg(Solver solver) {
+		return solver.getNbVars()+"VARIABLES    "+solver.getNbConstraints()+"CONSTRAINTS";
+	}
 
 }
