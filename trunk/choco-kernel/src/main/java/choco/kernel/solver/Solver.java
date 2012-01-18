@@ -364,6 +364,13 @@ public interface Solver extends IMeasures, IPretty {
 	 *
 	 * @return the total number of variables in the model
 	 */
+	public int getNbVars();
+
+	/**
+	 * retrieving the total number of integer variables
+	 *
+	 * @return the total number of integer variables in the model
+	 */
 	public int getNbIntVars();
 
 	/**
@@ -633,6 +640,13 @@ public interface Solver extends IMeasures, IPretty {
 	 * retrieving the total number of constraints over integers
 	 *
 	 * @return the total number of constraints over integers in the model
+	 */
+	public int getNbConstraints();
+
+	/**
+	 * retrieving the total number of constraints
+	 *
+	 * @return the total number of constraints in the model
 	 */
 	public int getNbIntConstraints();
 

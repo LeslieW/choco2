@@ -1618,7 +1618,13 @@ public class CPSolver implements Solver {
         return intVars.indexOf(c);
     }
 
-    /**
+    
+    @Override
+	public int getNbVars() {
+    	return getNbIntVars() + getNbRealVars() + getNbSetVars() + getNbTaskVars();
+	}
+
+	/**
      * retrieving the total number of variables
      *
      * @return the total number of variables in the model
@@ -1701,7 +1707,13 @@ public class CPSolver implements Solver {
         return taskVars.getQuick(i);
     }
 
-    /**
+    
+    @Override
+	public int getNbConstraints() {
+		return getNbIntConstraints() + nogoodStore.getNbClause();
+	}
+
+	/**
      * retrieving the total number of constraints over integers
      *
      * @return the total number of constraints over integers in the model
