@@ -296,9 +296,9 @@ public class IntVarEvent<C extends AbstractSConstraint & IntPropagator> extends 
             eventType = (eventType | promoteEvent(basicEvt));
             // in case the cause of this update is different from the previous cause, all causes are forgotten
             // (so that the constraints that caused the event will be reawaken)
-            if (cause != constraint) {
-                cause = null;
-            }
+            if (forceAwake || cause != constraint) {
+               cause = null;
+}
         }
     }
 }
