@@ -96,11 +96,13 @@ public class SBitSet implements IStateBitSet{
     private void recalculateWordsInUse() {
         // Traverse the bitset until a used word is found
         int i;
-        for (i = wordsInUse.get() - 1; i >= 0; i--)
+        int n = wordsInUse.get();
+        for (i = n - 1; i >= 0; i--)
             if (words[i].get() != 0)
                 break;
-
-        wordsInUse.set(i + 1); // The new logical size
+        if(i + 1 < n){
+            wordsInUse.set(i + 1); // The new logical size
+        }
     }
 
     /**
@@ -384,12 +386,14 @@ public class SBitSet implements IStateBitSet{
             throw new IndexOutOfBoundsException("bitIndex < 0: " + bitIndex);
 
         int wordIndex = wordIndex(bitIndex);
-        if (wordIndex >= wordsInUse.get())
+        int n = wordsInUse.get();
+        if (wordIndex >= n)
             return;
 
         words[wordIndex].set(words[wordIndex].get() & ~(1L << bitIndex));
 
-        recalculateWordsInUse();
+        if(wordIndex == n-1)
+            recalculateWordsInUse();
         //checkInvariants();
     }
 
@@ -410,14 +414,15 @@ public class SBitSet implements IStateBitSet{
         if (fromIndex == toIndex)
             return;
 
+        int wiu = wordsInUse.get();
         int startWordIndex = wordIndex(fromIndex);
-        if (startWordIndex >= wordsInUse.get())
+        if (startWordIndex >= wiu)
             return;
 
         int endWordIndex = wordIndex(toIndex - 1);
-        if (endWordIndex >= wordsInUse.get()) {
+        if (endWordIndex >= wiu) {
             toIndex = length();
-            endWordIndex = wordsInUse.get() - 1;
+            endWordIndex = wiu - 1;
         }
 
         long firstWordMask = WORD_MASK << fromIndex;
@@ -438,7 +443,8 @@ public class SBitSet implements IStateBitSet{
             words[endWordIndex].set(words[endWordIndex].get() & ~lastWordMask);
         }
 
-        recalculateWordsInUse();
+       if(endWordIndex < wiu)
+            recalculateWordsInUse();
         //checkInvariants();
     }
 
@@ -553,13 +559,13 @@ public class SBitSet implements IStateBitSet{
      * @since 1.4
      */
     public int nextSetBit(int fromIndex) {
-        //if (fromIndex < 0)
-        //    throw new IndexOutOfBoundsException("fromIndex < 0: " + fromIndex);
+        if (fromIndex < 0) {
+            fromIndex = 0;
+        }
 
-        //checkInvariants();
-
+        int wiu = wordsInUse.get();
         int u = wordIndex(fromIndex);
-        if (u >= wordsInUse.get())
+        if (u >= wiu)
             return -1;
 
         long word = words[u].get() & (WORD_MASK << fromIndex);
@@ -567,9 +573,41 @@ public class SBitSet implements IStateBitSet{
         while (true) {
             if (word != 0)
                 return (u * BITS_PER_WORD) + Long.numberOfTrailingZeros(word);
-            if (++u == wordsInUse.get())
+            if (++u == wiu)
                 return -1;
             word = words[u].get();
+        }
+    }
+
+    /**
+     * Returns the index of the first bit that is set to <code>false</code>
+     * that occurs on or after the specified starting index.
+     *
+     * @param fromIndex the index to start checking from (inclusive).
+     * @return the index of the next clear bit.
+     * @throws IndexOutOfBoundsException if the specified index is negative.
+     * @since 1.4
+     */
+    public int nextClearBit(int fromIndex) {
+        // Neither spec nor implementation handle bitsets of maximal length.
+        // See 4816253.
+        if (fromIndex < 0) {
+            fromIndex = 0;
+        }
+
+        int wiu = wordsInUse.get();
+        int u = wordIndex(fromIndex);
+        if (u >= wiu)
+            return fromIndex;
+
+        long word = ~words[u].get() & (WORD_MASK << fromIndex);
+
+        while (true) {
+            if (word != 0)
+                return (u * BITS_PER_WORD) + Long.numberOfTrailingZeros(word);
+            if (++u == wiu)
+                return wiu * BITS_PER_WORD;
+            word = ~words[u].get();
         }
     }
 
@@ -587,22 +625,19 @@ public class SBitSet implements IStateBitSet{
 
 
     public int prevSetBit(int fromIndex) {
-//        if (fromIndex < 0)
-//            throw new IndexOutOfBoundsException("fromIndex < 0: " + fromIndex);
-
-        //checkInvariants();
-
-        int u = wordIndex(fromIndex);
-        if (u >= wordsInUse.get()) {
-            return length() - 1;
+        if (fromIndex < 0) {
+            return -1;
         }
 
-        long mask = ~(WORD_MASK << fromIndex + 1);
-        long word = words[u].get() & ( mask != 0 ? mask : WORD_MASK );
+        int u = wordIndex(fromIndex);
+        if (u >= wordsInUse.get())
+            return length() - 1;
+
+        long word = words[u].get() & (WORD_MASK >>> -(fromIndex + 1));
 
         while (true) {
             if (word != 0)
-                return (u * BITS_PER_WORD) + BIT_INDEX_MASK - Long.numberOfLeadingZeros(word);
+                return (u + 1) * BITS_PER_WORD - 1 - Long.numberOfLeadingZeros(word);
             if (u-- == 0)
                 return -1;
             word = words[u].get();
@@ -610,24 +645,19 @@ public class SBitSet implements IStateBitSet{
     }
 
     public int prevClearBit(int fromIndex) {
-//        if (fromIndex < 0)
-//            throw new IndexOutOfBoundsException("fromIndex < 0: " + fromIndex);
-
-        //checkInvariants();
-
-        int u = wordIndex(fromIndex);
-        if (u >= wordsInUse.get()) {
-            return fromIndex;
-        }else if(u < 0){
+        if (fromIndex < 0) {
             return -1;
         }
 
-        long mask = ~(WORD_MASK << fromIndex + 1);
-        long word = ~words[u].get() & ( mask != 0 ? mask : WORD_MASK );
+        int u = wordIndex(fromIndex);
+        if (u >= wordsInUse.get())
+            return fromIndex;
+
+        long word = ~words[u].get() & (WORD_MASK >>> -(fromIndex + 1));
 
         while (true) {
             if (word != 0)
-                return (u * BITS_PER_WORD) + BIT_INDEX_MASK - Long.numberOfLeadingZeros(word);
+                return (u + 1) * BITS_PER_WORD - 1 - Long.numberOfLeadingZeros(word);
             if (u-- == 0)
                 return -1;
             word = ~words[u].get();
@@ -639,38 +669,6 @@ public class SBitSet implements IStateBitSet{
     }
 
     /**
-     * Returns the index of the first bit that is set to <code>false</code>
-     * that occurs on or after the specified starting index.
-     *
-     * @param fromIndex the index to start checking from (inclusive).
-     * @return the index of the next clear bit.
-     * @throws IndexOutOfBoundsException if the specified index is negative.
-     * @since 1.4
-     */
-    public int nextClearBit(int fromIndex) {
-        // Neither spec nor implementation handle bitsets of maximal length.
-        // See 4816253.
-//        if (fromIndex < 0)
-//            throw new IndexOutOfBoundsException("fromIndex < 0: " + fromIndex);
-
-        //checkInvariants();
-
-        int u = wordIndex(fromIndex);
-        if (u >= wordsInUse.get())
-            return fromIndex;
-
-        long word = ~words[u].get() & (WORD_MASK << fromIndex);
-
-        while (true) {
-            if (word != 0)
-                return (u * BITS_PER_WORD) + Long.numberOfTrailingZeros(word);
-            if (++u == wordsInUse.get())
-                return wordsInUse.get() * BITS_PER_WORD;
-            word = ~words[u].get();
-        }
-    }
-
-    /**
      * Returns the "logical size" of this <code>BitSet</code>: the index of
      * the highest set bit in the <code>BitSet</code> plus one. Returns zero
      * if the <code>BitSet</code> contains no set bits.
@@ -679,11 +677,12 @@ public class SBitSet implements IStateBitSet{
      * @since 1.2
      */
     public int length() {
-        if (wordsInUse.get() == 0)
+        int wiu = wordsInUse.get();
+        if (wiu == 0)
             return 0;
 
-        return BITS_PER_WORD * (wordsInUse.get() - 1) +
-                (BITS_PER_WORD - Long.numberOfLeadingZeros(words[wordsInUse.get() - 1].get()));
+        return BITS_PER_WORD * (wiu - 1) +
+                (BITS_PER_WORD - Long.numberOfLeadingZeros(words[wiu - 1].get()));
     }
 
     /**
@@ -731,7 +730,7 @@ public class SBitSet implements IStateBitSet{
      */
     public int cardinality() {
         int sum = 0;
-        for (int i = 0; i < wordsInUse.get(); i++)
+        for (int i = wordsInUse.get()-1; i >=0 ; i--)
             sum += Long.bitCount(words[i].get());
         return sum;
     }
