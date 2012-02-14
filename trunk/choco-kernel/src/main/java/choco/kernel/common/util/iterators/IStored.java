@@ -24,48 +24,19 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package choco.kernel.common.util.disposable;
-
-import choco.kernel.common.util.iterators.IStored;
-
-import java.io.Serializable;
+package choco.kernel.common.util.iterators;
 
 /**
  * <br/>
  *
  * @author Charles Prud'homme
- * @since 17/02/11
+ * @since 14/02/12
  */
-public class PoolManager<E extends IStored> implements Serializable {
+public interface IStored {
 
-    final E[] elements;
-    final int capacity;
-    int idx;
+    void push();
 
-    public PoolManager() {
-        this(8);
-    }
+    void pop();
 
-    public PoolManager(int initialSize) {
-        elements = (E[]) new Object[initialSize];
-        capacity = initialSize;
-        idx = 0;
-    }
-
-    public E getE() {
-        if (idx == 0) {
-            return null;
-        } else {
-            E e = elements[idx--];
-            e.pop();
-            return e;
-        }
-    }
-
-    public void returnE(E element) {
-        if (!element.isStored() && idx < capacity) {
-            element.push();
-            elements[idx++] = element;
-        }
-    }
+    boolean isStored();
 }
