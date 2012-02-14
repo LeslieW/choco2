@@ -37,12 +37,14 @@ import choco.kernel.common.util.disposable.PoolManager;
 * Update : Choco 2.1.0
 */
 
-public final class OneValueIterator extends DisposableIntIterator {
+public final class OneValueIterator extends DisposableIntIterator implements IStored {
 
     private static final ThreadLocal<PoolManager<OneValueIterator>> manager = new ThreadLocal<PoolManager<OneValueIterator>>();
 
     private int value;
     private boolean next;
+
+    private boolean isStored;
 
     private OneValueIterator() {
     }
@@ -101,5 +103,20 @@ public final class OneValueIterator extends DisposableIntIterator {
     public void dispose() {
         super.dispose();
         manager.get().returnE(this);
+    }
+
+    @Override
+    public void push() {
+        isStored = true;
+    }
+
+    @Override
+    public void pop() {
+        isStored = false;
+    }
+
+    @Override
+    public boolean isStored() {
+        return isStored;
     }
 }

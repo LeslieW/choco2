@@ -29,7 +29,7 @@ package choco.kernel.common.util.iterators;
 
 import choco.kernel.common.util.disposable.PoolManager;
 
-public final class ArrayIterator<E> extends DisposableIterator<E> {
+public final class ArrayIterator<E> extends DisposableIterator<E>  implements IStored{
 
     private static final ThreadLocal<PoolManager<ArrayIterator>> manager = new ThreadLocal<PoolManager<ArrayIterator>>();
 
@@ -38,6 +38,8 @@ public final class ArrayIterator<E> extends DisposableIterator<E> {
     private int size;
 
     private int cursor;
+
+    private boolean isStored;
 
     private ArrayIterator() {
     }
@@ -110,5 +112,20 @@ public final class ArrayIterator<E> extends DisposableIterator<E> {
     public void dispose() {
         super.dispose();
         manager.get().returnE(this);
+    }
+
+    @Override
+    public void push() {
+        isStored = true;
+    }
+
+    @Override
+    public void pop() {
+        isStored = false;
+    }
+
+    @Override
+    public boolean isStored() {
+        return isStored;
     }
 }

@@ -35,13 +35,15 @@ import choco.kernel.common.util.disposable.PoolManager;
  * Date : 1 mars 2010<br/>
  * Since : Choco 2.1.1<br/>
  */
-public final class IntArrayIterator extends DisposableIntIterator {
+public final class IntArrayIterator extends DisposableIntIterator  implements IStored{
 
     private static final ThreadLocal<PoolManager<IntArrayIterator>> manager = new ThreadLocal<PoolManager<IntArrayIterator>>();
 
     private int[] elements;
     private int endIdx;
     private int curentIdx;
+
+    private boolean isStored;
 
     private IntArrayIterator() {
     }
@@ -108,5 +110,20 @@ public final class IntArrayIterator extends DisposableIntIterator {
     public void dispose() {
         super.dispose();
         manager.get().returnE(this);
+    }
+
+    @Override
+    public void push() {
+        isStored = true;
+    }
+
+    @Override
+    public void pop() {
+        isStored = false;
+    }
+
+    @Override
+    public boolean isStored() {
+        return isStored;
     }
 }
