@@ -47,7 +47,7 @@ public class PoolManager<E extends IStored> implements Serializable {
     }
 
     public PoolManager(int initialSize) {
-        elements = (E[]) new Object[initialSize];
+        elements = (E[]) new IStored[initialSize];
         capacity = initialSize;
         idx = 0;
     }
@@ -56,7 +56,7 @@ public class PoolManager<E extends IStored> implements Serializable {
         if (idx == 0) {
             return null;
         } else {
-            E e = elements[idx--];
+            E e = elements[--idx];
             e.pop();
             return e;
         }
