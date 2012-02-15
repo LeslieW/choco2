@@ -120,7 +120,7 @@ public final class SetNaryUnion extends AbstractLargeSetSConstraint {
     /**
      * Default propagation on instantiation.
      */
-    public void awakeOnInst(int varIdx) throws ContradictionException { //FIXME
+    public void awakeOnInst(int varIdx) throws ContradictionException {
         DisposableIntIterator it = null;
         try {
             if (varIdx == UNION_SET_INDEX) {
@@ -212,7 +212,7 @@ public final class SetNaryUnion extends AbstractLargeSetSConstraint {
     }
 
     private int getNbOccurence(int x) {
-        if (x >= offset && x < offset + occurCpt.length) {
+        if (x >= offset && x < offset + occurCpt.length && occurCpt[x - offset] != null) {
             return occurCpt[x - offset].get();
         }
         return 0;
