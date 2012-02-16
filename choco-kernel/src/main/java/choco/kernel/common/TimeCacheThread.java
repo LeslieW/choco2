@@ -38,8 +38,7 @@ import choco.kernel.solver.SolverException;
  */
 public final class TimeCacheThread extends Thread {
 
-	// TODO - Increase heartbeat to 200m or 500ms ? - created 5 juil. 2011 by Arnaud Malapert
-	public final static int CHOCO_MS_TIME_PRECISION = 100;
+	public final static int CHOCO_MS_TIME_PRECISION = 200;
 		
 	public static volatile long currentTimeMillis = System.currentTimeMillis();
 

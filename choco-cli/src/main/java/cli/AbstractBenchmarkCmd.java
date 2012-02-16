@@ -79,6 +79,7 @@ public abstract class AbstractBenchmarkCmd extends AbstractCmdLine implements Fi
 	@Option(name="-s",aliases={"--seed", "-seed"},usage="global seed")
 	protected long seed;
 
+	// TODO - Change time limit option from -tl to -t - created 16 févr. 2012 by A. Malapert
 	@Option(name="-tl",aliases={"--timeLimit", "-time"},usage="time limit in seconds")
 	protected Integer timeLimit;
 
