@@ -47,7 +47,6 @@ public abstract class AbstractMinimizeModel extends AbstractInstanceModel {
 
 	private IHeuristic heuristics;
 
-	// TODO - Change to Integer ? - created 10 juil. 2011 by Arnaud Malapert
 	private int computedLowerBound;
 
 	private IVisuManager chartManager;

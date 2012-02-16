@@ -198,7 +198,7 @@ public class PackTest {
 		for (int i = 0; i < vars.length; i++) {
 			assertTrue(vars[i].isInstantiatedTo(vals[i]));
 		}
-		// FIXME - fill bin is does not detect the completion of bins 0,1 by 3,3 and then bin 2 by 2 - created 12 juil. 2011 by Arnaud Malapert
+		// FIXME - fill bin does not detect the completion of bins 0,1 by 3,3 and then bin 2 by 2 - created 12 juil. 2011 by Arnaud Malapert
 		//ChocoLogging.flushLogs();
 	}
 

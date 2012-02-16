@@ -56,7 +56,7 @@ import java.util.logging.Logger;
  * CSP described in the xml format of the 2008 competition
  */
 public class XmlModel {
-
+	// TODO - Replace class by AbstractInstanceModel ! - created 16 févr. 2012 by A. Malapert
 	public final static Logger LOGGER = ChocoLogging.getMainLogger();
 
 	//heuristics

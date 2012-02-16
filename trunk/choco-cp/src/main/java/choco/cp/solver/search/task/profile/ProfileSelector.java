@@ -44,7 +44,6 @@ import choco.kernel.solver.search.integer.VarValPairSelector;
 import choco.kernel.solver.variables.scheduling.ITask;
 
 
-// TODO - migrate from contribs to solver - created 20 août 2011 by Arnaud Malapert
 public final class ProfileSelector implements VarValPairSelector {
 
 	private final Solver solver;

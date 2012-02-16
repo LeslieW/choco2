@@ -69,7 +69,6 @@ public abstract class AbstractVar implements Var {
 	 * The number of extensions registered to this class
 	 */
 	private static int ABSTRACTVAR_EXTENSIONS_NB = 0;
-
 	/**
 	 * The set of registered extensions (in order to deliver one and only one index for each extension !)
 	 */
@@ -93,7 +92,8 @@ public abstract class AbstractVar implements Var {
 	 * The extensions of this constraint, in order to add some data linked to this constraint (for specific algorithms)
 	 */
 	public Extension[] extensions = new Extension[4];
-
+	// TODO - Create extension on demand ? - created 16 févr. 2012 by A. Malapert
+	
 	public String getName() {
 		return name;
 	}
