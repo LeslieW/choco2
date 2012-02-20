@@ -2123,10 +2123,10 @@ public class Choco {
      * Ensures the variable min to represent the minimum value in ivars that occurs in the sublist associated with set.
      * An element vars[i] belongs to the sublist if the set contains i.
      *
-     * @param svar                 the set which defined the sublist
-     * @param ivars                 List of variables
-     * @param min                  Variable to represent the maximum among the sublist
-     * @param options 			   {@link Options#C_MINMAX_INF}, {@link Options#C_MINMAX_SUP}
+     * @param svar    the set which defined the sublist
+     * @param ivars   List of variables
+     * @param min     Variable to represent the maximum among the sublist
+     * @param options {@link Options#C_MINMAX_INF}, {@link Options#C_MINMAX_SUP}
      * @return Constraint
      */
     public static Constraint min(SetVariable svar, IntegerVariable[] ivars, IntegerVariable min, String... options) {
@@ -2158,10 +2158,10 @@ public class Choco {
      * Ensures the variable min to represent the maximum value in ivars that occurs in the sublist associated with set.
      * An element vars[i] belongs to the sublist if the set contains i.
      *
-     * @param svar                 the set which defined the sublist
-     * @param ivars                 List of variables
-     * @param min                  Variable to represent the maximum among the sublist
-     * @param options 			   {@link Options#C_MINMAX_INF}, {@link Options#C_MINMAX_SUP}
+     * @param svar    the set which defined the sublist
+     * @param ivars   List of variables
+     * @param min     Variable to represent the maximum among the sublist
+     * @param options {@link Options#C_MINMAX_INF}, {@link Options#C_MINMAX_SUP}
      * @return Constraint
      */
     public static Constraint max(SetVariable svar, IntegerVariable[] ivars, IntegerVariable min, String... options) {
@@ -2401,10 +2401,10 @@ public class Choco {
      * <p/>Bounds-consistency algorithm linear in n (the number of variables)
      *
      * @param variables collection of variables
-     * @param sum resulting variable
+     * @param sum       resulting variable
      * @return Constraint
      */
-    public static Constraint increasingSum(IntegerVariable[] variables, IntegerVariable sum){
+    public static Constraint increasingSum(IntegerVariable[] variables, IntegerVariable sum) {
         return new ComponentConstraint(ConstraintType.INCREASINGSUM, null, ArrayUtils.append(variables, new IntegerVariable[]{sum}));
     }
 
@@ -2577,7 +2577,7 @@ public class Choco {
      * to the number of items of the collection Y then the jth variable of the collection Y is assigned to i.
      * <br/>- Conversely, if the jth variable of the collection Y is assigned to i and if i is less than or equal
      * to the number of items of the collection X then the ith variable of the collection X is assigned to j.
-     *
+     * <p/>
      * <p/>
      * See <a href="http://www.emn.fr/z-info/sdemasse/gccat/Cinverse_within_range.html">inverse_within_range</a>
      *
@@ -3858,7 +3858,8 @@ public class Choco {
     /**
      * Ensures that the values of integer variables are contained in a set variable.
      * <br/> &#8704; i in [1,n], vars_i &#8712; sv
-     * @param sv the set variable
+     *
+     * @param sv   the set variable
      * @param vars integer variables whose values should be contained in the set
      * @return the new constraint
      */
@@ -4376,6 +4377,12 @@ public class Choco {
      * @return a constraint
      */
     public static Constraint equation(int val, IntegerVariable[] vars, int[] coeffs) {
+        if (val < 0)
+            throw new ModelException("equation does not support negative value for val :" + val + "\nConsider using scalar constraints.");
+        for (int i = 0; i < coeffs.length; i++) {
+            if (coeffs[i] < 0)
+                throw new ModelException("equation does not support negative coefficient.\nConsider using scalar constraints.");
+        }
         return new ComponentConstraint(ConstraintType.REGULAR,
                 new int[][]{coeffs, new int[]{val}}, vars);
     }
@@ -4446,6 +4453,12 @@ public class Choco {
      */
     @Deprecated
     public static Constraint equation(IntegerVariable[] vars, int[] coeffs, int val) {
+        if (val < 0)
+            throw new ModelException("equation does not support negative value for val :" + val + "\nConsider using scalar constraints.");
+        for (int i = 0; i < coeffs.length; i++) {
+            if (coeffs[i] < 0)
+                throw new ModelException("equation does not support negative coefficient.\nConsider using scalar constraints.");
+        }
         return new ComponentConstraint(ConstraintType.REGULAR,
                 new int[][]{coeffs, new int[]{val}}, vars);
     }

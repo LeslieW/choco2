@@ -38,6 +38,7 @@ import choco.kernel.common.util.tools.StatisticUtils;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.trailing.EnvironmentTrailing;
 import choco.kernel.model.Model;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -47,6 +48,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -253,7 +255,7 @@ public class KnapsackTest {
     public void testEquation() {
         int n = 3;
         IntegerVariable[] bvars = makeIntVarArray("b", n, 0, 2, Options.V_ENUM);
-        int[] coefs = new int[]{-1, 2, 3};
+        int[] coefs = new int[]{1, 2, 3};
         int charge = 5;
         Constraint knapsack = equation(charge, bvars, coefs);
 
@@ -265,6 +267,51 @@ public class KnapsackTest {
 
         CPModel m2 = new CPModel();
         m2.addConstraint(Choco.eq(charge, scalar(coefs, bvars)));
+        CPSolver s2 = new CPSolver();
+        s2.read(m2);
+        s2.solveAll();
+        org.junit.Assert.assertEquals(s.getSolutionCount(), s2.getSolutionCount());
+    }
+
+    @Test(expected = ModelException.class)
+    public void testEquation2() {
+        int n = 3;
+        IntegerVariable[] bvars = makeIntVarArray("b", n, 0, 1, Options.V_ENUM);
+        IntegerVariable var = makeIntVar("v", 0, n - 1, Options.V_ENUM);
+        int[] coefs = new int[n];
+        Arrays.fill(coefs,1);
+        Constraint knapsack = equation(var, bvars, coefs);
+
+        CPModel m = new CPModel();
+        m.addConstraint(knapsack);
+        CPSolver s = new CPSolver();
+        s.read(m);
+        s.solveAll();
+
+        CPModel m2 = new CPModel();
+        m2.addConstraint(Choco.eq(var, scalar(coefs, bvars)));
+        CPSolver s2 = new CPSolver();
+        s2.read(m2);
+        s2.solveAll();
+        org.junit.Assert.assertEquals(s.getSolutionCount(), s2.getSolutionCount());
+    }
+
+    @Test(expected = ModelException.class)
+    public void testEquation3() {
+        int n = 3;
+        IntegerVariable[] bvars = makeIntVarArray("b", n, 0, 1, Options.V_ENUM);
+        int[] coefs = new int[n];
+        Arrays.fill(coefs,-1);
+        Constraint knapsack = equation(-n, bvars, coefs);
+
+        CPModel m = new CPModel();
+        m.addConstraint(knapsack);
+        CPSolver s = new CPSolver();
+        s.read(m);
+        s.solveAll();
+
+        CPModel m2 = new CPModel();
+        m2.addConstraint(Choco.eq(-n+1, scalar(coefs, bvars)));
         CPSolver s2 = new CPSolver();
         s2.read(m2);
         s2.solveAll();
