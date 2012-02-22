@@ -65,11 +65,11 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
     int nbVars;  //number of variables (without the cardinalities variables)
     private IntDomainVar[] card;
 
-    Interval[] minsorted,maxsorted;
+    Interval[] minsorted, maxsorted;
 
     private final int[] minOccurrences, maxOccurrences;
 
-    PartialSum l,u;
+    PartialSum l, u;
 
     private int firstValue;
     int range;
@@ -108,9 +108,8 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
                        int lastCardValue, IEnvironment environment) {
         super(ConstraintEvent.LINEAR, makeVarTable(vars, card));
         this.card = card;
-//        build(vars.length, firstCardValue, lastCardValue, environment);
         int n = vars.length;
-        int range = lastCardValue - firstCardValue + 1;
+        this.range = lastCardValue - firstCardValue + 1;
         this.nbVars = n;
         treelinks = new int[2 * n + 2];
         d = new int[2 * n + 2];
@@ -132,7 +131,6 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
         }
         this.offset = firstCardValue;
         this.firstValue = firstCardValue;
-        this.range = range;
         val_maxOcc = new IStateInt[range];
         val_minOcc = new IStateInt[range];
         for (int i = 0; i < range; i++) {
@@ -152,6 +150,13 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
 
     public int getMinOcc(int i) {
         return card[i].getInf();
+    }
+
+    protected void init() {
+        for (int i = 0; i < range; i++) {
+            val_maxOcc[i].set(0);
+            val_minOcc[i].set(0);
+        }
     }
 
 //    public void updateSup(IntDomainVar v, int nsup, int idx) throws ContradictionException {
@@ -287,7 +292,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
         for (i = 0; i <= nbBounds; i++) {
             d[i] = u.sum(bounds[i], bounds[treelinks[i] = h[i] = i + 1] - 1);
         }
-        for (i = nbVars; --i >= 0;) { // visit intervals in decreasing min order
+        for (i = nbVars; --i >= 0; ) { // visit intervals in decreasing min order
             // get interval bounds
             x = minsorted[i].maxrank;
             y = minsorted[i].minrank;
@@ -501,10 +506,10 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
     }
 
     private void initCard() throws ContradictionException {
-        for (int i = 0; i < range ; i++) {
-            if(val_maxOcc[i].get() == 0){
+        for (int i = 0; i < range; i++) {
+            if (val_maxOcc[i].get() == 0) {
                 card[i].instantiate(0, this, false);
-            }else{
+            } else {
                 card[i].updateInf(val_minOcc[i].get(), this, false);
             }
         }
@@ -512,6 +517,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
 
     @Override
     public void awake() throws ContradictionException {
+        init();
         initBackDataStruct();
         initCard();
         for (int i = 0; i < vars.length; i++) {
@@ -534,7 +540,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
 
     public boolean directInconsistentCount() {
         for (int i = 0; i < range; i++) {
-            if(val_maxOcc[i].get() < card[i].getInf() ||
+            if (val_maxOcc[i].get() < card[i].getInf() ||
                     val_minOcc[i].get() > card[i].getSup())
                 return true;
         }
@@ -558,11 +564,11 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
 
         // The variable domains must be inside the domain defined by
         // the lower bounds (l) and the upper bounds (u).
-        assert(l.minValue() == u.minValue());
-        assert(l.maxValue() == u.maxValue());
-        assert(l.minValue() <= minsorted[0].var.getInf());
-        assert(maxsorted[nbVars-1].var.getSup() <= u.maxValue());
-        assert(!directInconsistentCount());
+        assert (l.minValue() == u.minValue());
+        assert (l.maxValue() == u.maxValue());
+        assert (l.minValue() <= minsorted[0].var.getInf());
+        assert (maxsorted[nbVars - 1].var.getSup() <= u.maxValue());
+        assert (!directInconsistentCount());
 
         // Checks if there are values that must be assigned before the
         // smallest interval or after the last interval. If this is
@@ -594,7 +600,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
     //in case of bound variables, the bound has to be checked
     public final void filterBCOnInf(int i) throws ContradictionException {
         int inf = vars[i].getInf();
-        int nbInf = val_minOcc[inf-offset].get();
+        int nbInf = val_minOcc[inf - offset].get();
         if (vars[i].isInstantiatedTo(inf)) {
             nbInf--;
         }
@@ -616,7 +622,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
     //in case of bound variables, the bound has to be checked
     public final void filterBCOnSup(int i) throws ContradictionException {
         int sup = vars[i].getSup();
-        int nbSup = val_minOcc[sup-offset].get();
+        int nbSup = val_minOcc[sup - offset].get();
         if (vars[i].isInstantiatedTo(sup)) {
             nbSup--;
         }
@@ -634,7 +640,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
         if (i < nbVars) {
             //update lower bounds of cardinalities
             val_minOcc[val - offset].add(1);
-            card[val - offset].updateInf(val_minOcc[val-offset].get(), this, false);
+            card[val - offset].updateInf(val_minOcc[val - offset].get(), this, false);
             filterBCOnInst(val);
         } else {
             filterBCOnInst(i - nbVars + offset);
@@ -663,7 +669,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
     }
 
     public final void filterBCOnRem(int val) throws ContradictionException {
-        int nbpos = val_maxOcc[val- offset].get();
+        int nbpos = val_maxOcc[val - offset].get();
         if (nbpos < getMinOcc(val - offset)) {
             this.fail();
         } else if (nbpos == getMinOcc(val - offset)) {

@@ -97,7 +97,6 @@ public class GlobalCardinality extends AbstractBipartiteFlow {
         }
     }
 
-
     public Object clone() throws CloneNotSupportedException {
         GlobalCardinality newc = (GlobalCardinality) super.clone();
         System.arraycopy(this.minFlow, 0, newc.minFlow, 0, this.minFlow.length);
@@ -194,6 +193,7 @@ public class GlobalCardinality extends AbstractBipartiteFlow {
      * @throws ContradictionException
      */
     public void awake() throws ContradictionException {
+        init();
         for (int i = 0; i < nbLeftVertices; i++) {
             vars[i].updateInf(minValue, this, false);
             vars[i].updateSup(maxValue, this, false);
@@ -235,5 +235,5 @@ public class GlobalCardinality extends AbstractBipartiteFlow {
         }
         return new String(buf);
 
-  }
+    }
 }
