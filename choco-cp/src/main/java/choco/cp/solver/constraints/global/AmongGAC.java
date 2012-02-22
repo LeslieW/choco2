@@ -66,8 +66,6 @@ public final class AmongGAC extends AbstractLargeIntSConstraint {
 
     private IStateInt[] occs;
 
-    private IEnvironment env;
-
     /**
      * Constructs a constraint with the specified priority.
      * <p/>
@@ -80,13 +78,15 @@ public final class AmongGAC extends AbstractLargeIntSConstraint {
     public AmongGAC(IntDomainVar[] vars, int[] values, IEnvironment environment) {
         super(ConstraintEvent.QUADRATIC, vars);
         nb_vars = vars.length - 1;
-        env = environment;
         this.values = values;
         both = environment.makeBitSet(nb_vars);
         LB = environment.makeInt(0);
         UB = environment.makeInt(0);
         this.setValues = new TIntHashSet(values);
         this.occs = new IStateInt[nb_vars];
+        for (int i = 0; i < nb_vars; i++) {
+            occs[i] = environment.makeInt(0);
+        }
     }
 
     @Override
@@ -95,6 +95,15 @@ public final class AmongGAC extends AbstractLargeIntSConstraint {
             return IntVarEvent.INSTINT_MASK + IntVarEvent.INCINF_MASK + IntVarEvent.DECSUP_MASK;
         }
         return IntVarEvent.INSTINT_MASK + IntVarEvent.REMVAL_MASK;
+    }
+
+    protected void init() {
+        LB.set(0);
+        UB.set(0);
+        both.clear();
+        for (int i = 0; i < nb_vars; i++) {
+            this.occs[i].set(0);
+        }
     }
 
     /**
@@ -107,6 +116,7 @@ public final class AmongGAC extends AbstractLargeIntSConstraint {
      */
     @Override
     public void awake() throws ContradictionException {
+        this.init();
         int lb = 0;
         int ub = nb_vars;
         for (int i = 0; i < nb_vars; i++) {
@@ -115,7 +125,7 @@ public final class AmongGAC extends AbstractLargeIntSConstraint {
             for (int value : values) {
                 nb += (var.canBeInstantiatedTo(value) ? 1 : 0);
             }
-            occs[i] = env.makeInt(nb);
+            occs[i].set(nb);
             if (nb == var.getDomainSize()) {
                 lb++;
             } else if (nb == 0) {

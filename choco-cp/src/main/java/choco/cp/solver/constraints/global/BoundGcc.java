@@ -39,41 +39,44 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  */
 public final class BoundGcc extends BoundGccVar {
 
-	private int[] maxOccurrences;
-	private int[] minOccurrences;
+    private int[] maxOccurrences;
+    private int[] minOccurrences;
 
-	/**
-	 * Bound Global cardinality : Given an array of variables vars, min the minimal value over all variables,
-	 * and max the maximal value over all variables, the constraint ensures that the number of occurences
-	 * of the value i among the variables is between low[i - min] and up[i - min]. Note that the length
-	 * of low and up should be max - min + 1.
-	 * Use the propagator of :
-	 * C.-G. Quimper, P. van Beek, A. Lopez-Ortiz, A. Golynski, and S.B. Sadjad.
-	 * An efficient bounds consistency algorithm for the global cardinality constraint.
-	 * CP-2003.
-	 */
-	public BoundGcc(IntDomainVar[] vars,
+    /**
+     * Bound Global cardinality : Given an array of variables vars, min the minimal value over all variables,
+     * and max the maximal value over all variables, the constraint ensures that the number of occurences
+     * of the value i among the variables is between low[i - min] and up[i - min]. Note that the length
+     * of low and up should be max - min + 1.
+     * Use the propagator of :
+     * C.-G. Quimper, P. van Beek, A. Lopez-Ortiz, A. Golynski, and S.B. Sadjad.
+     * An efficient bounds consistency algorithm for the global cardinality constraint.
+     * CP-2003.
+     */
+    public BoundGcc(IntDomainVar[] vars,
                     int firstDomainValue,
                     int lastDomainValue,
                     int[] minOccurrences,
                     int[] maxOccurrences, IEnvironment environment) {
-		super(vars, null, firstDomainValue, lastDomainValue, environment);
-		this.maxOccurrences = maxOccurrences;
-		this.minOccurrences = minOccurrences;
+        super(vars, null, firstDomainValue, lastDomainValue, environment);
+        this.maxOccurrences = maxOccurrences;
+        this.minOccurrences = minOccurrences;
+    }
+
+    @Override
+    public int getMaxOcc(int i) {
+        return maxOccurrences[i];
+    }
+
+    @Override
+    public int getMinOcc(int i) {
+        return minOccurrences[i];
+    }
+
+    protected void init() {
+        super.init();
         l.compute(minOccurrences);
         u.compute(maxOccurrences);
-	}
-
-	@Override
-	public int getMaxOcc(int i) {
-		return maxOccurrences[i];
-	}
-
-	@Override
-	public int getMinOcc(int i) {
-		return minOccurrences[i];
-	}
-
+    }
 
 //	@Override
 //	public void updateSup(IntDomainVar v, int nsup, int idx) throws ContradictionException {
@@ -84,16 +87,17 @@ public final class BoundGcc extends BoundGccVar {
 //	public void updateInf(IntDomainVar v, int ninf, int idx) throws ContradictionException {
 //		v.updateInf(ninf, VarEvent.domOverWDegIdx(cIndices[idx]));//cIndices[idx]);
 //	}
-    
 
-	@Override
-	public void awake() throws ContradictionException {
+
+    @Override
+    public void awake() throws ContradictionException {
+        init();
         initBackDataStruct();
         for (int i = 0; i < vars.length; i++) {
-			if (vars[i].isInstantiated()) {
-                filterBCOnInst(vars[i].getVal());				
-			}
-		}
+            if (vars[i].isInstantiated()) {
+                filterBCOnInst(vars[i].getVal());
+            }
+        }
         for (int i = 0; i < nbVars; i++) {
             for (int val = vars[i].getInf() + 1; val < vars[i].getSup(); val++) {
                 if (!vars[i].canBeInstantiatedTo(val))
@@ -109,23 +113,23 @@ public final class BoundGcc extends BoundGccVar {
     public boolean directInconsistentCount() {
         for (int i = 0; i < range; i++) {
             if (val_maxOcc[i].get() < minOccurrences[i] ||
-                val_minOcc[i].get() > maxOccurrences[i])
+                    val_minOcc[i].get() > maxOccurrences[i])
                 return true;
         }
         return false;
     }
 
     @Override
-	public void propagate() throws ContradictionException {
-		sortIt();
+    public void propagate() throws ContradictionException {
+        sortIt();
 
         // The variable domains must be inside the domain defined by
         // the lower bounds (l) and the upper bounds (u).
-        assert(l.minValue() == u.minValue());
-        assert(l.maxValue() == u.maxValue());
-        assert(l.minValue() <= minsorted[0].var.getInf());
-        assert(maxsorted[nbVars-1].var.getSup() <= u.maxValue());
-        assert(!directInconsistentCount());
+        assert (l.minValue() == u.minValue());
+        assert (l.maxValue() == u.maxValue());
+        assert (l.minValue() <= minsorted[0].var.getInf());
+        assert (maxsorted[nbVars - 1].var.getSup() <= u.maxValue());
+        assert (!directInconsistentCount());
         // Checks if there are values that must be assigned before the
         // smallest interval or after the last interval. If this is
         // the case, there is no solution to the problem
@@ -134,46 +138,46 @@ public final class BoundGcc extends BoundGccVar {
         // filterUpper{Min,Max} do not check for this case.
 
         if ((l.sum(l.minValue(), minsorted[0].var.getInf() - 1) > 0) ||
-				(l.sum(maxsorted[getNbVars() - 1].var.getSup() + 1, l.maxValue()) > 0)) {
-			this.fail();
-		}
-		filterLowerMax();
-		filterLowerMin();
-		filterUpperMax();
-		filterUpperMin();        
+                (l.sum(maxsorted[getNbVars() - 1].var.getSup() + 1, l.maxValue()) > 0)) {
+            this.fail();
+        }
+        filterLowerMax();
+        filterLowerMin();
+        filterUpperMax();
+        filterUpperMin();
     }
 
-	@Override
-	public void awakeOnInf(int i) throws ContradictionException {
-		this.constAwake(false);
-		if (!vars[i].hasEnumeratedDomain()) {
-			filterBCOnInf(i);
-		}
-	}
-
-	@Override
-	public void awakeOnSup(int i) throws ContradictionException {
-		this.constAwake(false);
-		if (!vars[i].hasEnumeratedDomain()) {
-			filterBCOnSup(i);
-		}
-	}
-
-	@Override
-	public void awakeOnInst(int i) throws ContradictionException {   // Propagation classique
-		int val = vars[i].getVal();
-		constAwake(false);
-		// if a value has been instantiated to its max number of occurrences
-		// remove it from all variables
-        val_minOcc[val - offset].add(1);
-        filterBCOnInst(val);
-	}
+    @Override
+    public void awakeOnInf(int i) throws ContradictionException {
+        this.constAwake(false);
+        if (!vars[i].hasEnumeratedDomain()) {
+            filterBCOnInf(i);
+        }
+    }
 
     @Override
-	public void awakeOnRem(int idx, int val) throws ContradictionException {
+    public void awakeOnSup(int i) throws ContradictionException {
+        this.constAwake(false);
+        if (!vars[i].hasEnumeratedDomain()) {
+            filterBCOnSup(i);
+        }
+    }
+
+    @Override
+    public void awakeOnInst(int i) throws ContradictionException {   // Propagation classique
+        int val = vars[i].getVal();
+        constAwake(false);
+        // if a value has been instantiated to its max number of occurrences
+        // remove it from all variables
+        val_minOcc[val - offset].add(1);
+        filterBCOnInst(val);
+    }
+
+    @Override
+    public void awakeOnRem(int idx, int val) throws ContradictionException {
         val_maxOcc[val - offset].add(-1);
         filterBCOnRem(val);
-	}
+    }
 
     @Override
     public boolean isSatisfied() {
