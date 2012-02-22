@@ -30,7 +30,6 @@ import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.BranchingFactory;
-import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -70,7 +69,7 @@ public class ReifiedGlobalConstraint {
             s1.addGoal(BranchingFactory.randomIntSearch(s1, seed + i));
             s2.addGoal(BranchingFactory.randomIntSearch(s2, seed + i));
 
-            ChocoLogging.toSearch();
+//            ChocoLogging.toSearch();
             s1.solveAll();
             s2.solveAll();
 
@@ -204,7 +203,7 @@ public class ReifiedGlobalConstraint {
         int n = 5;
         IntegerVariable[] vars = new IntegerVariable[n];
         for (int i = 0; i < n; i++) {
-            vars[i] = makeIntVar("var?" + i, 1, n);
+            vars[i] = makeIntVar("var_" + i, 1, n);
         }
         int[] LB2 = {0, 1, 1, 0, 3};
         int[] UB2 = {0, 1, 1, 0, 3};
@@ -217,7 +216,7 @@ public class ReifiedGlobalConstraint {
         int n = 5;
         IntegerVariable[] vars = new IntegerVariable[n];
         for (int i = 0; i < n; i++) {
-            vars[i] = makeIntVar("var?" + i, 1, n);
+            vars[i] = makeIntVar("var_" + i, 1, n);
         }
         int[] LB2 = {0, 1, 1, 0, 3};
         int[] UB2 = {0, 1, 1, 0, 3};
@@ -290,8 +289,8 @@ public class ReifiedGlobalConstraint {
 
     @Test
     public void invChantest() {
-        IntegerVariable[] X = makeIntVarArray("X", 3, 0, 2);
-        IntegerVariable[] Y = makeIntVarArray("Y", 3, 0, 2);
+        IntegerVariable[] X = makeIntVarArray("X", 5, 0, 6);
+        IntegerVariable[] Y = makeIntVarArray("Y", 5, 0, 6);
         Constraint c = inverseChanneling(X, Y);
         make(c, 20, 10);
     }

@@ -65,50 +65,54 @@ public final class InverseChanneling extends AbstractLargeIntSConstraint {
     }
 
     public void propagate() throws ContradictionException {
-//      for (int idx = 0; idx < vars.length; idx++) {
-//          for (int i = 0; i < n; i++) {
-//              if (idx < n && !vars[idx].canBeInstantiatedTo(i + min)) {
-//                  vars[i + n].removeVal(idx + min, this, false);
-//              } else if (!vars[idx].canBeInstantiatedTo(i + min)) {
-//                  vars[i].removeVal(idx - n + min, this, false);
-//              }
-//          }
-//      }
-
-        int left = Integer.MIN_VALUE;
-        int right = left;
-        for (int i = 0; i < n; i++) {
-            int val = i + min;
-            for (int idx = 0; idx < n; idx++) {
-                if (!vars[idx].canBeInstantiatedTo(val)) {
-                    if (val == right + 1) {
-                        right = val;
-                    } else {
-                        vars[i + n].removeInterval(left, right, this, false);
-                        left = val;
-                        right = val;
+        for (int idx = 0; idx < n; idx++) {
+            vars[idx].updateInf(min, this, false);
+            vars[idx].updateSup(n + min - 1, this, false);
+            if (vars[idx].hasEnumeratedDomain()) {
+                for (int i = 0; i < n; i++) {
+                    if (!vars[idx].canBeInstantiatedTo(i + min)) {
+                        vars[i + n].removeVal(idx + min, this, false);
                     }
-//                    vars[i + n].removeVal(idx + min, this, false);
+                }
+            } else {
+                int i = 0;
+                while (i < n && !vars[idx].canBeInstantiatedTo(i + min)
+                        && (!vars[i + n].canBeInstantiatedTo(idx + min)
+                        || vars[i + n].removeVal(idx + min, this, false))) {
+                    i++;
+                }
+                int j = n - 1;
+                while (j > 0 && !vars[idx].canBeInstantiatedTo(j + min)
+                        && (!vars[j + n].canBeInstantiatedTo(idx + min)
+                        || vars[j + n].removeVal(idx + min, this, false))) {
+                    j--;
                 }
             }
-            vars[i + n].removeInterval(left, right, this, false);
         }
-        right = left = Integer.MIN_VALUE;
-        for (int i = 0; i < n; i++) {
-            for (int idx = n; idx < vars.length; idx++) {
-                int val = idx - n + min;
-                if (!vars[idx].canBeInstantiatedTo(i + min)) {
-                    if (val == right + 1) {
-                        right = val;
-                    } else {
-                        vars[i].removeInterval(left, right, this, false);
-                        left = val;
-                        right = val;
+
+        for (int idx = n; idx < vars.length; idx++) {
+            vars[idx].updateInf(min, this, false);
+            vars[idx].updateSup(n + min - 1, this, false);
+            if (vars[idx].hasEnumeratedDomain()) {
+                for (int i = 0; i < n; i++) {
+                    if (!vars[idx].canBeInstantiatedTo(i + min)) {
+                        vars[i].removeVal(idx - n + min, this, false);
                     }
-//                    vars[i].removeVal(idx - n + min, this, false);
+                }
+            } else {
+                int i = 0;
+                while (i < n && !vars[idx].canBeInstantiatedTo(i + min)
+                        && (!vars[i].canBeInstantiatedTo(idx + min)
+                        || vars[i].removeVal(idx - n + min, this, false))) {
+                    i++;
+                }
+                int j = n - 1;
+                while (j > 0 && !vars[idx].canBeInstantiatedTo(j + min)
+                        && (!vars[j].canBeInstantiatedTo(idx + min)
+                        || vars[j].removeVal(idx - n + min, this, false))) {
+                    j--;
                 }
             }
-            vars[i].removeInterval(left, right, this, false);
         }
     }
 
@@ -160,7 +164,8 @@ public final class InverseChanneling extends AbstractLargeIntSConstraint {
 
     public void awakeOnRem(int idx, int x) throws ContradictionException {
         if (idx < n) {
-            vars[x - min + n].removeVal(idx + min, this, false);
+            if (x - min < n)
+                vars[x - min + n].removeVal(idx + min, this, false);
         } else {
             vars[x - min].removeVal(idx - n + min, this, false);
         }
