@@ -69,8 +69,8 @@ public final class Occurrence extends AbstractLargeIntSConstraint {
      *
      * @param vars variables
      * @param occval checking value
-     * @param onInf  if true, constraint insures size{forall v in lvars | v = occval} <= occVar
-     * @param onSup  if true, constraint insure size{forall v in lvars | v = occval} >= occVar
+     * @param onInf  if true, constraint insures size{forall v in lvars | v = occval} >= occVar
+     * @param onSup  if true, constraint insure size{forall v in lvars | v = occval} <= occVar
      * @param environment
      */
     public Occurrence(IntDomainVar[] vars, int occval, boolean onInf, boolean onSup, IEnvironment environment) {
