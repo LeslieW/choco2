@@ -336,11 +336,6 @@ public final class BoundAllDiff extends AbstractLargeIntSConstraint {
     public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
     }
 
-    @Override
-    public Boolean isEntailed() {
-        throw new UnsupportedOperationException("isEntailed not yet implemented on package choco.kernel.solver.constraints.global.BoundAlldiff");
-    }
-
     /**
      * This method assumes that all variables are instantiated and checks if the values are consistent with the
      * constraint.
