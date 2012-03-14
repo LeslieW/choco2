@@ -67,6 +67,9 @@ public final class MathUtils {
 		else {return combinaison(n-1, p) + combinaison(n-1, p-1);}
 	}
 
+	public static final boolean isInt(double x) {
+		return Math.round(x) == x;
+	}
 	public static final boolean isPowerOfTwo(int x) {
 		return (x & (x - 1)) == 0;
 	}

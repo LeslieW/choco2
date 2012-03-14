@@ -30,10 +30,15 @@
  */
 package parser.instances;
 
+import static choco.Choco.MAX_UPPER_BOUND;
+import static choco.Choco.MIN_LOWER_BOUND;
+import static choco.Choco.makeIntVar;
+import choco.Options;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.preprocessor.PreProcessConfiguration;
 import choco.kernel.common.opres.heuristics.IHeuristic;
 import choco.kernel.common.opres.heuristics.NoHeuristic;
+import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Configuration;
 import choco.kernel.solver.ResolutionPolicy;
 import choco.kernel.solver.Solver;
@@ -51,7 +56,7 @@ public abstract class AbstractMinimizeModel extends AbstractInstanceModel {
 
 	private IVisuManager chartManager;
 	// FIXME - Not instantiated in all subclasses - created 20 juil. 2011 by Arnaud Malapert
-	
+
 	public AbstractMinimizeModel(InstanceFileParser parser, Configuration settings) {
 		super(parser, settings);
 		cancelHeuristic();
@@ -94,7 +99,6 @@ public abstract class AbstractMinimizeModel extends AbstractInstanceModel {
 	}
 
 
-
 	@Override
 	public void initialize() {
 		super.initialize();
@@ -115,7 +119,13 @@ public abstract class AbstractMinimizeModel extends AbstractInstanceModel {
 	}
 
 
-
+	protected IntegerVariable buildObjective(String name, int defaultUpperBound) {
+		return makeIntVar(name, 
+				Math.max(getComputedLowerBound(), MIN_LOWER_BOUND),
+				Math.min(isFeasible() == Boolean.TRUE ? objective.intValue() - 1 : defaultUpperBound, MAX_UPPER_BOUND),
+				Options.V_OBJECTIVE,Options.V_NO_DECISION, Options.V_BOUND
+				);
+	}
 	@Override
 	protected void logOnDiagnostics() {
 		super.logOnDiagnostics();

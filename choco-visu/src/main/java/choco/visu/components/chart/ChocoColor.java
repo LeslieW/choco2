@@ -91,7 +91,6 @@ public final class ChocoColor {
 	 */
 	public static Paint[] createDefaultPaintArray() {
 		return new Paint[] {
-				COLOR_124_1,
 				COLOR_124_2,
 				COLOR_124_3, 
 				COLOR_211_4,
@@ -115,6 +114,7 @@ public final class ChocoColor {
 				COLOR_274_5,
 				COLOR_274_6,
 				COLOR_124_5,
+				COLOR_124_1,
 				COLOR_148_2,
 				COLOR_211_6,
 				COLOR_148_3,

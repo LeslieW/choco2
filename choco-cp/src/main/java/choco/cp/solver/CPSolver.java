@@ -1342,7 +1342,6 @@ public class CPSolver implements Solver {
     }
 
 
-    @Deprecated
     public void setRecordNogoodFromRestart(boolean recordNogoodFromRestart) {
         configuration.putBoolean(Configuration.NOGOOD_RECORDING_FROM_RESTART, recordNogoodFromRestart);
     }
@@ -1352,7 +1351,6 @@ public class CPSolver implements Solver {
      *
      * @param restart indicates wether to restart or not
      */
-    @Deprecated
     public void setRestart(boolean restart) {
         configuration.putBoolean(Configuration.RESTART_AFTER_SOLUTION, restart);
     }

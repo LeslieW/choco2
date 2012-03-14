@@ -429,7 +429,7 @@ public abstract class AbstractInstanceModel {
 	}
 
 	protected void logOnConfiguration() {
-		logMsg.appendConfiguration( MessageFactory.getGeneralMsg(defaultConf, getInstanceName()));
+		logMsg.appendConfiguration( MessageFactory.getGeneralMsg(defaultConf, getClass().getSimpleName(), getInstanceName()));
 		logMsg.storeConfiguration( createTimeConfiguration() );
 		logMsg.storeConfiguration( BasicSettings.getInstModelMsg(defaultConf) );
 		if (solver != null) {
