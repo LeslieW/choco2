@@ -41,6 +41,8 @@ import org.jfree.data.gantt.TaskSeries;
 import org.jfree.data.gantt.TaskSeriesCollection;
 import org.jfree.data.time.SimpleTimePeriod;
 import org.jfree.data.time.TimePeriod;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeTableXYDataset;
 import org.jfree.data.xy.XYSeries;
 
@@ -76,7 +78,38 @@ public final class ChocoDatasetFactory {
 	public static Task createTask(ITask t) {
 		return new Task(t.getName(),getTimePeriod(t.getEST(),t.getLCT()));
 	}
-
+	
+	public static Task createTask(ITask t, int releaseDate) {
+		assert releaseDate <= t.getEST();
+		Task t1 = new Task(t.getName(),getTimePeriod(t.getEST(),t.getLCT()));
+		t1.addSubtask( new Task("Waiting",getTimePeriod(releaseDate, t.getEST())));
+		t1.addSubtask( new Task("Execution",getTimePeriod(t.getEST(), t.getLCT())));
+		t1.getSubtask(0).setPercentComplete(0);
+		t1.getSubtask(1).setPercentComplete(1);
+		return t1;
+	}
+	
+	public static Task createTask(ITask t, int releaseDate, int setupTime) {
+		Task t1 = createTask(t, releaseDate);
+		t1.addSubtask( new Task("Setup",getTimePeriod(t.getLCT(), t.getLCT() + setupTime)));
+		t1.getSubtask(2).setPercentComplete(0);
+		return t1;
+	}
+	
+	public static Task createEarlinessTardiness(ITask t, int dueDate) {
+		Task t1;
+		if(t.getLCT() <= dueDate) {
+			t1 = new Task(t.getName(),getTimePeriod(t.getLCT(), dueDate));
+			t1.setPercentComplete(0);
+		} else {
+			t1 = new Task(t.getName(),getTimePeriod(dueDate, t.getLCT()));
+			t1.setPercentComplete(1);	
+		}
+		return t1;
+	}
+	
+	
+	
 	public static Task createTask(CPSolver s,TaskVariable t) {
 		return createTask(s.getVar(t));
 	}
@@ -202,6 +235,39 @@ public final class ChocoDatasetFactory {
 				);
 	}
 
+	//*****************************************************************//
+	//*******************  Gantt *************************************//
+	//***************************************************************//
+
+	public static TaskSeriesCollection createGanttDataset(ITask[] tasks, int[] releaseDates) {
+		final TaskSeries s1 = new TaskSeries("Tasks");
+		for (int i = 0; i < tasks.length; i++) {
+			s1.add(createTask(tasks[i], releaseDates[i]));
+		}
+		final TaskSeriesCollection coll = new TaskSeriesCollection();
+		coll.add(s1);
+		return coll;
+	}
+	
+	public static TaskSeriesCollection createGanttDataset(ITask[] tasks, int[] releaseDates, int[] setupTimes) {
+		final TaskSeries s1 = new TaskSeries("Tasks");
+		for (int i = 0; i < tasks.length; i++) {
+			s1.add(createTask(tasks[i], releaseDates[i], setupTimes[i]));
+		}
+		final TaskSeriesCollection coll = new TaskSeriesCollection();
+		coll.add(s1);
+		return coll;
+	}
+	
+	public static TaskSeriesCollection createGanttDataset(ITask[] tasks, int[] releaseDates, int[] setupTimes, int[] dueDates) {
+		TaskSeriesCollection coll = createGanttDataset(tasks, releaseDates, setupTimes);
+		final TaskSeries s1 = new TaskSeries("Earliness/Tardiness");
+		for (int i = 0; i < tasks.length; i++) {
+			s1.add(createEarlinessTardiness(tasks[i], dueDates[i]));
+		}
+		coll.add(s1);
+		return coll;
+	}
 	//*****************************************************************//
 	//*******************  Solver solutions  ********************************//
 	//***************************************************************//

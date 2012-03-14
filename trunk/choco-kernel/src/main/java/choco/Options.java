@@ -529,8 +529,6 @@ public class Options {
 
 		categories.put(C_POST_PONED, 1);
 
-		categories.put(C_NO_DETECTION, 2);
-
 		categories.put(C_PACK_AR, 0);
 		//...
 		categories.put(C_PACK_DLB, 3);
@@ -552,6 +550,8 @@ public class Options {
 		
 		categories.put(C_MINMAX_INF, 0);
 		categories.put(C_MINMAX_SUP, 0);
+		
+		categories.put(C_NO_DETECTION, 6); // TODO - set to 0 - created 11 mars 2012 by A. Malapert
 
 	}
 

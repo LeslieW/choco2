@@ -60,6 +60,7 @@ import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.LogAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.SymbolAxis;
+import org.jfree.chart.labels.IntervalCategoryToolTipGenerator;
 import org.jfree.chart.labels.ItemLabelAnchor;
 import org.jfree.chart.labels.ItemLabelPosition;
 import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
@@ -75,12 +76,17 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.category.CategoryItemRenderer;
+import org.jfree.chart.renderer.category.GanttRenderer;
 import org.jfree.chart.renderer.category.StackedBarRenderer3D;
+import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.chart.renderer.xy.DeviationRenderer;
 import org.jfree.chart.renderer.xy.StackedXYBarRenderer;
 import org.jfree.chart.renderer.xy.StandardXYBarPainter;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
+import org.jfree.chart.urls.StandardCategoryURLGenerator;
 import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.category.IntervalCategoryDataset;
 import org.jfree.data.gantt.TaskSeriesCollection;
 import org.jfree.data.xy.TableXYDataset;
 import org.jfree.data.xy.YIntervalSeriesCollection;
@@ -92,6 +98,7 @@ import org.jfree.ui.RefineryUtilities;
 import org.jfree.ui.TextAnchor;
 
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.constraints.global.geost.Setup;
 import choco.cp.solver.constraints.global.pack.IPackSConstraint;
 import choco.cp.solver.constraints.global.pack.PackSConstraint;
 import choco.kernel.model.constraints.Constraint;
@@ -435,7 +442,48 @@ public final class ChocoChartFactory {
 		return chart;
 
 	}
+	//*****************************************************************//
+	//*******************  Gantt Charts  ********************************//
+	//***************************************************************//
 
+
+	public static JFreeChart createGanttChart(String title, TaskVar[] tasks, int[] releaseDates) {
+		return createGanttChart(title, ChocoDatasetFactory.createGanttDataset(tasks, releaseDates), false, null);
+	}
+	
+	public static JFreeChart createGanttChart(String title, TaskVar[] tasks, int[] releaseDates, int[] setupTimes) {
+		return createGanttChart(title, ChocoDatasetFactory.createGanttDataset(tasks, releaseDates, setupTimes), false, null);
+	}
+	
+	public static JFreeChart createGanttChart(String title, TaskVar[] tasks, int[] releaseDates, int[] setupTimes, int[] dueDates) {
+		return createGanttChart(title, ChocoDatasetFactory.createGanttDataset(tasks, releaseDates, setupTimes, dueDates), true, null);
+	}
+	
+	public static JFreeChart createGanttChart(String title, IntervalCategoryDataset dataset, boolean legend, XYToolTipGenerator tooltip) {
+		CategoryAxis categoryAxis = new CategoryAxis("Tasks");
+        DateAxis dateAxis = createDateAxis();
+
+        GanttRenderer renderer = new GanttRenderer();
+        renderer.setStartPercent(0.3);
+        renderer.setEndPercent(0.7);
+        renderer.setIncompletePaint(ChocoColor.COLOR_211_1);
+        renderer.setCompletePaint(ChocoColor.COLOR_274_3);
+        renderer.setBaseToolTipGenerator(
+                new IntervalCategoryToolTipGenerator(
+                    "{1} - {3} -> {4}", ChocoChartFactory.INTEGER_DATE_FORMAT
+                )
+            );
+        
+        CategoryPlot plot = new CategoryPlot(
+            dataset, categoryAxis, dateAxis, renderer
+        );
+        plot.setOrientation(PlotOrientation.HORIZONTAL);
+        JFreeChart chart = new JFreeChart(
+            title, JFreeChart.DEFAULT_TITLE_FONT, plot, legend
+        );
+    	CHOCO_THEME.apply(chart);
+        return chart;
+	}
 
 	//*****************************************************************//
 	//*******************  Solution Charts  ********************************//

@@ -38,11 +38,9 @@ public final class MessageFactory {
 	private MessageFactory() {
 		super();
 	}
-	public static String getGeneralMsg(Solver solver) {
-		return getGeneralMsg(solver.getConfiguration(), "");
-	}
+	
 
-	public static String getGeneralMsg(Configuration conf, String name) {
+	public static String getGeneralMsg(Configuration conf, String problemName, String instanceName) {
 		final StringBuilder b = new StringBuilder(128);
 		ResolutionPolicy policy = conf.readEnum(RESOLUTION_POLICY, ResolutionPolicy.class);
 		switch (policy) {
@@ -58,8 +56,9 @@ public final class MessageFactory {
 			break;
 		}
 		if( conf.readBoolean(STOP_AT_FIRST_SOLUTION) ) b.append("FIRST_SOLUTION    ");
-		else b.append("ALL_SOLUTIONS    ");
-		b.append(name).append("    ");
+		else if(policy == ResolutionPolicy.SATISFACTION) b.append("ALL_SOLUTIONS    ");
+		b.append(problemName).append("    ");
+		b.append(instanceName).append("    ");
 		b.append(conf.readString(RANDOM_SEED)).append(" SEED");
 		return b.toString();
 	}

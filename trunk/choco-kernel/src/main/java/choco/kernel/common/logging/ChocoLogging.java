@@ -78,7 +78,7 @@ public final class ChocoLogging {
 			setLevel(Level.ALL, DEFAULT_HANDLER, DETAILED_HANDLER);
 			setLevel(Level.WARNING, ERROR_HANDLER);
 			setDefaultHandler();
-            setVerbosity(loadProperties());
+			setVerbosity(loadProperties());
 		} catch (AccessControlException e) {
 			// Do nothing if this is an applet !
 			// TODO: see how to make it work with an applet !
