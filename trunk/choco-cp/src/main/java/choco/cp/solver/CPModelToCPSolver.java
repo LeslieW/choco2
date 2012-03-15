@@ -76,424 +76,423 @@ import java.util.logging.Logger;
  */
 public class CPModelToCPSolver {
 
-    protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
+	protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
-    protected final CPSolver cpsolver;
+	protected final CPSolver cpsolver;
 
-    private final THashSet<IntDomainVar> intNoDecisionVar = new THashSet<IntDomainVar>();
+	private final THashSet<IntDomainVar> intNoDecisionVar = new THashSet<IntDomainVar>();
 
-    private final THashSet<SetVar> setNoDecisionVar = new THashSet<SetVar>();
+	private final THashSet<SetVar> setNoDecisionVar = new THashSet<SetVar>();
 
-    private final THashSet<RealVar> realNoDecisionVar = new THashSet<RealVar>();
+	private final THashSet<RealVar> realNoDecisionVar = new THashSet<RealVar>();
 
-    private final THashSet<TaskVar> taskNoDecisionVar = new THashSet<TaskVar>();
+	private final THashSet<TaskVar> taskNoDecisionVar = new THashSet<TaskVar>();
 
-    private final List<SConstraint> postponedConstraint = new ArrayList<SConstraint>(8);
+	private final List<SConstraint> postponedConstraint = new ArrayList<SConstraint>(8);
 
-    public CPModelToCPSolver(final CPSolver cpsolver) {
-        this.cpsolver = cpsolver;
-    }
+	public CPModelToCPSolver(final CPSolver cpsolver) {
+		this.cpsolver = cpsolver;
+	}
 
-    /**
-     * Clear datastructures for safe reuses
-     */
-    public void clear() {
-        this.intNoDecisionVar.clear();
-        this.setNoDecisionVar.clear();
-        this.realNoDecisionVar.clear();
-        this.taskNoDecisionVar.clear();
-        this.postponedConstraint.clear();
-    }
-    //************************************************* CONCERNING VARIABLES ***********************************************
+	/**
+	 * Clear datastructures for safe reuses
+	 */
+	public void clear() {
+		this.intNoDecisionVar.clear();
+		this.setNoDecisionVar.clear();
+		this.realNoDecisionVar.clear();
+		this.taskNoDecisionVar.clear();
+		this.postponedConstraint.clear();
+	}
+	//************************************************* CONCERNING VARIABLES ***********************************************
 
-    /**
-     * Read variable from the model, transpose it into Solver variables,
-     * adding it to the Solver directly.
-     *
-     * @param model to read
-     */
-    public void readVariables(final CPModel model) {
-        readIntegerVariables(model);
-        readRealVariables(model);
-        readSetVariables(model);
-        readConstants(model);
-        readMultipleVariables(model);
-    }
+	/**
+	 * Read variable from the model, transpose it into Solver variables,
+	 * adding it to the Solver directly.
+	 *
+	 * @param model to read
+	 */
+	public void readVariables(final CPModel model) {
+		readIntegerVariables(model);
+		readRealVariables(model);
+		readSetVariables(model);
+		readConstants(model);
+		readMultipleVariables(model);
+	}
 
-    public void readIntegerVariables(final CPModel model) {
-        IntegerVariable i;
-        final Iterator<IntegerVariable> it = model.getIntVarIterator();
-        while (it.hasNext()) {
-            i = it.next();
-            if (!cpsolver.mapvariables.containsKey(i.getIndex())) {
-                cpsolver.mapvariables.put(i.getIndex(), readModelVariable(i));
-            }
-        }
-    }
+	public void readIntegerVariables(final CPModel model) {
+		IntegerVariable i;
+		final Iterator<IntegerVariable> it = model.getIntVarIterator();
+		while (it.hasNext()) {
+			i = it.next();
+			if (!cpsolver.mapvariables.containsKey(i.getIndex())) {
+				cpsolver.mapvariables.put(i.getIndex(), readModelVariable(i));
+			}
+		}
+	}
 
-    public void readRealVariables(final CPModel model) {
-        RealVariable r;
-        final Iterator<RealVariable> it = model.getRealVarIterator();
-        while (it.hasNext()) {
-            r = it.next();
-            if (!cpsolver.mapvariables.containsKey(r.getIndex())) {
-                cpsolver.mapvariables.put(r.getIndex(), readModelVariable(r));
-            }
-        }
-    }
+	public void readRealVariables(final CPModel model) {
+		RealVariable r;
+		final Iterator<RealVariable> it = model.getRealVarIterator();
+		while (it.hasNext()) {
+			r = it.next();
+			if (!cpsolver.mapvariables.containsKey(r.getIndex())) {
+				cpsolver.mapvariables.put(r.getIndex(), readModelVariable(r));
+			}
+		}
+	}
 
-    public void readSetVariables(final CPModel model) {
-        SetVariable s;
-        final Iterator<SetVariable> it = model.getSetVarIterator();
-        while (it.hasNext()) {
-            s = it.next();
-            if (!cpsolver.mapvariables.containsKey(s.getIndex())) {
-                final SetVar setVar = (SetVar) readModelVariable(s);
-                cpsolver.mapvariables.put(s.getIndex(), setVar);
-                cpsolver.mapvariables.put(s.getCard().getIndex(), setVar.getCard());
-                checkOptions(s.getCard(), setVar.getCard());
-            }
-        }
-    }
+	public void readSetVariables(final CPModel model) {
+		SetVariable s;
+		final Iterator<SetVariable> it = model.getSetVarIterator();
+		while (it.hasNext()) {
+			s = it.next();
+			if (!cpsolver.mapvariables.containsKey(s.getIndex())) {
+				final SetVar setVar = (SetVar) readModelVariable(s);
+				cpsolver.mapvariables.put(s.getIndex(), setVar);
+				cpsolver.mapvariables.put(s.getCard().getIndex(), setVar.getCard());
+				checkOptions(s.getCard(), setVar.getCard());
+			}
+		}
+	}
 
-    public void readConstants(final CPModel model) {
-        Variable v;
-        IntegerConstantVariable ci;
-        RealConstantVariable cr;
-        SetConstantVariable cs;
-        final Iterator<Variable> it = model.getConstVarIterator();
-        while (it.hasNext()) {
-            v = it.next();
-            if (!cpsolver.mapvariables.containsKey(v.getIndex())) {
-                switch (v.getVariableType()) {
-                    case CONSTANT_INTEGER:
-                        ci = (IntegerConstantVariable) v;
-                        if (!cpsolver.mapvariables.containsKey(ci.getIndex())) {
-                            cpsolver.mapvariables.put(ci.getIndex(), readModelVariable(ci));
-                        }
-                        break;
-                    case CONSTANT_DOUBLE:
-                        cr = (RealConstantVariable) v;
-                        if (!cpsolver.mapvariables.containsKey(cr.getIndex())) {
-                            cpsolver.mapvariables.put(cr.getIndex(), readModelVariable(cr));
-                        }
-                        break;
-                    case CONSTANT_SET:
-                        cs = (SetConstantVariable) v;
-                        if (!cpsolver.mapvariables.containsKey(cs.getIndex())) {
-                            cpsolver.mapvariables.put(cs.getIndex(), readModelVariable(cs));
-                        }
-                        break;
-                }
-            }
-        }
-    }
+	public void readConstants(final CPModel model) {
+		Variable v;
+		IntegerConstantVariable ci;
+		RealConstantVariable cr;
+		SetConstantVariable cs;
+		final Iterator<Variable> it = model.getConstVarIterator();
+		while (it.hasNext()) {
+			v = it.next();
+			if (!cpsolver.mapvariables.containsKey(v.getIndex())) {
+				switch (v.getVariableType()) {
+				case CONSTANT_INTEGER:
+					ci = (IntegerConstantVariable) v;
+					if (!cpsolver.mapvariables.containsKey(ci.getIndex())) {
+						cpsolver.mapvariables.put(ci.getIndex(), readModelVariable(ci));
+					}
+					break;
+				case CONSTANT_DOUBLE:
+					cr = (RealConstantVariable) v;
+					if (!cpsolver.mapvariables.containsKey(cr.getIndex())) {
+						cpsolver.mapvariables.put(cr.getIndex(), readModelVariable(cr));
+					}
+					break;
+				case CONSTANT_SET:
+					cs = (SetConstantVariable) v;
+					if (!cpsolver.mapvariables.containsKey(cs.getIndex())) {
+						cpsolver.mapvariables.put(cs.getIndex(), readModelVariable(cs));
+					}
+					break;
+				}
+			}
+		}
+	}
 
-    public void readMultipleVariables(final CPModel model) {
-        MultipleVariables mv;
-        final Iterator<MultipleVariables> it = model.getMultipleVarIterator();
-        while (it.hasNext()) {
-            mv = it.next();
-            if (!cpsolver.mapvariables.containsKey(mv.getIndex())) {
-                cpsolver.mapvariables.put(mv.getIndex(), readModelVariable(mv));
-            }
-        }
-    }
-
-
-    @SuppressWarnings({"unchecked"})
-    public Var readModelVariable(final Variable v) {
-        final VariableManager vm = v.getVariableManager();
-        if (vm != null) {
-            final Var var = vm.makeVariable(cpsolver, v);
-            checkOptions(v, var);
-            return var;
-        }
-        return null;
-    }
-
-    /**
-     * handle options associated to a given var.
-     *
-     * @param v   the model variable to check
-     * @param var the solver variable
-     */
-    private void checkOptions(final Variable v, final Var var) {
-        if (v.getOptions().contains(Options.V_DECISION)) {
-            LOGGER.warning("CPOptions.V_DECISION or \"cp:decision\" option are deprecated and have no longer effect on decision variables pool!");
-        } else if (v.getOptions().contains(Options.V_NO_DECISION)) {
-            removeFromDecisionPool(var);
-        }
-        if (v.getOptions().contains(Options.V_OBJECTIVE)) {
-            cpsolver.setObjective(var);
-        }
-        if (v.getOptions().contains(Options.V_MAKESPAN)) {
-            cpsolver.setMakespan(var);
-        }
-    }
-
-    /**
-     * Add decision or non decision variable to the correct list
-     *
-     * @param v the variable to add
-     */
-    private void removeFromDecisionPool(final Var v) {
-        if (v instanceof IntDomainVar) {
-            intNoDecisionVar.add((IntDomainVar) v);
-        } else if (v instanceof SetVar) {
-            setNoDecisionVar.add((SetVar) v);
-        } else if (v instanceof RealVar) {
-            realNoDecisionVar.add((RealVar) v);
-        } else if (v instanceof TaskVar) {
-            taskNoDecisionVar.add((TaskVar) v);
-        }
-
-    }
-
-    /**
-     * Read the decision variables declared in the model
-     */
-    protected void readDecisionVariables() {
-        // Integer decision variables
-        cpsolver.intDecisionVars.addAll(cpsolver.intVars.toList());
-        if (!intNoDecisionVar.isEmpty()) {
-            cpsolver.intDecisionVars.removeAll(intNoDecisionVar);
-            cpsolver.intDecisionVars.removeAll(cpsolver.getIntConstantSet());
-        }
-        // Set decision variables
-        cpsolver.setDecisionVars.addAll(cpsolver.setVars.toList());
-        if (!setNoDecisionVar.isEmpty()) {
-            cpsolver.setDecisionVars.removeAll(setNoDecisionVar);
-        }
-        // Real decision variables
-        cpsolver.floatDecisionVars.addAll(cpsolver.floatVars.toList());
-        if (!realNoDecisionVar.isEmpty()) {
-            cpsolver.floatDecisionVars.removeAll(realNoDecisionVar);
-            cpsolver.floatDecisionVars.removeAll(cpsolver.getRealConstantSet());
-        }
-        // Task decision variables
-        cpsolver.taskDecisionVars.addAll(cpsolver.taskVars.toList());
-        if (!taskNoDecisionVar.isEmpty()) {
-            cpsolver.taskDecisionVars.removeAll(taskNoDecisionVar);
-        }
-    }
-
-    //************************************************* CONCERNING CONSTRAINTS *********************************************
+	public void readMultipleVariables(final CPModel model) {
+		MultipleVariables mv;
+		final Iterator<MultipleVariables> it = model.getMultipleVarIterator();
+		while (it.hasNext()) {
+			mv = it.next();
+			if (!cpsolver.mapvariables.containsKey(mv.getIndex())) {
+				cpsolver.mapvariables.put(mv.getIndex(), readModelVariable(mv));
+			}
+		}
+	}
 
 
-    public void readConstraints(final CPModel model) {
-        Constraint ic;
-        SConstraint c;
-        Boolean decomp = model.getDefaultExpressionDecomposition();
-        final Iterator<Constraint> it = model.getConstraintIterator();
-        while (it.hasNext()) {
-            ic = it.next();
-            if (!cpsolver.mapconstraints.containsKey(ic.getIndex())) {
-                if (ic.getOptions().contains(Options.E_DECOMP)) {
-                    decomp = true;
-                }
-                c = readModelConstraint(ic, decomp);
-                if (ic.getOptions().contains(Options.C_POST_PONED)) {
-                    postponedConstraint.add(c);
-                } else {
-                    cpsolver.post(c);
-                }
-                cpsolver.mapconstraints.put(ic.getIndex(), c);
-            }
-        }
-        for (final SConstraint ppc : postponedConstraint) {
-            cpsolver.post(ppc);
-        }
-        if (cpsolver.isUniqueReading()) {
-            cpsolver.postTaskConsistencyConstraints();
-            cpsolver.postMakespanConstraint();
-        }
-    }
+	@SuppressWarnings({"unchecked"})
+	public Var readModelVariable(final Variable v) {
+		final VariableManager vm = v.getVariableManager();
+		if (vm != null) {
+			final Var var = vm.makeVariable(cpsolver, v);
+			checkOptions(v, var);
+			return var;
+		}
+		return null;
+	}
 
-    public void readConstraint(final Constraint ic, final Boolean decomp) {
-        if (!cpsolver.mapconstraints.containsKey(ic.getIndex())) {
-            final SConstraint c = readModelConstraint(ic, decomp);
-            cpsolver.mapconstraints.put(ic.getIndex(), c);
-            cpsolver.post(c);
-        }
-    }
+	/**
+	 * handle options associated to a given var.
+	 *
+	 * @param v   the model variable to check
+	 * @param var the solver variable
+	 */
+	 private void checkOptions(final Variable v, final Var var) {
+		if (v.getOptions().contains(Options.V_DECISION)) {
+			LOGGER.warning("CPOptions.V_DECISION or \"cp:decision\" option are deprecated and have no longer effect on decision variables pool!");
+		} else if (v.getOptions().contains(Options.V_NO_DECISION)) {
+			removeFromDecisionPool(var);
+		}
+		if (v.getOptions().contains(Options.V_OBJECTIVE)) {
+			cpsolver.setObjective(var);
+		}
+		if (v.getOptions().contains(Options.V_MAKESPAN)) {
+			cpsolver.setMakespan(var);
+		}
+	 }
 
-    public SConstraint makeSConstraint(final Constraint ic, final Boolean decomp) {
-        return readModelConstraint(ic, decomp);
-    }
+	 /**
+	  * Add decision or non decision variable to the correct list
+	  *
+	  * @param v the variable to add
+	  */
+	 private void removeFromDecisionPool(final Var v) {
+		 if (v instanceof IntDomainVar) {
+			 intNoDecisionVar.add((IntDomainVar) v);
+		 } else if (v instanceof SetVar) {
+			 setNoDecisionVar.add((SetVar) v);
+		 } else if (v instanceof RealVar) {
+			 realNoDecisionVar.add((RealVar) v);
+		 } else if (v instanceof TaskVar) {
+			 taskNoDecisionVar.add((TaskVar) v);
+		 }
 
-    public SConstraint makeSConstraint(final Constraint ic) {
-        return readModelConstraint(ic, false);
-    }
+	 }
 
-    public SConstraint[] makeSConstraintAndOpposite(final Constraint ic, final Boolean decomp) {
-        SConstraint[] cs = new SConstraint[2];
-        ComponentConstraint cc = (ComponentConstraint) ic;
-        ConstraintManager cm = cc.getConstraintManager();
-        try {
-            cs = cm.makeConstraintAndOpposite(cpsolver, cc.getVariables(), cc.getParameters(), cc.getOptions());
-        } catch (Exception e) {
-            cs[0] = readModelConstraint(ic, decomp);
-            try {
-                cs[1] = cs[0].opposite(cpsolver);
-            } catch (SolverException se) {
-                //HACK
-                Constraint oc = Choco.not(ic);
-                oc.findManager(CPModel.properties);
-                cs[1] = readModelConstraint(oc, decomp);
-            }
-        }
-        return cs;
-    }
+	 /**
+	  * Read the decision variables declared in the model
+	  */
+	 protected void readDecisionVariables() {
+		 // Integer decision variables
+		 cpsolver.intDecisionVars.addAll(cpsolver.intVars.toList());
+		 if (!intNoDecisionVar.isEmpty()) {
+			 cpsolver.intDecisionVars.removeAll(intNoDecisionVar);
+			 cpsolver.intDecisionVars.removeAll(cpsolver.getIntConstantSet());
+		 }
+		 // Set decision variables
+		 cpsolver.setDecisionVars.addAll(cpsolver.setVars.toList());
+		 if (!setNoDecisionVar.isEmpty()) {
+			 cpsolver.setDecisionVars.removeAll(setNoDecisionVar);
+		 }
+		 // Real decision variables
+		 cpsolver.floatDecisionVars.addAll(cpsolver.floatVars.toList());
+		 if (!realNoDecisionVar.isEmpty()) {
+			 cpsolver.floatDecisionVars.removeAll(realNoDecisionVar);
+			 cpsolver.floatDecisionVars.removeAll(cpsolver.getRealConstantSet());
+		 }
+		 // Task decision variables
+		 cpsolver.taskDecisionVars.addAll(cpsolver.taskVars.toList());
+		 if (!taskNoDecisionVar.isEmpty()) {
+			 cpsolver.taskDecisionVars.removeAll(taskNoDecisionVar);
+		 }
+	 }
 
-    public SConstraint[] makeSConstraintAndOpposite(final Constraint ic) {
-        return makeSConstraintAndOpposite(ic, false);
-    }
-
-    SConstraint readModelConstraint(final Constraint ic, final Boolean decomp) {
-
-        if (ic instanceof MetaConstraint) {
-            return createMetaConstraint(ic, decomp);
-        }
-
-        if (ic instanceof ComponentConstraint) {
-            if (ic.getConstraintType().canContainExpression && containExpression(ic.getVariables())) {
-                return createMetaConstraint(ic, decomp);
-            }
-            final ComponentConstraint cc = (ComponentConstraint) ic;
-            final ConstraintManager cm = cc.getConstraintManager();
-            return cm.makeConstraint(cpsolver, cc.getVariables(), cc.getParameters(), cc.getOptions());
-        }
-        return null;
-    }
-
-    /**
-     * Check wether a pool of variables is composed of simple variables or not
-     *
-     * @param vars pool of variables
-     * @return true if only simple variable,
-     */
-    private static boolean containExpression(final Variable[] vars) {
-        if (vars == null) {
-            return false;
-        }
-        for (final Variable v : vars) {
-            final VariableType type = v.getVariableType();
-            if (type == VariableType.INTEGER_EXPRESSION) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private IntDomainVar[] integerVariableToIntDomainVar(final Variable[] tab) {
-        return integerVariableToIntDomainVar(tab, tab.length);
-    }
-
-    private IntDomainVar[] integerVariableToIntDomainVar(final Variable[] tab, final int n) {
-        final IntDomainVar[] newTab = new IntDomainVar[n];
-        for (int i = 0; i < n; i++) {
-            newTab[i] = (IntDomainVar) cpsolver.mapvariables.get(tab[i].getIndex());
-        }
-        return newTab;
-    }
-
-    private IntDomainVar[][] integerVariableToIntDomainVar(final Variable[][] tab, final int n) {
-        final IntDomainVar[][] newTab = new IntDomainVar[n][];
-        for (int i = 0; i < n; i++) {
-            newTab[i] = integerVariableToIntDomainVar(tab[i]);
-        }
-        return newTab;
-    }
+	 //************************************************* CONCERNING CONSTRAINTS *********************************************
 
 
-    protected IntDomainVar[][] integerVariableToIntDomainVar(final Variable[][] tab) {
-        return integerVariableToIntDomainVar(tab, tab.length);
-    }
+	 public void readConstraints(final CPModel model) {
+		 Constraint ic;
+		 SConstraint c;
+		 Boolean decomp = model.getDefaultExpressionDecomposition();
+		 final Iterator<Constraint> it = model.getConstraintIterator();
+		 while (it.hasNext()) {
+			 ic = it.next();
+			 if (!cpsolver.mapconstraints.containsKey(ic.getIndex())) {
+				 if (ic.getOptions().contains(Options.E_DECOMP)) {
+					 decomp = true;
+				 }
+				 c = readModelConstraint(ic, decomp);
+				 if (ic.getOptions().contains(Options.C_POST_PONED)) {
+					 postponedConstraint.add(c);
+				 } else {
+					 cpsolver.post(c);
+				 }
+				 cpsolver.mapconstraints.put(ic.getIndex(), c);
+			 }
+		 }
+		 for (final SConstraint ppc : postponedConstraint) {
+			 cpsolver.post(ppc);
+		 }
+		 if (cpsolver.isUniqueReading()) {
+			 cpsolver.postTaskConsistencyConstraints();
+			 cpsolver.postMakespanConstraint();
+		 }
+	 }
+
+	 public void readConstraint(final Constraint ic, final Boolean decomp) {
+		 if (!cpsolver.mapconstraints.containsKey(ic.getIndex())) {
+			 final SConstraint c = readModelConstraint(ic, decomp);
+			 cpsolver.mapconstraints.put(ic.getIndex(), c);
+			 cpsolver.post(c);
+		 }
+	 }
+
+	 public SConstraint makeSConstraint(final Constraint ic, final Boolean decomp) {
+		 return readModelConstraint(ic, decomp);
+	 }
+
+	 public SConstraint makeSConstraint(final Constraint ic) {
+		 return readModelConstraint(ic, false);
+	 }
+
+	 public SConstraint[] makeSConstraintAndOpposite(final Constraint ic, final Boolean decomp) {
+		 SConstraint[] cs = new SConstraint[2];
+		 ComponentConstraint cc = (ComponentConstraint) ic;
+		 ConstraintManager cm = cc.getConstraintManager();
+		 try {
+			 cs = cm.makeConstraintAndOpposite(cpsolver, cc.getVariables(), cc.getParameters(), cc.getOptions());
+		 } catch (Exception e) {
+			 cs[0] = readModelConstraint(ic, decomp);
+			 try {
+				 cs[1] = cs[0].opposite(cpsolver);
+			 } catch (SolverException se) {
+				 //HACK
+				 Constraint oc = Choco.not(ic);
+				 oc.findManager(CPModel.properties);
+				 cs[1] = readModelConstraint(oc, decomp);
+			 }
+		 }
+		 return cs;
+	 }
+
+	 public SConstraint[] makeSConstraintAndOpposite(final Constraint ic) {
+		 return makeSConstraintAndOpposite(ic, false);
+	 }
+
+	 SConstraint readModelConstraint(final Constraint ic, final Boolean decomp) {
+
+		 if (ic instanceof MetaConstraint) {
+			 return createMetaConstraint(ic, decomp);
+		 }
+
+		 if (ic instanceof ComponentConstraint) {
+			 if (ic.getConstraintType().canContainExpression && containExpression(ic.getVariables())) {
+				 return createMetaConstraint(ic, decomp);
+			 }
+			 final ComponentConstraint cc = (ComponentConstraint) ic;
+			 final ConstraintManager cm = cc.getConstraintManager();
+			 return cm.makeConstraint(cpsolver, cc.getVariables(), cc.getParameters(), cc.getOptions());
+		 }
+		 return null;
+	 }
+
+	 /**
+	  * Check wether a pool of variables is composed of simple variables or not
+	  *
+	  * @param vars pool of variables
+	  * @return true if only simple variable,
+	  */
+	 private static boolean containExpression(final Variable[] vars) {
+		 if (vars == null) {
+			 return false;
+		 }
+		 for (final Variable v : vars) {
+			 final VariableType type = v.getVariableType();
+			 if (type == VariableType.INTEGER_EXPRESSION) {
+				 return true;
+			 }
+		 }
+		 return false;
+	 }
+
+	 private IntDomainVar[] integerVariableToIntDomainVar(final Variable[] tab) {
+		 return integerVariableToIntDomainVar(tab, tab.length);
+	 }
+
+	 private IntDomainVar[] integerVariableToIntDomainVar(final Variable[] tab, final int n) {
+		 final IntDomainVar[] newTab = new IntDomainVar[n];
+		 for (int i = 0; i < n; i++) {
+			 newTab[i] = (IntDomainVar) cpsolver.mapvariables.get(tab[i].getIndex());
+		 }
+		 return newTab;
+	 }
+
+	 private IntDomainVar[][] integerVariableToIntDomainVar(final Variable[][] tab, final int n) {
+		 final IntDomainVar[][] newTab = new IntDomainVar[n][];
+		 for (int i = 0; i < n; i++) {
+			 newTab[i] = integerVariableToIntDomainVar(tab[i]);
+		 }
+		 return newTab;
+	 }
 
 
-    protected SConstraint createMetaConstraint(final Constraint ic, final Boolean decomp) {
-        try {
-            final ExpressionSConstraint c = new ExpressionSConstraint(buildBoolNode(ic));
-            c.setDecomposeExp(decomp);
-            c.setScope(cpsolver);
-            if (ic.getOptions().contains("cp:ac")) {
-            	//Option is equal to C_ALLDIFFERENT_AC,  C_GCC_AC !? 
-                c.setLevelAc(0);
-            } else if (ic.getOptions().contains(Options.C_EXT_FC)) {
-                c.setLevelAc(1);
-            }
-            //important step to deal properly with linear equation
-            final SConstraint intensional = ExpressionTools.getScalarConstraint(c, cpsolver);
-            if (intensional != null) {
-                return intensional;
-            } else {
-                return c;
-            }
-        } catch (ClassCastException cce) {
-            //HACK
-            LOGGER.info("createGenericMetaConstraint");
-            return createGenericMetaConstraint((MetaConstraint) ic, decomp);
-        }
-    }
-
-    protected BoolNode buildBoolNode(final Constraint ic) {
-        IntegerExpressionVariable[] vars = null;
-        if (ic.getNbVars() > 0) {
-            vars = new IntegerExpressionVariable[ic.getNbVars()];
-            for (int i = 0; i < ic.getVariables().length; i++) {
-                vars[i] = (IntegerExpressionVariable) ic.getVariables()[i];
-            }
-        }
-        return (BoolNode) ic.getExpressionManager().makeNode(cpsolver, new Constraint[]{ic}, vars);
-    }
+	 protected IntDomainVar[][] integerVariableToIntDomainVar(final Variable[][] tab) {
+		 return integerVariableToIntDomainVar(tab, tab.length);
+	 }
 
 
-    protected SConstraint createGenericMetaConstraint(final MetaConstraint mc, final Boolean decomp) {
-        int l = mc.getConstraints().length;
-        SConstraint[] subcs = new SConstraint[l];
-        IntDomainVar[] breifs = new IntDomainVar[l];
-        for (int i = 0; i < l; i++) {
-            final SConstraint[] cs = makeSConstraintAndOpposite(mc.getConstraint(i), decomp);
-            breifs[i] = cpsolver.createBooleanVar(StringUtils.randomName());
-            subcs[i] = ReifiedFactory.builder(breifs[i], cs[0], cs[1], cpsolver);
-        }
-        IntDomainVar[] notbreifs;
-        switch (mc.getConstraintType()) {
-            case AND:
-                cpsolver.post(subcs);
-                return BooleanFactory.and(breifs);
-            case OR:
-                cpsolver.post(subcs);
-                return BooleanFactory.or(cpsolver.getEnvironment(), breifs);
-            case NOT:
-                cpsolver.post(subcs);
-                return cpsolver.eq(breifs[0], 0);
-            case IFONLYIF:
-                cpsolver.post(subcs);
-                return cpsolver.eq(breifs[0], breifs[1]);
-            case IFTHENELSE:
-                cpsolver.post(subcs);
-                notbreifs = new IntDomainVar[1];
-                notbreifs[0] = cpsolver.createBooleanVar(StringUtils.randomName());
+	 protected SConstraint createMetaConstraint(final Constraint ic, final Boolean decomp) {
+		 try {
+			 final ExpressionSConstraint c = new ExpressionSConstraint(buildBoolNode(ic));
+			 c.setDecomposeExp(decomp);
+			 c.setScope(cpsolver);
+			 if (ic.getOptions().contains(Options.E_AC)) {
+				 c.setLevelAc(0);
+			 } else if (ic.getOptions().contains(Options.E_FC)) {
+				 c.setLevelAc(1);
+			 }
+			 //important step to deal properly with linear equation
+			 final SConstraint intensional = ExpressionTools.getScalarConstraint(c, cpsolver);
+			 if (intensional != null) {
+				 return intensional;
+			 } else {
+				 return c;
+			 }
+		 } catch (ClassCastException cce) {
+			 //HACK
+			 LOGGER.info("createGenericMetaConstraint");
+			 return createGenericMetaConstraint((MetaConstraint) ic, decomp);
+		 }
+	 }
 
-                cpsolver.post(cpsolver.neq(breifs[0], notbreifs[0]));
-                cpsolver.post(cpsolver.eq(breifs[0], breifs[1]));
-                cpsolver.post(cpsolver.eq(notbreifs[0], breifs[2]));
+	 protected BoolNode buildBoolNode(final Constraint ic) {
+		 IntegerExpressionVariable[] vars = null;
+		 if (ic.getNbVars() > 0) {
+			 vars = new IntegerExpressionVariable[ic.getNbVars()];
+			 for (int i = 0; i < ic.getVariables().length; i++) {
+				 vars[i] = (IntegerExpressionVariable) ic.getVariables()[i];
+			 }
+		 }
+		 return (BoolNode) ic.getExpressionManager().makeNode(cpsolver, new Constraint[]{ic}, vars);
+	 }
 
-                return BooleanFactory.or(cpsolver.getEnvironment(), breifs[0], notbreifs[0]);
-            case IMPLIES:
-                cpsolver.post(subcs);
-                notbreifs = new IntDomainVar[1];
-                notbreifs[0] = cpsolver.createBooleanVar(StringUtils.randomName());
 
-                cpsolver.post(cpsolver.neq(breifs[0], notbreifs[0]));
+	 protected SConstraint createGenericMetaConstraint(final MetaConstraint mc, final Boolean decomp) {
+		 int l = mc.getConstraints().length;
+		 SConstraint[] subcs = new SConstraint[l];
+		 IntDomainVar[] breifs = new IntDomainVar[l];
+		 for (int i = 0; i < l; i++) {
+			 final SConstraint[] cs = makeSConstraintAndOpposite(mc.getConstraint(i), decomp);
+			 breifs[i] = cpsolver.createBooleanVar(StringUtils.randomName());
+			 subcs[i] = ReifiedFactory.builder(breifs[i], cs[0], cs[1], cpsolver);
+		 }
+		 IntDomainVar[] notbreifs;
+		 switch (mc.getConstraintType()) {
+		 case AND:
+			 cpsolver.post(subcs);
+			 return BooleanFactory.and(breifs);
+		 case OR:
+			 cpsolver.post(subcs);
+			 return BooleanFactory.or(cpsolver.getEnvironment(), breifs);
+		 case NOT:
+			 cpsolver.post(subcs);
+			 return cpsolver.eq(breifs[0], 0);
+		 case IFONLYIF:
+			 cpsolver.post(subcs);
+			 return cpsolver.eq(breifs[0], breifs[1]);
+		 case IFTHENELSE:
+			 cpsolver.post(subcs);
+			 notbreifs = new IntDomainVar[1];
+			 notbreifs[0] = cpsolver.createBooleanVar(StringUtils.randomName());
 
-                return BooleanFactory.or(cpsolver.getEnvironment(), notbreifs[0], breifs[1]);
-            default:
-                throw new UnsupportedOperationException();
-        }
-    }
+			 cpsolver.post(cpsolver.neq(breifs[0], notbreifs[0]));
+			 cpsolver.post(cpsolver.eq(breifs[0], breifs[1]));
+			 cpsolver.post(cpsolver.eq(notbreifs[0], breifs[2]));
+
+			 return BooleanFactory.or(cpsolver.getEnvironment(), breifs[0], notbreifs[0]);
+		 case IMPLIES:
+			 cpsolver.post(subcs);
+			 notbreifs = new IntDomainVar[1];
+			 notbreifs[0] = cpsolver.createBooleanVar(StringUtils.randomName());
+
+			 cpsolver.post(cpsolver.neq(breifs[0], notbreifs[0]));
+
+			 return BooleanFactory.or(cpsolver.getEnvironment(), notbreifs[0], breifs[1]);
+		 default:
+			 throw new UnsupportedOperationException();
+		 }
+	 }
 
 }
 

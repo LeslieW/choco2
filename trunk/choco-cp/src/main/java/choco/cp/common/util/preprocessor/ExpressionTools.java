@@ -563,11 +563,8 @@ public final class ExpressionTools {
 		if (e.getNbVars() == 2) {
 			final IntDomainVar v1 = e.getVars()[0];
 			final IntDomainVar v2 = e.getVars()[1];
-			//Bug maxspan == maxdsize !
-			//final int maxspan = Math.max(v1.getSup() - v1.getInf() + 1,
-			//       v2.getSup() - v2.getInf() + 1);
-			final int maxspan = Math.max(v2.getSup() - v1.getInf() + 1,
-					v2.getSup() - v1.getInf() + 1);
+			final int maxspan = Math.max(v1.getSup() - v1.getInf() + 1,
+			       v2.getSup() - v2.getInf() + 1);
 			final int maxdsize = Math.max(v1.getDomainSize(), v2.getDomainSize());
 			return (maxspan >= 1000 && maxdsize < maxspan);
 		} else {

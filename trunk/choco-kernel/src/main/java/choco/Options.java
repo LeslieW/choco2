@@ -129,6 +129,17 @@ public class Options {
 	 */
 	public static final String E_DECOMP = "cp:decomp";
 
+	/**
+	 * <br/><b>Goal</b> : to get AC algorithm
+	 * <br/><b>Scope</b> : {@link choco.kernel.model.variables.integer.IntegerExpressionVariable}.
+	 */
+	public static final String E_AC= "cp:ac";
+	
+	/**
+	 * <br/><b>Goal</b> :  set filter policy to forward checking.
+	 * <br/><b>Scope</b> : {@link choco.kernel.model.variables.integer.IntegerExpressionVariable}.
+	 */
+	public static final String E_FC= "cp:fc";
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////// CONSTRAINT ////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
