@@ -418,6 +418,7 @@ public class CPModelToCPSolver {
             c.setDecomposeExp(decomp);
             c.setScope(cpsolver);
             if (ic.getOptions().contains("cp:ac")) {
+            	//Option is equal to C_ALLDIFFERENT_AC,  C_GCC_AC !? 
                 c.setLevelAc(0);
             } else if (ic.getOptions().contains(Options.C_EXT_FC)) {
                 c.setLevelAc(1);
@@ -448,7 +449,7 @@ public class CPModelToCPSolver {
     }
 
 
-    private SConstraint createGenericMetaConstraint(final MetaConstraint mc, final Boolean decomp) {
+    protected SConstraint createGenericMetaConstraint(final MetaConstraint mc, final Boolean decomp) {
         int l = mc.getConstraints().length;
         SConstraint[] subcs = new SConstraint[l];
         IntDomainVar[] breifs = new IntDomainVar[l];

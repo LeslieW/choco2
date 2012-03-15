@@ -27,11 +27,13 @@
 
 package choco.cp.solver.preprocessor;
 
+import choco.Options;
 import choco.cp.common.util.preprocessor.ExpressionTools;
 import choco.cp.solver.CPModelToCPSolver;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
 import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.constraints.MetaConstraint;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.reified.BoolNode;
 import gnu.trove.TLongObjectHashMap;
@@ -46,72 +48,83 @@ import gnu.trove.TLongObjectHashMap;
 public class PPModelToCPSolver extends CPModelToCPSolver {
 
 
-    /**
-     * store if an expression constraint has already be been built for
-     * a model constraint.
-     */
-    //This could be implemented as a hook on constraint ?
-    protected TLongObjectHashMap<ExpressionSConstraint> knownExpressionCts;
+	/**
+	 * store if an expression constraint has already be been built for
+	 * a model constraint.
+	 */
+	//This could be implemented as a hook on constraint ?
+	protected TLongObjectHashMap<ExpressionSConstraint> knownExpressionCts;
 
-    public PPModelToCPSolver(CPSolver cpsolver) {
-        super(cpsolver);
-        knownExpressionCts = new TLongObjectHashMap<ExpressionSConstraint>();
-    }
-
-
-    public void storeExpressionSConstraint(Constraint c, ExpressionSConstraint ic) {
-        knownExpressionCts.put(c.getIndex(),ic);
-    }
-
-    /**
-     * The number of heavy extensional constraint posted
-     * using an expression
-     */
-    protected int nbHeavyBin = 0;
+	public PPModelToCPSolver(CPSolver cpsolver) {
+		super(cpsolver);
+		knownExpressionCts = new TLongObjectHashMap<ExpressionSConstraint>();
+	}
 
 
-    /**
-     * Override the creation of Expression Constraint as in the preprocessing
-     * they might have been built earlier or identified as an intensional
-     * constraint. 
-     * @param ic
-     * @param decomp
-     * @return
-     */
-    protected SConstraint createMetaConstraint(Constraint ic, Boolean decomp) {
-        ExpressionSConstraint c = knownExpressionCts.get(ic.getIndex());
-        if (c == null) {
-            c = new ExpressionSConstraint(super.buildBoolNode(ic));
-        }
-        c.setScope(cpsolver);
-        c.setDecomposeExp(false); //todo: check default value of decomp ?
-        //c.setDecomposeExp(decomp);
-        if (ExpressionTools.toBeDecomposed(c)) {
-            c.setDecomposeExp(true);
-        } else if (ExpressionTools.isVeryBinaryHeavy(c)) {
-            nbHeavyBin ++;
-        }
-        if (nbHeavyBin > 2000) {
-            c.setLevelAc(1);
-        } else c.setLevelAc(0);
+	public void storeExpressionSConstraint(Constraint c, ExpressionSConstraint ic) {
+		knownExpressionCts.put(c.getIndex(),ic);
+	}
 
-        SConstraint intensional = c.getKnownIntensionalConstraint();
-        if (intensional == null)
-            intensional = ExpressionTools.getIntentionalConstraint(c, cpsolver);
-        if (intensional != null)
-            return intensional;
-        else return c;
-    }
+	/**
+	 * The number of heavy extensional constraint posted
+	 * using an expression
+	 */
+	protected int nbHeavyBin = 0;
 
 
+	/**
+	 * Override the creation of Expression Constraint as in the preprocessing
+	 * they might have been built earlier or identified as an intensional
+	 * constraint. 
+	 * @param ic
+	 * @param decomp
+	 * @return
+	 */
+	protected SConstraint createMetaConstraint(Constraint ic, Boolean decomp) {
+		try {
+			ExpressionSConstraint c = knownExpressionCts.get(ic.getIndex());
+			if (c == null) {
+				c = new ExpressionSConstraint(super.buildBoolNode(ic));
+			}
+			c.setScope(cpsolver);
+			c.setDecomposeExp(decomp);
+			if ( ! decomp && ExpressionTools.toBeDecomposed(c)) {
+				c.setDecomposeExp(true);
+			} else if (ExpressionTools.isVeryBinaryHeavy(c)) {
+				nbHeavyBin ++;
+			}
 
-    // to make the builNode method accessible from the blackbox solver
-    public BoolNode buildNode(Constraint ic) {
-       return super.buildBoolNode(ic);
-    }
+			if (ic.getOptions().contains("cp:ac")) {
+				//Option is equal to C_ALLDIFFERENT_AC,  C_GCC_AC !? 
+				c.setLevelAc(0);
+			} else if (ic.getOptions().contains(Options.C_EXT_FC)) {
+				c.setLevelAc(1);
+			}else if (nbHeavyBin > 2000) {
+				c.setLevelAc(1);
+			} else c.setLevelAc(0);
 
-   
-    protected void readBBDecisionVariables() {
-        super.readDecisionVariables();
-    }
+			SConstraint intensional = c.getKnownIntensionalConstraint();
+			if (intensional == null)
+				intensional = ExpressionTools.getIntentionalConstraint(c, cpsolver);
+			if (intensional != null)
+				return intensional;
+			else return c;
+		} catch (ClassCastException cce) {
+			//HACK
+			LOGGER.info("createGenericMetaConstraint");
+			return createGenericMetaConstraint((MetaConstraint) ic, decomp);
+		}
+	}
+
+
+
+	// to make the builNode method accessible from the blackbox solver
+	public BoolNode buildNode(Constraint ic) {
+		return super.buildBoolNode(ic);
+	}
+
+
+	protected void readBBDecisionVariables() {
+		super.readDecisionVariables();
+	}
 }

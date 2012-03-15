@@ -29,6 +29,7 @@ package choco.cp.solver.preprocessor;
 
 import choco.cp.common.util.preprocessor.AbstractDetector;
 import choco.cp.common.util.preprocessor.detector.scheduling.DisjunctiveModel;
+import choco.cp.common.util.preprocessor.detector.scheduling.DisjunctiveSModel;
 import choco.cp.model.CPModel;
 import choco.cp.model.preprocessor.ModelDetectorFactory;
 import choco.cp.solver.CPSolver;
@@ -63,6 +64,8 @@ public class PreProcessCPSolver extends CPSolver {
 	private final PPSearch ppsearch;
 	
 	private DisjunctiveModel disjMod;
+	
+	private DisjunctiveSModel disjSMod;
 
 	/**
 	 * initial propagation time (to decide whether to perform or not
@@ -86,10 +89,17 @@ public class PreProcessCPSolver extends CPSolver {
 		//optionsSet.addAll(Arrays.asList(options));
 	}
 
-	public final DisjunctiveModel getDisjMod() {
+	public final DisjunctiveModel getDisjModel() {
 		return disjMod;
 	}
 
+	public final DisjunctiveSModel getDisjSModel() {
+		if(disjSMod == null && disjMod != null) {
+			disjSMod = new DisjunctiveSModel(this, disjMod);
+		}
+		return disjSMod;
+	}
+	
 	public PPModelToCPSolver getMod2Sol() {
 		return (PPModelToCPSolver) mod2sol;
 	}

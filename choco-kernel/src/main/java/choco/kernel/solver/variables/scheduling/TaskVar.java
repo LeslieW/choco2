@@ -307,7 +307,9 @@ public final class TaskVar<C extends AbstractSConstraint & TaskPropagator> exten
 	}
 
     @Override
-    public void addExtension(final int extensionNumber) {}
+    public void addExtension(final int extensionNumber) {
+    	throw new UnsupportedOperationException("Not yet implemented");
+    }
 
     public final boolean detectOrPostConsistencyConstraint(Solver solver) {
 		final DisposableIterator<SConstraint> iter = getConstraintsIterator();

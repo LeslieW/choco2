@@ -125,7 +125,7 @@ public class PertCPM extends PatternExample {
 		PreProcessConfiguration.keepSchedulingPreProcess(s);
 		s.createMakespan();
 		s.read(model);
-		showGUI(s.getDisjMod());
+		showGUI(s.getDisjModel());
 	}
 
 	@Override
