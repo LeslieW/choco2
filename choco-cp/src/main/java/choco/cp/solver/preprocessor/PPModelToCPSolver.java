@@ -94,10 +94,9 @@ public class PPModelToCPSolver extends CPModelToCPSolver {
 				nbHeavyBin ++;
 			}
 
-			if (ic.getOptions().contains("cp:ac")) {
-				//Option is equal to C_ALLDIFFERENT_AC,  C_GCC_AC !? 
+			if (ic.getOptions().contains(Options.E_AC)) {
 				c.setLevelAc(0);
-			} else if (ic.getOptions().contains(Options.C_EXT_FC)) {
+			} else if (ic.getOptions().contains(Options.E_FC)) {
 				c.setLevelAc(1);
 			}else if (nbHeavyBin > 2000) {
 				c.setLevelAc(1);
