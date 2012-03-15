@@ -49,7 +49,7 @@ public class DisjunctiveSModel extends DisjunctiveGraph<ITemporalSRelation> {
 	public final Solver solver;
 
 	public DisjunctiveSModel(PreProcessCPSolver solver) {
-		this(solver, solver.getDisjMod());
+		this(solver, solver.getDisjModel());
 	}
 	public DisjunctiveSModel(Solver solver, DisjunctiveModel dmod) {
 		super(solver.getNbTaskVars());
@@ -113,7 +113,7 @@ public class DisjunctiveSModel extends DisjunctiveGraph<ITemporalSRelation> {
 					return true;
 				}
 			});
-			// TODO - sort disjuncts according to which criteria ?- created 12 août 2011 by Arnaud Malapert
+			// TODO - sort disjuncts according to which criteria ?- created 12 aout 2011 by Arnaud Malapert
 		}
 		
 		return reuseDisjuncts;
