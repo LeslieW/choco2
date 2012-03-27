@@ -218,7 +218,7 @@ public class TestAlternativeResources {
 
 	@Test
 	public void testAltDisj2() {
-		int n = 5;
+		int n = 5;	
 		int[] durations = ArrayUtils.oneToN(n);
 		testAltDisjunctive(1,durations, (n * (n - 1)) / 2, 1);
 	}
