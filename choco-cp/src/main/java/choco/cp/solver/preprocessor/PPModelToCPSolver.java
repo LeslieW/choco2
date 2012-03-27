@@ -88,7 +88,7 @@ public class PPModelToCPSolver extends CPModelToCPSolver {
 			}
 			c.setScope(cpsolver);
 			c.setDecomposeExp(decomp);
-			if ( ! decomp && ExpressionTools.toBeDecomposed(c)) {
+			if (  decomp == null && ExpressionTools.toBeDecomposed(c)) {
 				c.setDecomposeExp(true);
 			} else if (ExpressionTools.isVeryBinaryHeavy(c)) {
 				nbHeavyBin ++;
