@@ -119,8 +119,12 @@ public class SetTimes extends AbstractLargeIntBranchingStrategy {
 	/** select a task. */
 	protected final TaskVarSelector selector;
 
-	public SetTimes(final Solver solver, final List<TaskVar> tasks, final Comparator<ITask> comparator, final boolean randomized) {
-		this(solver, tasks, randomized ? new RandomizedTaskSelector(comparator) : new TaskSelector(comparator));
+	public SetTimes(final Solver solver, final List<TaskVar> tasks, final Comparator<ITask> comparator) {
+		this(solver, tasks, new TaskSelector(comparator));
+	}
+	
+	public SetTimes(final Solver solver, final List<TaskVar> tasks, final Comparator<ITask> comparator, final long seed) {
+		this(solver, tasks, new RandomizedTaskSelector(comparator, seed));
 	}
 
 	/**

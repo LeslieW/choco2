@@ -104,7 +104,7 @@ public class OpenShopScheduling extends PatternExample {
                 solver.addGoal(BranchingFactory.setTimes(solver));
                 break;
             case 1:
-                solver.addGoal(BranchingFactory.setTimes(solver, TaskComparators.makeEarliestStartingTimeCmp(), true));
+                solver.addGoal(BranchingFactory.setTimes(solver, 0));
                 break;
             case 2:
                 ((CPSolver) solver).setRandomSelectors();
