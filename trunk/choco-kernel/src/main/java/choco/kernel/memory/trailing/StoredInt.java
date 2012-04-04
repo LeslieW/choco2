@@ -36,64 +36,87 @@ import choco.kernel.memory.trailing.trail.StoredIntTrail;
  */
 public class StoredInt extends AbstractStoredObject implements IStateInt {
 
-    private int currentValue;
+	private int currentValue;
 
-    protected final StoredIntTrail myTrail;
+	protected final StoredIntTrail myTrail;
 
-    /**
-     * Constructs a stored search with an initial value.
-     * Note: this constructor should not be used directly: one should instead
-     * use the IEnvironment factory
-     */
-    public StoredInt(final EnvironmentTrailing env, final int i) {
-        super(env);
-        myTrail = env.getIntTrail();
-        currentValue = i;
-    }
-
-    @Override
-    public final int add(final int delta) {
-        set(currentValue + delta);
-        return currentValue;
-    }
-
-    @Override
-    public final int get() {
-        return currentValue;
-    }
+	/**
+	 * Constructs a stored search with an initial value.
+	 * Note: this constructor should not be used directly: one should instead
+	 * use the IEnvironment factory
+	 */
+	public StoredInt(final EnvironmentTrailing env, final int i) {
+		super(env);
+		myTrail = env.getIntTrail();
+		currentValue = i;
+	}
 
 
-    /**
-     * Modifies the value and stores if needed the former value on the
-     * trailing stack.
-     */
-    public final void set(final int y) {
-        if (y != currentValue) {
-            if (this.worldStamp < environment.getWorldIndex()) {
-                myTrail.savePreviousState(this, currentValue, worldStamp);
-                worldStamp = environment.getWorldIndex();
-            }
-            currentValue = y;
-        }
-    }
+	private final void save() {
+		if (this.worldStamp < environment.getWorldIndex()) {
+			myTrail.savePreviousState(this, currentValue, worldStamp);
+			worldStamp = environment.getWorldIndex();
+		}
+	}
+	
+	@Override
+	public final int add(final int delta) {
+		if (delta != 0) {
+			save();
+		}
+		currentValue += delta;
+		return currentValue;
+	}
 
 
-    /**
-     * Modifies the value without storing the former value on the trailing stack.
-     *
-     * @param y      the new value
-     * @param wstamp the stamp of the world in which the update is performed
-     */
-
-    public void _set(final int y, final int wstamp) {
-        currentValue = y;
-        worldStamp = wstamp;
-    }
+	@Override
+	public int increment() {
+		save();
+		return ++currentValue;
+	}
 
 
-    @Override
-    public final String toString() {
-        return String.valueOf(currentValue);
-    }
+	@Override
+	public int decrement() {
+		save();
+		return --currentValue;
+	}
+
+
+	@Override
+	public final int get() {
+		return currentValue;
+	}
+
+
+	/**
+	 * Modifies the value and stores if needed the former value on the
+	 * trailing stack.
+	 */
+	public final void set(final int y) {
+		if (y != currentValue) {
+			save();
+		}
+		currentValue = y;
+	}
+
+
+	/**
+	 * Modifies the value without storing the former value on the trailing stack.
+	 *
+	 * @param y      the new value
+	 * @param wstamp the stamp of the world in which the update is performed
+	 */
+
+	public void _set(final int y, final int wstamp) {
+		currentValue = y;
+		worldStamp = wstamp;
+	}
+
+
+	@Override
+	public final String toString() {
+		return String.valueOf(currentValue);
+	}
 }
 

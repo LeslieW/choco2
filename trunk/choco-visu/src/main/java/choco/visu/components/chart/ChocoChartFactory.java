@@ -76,15 +76,12 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.category.BarRenderer;
-import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.chart.renderer.category.GanttRenderer;
 import org.jfree.chart.renderer.category.StackedBarRenderer3D;
-import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.chart.renderer.xy.DeviationRenderer;
 import org.jfree.chart.renderer.xy.StackedXYBarRenderer;
 import org.jfree.chart.renderer.xy.StandardXYBarPainter;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
-import org.jfree.chart.urls.StandardCategoryURLGenerator;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.IntervalCategoryDataset;
 import org.jfree.data.gantt.TaskSeriesCollection;
@@ -98,7 +95,6 @@ import org.jfree.ui.RefineryUtilities;
 import org.jfree.ui.TextAnchor;
 
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.global.geost.Setup;
 import choco.cp.solver.constraints.global.pack.IPackSConstraint;
 import choco.cp.solver.constraints.global.pack.PackSConstraint;
 import choco.kernel.model.constraints.Constraint;
@@ -110,6 +106,7 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.global.scheduling.ICumulativeResource;
 import choco.kernel.solver.constraints.global.scheduling.IResource;
 import choco.kernel.solver.search.limit.Limit;
+import choco.kernel.solver.variables.scheduling.ITask;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 import choco.kernel.visu.AbstractVisuManager;
 import choco.visu.components.chart.axis.Log2Axis;
@@ -446,6 +443,13 @@ public final class ChocoChartFactory {
 	//*******************  Gantt Charts  ********************************//
 	//***************************************************************//
 
+	public static JFreeChart createGanttChart(String title, ITask[] tasks) {
+		return createGanttChart(title, ChocoDatasetFactory.createGanttDataset(tasks), false, null);
+	}
+	
+	public static JFreeChart createGanttChart(String title, ITask[] tasks, int[] releaseDates) {
+		return createGanttChart(title, ChocoDatasetFactory.createGanttDataset(tasks, releaseDates), false, null);
+	}
 
 	public static JFreeChart createGanttChart(String title, TaskVar[] tasks, int[] releaseDates) {
 		return createGanttChart(title, ChocoDatasetFactory.createGanttDataset(tasks, releaseDates), false, null);

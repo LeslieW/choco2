@@ -51,10 +51,11 @@ import java.util.logging.Logger;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-class SimpleTask extends AbstractTask {
+final class SimpleTask extends AbstractTask {
 
 	private static int nextID;
 
+	private final int id;
 	private final Point domain;
 
 	private final int duration;
@@ -67,19 +68,23 @@ class SimpleTask extends AbstractTask {
      * @param duration
      */
 	public SimpleTask(final int est, final int lst, final int duration) {
-		super(nextID++, "T"+nextID);
+		super();
+		id = nextID++;
 		this.domain = new Point(est, lst>=est ? lst :est);
 		this.duration = duration>0 ? duration : 0;
 	}
 
-
-	/**
-	 * @see ITask#getECT()
-	 */
+	
 	@Override
-	public int getECT() {
-		return domain.x+duration;
+	public boolean isPreemptionAllowed() {
+		return false;
 	}
+
+
+	public final int getID() {
+		return id;
+	}
+
 
 	/**
 	 * @see ITask#getEST()
@@ -98,27 +103,11 @@ class SimpleTask extends AbstractTask {
 	}
 
 	/**
-	 * @see ITask#getLST()
-	 */
-	@Override
-	public int getLST() {
-		return domain.y;
-	}
-
-	/**
 	 * @see ITask#getMinDuration()
 	 */
 	@Override
 	public int getMinDuration() {
 		return duration;
-	}
-
-	/**
-	 * @see ITask#hasConstantDuration()
-	 */
-	@Override
-	public boolean hasConstantDuration() {
-		return true;
 	}
 
 	/**

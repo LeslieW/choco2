@@ -476,5 +476,19 @@ public class DetectorsTest {
 		//System.out.println(disjMod.setupTimesToString());
 		//VizFactory.toDotty(new File("/tmp/test.dot"), disjMod);
 	}
+	
+	@Test
+	public void testVariableRemovals(){
+		CPModel model = new CPModel();
+		final TaskVariable t1 = makeTaskVar("T1", 0, 20, 15);
+		final TaskVariable t2 = makeTaskVar("T2", 20, 50, 10);
+		IntegerVariable b = Choco.makeBooleanVar("b");
+		model.addConstraints(
+				precedenceDisjoint(t1, t2, b)
+		);
+		final DisjunctiveModel disjMod = new DisjunctiveModel(model);
+		run(model, schedulingModelDetectors(model, disjMod));
+		assertEquals(2, model.getNbStoredMultipleVars());
+	}
 
 }

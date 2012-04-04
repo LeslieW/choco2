@@ -40,7 +40,7 @@ public class BoundHRTask extends RTask {
 		super(constraint, taskIdx);
 		estH = env.makeInt(getTaskVar().getEST());
 		lctH = env.makeInt(getTaskVar().getLCT());
-		this.htask = new HTask(taskvar, usage, estH, lctH);
+		htask = new HTask(taskvar, usage, estH, lctH);
 	}
 
 
