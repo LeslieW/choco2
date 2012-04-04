@@ -39,6 +39,7 @@ import static choco.kernel.common.util.tools.VariableUtils.getTaskVars;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import choco.cp.common.util.preprocessor.detector.scheduling.DisjunctiveSModel;
 import choco.cp.solver.constraints.global.pack.PackSConstraint;
 import choco.cp.solver.constraints.global.scheduling.precedence.ITemporalSRelation;
 import choco.cp.solver.search.integer.branching.AssignOrForbidIntVarVal;
@@ -72,10 +73,13 @@ import choco.cp.solver.search.set.StaticSetVarOrder;
 import choco.cp.solver.search.task.OrderingValSelector;
 import choco.cp.solver.search.task.SetTimes;
 import choco.cp.solver.search.task.ordering.CentroidOrdering;
+import choco.cp.solver.search.task.ordering.LexOrdering;
 import choco.cp.solver.search.task.ordering.MaxPreservedOrdering;
 import choco.cp.solver.search.task.ordering.MinPreservedOrdering;
+import choco.cp.solver.search.task.profile.ProfileSelector;
 import choco.kernel.common.util.comparator.TaskComparators;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.constraints.global.scheduling.IResource;
 import choco.kernel.solver.search.ValIterator;
 import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -114,11 +118,11 @@ public final class BranchingFactory {
 	public static AssignVar lexicographic(Solver solver) {
 		return lexicographic(solver, solver.getIntDecisionVars());
 	}
-	
+
 	public static AssignVar lexicographic(Solver solver, IntDomainVar[] vars) {
 		return lexicographic(solver, vars, new MinVal());
 	}
-	
+
 	public static AssignVar lexicographic(Solver solver, IntDomainVar[] vars, ValSelector<IntDomainVar> valSel) {
 		return new AssignVar( new StaticVarOrder(solver, vars), valSel);
 	}
@@ -415,7 +419,7 @@ public final class BranchingFactory {
 		final RandMaxRatioSelector varSel = new RandMaxRatioSelector(solver, ratios, seed);
 		return new AssignOrForbidIntVarValPair(new CompositePrecValSelector(ratios, varSel, valSel));
 	}
-	
+
 	//*****************************************************************//
 	//************************* SetTimes *****************************//
 	//***************************************************************//
@@ -423,15 +427,19 @@ public final class BranchingFactory {
 	public static SetTimes setTimes(final Solver solver) {
 		final TaskVar[] tasks = getTaskVars(solver);
 		Arrays.sort(tasks,TaskComparators.makeRMinDurationCmp()); 
-		return new SetTimes(solver,Arrays.asList(tasks) , TaskComparators.makeEarliestStartingTimeCmp(), false);
+		return new SetTimes(solver,Arrays.asList(tasks) , TaskComparators.makeEarliestStartingTimeCmp());
 	}
 
-	public static SetTimes setTimes(final Solver solver, final Comparator<ITask> comparator, final boolean randomized) {
-		return setTimes(solver,getTaskVars(solver), comparator, randomized);
+	public static SetTimes setTimes(final Solver solver, final long seed) {
+		return setTimes(solver,getTaskVars(solver), TaskComparators.makeEarliestStartingTimeCmp(), seed);
 	}
 
-	public static SetTimes setTimes(final Solver solver, final TaskVar[] tasks, final Comparator<ITask> comparator, final boolean randomized) {
-		return new SetTimes(solver, Arrays.asList(tasks), comparator, randomized);
+	public static SetTimes setTimes(final Solver solver, final TaskVar[] tasks, final Comparator<ITask> comparator) {
+		return new SetTimes(solver, Arrays.asList(tasks), comparator);
+	}
+	
+	public static SetTimes setTimes(final Solver solver, final TaskVar[] tasks, final Comparator<ITask> comparator, final long seed) {
+		return new SetTimes(solver, Arrays.asList(tasks), comparator, seed);
 	}
 
 	//*****************************************************************//
@@ -448,9 +456,40 @@ public final class BranchingFactory {
 	public static AssignVar completeDecreasingFirstFit(Solver solver, PackSConstraint ct) {
 		return completeDecreasing(solver, ct, false, true);
 	}
-	
+
 	public static AssignVar completeDecreasingBestFit(Solver solver, PackSConstraint ct) {
 		return completeDecreasing(solver, ct, true, true);
 	}
+
+	//*****************************************************************//
+	//*******************  Profile Heuristics **********************//
+	//***************************************************************//
+
+	public static AssignOrForbidIntVarValPair profile(Solver solver,  DisjunctiveSModel disjSModel) {
+		return profile(solver, disjSModel, new LexOrdering());
+	}
+
+	public static AssignOrForbidIntVarValPair profile(Solver solver, DisjunctiveSModel disjSModel, long seed) {
+		return profile(solver, disjSModel, new CentroidOrdering(seed));
+	}
+
+	public static AssignOrForbidIntVarValPair profile(Solver solver, DisjunctiveSModel disjSModel, OrderingValSelector valSel) {
+		return new AssignOrForbidIntVarValPair(new ProfileSelector(solver, disjSModel, valSel));
+	}
+
+
+	public static AssignOrForbidIntVarValPair profile(Solver solver, IResource<?>[] resources, DisjunctiveSModel disjSModel) {
+		return profile(solver, resources, disjSModel, new LexOrdering());
+	}
+
+	public static AssignOrForbidIntVarValPair profile(Solver solver, IResource<?>[] resources, DisjunctiveSModel disjSModel, long seed) {
+		return profile(solver, resources, disjSModel, new CentroidOrdering(seed));
+	}
+
+	public static AssignOrForbidIntVarValPair profile(Solver solver, IResource<?>[] resources, DisjunctiveSModel disjSModel, OrderingValSelector valSel) {
+		return new AssignOrForbidIntVarValPair(new ProfileSelector(solver, resources, disjSModel, valSel));
+	}
+
+
 
 }

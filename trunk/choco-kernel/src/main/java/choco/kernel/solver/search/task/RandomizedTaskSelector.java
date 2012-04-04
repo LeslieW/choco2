@@ -44,9 +44,9 @@ public class RandomizedTaskSelector extends TaskSelector {
 
 	private final Random rnd;
 
-	public RandomizedTaskSelector(Comparator<ITask> comparator) {
+	public RandomizedTaskSelector(Comparator<ITask> comparator, final long seed) {
 		super(comparator);
-		rnd = new Random();
+		rnd = new Random(seed);
 	}
 
 	@Override
