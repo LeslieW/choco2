@@ -77,6 +77,18 @@ public interface IStateInt {
   int add(int delta);
 
   /**
+   * Modifying a StoredInt by adding an unit increment.
+   * @return the updated value
+   */
+  int increment();
+  
+  /**
+   * Modifying a StoredInt by subtracting an unit increment.
+   * @return the updated value
+   */
+  int decrement();
+  
+  /**
    * Retrieving the environment.
    * @return the environment associated to this variable (the object
    * responsible to manage worlds and storable variables).

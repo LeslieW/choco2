@@ -56,10 +56,26 @@ public class RcInt implements IStateInt, RecomputableElement {
     }
 
     
+   
     @Override
 	public final int add(int delta) {
-		set(currentValue + delta);
-        return currentValue;
+    	timeStamp = environment.getWorldIndex();
+    	currentValue += delta;
+    	return currentValue;
+	}
+
+    
+
+	@Override
+	public int increment() {
+		timeStamp = environment.getWorldIndex();
+		return ++currentValue;
+	}
+
+	@Override
+	public int decrement() {
+		timeStamp = environment.getWorldIndex();
+		return --currentValue;
 	}
 
 	@Override
@@ -69,7 +85,7 @@ public class RcInt implements IStateInt, RecomputableElement {
 
 	public final void set(int y) {
         //if (y != currentValue)
-            currentValue = y;
+        currentValue = y;
         timeStamp = environment.getWorldIndex();
     }
 

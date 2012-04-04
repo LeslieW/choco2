@@ -62,6 +62,7 @@ import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import choco.kernel.solver.search.limit.Limit;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.ITask;
+import choco.kernel.solver.variables.scheduling.ITimePeriodList;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 
 public final class ChocoDatasetFactory {
@@ -76,9 +77,22 @@ public final class ChocoDatasetFactory {
 	//*******************  Tasks  ********************************//
 	//***************************************************************//
 	public static Task createTask(ITask t) {
-		return new Task(t.getName(),getTimePeriod(t.getEST(),t.getLCT()));
+		if(t.isPartiallyScheduled()) {
+			ITimePeriodList periods = t.getTimePeriodList();
+			final Task res = new Task(t.getName(),getTimePeriod(periods.getPeriodFirst(),periods.getPeriodLast()));
+			res.setPercentComplete(1);
+			// TODO -  setPercentComplete() - created 4 avr. 2012 by A. Malapert
+			if(t.isInterrupted()) {
+				for (int i = 0; i < periods.getTimePeriodCount(); i++) {
+					final Task subtask = new Task(t.getName(),getTimePeriod(periods.getPeriodStart(i),periods.getPeriodEnd(i)));
+					subtask.setPercentComplete(1);
+					res.addSubtask(subtask);
+				}
+			}
+			return res;
+		} else return null;
 	}
-	
+
 	public static Task createTask(ITask t, int releaseDate) {
 		assert releaseDate <= t.getEST();
 		Task t1 = new Task(t.getName(),getTimePeriod(t.getEST(),t.getLCT()));
@@ -88,28 +102,28 @@ public final class ChocoDatasetFactory {
 		t1.getSubtask(1).setPercentComplete(1);
 		return t1;
 	}
-	
+
 	public static Task createTask(ITask t, int releaseDate, int setupTime) {
 		Task t1 = createTask(t, releaseDate);
 		t1.addSubtask( new Task("Setup",getTimePeriod(t.getLCT(), t.getLCT() + setupTime)));
 		t1.getSubtask(2).setPercentComplete(0);
 		return t1;
 	}
-	
+
 	public static Task createEarlinessTardiness(ITask t, int dueDate) {
 		Task t1;
-		if(t.getLCT() <= dueDate) {
-			t1 = new Task(t.getName(),getTimePeriod(t.getLCT(), dueDate));
+		if(t.getLST() <= dueDate) {
+			t1 = new Task(t.getName(),getTimePeriod(t.getLST(), dueDate));
 			t1.setPercentComplete(0);
 		} else {
-			t1 = new Task(t.getName(),getTimePeriod(dueDate, t.getLCT()));
+			t1 = new Task(t.getName(),getTimePeriod(dueDate, t.getLST()));
 			t1.setPercentComplete(1);	
 		}
 		return t1;
 	}
-	
-	
-	
+
+
+
 	public static Task createTask(CPSolver s,TaskVariable t) {
 		return createTask(s.getVar(t));
 	}
@@ -119,7 +133,7 @@ public final class ChocoDatasetFactory {
 	}
 
 
-	public static TaskSeries createTaskSeries(String name, TaskVar... tasks) {
+	public static TaskSeries createTaskSeries(String name, ITask... tasks) {
 		final TaskSeries s = new TaskSeries(name);
 		for (int i = 0; i < tasks.length; i++) {
 			s.add(createTask(tasks[i]));
@@ -136,7 +150,7 @@ public final class ChocoDatasetFactory {
 		}
 		return s;
 	}
-
+	
 	public static TaskSeriesCollection createTaskCollection(Solver solver, String prefix, TaskVariable[][] tasks) {
 		TaskSeriesCollection c = new TaskSeriesCollection();
 		for (int i = 0; i < tasks.length; i++) {
@@ -144,7 +158,7 @@ public final class ChocoDatasetFactory {
 		}
 		return c;
 	}
-	
+
 	public static TaskSeriesCollection createTaskCollection(IResource<TaskVar>... resources) {
 		TaskSeriesCollection c = new TaskSeriesCollection();
 		for (IResource<TaskVar> rsc : resources) {
@@ -239,6 +253,17 @@ public final class ChocoDatasetFactory {
 	//*******************  Gantt *************************************//
 	//***************************************************************//
 
+	public static TaskSeriesCollection createGanttDataset(ITask[] tasks) {
+		final TaskSeries s1 = new TaskSeries("Tasks");
+		for (int i = 0; i < tasks.length; i++) {
+			final Task t = createTask(tasks[i]);
+			if( t != null) {s1.add(createTask(tasks[i]));};
+		}
+		final TaskSeriesCollection coll = new TaskSeriesCollection();
+		coll.add(s1);
+		return coll;
+	}
+	
 	public static TaskSeriesCollection createGanttDataset(ITask[] tasks, int[] releaseDates) {
 		final TaskSeries s1 = new TaskSeries("Tasks");
 		for (int i = 0; i < tasks.length; i++) {
@@ -248,7 +273,7 @@ public final class ChocoDatasetFactory {
 		coll.add(s1);
 		return coll;
 	}
-	
+
 	public static TaskSeriesCollection createGanttDataset(ITask[] tasks, int[] releaseDates, int[] setupTimes) {
 		final TaskSeries s1 = new TaskSeries("Tasks");
 		for (int i = 0; i < tasks.length; i++) {
@@ -258,7 +283,7 @@ public final class ChocoDatasetFactory {
 		coll.add(s1);
 		return coll;
 	}
-	
+
 	public static TaskSeriesCollection createGanttDataset(ITask[] tasks, int[] releaseDates, int[] setupTimes, int[] dueDates) {
 		TaskSeriesCollection coll = createGanttDataset(tasks, releaseDates, setupTimes);
 		final TaskSeries s1 = new TaskSeries("Earliness/Tardiness");

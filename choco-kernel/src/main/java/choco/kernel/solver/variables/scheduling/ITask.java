@@ -27,16 +27,14 @@
 
 package choco.kernel.solver.variables.scheduling;
 
+
+
 import choco.IPretty;
 import choco.kernel.common.IDotty;
 
 
-
-
 /**
- * The Interface ITask represent a scheduling entity : a task or activity.
- *  A task is defined by a starting time and a duration.
- *  We do not allow preemption.
+ * The Interface ITask represent a scheduling entity : a task, activity, job.
  *
  * @author Arnaud Malapert
  */
@@ -103,10 +101,9 @@ public interface ITask extends IDotty, IPretty {
 	/**
 	 * Checks for if the duration is constant.
 	 *
-	 * @return true, if successful
+	 * @return true, if the duration is constant.
 	 */
 	boolean hasConstantDuration();
-
 
 	/**
 	 * Checks if the task is scheduled. The task is scheduled if its starting time and its duration are fixed.
@@ -115,7 +112,36 @@ public interface ITask extends IDotty, IPretty {
 	 */
 	boolean isScheduled();
 
+	/**
+	 * Checks whether the preemption is allowed.
+	 *
+	 * @return true, if preemption is allowed
+	 */
+	boolean isPreemptionAllowed();
 
+	/**
+	 * Checks whether a preemptive task has been partially scheduled.
+	 *
+	 * @return true, if a preemptive task has been partially scheduled.
+	 */
+	boolean isPartiallyScheduled();
+		
+	/**
+	 * Checks if the task is interrupted (preempted).
+	 *
+	 * @return true, if the tasks is interrupted
+	 */
+	boolean isInterrupted();
+
+	/**
+	 * Gets the list of time periods in which the task is executed
+	 *
+	 * @return a list of time period.
+	 */
+	ITimePeriodList getTimePeriodList();
+	
+	
+	
 }
 
 

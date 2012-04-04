@@ -27,20 +27,18 @@
 
 package choco.kernel.solver.variables.scheduling;
 
-import static choco.kernel.common.util.tools.TaskUtils.*;
-import choco.kernel.common.util.tools.StringUtils;
+import static choco.kernel.common.util.tools.TaskUtils.isRegular;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-public class HTask implements ITask {
+public final class HTask extends AbstractTask {
 
 	private final ITask task;
 	
 	private IntDomainVar usage;
 	
 	private final IStateInt estH, lctH;
-	
-	
+		
 	public HTask(ITask task, IntDomainVar usage, IStateInt estH, IStateInt lctH) {
 		super();
 		this.task = task;
@@ -48,6 +46,13 @@ public class HTask implements ITask {
 		this.estH = estH;
 		this.lctH = lctH;
 	}
+	
+
+	@Override
+	public final boolean isPreemptionAllowed() {
+		return task.isPreemptionAllowed();
+	}
+
 
 	//ITask interface : integrate the hypothetical domains for filtering algorithms.
 	@Override
@@ -134,22 +139,8 @@ public class HTask implements ITask {
 		return task.isScheduled();
 	}
 
-	@Override
-	public String pretty() {
-		return StringUtils.pretty(this);
-	}
 
 
-	@Override
-	public String toString() {
-		return getName()+"["+getEST()+", "+getLCT()+"]";
-	}
-
-	@Override
-	public String toDotty() {
-		return StringUtils.toDotty(this, null, true);
-	}
-	
 	
 
 }

@@ -54,6 +54,10 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  */
 public final class TaskVar<C extends AbstractSConstraint & TaskPropagator> extends AbstractTask implements Var, ITaskVariable<IntDomainVar>, IIndex {
 
+	private final int id;
+	
+	private final String name;
+	
 	protected final IntDomainVar start;
 
 	protected final IntDomainVar end;
@@ -76,7 +80,9 @@ public final class TaskVar<C extends AbstractSConstraint & TaskPropagator> exten
 	 * @param name The name of the variable
 	 */
 	public TaskVar(final Solver solver, final int id, final String name, final IntDomainVar start, final IntDomainVar end, final IntDomainVar duration) {
-		super(id, name);
+		super();
+		this.id = id;
+		this.name = name;
 		this.start = start;
 		this.end = end;
 		this.duration = duration;
@@ -84,6 +90,25 @@ public final class TaskVar<C extends AbstractSConstraint & TaskPropagator> exten
 		index = solver.getIndexfactory().getIndex();
 		this.event = new TaskVarEvent<C>(this);
 		this.propagationEngine = solver.getPropagationEngine();
+	}
+
+	
+
+	@Override
+	public final boolean isPreemptionAllowed() {
+		return false;
+	}
+
+
+
+	@Override
+	public final int getID() {
+		return id;
+	}
+
+	@Override
+	public final String getName() {
+		return name;
 	}
 
 

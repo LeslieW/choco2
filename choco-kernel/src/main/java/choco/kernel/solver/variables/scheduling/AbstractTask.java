@@ -27,37 +27,51 @@
 
 package choco.kernel.solver.variables.scheduling;
 
+import java.awt.Point;
+
+import choco.Choco;
 import choco.kernel.common.util.tools.StringUtils;
 
 public abstract class AbstractTask implements ITask {
 
-	protected final int id;
-
-	/**
-	 * A name may be associated to each variable.
-	 */
-	protected final String name;
-
-
-	public AbstractTask(int id, String name) {
-		super();
-		this.id = id;
-		this.name = name;
-	}
-
-
-	@Override
-	public final int getID() {
-		return id;
-	}
-
-
-	@Override
-	public final String getName() {
-		return name;
-	}
-
 	
+	private final ITimePeriodList timePeriodList;
+		
+	/**
+	 * Warning: preemption should not be allowed.
+	 */
+	public AbstractTask() {
+		super();
+		timePeriodList = new SingleTimePeriod();
+	}
+	/**
+	 * possibly allow preemption.
+	 */
+	public AbstractTask(ITimePeriodList timePeriodList) {
+		super();
+		this.timePeriodList = timePeriodList;
+	}
+
+	@Override
+	public String getName() {
+		return "T"+getID();
+	}
+	
+	@Override
+	public boolean hasConstantDuration() {
+		return getMinDuration() == getMaxDuration();
+	}
+
+	@Override
+	public int getECT() {
+		return getEST() + getMinDuration();
+	}
+
+	@Override
+	public int getLST() {
+		return getLCT() - getMinDuration();
+	}
+
 	@Override
 	public String toDotty() {
 		return StringUtils.toDotty(this, null, true);
@@ -66,14 +80,83 @@ public abstract class AbstractTask implements ITask {
 
 	@Override
 	public String pretty() {
-		return StringUtils.pretty(this);
+		return StringUtils.pretty(this);					
 	}
 
 
 	@Override
 	public String toString() {
-		return getName()+"["+getEST()+", "+getLCT()+"]";
+		return pretty();
 	}
 
+	@Override
+	public boolean isScheduled() {
+		return timePeriodList.getExpendedDuration() == getMaxDuration();
+	}
 
+	@Override
+	public final boolean isPartiallyScheduled() {
+		return ! timePeriodList.isEmpty();
+	}
+
+	@Override
+	public final boolean isInterrupted() {
+		return timePeriodList.getTimePeriodCount() > 1;
+	}
+	
+	@Override
+	public final ITimePeriodList getTimePeriodList() {
+		return timePeriodList;
+	}
+
+	/**
+	 * 
+	 * The mandatory part of the task. 
+	 */
+	private final class SingleTimePeriod implements ITimePeriodList {
+
+		@Override
+		public final void reset() {}
+
+		@Override
+		public final int getExpendedDuration() {
+			return getECT() - getLST();
+		}
+
+		@Override
+		public final boolean isEmpty() {
+			return getExpendedDuration() > 0;
+		}
+
+		@Override
+		public final int getTimePeriodCount() {
+			return isEmpty() ? 0 : 1;
+		}
+
+		@Override
+		public final Point getTimePeriod(int i) {
+			return i == 0 && ! isEmpty() ? new Point(getLST(), getECT()) : null ;
+		}
+
+		
+		@Override
+		public int getPeriodFirst() {
+			return getLST();
+		}
+
+		@Override
+		public int getPeriodLast() {
+			return getECT();
+		}
+
+		@Override
+		public final int getPeriodStart(int i) {
+			return i == 0 ? getLST() : Choco.MIN_LOWER_BOUND;
+		}
+
+		@Override
+		public final int getPeriodEnd(int i) {
+			return i == 0 ? getECT() : Choco.MIN_LOWER_BOUND;
+		}
+	}
 }
