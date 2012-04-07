@@ -38,6 +38,14 @@ public final class DisjointModelDetector extends AbstractTemporalDetector {
 		super(model, disjMod);
 	}
 
+	
+//	@Override
+//	protected void setUp() {
+//		super.setUp();
+//		disjMod.computePrecClosure();
+//	}
+
+
 	@Override
 	protected void apply(TemporalConstraint ct) {
 		if( ! ct.isFixed() ) {

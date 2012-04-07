@@ -447,34 +447,23 @@ public final class ChocoChartFactory {
 		return createGanttChart(title, ChocoDatasetFactory.createGanttDataset(tasks), false, null);
 	}
 	
-	public static JFreeChart createGanttChart(String title, ITask[] tasks, int[] releaseDates) {
-		return createGanttChart(title, ChocoDatasetFactory.createGanttDataset(tasks, releaseDates), false, null);
+	public static JFreeChart createGanttChart(String title, ITask[] tasks, int[] dueDates) {
+		return createGanttChart(title, ChocoDatasetFactory.createGanttDataset(tasks, dueDates), false, null);
 	}
 
-	public static JFreeChart createGanttChart(String title, TaskVar[] tasks, int[] releaseDates) {
-		return createGanttChart(title, ChocoDatasetFactory.createGanttDataset(tasks, releaseDates), false, null);
-	}
-	
-	public static JFreeChart createGanttChart(String title, TaskVar[] tasks, int[] releaseDates, int[] setupTimes) {
-		return createGanttChart(title, ChocoDatasetFactory.createGanttDataset(tasks, releaseDates, setupTimes), false, null);
-	}
-	
-	public static JFreeChart createGanttChart(String title, TaskVar[] tasks, int[] releaseDates, int[] setupTimes, int[] dueDates) {
-		return createGanttChart(title, ChocoDatasetFactory.createGanttDataset(tasks, releaseDates, setupTimes, dueDates), true, null);
-	}
 	
 	public static JFreeChart createGanttChart(String title, IntervalCategoryDataset dataset, boolean legend, XYToolTipGenerator tooltip) {
 		CategoryAxis categoryAxis = new CategoryAxis("Tasks");
         DateAxis dateAxis = createDateAxis();
 
         GanttRenderer renderer = new GanttRenderer();
-        renderer.setStartPercent(0.3);
-        renderer.setEndPercent(0.7);
+        renderer.setStartPercent(0.4);
+        renderer.setEndPercent(0.6);
         renderer.setIncompletePaint(ChocoColor.COLOR_211_1);
         renderer.setCompletePaint(ChocoColor.COLOR_274_3);
         renderer.setBaseToolTipGenerator(
                 new IntervalCategoryToolTipGenerator(
-                    "{1} - {3} -> {4}", ChocoChartFactory.INTEGER_DATE_FORMAT
+                    "{1}: {3} -> {4}", ChocoChartFactory.INTEGER_DATE_FORMAT
                 )
             );
         

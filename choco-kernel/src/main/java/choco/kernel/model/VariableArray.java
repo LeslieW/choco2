@@ -108,11 +108,11 @@ public class VariableArray implements IVariableArray, Serializable {
 		return ArrayUtils.getNonRedundantObjects(Variable.class, variables);
 	}
 	
-	protected void cancelExtractVariables() {
+	protected final void cancelExtractVariables() {
 		extractedVariables = null;
 	}
 	
-	protected void forceExtractVariables() {
+	protected final void forceExtractVariables() {
 		cancelExtractVariables();
 		extractedVariables = doExtractVariables();
 	}

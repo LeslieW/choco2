@@ -98,12 +98,12 @@ public abstract class AbstractTemporalDetector extends AbstractSchedulingDetecto
 
 
 	@Override
-	protected final void setUp() {}
+	protected void setUp() {}
 
 
 
 	@Override
-	protected final void tearDown() {}
+	protected void tearDown() {}
 
 	
 	@Override

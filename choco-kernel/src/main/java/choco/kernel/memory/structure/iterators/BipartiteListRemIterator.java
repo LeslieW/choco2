@@ -29,6 +29,7 @@ package choco.kernel.memory.structure.iterators;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateInt;
+import choco.kernel.solver.SolverException;
 
 /**
  * User : cprudhom<br/>
@@ -36,17 +37,13 @@ import choco.kernel.memory.IStateInt;
  * Date : 29 mars 2010br/>
  * Since : Choco 2.1.1<br/>
  */
-public final class BipartiteListIterator extends DisposableIntIterator {
+public final class BipartiteListRemIterator extends DisposableIntIterator {
 
     private int[] list;
 
-    private IStateInt last;
-
-    private int nlast;
-
     private int idx;
 
-    public BipartiteListIterator() {}
+    public BipartiteListRemIterator() {}
 
     /**
      * Freeze the iterator, cannot be reused.
@@ -54,9 +51,7 @@ public final class BipartiteListIterator extends DisposableIntIterator {
     public void init(final int[] aList, final IStateInt aLast) {
         super.init();
         this.list = aList;
-        this.last = aLast;
-        this.nlast = aLast.get();
-        idx = 0;
+        idx = aLast.get() + 1;
     }
 
     /**
@@ -68,7 +63,7 @@ public final class BipartiteListIterator extends DisposableIntIterator {
      */
     @Override
     public boolean hasNext() {
-        return idx <= nlast;
+        return idx < list.length;
     }
 
     /**
@@ -84,26 +79,14 @@ public final class BipartiteListIterator extends DisposableIntIterator {
     }
 
     /**
-     * Removes from the underlying collection the last element returned by the
-     * iterator (optional operation).  This method can be called only once per
-     * call to <tt>next</tt>.  The behavior of an iterator is unspecified if
-     * the underlying collection is modified while the iteration is in
-     * progress in any way other than by calling this method.
+     * Removing an element is not permitted on this structure.
+     * Indeed, the structure iterates over removed elements of a bipartite set.
      *
      * @throws UnsupportedOperationException if the <tt>remove</tt>
      *                                       operation is not supported by this Iterator.
-     * @throws IllegalStateException         if the <tt>next</tt> method has not
-     *                                       yet been called, or the <tt>remove</tt> method has already
-     *                                       been called after the last call to the <tt>next</tt>
-     *                                       method.
      */
     @Override
     public void remove() {
-        idx--;
-        final int temp = list[nlast];
-        list[nlast] = list[idx];
-        list[idx] = temp;
-        last.add(-1);
-        nlast--;
+    	 throw new SolverException("removing an element is not permitted on this structure");
     }
 }
