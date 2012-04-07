@@ -125,7 +125,7 @@ public abstract class AbstractTask implements ITask {
 
 		@Override
 		public final boolean isEmpty() {
-			return getExpendedDuration() > 0;
+			return getExpendedDuration() <= 0;
 		}
 
 		@Override

@@ -28,7 +28,7 @@
 package choco.kernel.common;
 
 /**
- * @author Arnaud Malapert : arnaud(dot)malapert(at)emn(dot)fr
+ * @author Arnaud Malapert
  *
  */
 public interface IDotty {

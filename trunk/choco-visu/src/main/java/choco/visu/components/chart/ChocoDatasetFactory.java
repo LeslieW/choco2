@@ -41,8 +41,6 @@ import org.jfree.data.gantt.TaskSeries;
 import org.jfree.data.gantt.TaskSeriesCollection;
 import org.jfree.data.time.SimpleTimePeriod;
 import org.jfree.data.time.TimePeriod;
-import org.jfree.data.time.TimeSeries;
-import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeTableXYDataset;
 import org.jfree.data.xy.XYSeries;
 
@@ -103,20 +101,13 @@ public final class ChocoDatasetFactory {
 		return t1;
 	}
 
-	public static Task createTask(ITask t, int releaseDate, int setupTime) {
-		Task t1 = createTask(t, releaseDate);
-		t1.addSubtask( new Task("Setup",getTimePeriod(t.getLCT(), t.getLCT() + setupTime)));
-		t1.getSubtask(2).setPercentComplete(0);
-		return t1;
-	}
-
 	public static Task createEarlinessTardiness(ITask t, int dueDate) {
 		Task t1;
-		if(t.getLST() <= dueDate) {
-			t1 = new Task(t.getName(),getTimePeriod(t.getLST(), dueDate));
+		if(t.getECT() <= dueDate) {
+			t1 = new Task(t.getName(),getTimePeriod(t.getECT(), dueDate));
 			t1.setPercentComplete(0);
 		} else {
-			t1 = new Task(t.getName(),getTimePeriod(dueDate, t.getLST()));
+			t1 = new Task(t.getName(),getTimePeriod(dueDate, t.getECT()));
 			t1.setPercentComplete(1);	
 		}
 		return t1;
@@ -264,28 +255,8 @@ public final class ChocoDatasetFactory {
 		return coll;
 	}
 	
-	public static TaskSeriesCollection createGanttDataset(ITask[] tasks, int[] releaseDates) {
-		final TaskSeries s1 = new TaskSeries("Tasks");
-		for (int i = 0; i < tasks.length; i++) {
-			s1.add(createTask(tasks[i], releaseDates[i]));
-		}
-		final TaskSeriesCollection coll = new TaskSeriesCollection();
-		coll.add(s1);
-		return coll;
-	}
-
-	public static TaskSeriesCollection createGanttDataset(ITask[] tasks, int[] releaseDates, int[] setupTimes) {
-		final TaskSeries s1 = new TaskSeries("Tasks");
-		for (int i = 0; i < tasks.length; i++) {
-			s1.add(createTask(tasks[i], releaseDates[i], setupTimes[i]));
-		}
-		final TaskSeriesCollection coll = new TaskSeriesCollection();
-		coll.add(s1);
-		return coll;
-	}
-
-	public static TaskSeriesCollection createGanttDataset(ITask[] tasks, int[] releaseDates, int[] setupTimes, int[] dueDates) {
-		TaskSeriesCollection coll = createGanttDataset(tasks, releaseDates, setupTimes);
+	public static TaskSeriesCollection createGanttDataset(ITask[] tasks, int[] dueDates) {
+		TaskSeriesCollection coll = createGanttDataset(tasks);
 		final TaskSeries s1 = new TaskSeries("Earliness/Tardiness");
 		for (int i = 0; i < tasks.length; i++) {
 			s1.add(createEarlinessTardiness(tasks[i], dueDates[i]));

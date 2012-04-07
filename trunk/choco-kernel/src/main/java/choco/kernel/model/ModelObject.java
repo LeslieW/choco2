@@ -122,4 +122,10 @@ public class ModelObject extends VariableArray implements IOptions, IIndex {
 		return indice;
 	}
 
+	@Override
+	public String toString() {
+		return pretty();
+	}
+
+	
 }

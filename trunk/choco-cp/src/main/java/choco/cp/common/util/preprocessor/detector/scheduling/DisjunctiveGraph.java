@@ -31,6 +31,7 @@ import gnu.trove.TIntIntHashMap;
 import gnu.trove.TIntObjectHashMap;
 import gnu.trove.TObjectProcedure;
 
+import java.io.ObjectInputStream.GetField;
 import java.util.BitSet;
 
 import choco.kernel.common.IDotty;
@@ -87,13 +88,112 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 		return nbArcs == 0 && nbEdges == 0;
 	}
 
+	
+	private final static BitSet[] copy(BitSet[] graph) {
+		final BitSet[] res = new BitSet[graph.length]; 
+		for (int i = 0; i < graph.length; i++) {
+			res[i] = (BitSet) graph[i].clone();
+		}
+		return res;
+	}
+	public final static BitSet[] getClosure(BitSet[] graph) {
+		final BitSet[] closure = copy(graph);
+		floydMarshallClosure(closure);
+		return closure;
+	}
+	
+	public final static void floydMarshallClosure(BitSet[] graph) {
+		//Floyd marshall : quick and dirty
+		for (int k = 0; k < graph.length; k++) {
+			for (int i = 0; i < graph.length; i++) {
+				if(graph[i].get(k)) {
+					graph[i].or(graph[k]);
+				}
+			}
+		}
+	}
+
+	public final static BitSet[] getReduction(BitSet[] graph) {
+		final BitSet[] reduction = getClosure(graph);
+		floydMarshallReduction(reduction);
+		return reduction;
+	}
+
+	public final static void floydMarshallReduction(BitSet[] graph) {
+		//Floyd marshall : quick and dirty
+		for (int k = 0; k < graph.length; k++) {
+			for (int i = 0; i < graph.length; i++) {
+				if(graph[i].get(k)) {
+					graph[i].andNot(graph[k]);
+				}
+			}
+		}
+	}
+
+	public final static BitSet[] getTransitive(BitSet[] graph) {
+		final BitSet[] reduction = getReduction(graph);
+		final BitSet[] transitive = copy(graph);
+		floydMarshallTransitive(transitive, reduction);
+		return transitive;
+	}
+	
+	public final static void floydMarshallTransitive(BitSet[] graph,BitSet[] reduction) {
+		for (int i = 0; i < graph.length; i++) {
+			graph[i].andNot(reduction[i]);
+		}
+	}
+
+	public final void computePrecClosure() {
+		floydMarshallClosure(precGraph);
+	}
+
+
+	public final BitSet[] getPrecClosure() {
+		return getClosure(precGraph);
+	}
+	
+	public final void computePrecReduction() {
+		floydMarshallReduction(precGraph);
+	}
+	
+	
+	public final BitSet[] getPrecReduction() {
+		return getReduction(precGraph);
+	}
+
+	public final BitSet[] getPrecTransitive() {
+		return getTransitive(precGraph);
+	}
+	
+	public final BitSet[] getClauses() {
+		final BitSet[] closure = getPrecClosure();
+		//Still quick and dirty
+		for (int k = 0; k < nbNodes; k++) {
+			for (int i = 0; i < nbNodes; i++) {
+				if(disjGraph[i].get(k)) {
+					for (int j = 0; j < nbNodes; j++) {
+						if(disjGraph[k].get(j)) {
+							if( closure[i].get(j)) {
+								System.out.println("(" + i + "," + j+") -> (" + i + "," + k+") + (" + k + "," + j+")");
+							} else if( disjGraph[i].get(j)) {
+
+							}
+						}
+
+					}
+				}
+			}
+		}
+		return closure;
+	}
+
 	public final void addArc(int i, int j, int setupTime) {
 		precGraph[i].set(j);
 		final int key = getKey(i, j);
 		setupTimes.put(key, setupTime);
 		nbArcs++;
 	}
-	
+
 	public final void addArc(int i, int j, int setupTime, E rel) {
 		precGraph[i].set(j);
 		final int key = getKey(i, j);
@@ -109,8 +209,8 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 	public final void addEdge(int i, int j, E rel) {
 		addEdge(i, j, rel.forwardSetup(), rel.backwardSetup(), rel);
 	}
-	
-	
+
+
 	protected final void addEdge(int i, int j, int forwardSetup, int backwardSetup, E rel) {
 		disjGraph[i].set(j);
 		disjGraph[j].set(i);
@@ -120,7 +220,7 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 		setupTimes.put(getKey(j, i), backwardSetup);
 		nbEdges++;
 	}
-	
+
 	public final boolean isFixed() {
 		return storedConstraints.forEachValue(new TObjectProcedure<E>() {
 
@@ -129,9 +229,10 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 				return arg0.isFixed();
 			}
 
-		
+
 		});
 	}
+
 
 	public final int setupTime(int i, int j) {
 		return setupTimes.get(getKey(i, j));
@@ -152,7 +253,7 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 	public final boolean containsConstraint(int i, int j) {
 		return storedConstraints.contains(getKey(i, j));
 	}
-	
+
 	public final E getConstraint(int i, int j) {
 		return storedConstraints.get(getKey(i, j));
 	}
@@ -195,18 +296,18 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 		final int st = setupTime(i, j);
 		return st > 0 ? "label=\""+st+'\"' : null;
 	}
-	
+
 	protected final String getEdgeLabel(int i, int j) {
 		final int st1 = setupTime(i, j);
 		final int st2 = setupTime(j, i);
 		return st1 > 0 || st2 > 0 ? "label=\"("+st1+", "+st2+")\"" : null;
 
-			
+
 	}
 	private final void writeArc(StringBuilder b, int i, int j) {
 		b.append(i).append(" -> ").append(j);
 	}
-	
+
 	protected final static String ARC_COLOR = "color=forestgreen";
 	protected final static String EDGE_COLOR = "color=royalblue";
 	protected final static String STY_BOLD_DASHED= "style=\"bold,dashed\"";
@@ -214,7 +315,7 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 	protected final static String ARROW_DOT = "arrowhead=dot";
 	protected final static String ARROW_BIG = "arrowsize=1.5";
 	protected final static String DIR_BWD = "dir=back";
-	
+
 	protected void writeAttributes(StringBuilder b, String...options) {
 		b.append(" [");
 		final int l1 = b.length();
@@ -225,8 +326,8 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 		if(l2 > l1) b.replace(l2 -1, l2, "];\n");
 		else b.deleteCharAt(l1 - 1); 
 	}
-	
-	
+
+
 	protected void writeArcAttributes(StringBuilder b, int i, int j) {
 		writeAttributes(b, ARC_COLOR, STY_BOLD, getArcLabel(i, j));
 	}
@@ -235,7 +336,7 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 		if(rel.isFixed() && rel.getDirVal() == ITemporalRelation.BWD) writeArc(b, j, i);
 		else writeArc(b, i, j);
 	}
-	
+
 	protected void writeEdgeAttributes(StringBuilder b, E rel, int i, int j) {
 		if(rel.isFixed()) {
 			writeAttributes(b, EDGE_COLOR, STY_BOLD, ARROW_BIG, 
@@ -243,25 +344,25 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 		} else {
 			writeAttributes(b, EDGE_COLOR, STY_BOLD_DASHED, ARROW_BIG, ARROW_DOT, getEdgeLabel(i, j));
 		}
-		
+
 	}
 
-	
+
 	protected StringBuilder toDottyNodes() {
 		return new StringBuilder();
 	}
-	
+
 	@Override
 	public final String toDotty() {
 		final StringBuilder  b = toDottyNodes();
 		for (int i = 0; i < nbNodes; i++) {
 			for (int j = precGraph[i].nextSetBit(0); j >= 0; j = precGraph[i]
-			                                                              .nextSetBit(j + 1)) {
+					.nextSetBit(j + 1)) {
 				writeArc(b, i, j);
 				writeArcAttributes(b, i, j);
 			}
 			for (int j = disjGraph[i].nextSetBit(0); j >= 0; j = disjGraph[i]
-			                                                               .nextSetBit(j + 1)) {
+					.nextSetBit(j + 1)) {
 				E rel = storedConstraints.get(getKey(i, j) );
 				if( rel != null) {
 					writeEdge(b, rel, i, j); 
@@ -271,4 +372,6 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 		}
 		return b.toString();
 	}
+
+
 }

@@ -32,6 +32,7 @@ import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.IStateIntVector;
 import choco.kernel.memory.structure.iterators.BipartiteListIterator;
+import choco.kernel.memory.structure.iterators.BipartiteListRemIterator;
 import choco.kernel.solver.SolverException;
 
 /**
@@ -56,6 +57,8 @@ public final class StoredIntBipartiteList implements IStateIntVector {
     private final IStateInt last;
 
     private BipartiteListIterator _iterator;
+    
+    private BipartiteListRemIterator _remIterator;
 
 
     public StoredIntBipartiteList(final IEnvironment environment, final int[] values) {
@@ -122,6 +125,19 @@ public final class StoredIntBipartiteList implements IStateIntVector {
         }
         _iterator.init(list, last);
         return _iterator;
+
+    }
+    
+
+    public DisposableIntIterator getRemIterator() {
+        if (_remIterator == null) {
+            _remIterator = new BipartiteListRemIterator();
+        }else if (!_remIterator.reusable()) {
+            assert false;
+            _remIterator = new BipartiteListRemIterator();
+        }
+        _remIterator.init(list, last);
+        return _remIterator;
 
     }
 
