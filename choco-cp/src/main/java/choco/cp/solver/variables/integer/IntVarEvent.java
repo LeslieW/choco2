@@ -115,7 +115,7 @@ public class IntVarEvent<C extends AbstractSConstraint & IntPropagator> extends 
      * useful for debugging
      */
     public String toString() {
-        return ("VarEvt(" + modifiedVar + ")[" + eventType + ":"
+        return ("VarEvt(" + modifiedVar.pretty() + ")[" + eventType + ":"
                 + ((eventType & INCINF_MASK) != 0 ? "I" : "")
                 + ((eventType & DECSUP_MASK) != 0 ? "S" : "")
                 + ((eventType & REMVAL_MASK) != 0 ? "r" : "")

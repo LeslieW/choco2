@@ -28,9 +28,12 @@
 package choco.cp.solver.propagation;
 
 
+import choco.cp.solver.preprocessor.PreProcessCPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.propagation.event.PropagationEvent;
 import choco.kernel.solver.propagation.queue.EventQueue;
+import choco.kernel.visu.VisuFactory;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
@@ -78,6 +81,8 @@ public class VariableEventQueue implements EventQueue {
 	public void propagateAllEvents() throws ContradictionException {
 		while (queue.size() != 0) {
 			PropagationEvent evt = popEvent();
+			//ChocoLogging.getMainLogger().info(evt.toString());
+			//ChocoLogging.flushLogs();
 			evt.propagateEvent();
 		}
 	}

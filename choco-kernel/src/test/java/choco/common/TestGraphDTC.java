@@ -133,7 +133,7 @@ public class TestGraphDTC {
 			step++;
 			}
 		}
-		VisuFactory.getDotManager().show(graph);
+		//VisuFactory.getDotManager().show(graph);
 		//remove
 		assertFalse("rm", graph.remove(0,3));
 		for (int i = states.length-1; i >=0; i--) {

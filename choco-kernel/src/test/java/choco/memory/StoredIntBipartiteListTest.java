@@ -70,6 +70,7 @@ public class StoredIntBipartiteListTest {
 		DisposableIntIterator it = iVectA.getRemIterator();
 		int cpt = 0;
 		while (it.hasNext()) {it.next(); cpt++;;}
+		it.dispose();
 		return cpt;
 	}
 	@Test

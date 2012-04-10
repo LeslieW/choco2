@@ -35,9 +35,9 @@ import choco.kernel.model.constraints.TemporalConstraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 
-public class DisjointFromDisjModelDetector extends AbstractRscDetector {
+public class DisjointFromUnaryModelDetector extends AbstractRscDetector {
 
-	public DisjointFromDisjModelDetector(CPModel model,
+	public DisjointFromUnaryModelDetector(CPModel model,
 			DisjunctiveModel disjMod) {
 		super(model, disjMod);
 	}

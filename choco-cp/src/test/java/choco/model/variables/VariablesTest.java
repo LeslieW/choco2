@@ -459,12 +459,12 @@ public class VariablesTest {
             s2.solve();
             T2[3] = System.currentTimeMillis();
 
-            System.out.printf("%d - %d (vars)\n", s1.getNbIntVars(), s2.getNbIntVars());
-            System.out.printf("%d - %d (cstrs)\n", s1.getNbIntConstraints(), s2.getNbIntConstraints());
-            System.out.printf("R: %d - %d\n", T1[1] - T1[0], T2[1] - T2[0]);
-            System.out.printf("I: %d - %d\n", T1[2] - T1[1], T2[2] - T2[1]);
-            System.out.printf("S: %d - %d\n", T1[3] - T1[2], T2[3] - T2[2]);
-            System.out.printf("T: %d - %d\n", T1[3] - T1[0], T2[3] - T2[0]);
+//            System.out.printf("%d - %d (vars)\n", s1.getNbIntVars(), s2.getNbIntVars());
+//            System.out.printf("%d - %d (cstrs)\n", s1.getNbIntConstraints(), s2.getNbIntConstraints());
+//            System.out.printf("R: %d - %d\n", T1[1] - T1[0], T2[1] - T2[0]);
+//            System.out.printf("I: %d - %d\n", T1[2] - T1[1], T2[2] - T2[1]);
+//            System.out.printf("S: %d - %d\n", T1[3] - T1[2], T2[3] - T2[2]);
+//            System.out.printf("T: %d - %d\n", T1[3] - T1[0], T2[3] - T2[0]);
             /*System.out.printf("%d - %d = %d ms\n", t11, t21, (t11-t21));*/
 
         }

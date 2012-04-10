@@ -353,7 +353,7 @@ public class BetaVariableFactory extends AbstractVariablePool<IntegerVariable> {
 		CPModel m = new CPModel();
 		m.addVariables(f.make(25, new Random(0)));
 		m.addVariables(f.taskF.make(25, new Random(0)));
-		System.out.println(m.pretty());
+		//System.out.println(m.pretty());
 	}
 
 }

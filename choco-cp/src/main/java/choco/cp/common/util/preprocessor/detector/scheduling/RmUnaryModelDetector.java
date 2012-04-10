@@ -30,10 +30,10 @@ package choco.cp.common.util.preprocessor.detector.scheduling;
 import choco.cp.model.CPModel;
 import choco.kernel.model.constraints.ConstraintType;
 
-public final class RmDisjModelDetector extends AbstractRscDetector {
+public final class RmUnaryModelDetector extends AbstractRscDetector {
 
 	
-	public RmDisjModelDetector(CPModel model) {
+	public RmUnaryModelDetector(CPModel model) {
 		super(model, null);
 	}
 

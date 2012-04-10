@@ -37,6 +37,7 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.BoundAllDiff;
 import choco.cp.solver.constraints.global.matching.AllDifferent;
 import choco.cp.solver.preprocessor.PreProcessCPSolver;
+import choco.cp.solver.search.BranchingFactory;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.model.constraints.ConstraintType;
@@ -50,6 +51,7 @@ import choco.kernel.visu.VisuFactory;
 import org.junit.Test;
 
 import java.util.BitSet;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static choco.Choco.*;
@@ -492,7 +494,7 @@ public class DetectorsTest {
 		);
 		
 		run(model, intVarEqDet(model));
-		System.out.println(model.pretty());
+		//System.out.println(model.pretty());
 		assertEquals(2, model.getNbBoolVar());
 		assertEquals(1, model.getNbConstraints());
 		
@@ -528,18 +530,56 @@ public class DetectorsTest {
 				eq(b[0],1)
 		);
 		run(model,  new TestReplaceDetector(model, b[3], b[0]));
-		System.out.println(model.pretty());
+		//System.out.println(model.pretty());
 		assertEquals(2, model.getNbConstraints());
 		assertEquals(3, model.getNbBoolVar());
 		
 		
 	}
 	
+	private static void test(final CPModel model, final AbstractDetector... detectors) {
+		CPSolver solver = new CPSolver();
+		solver.read(model);
+		//solver.addGoal(BranchingFactory.minDomMinVal(solver));
+		run(model, detectors);
+		CPSolver ppsolver = new CPSolver();
+		ppsolver.read(model);
+		
+		solver.solveAll();
+		ppsolver.solveAll();
+		assertEquals(solver.getSolutionCount(), ppsolver.getSolutionCount());
+	}
+
+	@Test
+	public void detectCutCycleClauses(){
+		//ChocoLogging.toVerbose();
+		CPModel model = new CPModel();
+		TaskVariable[] t = makeTaskVarArray("T", 0, 20, new int[]{1,2,3,4,5});
+		IntegerVariable[] b = makeBooleanVarArray("b", 10);
+		model.addConstraints(
+				precedenceDisjoint(t[1], t[2], b[1]),
+				precedenceDisjoint(t[0], t[1], b[0]),
+				precedenceDisjoint(t[0], t[2], b[2]),
+				
+				precedenceDisjoint(t[1], t[4], b[3]),
+				precedenceDisjoint(t[2], t[4], b[4]),
+				precedenceDisjoint(t[3], t[4], b[5]),
+				precedence(t[0], t[4]),
+				precedence(t[0], t[3])				
+		);
+		final int ctCount = model.getNbConstraints() + 1;
+		DisjunctiveModel disjMod = new DisjunctiveModel(model);
+		test(model, disjunctiveModelDetectors(model, disjMod));
+		assertEquals(ctCount, model.getNbConstraints());
+		//VisuFactory.getDotManager().show(disjMod);
+	}
+	
 
 	@Test
 	public void detectTransitive(){
+		//ChocoLogging.toSolution();
 		CPModel model = new CPModel();
-		TaskVariable[] t = makeTaskVarArray("T", 0, 20, new int[]{1,2,3,4,5,6,7,8,9,10, 11, 12, 13, 14, 15,16});
+		TaskVariable[] t = makeTaskVarArray("T", 0, 47, new int[]{1,2,3,4,5,6,7,8,9,10, 11, 12, 13, 14, 15,16});
 		model.addConstraints(
 				precedence(t[0], t[1]),
 				precedence(t[1], t[2]),
@@ -572,35 +612,27 @@ public class DetectorsTest {
 				precedenceDisjoint(t[2], t[5], makeBooleanVar("b6"))
 				
 		);
-		//assertEquals(19, model.getNbConstraints());
-		final DisjunctiveModel disjMod = new DisjunctiveModel(model);
-		run(model, precFromDisjointDetector(model, disjMod));
-		System.out.println(model.pretty());
-		run(model, disjointDetector(model, disjMod));
+		DisjunctiveModel disjMod = new DisjunctiveModel(model);
+		test(model, disjunctiveModelDetectors(model, disjMod));
 		//VisuFactory.getDotManager().show(disjMod);
-		//VisuFactory.getDotManager().show(disjMod);
-		BitSet[] graph = disjMod.getPrecTransitive();
-		for (int i = 0; i < graph.length; i++) {
-			System.out.println(graph[i].toString());
-			
-		}
-		assertEquals(8, model.getNbConstraints());
+		assertEquals(17, model.getNbConstraints());
 		
 	}
 	
 	@Test
 	public void testVariableRemovals(){
 		CPModel model = new CPModel();
-		final TaskVariable t1 = makeTaskVar("T1", 0, 20, 15);
-		final TaskVariable t2 = makeTaskVar("T2", 20, 50, 10);
+		final TaskVariable t1 = makeTaskVar("T1", 0, 20, 18);
+		final TaskVariable t2 = makeTaskVar("T2", 20, 35, 10);
 		IntegerVariable b = Choco.makeBooleanVar("b");
 		model.addConstraints(
-				precedenceDisjoint(t1, t2, b)
+				precedenceDisjoint(t1, t2, b),
+				precedence(t1, t2, 10)
 		);
 		final DisjunctiveModel disjMod = new DisjunctiveModel(model);
-		System.out.println(model.pretty());
 		run(model, schedulingModelDetectors(model, disjMod));
-		System.out.println(model.pretty());
+		//System.out.println(model.pretty());
+		assertEquals(1, model.getNbConstraints());
 		assertEquals(2, model.getNbStoredMultipleVars());
 	}
 

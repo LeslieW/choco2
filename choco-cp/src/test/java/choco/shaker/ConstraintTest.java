@@ -257,7 +257,7 @@ public class ConstraintTest {
 		int sl = 0;
 		for (int i = 0; i < mainLoop; i++) {
 			seed = i;
-			System.out.println(seed);
+			//System.out.println(seed);
 			Random r = new Random(seed);
 			CPModelFactory mf = new CPModelFactory();
 

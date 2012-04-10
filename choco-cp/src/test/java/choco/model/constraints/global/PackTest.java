@@ -186,7 +186,7 @@ public class PackTest {
 		model = new CPModel();
 		modeler = new PackModel("",new int[]{6,6,6,3,3,2}, 6, 10);
 		model.addConstraint(pack(modeler, Options.C_PACK_FB,Options.C_PACK_AR ,Options.C_PACK_LBE));
-		model.addConstraints(modeler.packLargeItems());
+		modeler.packLargeItems(model);
 		Solver s = new CPSolver();
 		s.read(model);
 		//s.minimize(s.getVar(modeler.nbNonEmpty), false);
@@ -194,7 +194,7 @@ public class PackTest {
 		IntDomainVar[] vars = s.getVar(modeler.bins);
 		int[] vals = new int[]{0,1,2,0,1,2};
 		LOGGER.severe(StringUtils.pretty(s.getVar(modeler.bins)));
-		
+
 		for (int i = 0; i < vars.length; i++) {
 			assertTrue(vars[i].isInstantiatedTo(vals[i]));
 		}

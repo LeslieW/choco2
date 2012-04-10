@@ -69,7 +69,7 @@ public class EqTest {
         Solver s1 = new CPSolver();
         s1.setPrecision(0.01);
         s1.read(m1);
-        System.out.println(s1.pretty());
+       // System.out.println(s1.pretty());
         s1.solveAll();
 
         Solver s2 = new CPSolver();
