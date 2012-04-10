@@ -121,7 +121,7 @@ public class SoftTest {
         IntDomainVar obj = s.createEnumIntVar("obj", 0, n);
         s.post(s.eq(obj, s.sum(dists)));
 
-        System.out.println(s.pretty());
+       // System.out.println(s.pretty());
         s.minimize(obj, true);
     }
 

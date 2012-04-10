@@ -42,6 +42,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -54,128 +55,127 @@ import java.util.logging.Logger;
  */
 public class SortingTest {
 
-    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
+	protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
-    @Test
-    public void testSorting() {
-        CPModel m = new CPModel();
-        IntegerVariable[] x = {
-                makeIntVar("x0", 1, 16),
-                makeIntVar("x1", 5, 10),
-                makeIntVar("x2", 7, 9),
-                makeIntVar("x3", 12, 15),
-                makeIntVar("x4", 1, 13)
-        };
-        IntegerVariable[] y = {
-                makeIntVar("y0", 2, 3),
-                makeIntVar("y1", 6, 7),
-                makeIntVar("y2", 8, 11),
-                makeIntVar("y3", 13, 16),
-                makeIntVar("y4", 14, 18)
-        };
-        Constraint c = sorting(x, y);
-        m.addConstraint(c);
-        CPSolver s = new CPSolver();
-        s.read(m);
-        try {
-            ((SortingSConstraint)s.getCstr(c)).boundConsistency();
-        }
-        catch (ContradictionException e) {
-            assertTrue(false);
-            e.printStackTrace();
-        }
-    }
+	@Test
+	public void testSorting() {
+		CPModel m = new CPModel();
+		IntegerVariable[] x = {
+				makeIntVar("x0", 1, 16),
+				makeIntVar("x1", 5, 10),
+				makeIntVar("x2", 7, 9),
+				makeIntVar("x3", 12, 15),
+				makeIntVar("x4", 1, 13)
+		};
+		IntegerVariable[] y = {
+				makeIntVar("y0", 2, 3),
+				makeIntVar("y1", 6, 7),
+				makeIntVar("y2", 8, 11),
+				makeIntVar("y3", 13, 16),
+				makeIntVar("y4", 14, 18)
+		};
+		Constraint c = sorting(x, y);
+		m.addConstraint(c);
+		CPSolver s = new CPSolver();
+		s.read(m);
+		try {
+			((SortingSConstraint)s.getCstr(c)).boundConsistency();
+		}
+		catch (ContradictionException e) {
+			assertTrue(false);
+			e.printStackTrace();
+		}
+	}
 
-    @Test
-    public void testSorting2() {
-        for (int seed = 0; seed < 1; seed++) {
-            CPModel m = new CPModel();
-            int n = 3;
-            IntegerVariable[] x = makeIntVarArray("x", n, 0, n);
-            IntegerVariable[] y = makeIntVarArray("y", n, 0, n);
-            Constraint c = sorting(x, y);
-            m.addConstraint(c);
-            m.addConstraint(allDifferent(x));
-            CPSolver s = new CPSolver();
-            s.read(m);
-//            s.setValIntSelector(new RandomIntValSelector(seed));
-//            s.setVarIntSelector(new RandomIntVarSelector(s, seed + 2));
-            s.solve();
-            HashSet<String> sols = new HashSet<String>();
-            if(s.isFeasible()){
-                do{
-                    StringBuffer st = new StringBuffer();
-                    st.append(s.getVar(x[0]).getVal());
-                    for(int i = 1; i < n; i++){
-                        st.append(",").append(s.getVar(x[i]).getVal());
-                    }
-//                    st.append(" - ").append(s.getVar(y[0]).getVal());
-//                    for(int i = 1; i < n; i++){
-//                        st.append(",").append(s.getVar(y[i]).getVal());
-//                    }
-                    sols.add(st.toString());
-                    LOGGER.info(st.toString());
-                }while(s.nextSolution());
-            }
+	@Test
+	public void testSorting2() {
+		for (int seed = 0; seed < 1; seed++) {
+			CPModel m = new CPModel();
+			int n = 3;
+			IntegerVariable[] x = makeIntVarArray("x", n, 0, n);
+			IntegerVariable[] y = makeIntVarArray("y", n, 0, n);
+			Constraint c = sorting(x, y);
+			m.addConstraint(c);
+			m.addConstraint(allDifferent(x));
+			CPSolver s = new CPSolver();
+			s.read(m);
+			//            s.setValIntSelector(new RandomIntValSelector(seed));
+			//            s.setVarIntSelector(new RandomIntVarSelector(s, seed + 2));
+			s.solve();
+			HashSet<String> sols = new HashSet<String>();
+			if(s.isFeasible()){
+				do{
+					StringBuffer st = new StringBuffer();
+					st.append(s.getVar(x[0]).getVal());
+					for(int i = 1; i < n; i++){
+						st.append(",").append(s.getVar(x[i]).getVal());
+					}
+					//                    st.append(" - ").append(s.getVar(y[0]).getVal());
+					//                    for(int i = 1; i < n; i++){
+					//                        st.append(",").append(s.getVar(y[i]).getVal());
+					//                    }
+					sols.add(st.toString());
+					LOGGER.info(st.toString());
+				}while(s.nextSolution());
+			}
 
-            LOGGER.info("---------------");
-            CPSolver s1 = new CPSolver();
-            s1.read(m);
-//            s.setValIntSelector(new RandomIntValSelector(seed));
-//            s.setVarIntSelector(new RandomIntVarSelector(s, seed + 2));
-            s1.setVarIntSelector(new StaticVarOrder(s1, s1.getVar((IntegerVariable[]) ArrayUtils.append(x,y))));
-            s1.setValIntIterator(new IncreasingDomain());
-            s1.solve();
-            if(s1.isFeasible()){
-                do{
-                    StringBuffer st = new StringBuffer();
-                    st.append(s1.getVar(x[0]).getVal());
-                    for(int i = 1; i < n; i++){
-                        st.append(",").append(s1.getVar(x[i]).getVal());
-                    }
-//                    st.append(" - ").append(s1.getVar(y[0]).getVal());
-//                    for(int i = 1; i < n; i++){
-//                        st.append(",").append(s1.getVar(y[i]).getVal());
-//                    }
-                    sols.remove(st.toString());
-                    LOGGER.info(st.toString());
-                }while(s1.nextSolution());
-            }
-            LOGGER.info("########");
-            for(int i = 0 ; i < sols.size(); i++){
-                System.out.println(sols.toArray()[i]);
-            }
+			LOGGER.info("---------------");
+			CPSolver s1 = new CPSolver();
+			s1.read(m);
+			//            s.setValIntSelector(new RandomIntValSelector(seed));
+			//            s.setVarIntSelector(new RandomIntVarSelector(s, seed + 2));
+			s1.setVarIntSelector(new StaticVarOrder(s1, s1.getVar((IntegerVariable[]) ArrayUtils.append(x,y))));
+			s1.setValIntIterator(new IncreasingDomain());
+			s1.solve();
+			if(s1.isFeasible()){
+				do{
+					StringBuffer st = new StringBuffer();
+					st.append(s1.getVar(x[0]).getVal());
+					for(int i = 1; i < n; i++){
+						st.append(",").append(s1.getVar(x[i]).getVal());
+					}
+					//                    st.append(" - ").append(s1.getVar(y[0]).getVal());
+					//                    for(int i = 1; i < n; i++){
+					//                        st.append(",").append(s1.getVar(y[i]).getVal());
+					//                    }
+					sols.remove(st.toString());
+					LOGGER.info(st.toString());
+				}while(s1.nextSolution());
+			}
+			if(LOGGER.isLoggable(Level.INFO)) {
+				LOGGER.info("########");
+				LOGGER.info(Arrays.toString(sols.toArray()));
+				LOGGER.log(Level.INFO,"{0} - {1}:{2}", new Object[]{n, s.getNbSolutions(), s1.getNbSolutions()});
+			}
+			assertEquals(s.getNbSolutions(), s1.getNbSolutions());
+			//            assertEquals(840, s1.getNbSolutions());
+		}
 
-            LOGGER.log(Level.INFO,"{0} - {1}:{2}", new Object[]{n, s.getNbSolutions(), s1.getNbSolutions()});
-            assertEquals(s.getNbSolutions(), s1.getNbSolutions());
-//            assertEquals(840, s1.getNbSolutions());
-        }
+	}
 
-    }
-
-    @Test
-    public void testName() {
-        CPModel m = new CPModel();
-        int n = 3;
-        IntegerVariable[] x = makeIntVarArray("x", n, 0, n);
-        IntegerVariable[] y = makeIntVarArray("y", n, 0, n);
-        m.addConstraint(sorting(x, y));
-        m.addConstraint(allDifferent(x));
-        CPSolver s = new CPSolver();
-        s.read(m);
-        s.setVarIntSelector(new StaticVarOrder(s, s.getVar(x)));
-        s.setValIntIterator(new IncreasingDomain());
-        s.solve();
-        if(s.isFeasible()){
-                do{
-                    StringBuffer st = new StringBuffer();
-                    st.append(s.getVar(x[0]).getVal());
-                    for(int i = 1; i < n; i++){
-                        st.append(",").append(s.getVar(x[i]).getVal());
-                    }
-                    LOGGER.info(st.toString());
-                }while(s.nextSolution());
-            }
-        LOGGER.log(Level.INFO, "{0}", s.getNbSolutions());
-    }
+	@Test
+	public void testName() {
+		CPModel m = new CPModel();
+		int n = 3;
+		IntegerVariable[] x = makeIntVarArray("x", n, 0, n);
+		IntegerVariable[] y = makeIntVarArray("y", n, 0, n);
+		m.addConstraint(sorting(x, y));
+		m.addConstraint(allDifferent(x));
+		CPSolver s = new CPSolver();
+		s.read(m);
+		s.setVarIntSelector(new StaticVarOrder(s, s.getVar(x)));
+		s.setValIntIterator(new IncreasingDomain());
+		s.solve();
+		if(s.isFeasible()){
+			do{
+				StringBuffer st = new StringBuffer();
+				st.append(s.getVar(x[0]).getVal());
+				for(int i = 1; i < n; i++){
+					st.append(",").append(s.getVar(x[i]).getVal());
+				}
+				LOGGER.info(st.toString());
+			}while(s.nextSolution());
+		}
+		LOGGER.log(Level.INFO, "{0}", s.getNbSolutions());
+	}
 }

@@ -328,7 +328,7 @@ public class MemberTest {
             solver2.addGoal(BranchingFactory.lexicographic(solver2, solver2.getVar(new SetVariable[]{svar})));
             solver2.solveAll();
             Assert.assertEquals(solver1.getSolutionCount(), solver2.getSolutionCount());
-            System.out.printf("%d vs. %d\n", solver1.getTimeCount(), solver2.getTimeCount());
+           // System.out.printf("%d vs. %d\n", solver1.getTimeCount(), solver2.getTimeCount());
 
         }
     }

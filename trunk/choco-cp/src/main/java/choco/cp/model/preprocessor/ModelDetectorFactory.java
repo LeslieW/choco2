@@ -148,20 +148,24 @@ public final class ModelDetectorFactory extends DetectorFactory {
 		return new DisjointModelDetector(m, disjMod);
 	}
 
-	public static AbstractDetector disjointFromDisjDetector(final CPModel m, DisjunctiveModel disjMod){
-		return new DisjointFromDisjModelDetector(m, disjMod);
+	public static AbstractDetector disjointFromUnaryDetector(final CPModel m, DisjunctiveModel disjMod){
+		return new DisjointFromUnaryModelDetector(m, disjMod);
 	}
 
 	public static AbstractDetector disjointFromCumulDetector(final CPModel m, DisjunctiveModel disjMod){
 		return new DisjointFromCumulModelDetector(m, disjMod);
 	}
 	
-	/**
-	 * 
-	 * @param m model to analyze
-	 */
+	public static AbstractDetector clauseFromDisjointDetector(final CPModel m, DisjunctiveModel disjMod) {
+		return new ClauseFromDisjointModelDetector(m, disjMod);
+	}
+	
+	public static AbstractDetector precReductionDetector(final CPModel m, DisjunctiveModel disjMod) {
+		return new PrecReductionModelDetector(m, disjMod);
+	}
+	
 	public static AbstractDetector rmDisjDetector(final CPModel m){
-		return new RmDisjModelDetector(m);
+		return new RmUnaryModelDetector(m);
 	}
 
 
@@ -170,9 +174,13 @@ public final class ModelDetectorFactory extends DetectorFactory {
 				precFromImpliedDetector(m, disjMod),
 				precFromReifiedDetector(m, disjMod),
 				precFromDisjointDetector(m, disjMod),
+				//compute precedence transitive closure 
 				disjointDetector(m, disjMod),
-				disjointFromDisjDetector(m, disjMod),
-				disjointFromCumulDetector(m, disjMod)
+				disjointFromUnaryDetector(m, disjMod),
+				disjointFromCumulDetector(m, disjMod),
+				//clauseFromDisjointDetector(m, disjMod),
+				//restore precedence graph.
+				precReductionDetector(m, disjMod)
 		};
 	}
 

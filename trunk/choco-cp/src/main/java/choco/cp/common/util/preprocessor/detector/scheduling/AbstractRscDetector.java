@@ -98,7 +98,7 @@ final class PPResource {
 
 }
 
-public abstract class AbstractRscDetector extends AbstractSchedulingDetector {
+public abstract class AbstractRscDetector extends AbstractSchedulingConstraintDetector {
 
 	private PPResource rsc;
 	

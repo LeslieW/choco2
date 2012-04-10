@@ -48,6 +48,8 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 	//number of edges
 	protected int nbEdges = 0;
 
+	private BitSet[] savedPrecGraph;
+	
 	protected final BitSet[] precGraph;
 
 	protected final BitSet[] disjGraph;
@@ -88,6 +90,28 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 		return nbArcs == 0 && nbEdges == 0;
 	}
 
+	protected void setPrecClosure() {
+		savedPrecGraph = copy(precGraph);
+		floydMarshallClosure(precGraph);
+	}
+	
+	protected void unsetPrecClosure() {
+		if(savedPrecGraph != null) {
+			for (int i = 0; i < savedPrecGraph.length; i++) {
+				precGraph[i] = savedPrecGraph[i];
+			}
+		}
+	}
+	
+	public BitSet[] copyPrecGraph()	{
+		return copy(precGraph);
+	}
+	
+
+	public final BitSet[] getPrecClosure() {
+		return getClosure(precGraph);
+	}
+	
 	
 	private final static BitSet[] copy(BitSet[] graph) {
 		final BitSet[] res = new BitSet[graph.length]; 
@@ -133,59 +157,16 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 	public final static BitSet[] getTransitive(BitSet[] graph) {
 		final BitSet[] reduction = getReduction(graph);
 		final BitSet[] transitive = copy(graph);
-		floydMarshallTransitive(transitive, reduction);
+		andNot(transitive, reduction);
 		return transitive;
 	}
 	
-	public final static void floydMarshallTransitive(BitSet[] graph,BitSet[] reduction) {
+	public final static void andNot(BitSet[] graph,BitSet[] reduction) {
 		for (int i = 0; i < graph.length; i++) {
 			graph[i].andNot(reduction[i]);
 		}
 	}
 
-	public final void computePrecClosure() {
-		floydMarshallClosure(precGraph);
-	}
-
-
-	public final BitSet[] getPrecClosure() {
-		return getClosure(precGraph);
-	}
-	
-	public final void computePrecReduction() {
-		floydMarshallReduction(precGraph);
-	}
-	
-	
-	public final BitSet[] getPrecReduction() {
-		return getReduction(precGraph);
-	}
-
-	public final BitSet[] getPrecTransitive() {
-		return getTransitive(precGraph);
-	}
-	
-	public final BitSet[] getClauses() {
-		final BitSet[] closure = getPrecClosure();
-		//Still quick and dirty
-		for (int k = 0; k < nbNodes; k++) {
-			for (int i = 0; i < nbNodes; i++) {
-				if(disjGraph[i].get(k)) {
-					for (int j = 0; j < nbNodes; j++) {
-						if(disjGraph[k].get(j)) {
-							if( closure[i].get(j)) {
-								System.out.println("(" + i + "," + j+") -> (" + i + "," + k+") + (" + k + "," + j+")");
-							} else if( disjGraph[i].get(j)) {
-
-							}
-						}
-
-					}
-				}
-			}
-		}
-		return closure;
-	}
 
 	public final void addArc(int i, int j, int setupTime) {
 		precGraph[i].set(j);
@@ -200,6 +181,16 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 		storedConstraints.put(key, rel);
 		setupTimes.put(key, setupTime);
 		nbArcs++;
+	}
+	
+	protected void deleteArc(int i, int j) {
+		if(precGraph[i].get(j)) {
+		precGraph[i].clear(j);
+		final int key = getKey(i, j);
+		storedConstraints.remove(key);
+		setupTimes.remove(key);
+		nbArcs++;
+		}
 	}
 
 	public final void safeAddArc(int i, int j, int setupTime) {
@@ -256,6 +247,11 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 
 	public final E getConstraint(int i, int j) {
 		return storedConstraints.get(getKey(i, j));
+	}
+	
+	protected final E getEdgeConstraint(int i, int j) {
+		final E cij = storedConstraints.get(getKey(i, j));
+		return cij == null ? storedConstraints.get(getKey(j, i)) : cij;
 	}
 
 	@Override

@@ -259,8 +259,7 @@ public class TimesXYZTest {
 
     @Test
     public void testJoost() {
-		System.out.println("start test");
-		CPModel model = new CPModel();
+    	CPModel model = new CPModel();
         //model.setDefaultExpressionDecomposition(true);
 		Solver solver = new CPSolver();
 
@@ -278,14 +277,12 @@ public class TimesXYZTest {
 		model.addConstraint(Choco.eq(v1, Choco.mult(v2,v3)));
 		solver.read(model);
 
-		System.out.println("start solving");
 		solver.solve();
 		Assert.assertEquals(Boolean.TRUE, solver.checkSolution());
 	}
 
     @Test
     public void testJoost2() {
-		System.out.println("start test");
 		CPModel model = new CPModel();
         //model.setDefaultExpressionDecomposition(true);
 		Solver solver = new CPSolver();
@@ -304,14 +301,12 @@ public class TimesXYZTest {
 		model.addConstraint(Choco.eq(v1, Choco.mult(v2,v3)));
 		solver.read(model);
 
-		System.out.println("start solving");
 		solver.solve();
 		Assert.assertEquals(Boolean.TRUE, solver.checkSolution());
 	}
 
     @Test
     public void testJoost3() {
-		System.out.println("start test");
 		CPModel model = new CPModel();
         //model.setDefaultExpressionDecomposition(true);
 		Solver solver = new CPSolver();
@@ -327,14 +322,12 @@ public class TimesXYZTest {
 		model.addConstraint(times(v2, v3, v1));
 		solver.read(model);
         solver.addGoal(BranchingFactory.minDomIncDom(solver));
-		System.out.println("start solving");
 		solver.solve();
 		Assert.assertEquals(Boolean.TRUE, solver.checkSolution());
 	}
 
     @Test
     public void testJoost4() {
-		System.out.println("start test");
 		CPModel model = new CPModel();
         //model.setDefaultExpressionDecomposition(true);
 		Solver solver = new CPSolver();
@@ -351,7 +344,6 @@ public class TimesXYZTest {
 		model.addConstraint(times(v2, v3, v1));
 		solver.read(model);
         solver.addGoal(BranchingFactory.minDomIncDom(solver));
-		System.out.println("start solving");
 		solver.solve();
 		Assert.assertEquals(Boolean.TRUE, solver.checkSolution());
 	}

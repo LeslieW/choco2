@@ -168,7 +168,7 @@ public class QueensTest {
         for (int i = 4; i < 15; i++) {
             m = new CPModel();
             s1 = new CPSolver();
-            System.out.printf("queen %s\n", i);
+            LOGGER.info("queen "+i);
             queen0(i);
         }
     }

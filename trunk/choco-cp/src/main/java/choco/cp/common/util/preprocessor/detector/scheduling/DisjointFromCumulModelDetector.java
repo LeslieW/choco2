@@ -30,7 +30,7 @@ package choco.cp.common.util.preprocessor.detector.scheduling;
 import choco.cp.model.CPModel;
 import choco.kernel.model.constraints.ConstraintType;
 
-public final class DisjointFromCumulModelDetector extends DisjointFromDisjModelDetector {
+public final class DisjointFromCumulModelDetector extends DisjointFromUnaryModelDetector {
 
 		
 	public DisjointFromCumulModelDetector(CPModel model,

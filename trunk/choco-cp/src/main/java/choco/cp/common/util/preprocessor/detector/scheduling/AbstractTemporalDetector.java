@@ -27,6 +27,8 @@
 
 package choco.cp.common.util.preprocessor.detector.scheduling;
 
+import java.util.Iterator;
+
 import choco.Choco;
 import choco.Options;
 import choco.cp.common.util.preprocessor.AbstractAdvancedDetector;
@@ -35,14 +37,12 @@ import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintType;
 import choco.kernel.model.constraints.TemporalConstraint;
 
-import java.util.Iterator;
-
-
-abstract class AbstractSchedulingDetector extends AbstractAdvancedDetector {
+abstract class AbstractSchedulingDectector extends
+AbstractAdvancedDetector {
 
 	public final DisjunctiveModel disjMod;
 
-	public AbstractSchedulingDetector(CPModel model, DisjunctiveModel disjMod) {
+	public AbstractSchedulingDectector(CPModel model, DisjunctiveModel disjMod) {
 		super(model);
 		this.disjMod = disjMod;
 	}
@@ -51,14 +51,22 @@ abstract class AbstractSchedulingDetector extends AbstractAdvancedDetector {
 		return disjMod;
 	}
 
-	protected abstract ConstraintType getType();
-
-
-	protected abstract void setUp();
-
 	protected boolean isInPreprocess(Constraint c) {
 		return ! c.getOptions().contains(Options.C_NO_DETECTION);
 	}
+
+}
+
+
+abstract class AbstractSchedulingConstraintDetector extends AbstractSchedulingDectector {
+
+	public AbstractSchedulingConstraintDetector(CPModel model, DisjunctiveModel disjMod) {
+		super(model, disjMod);
+	}
+
+	protected abstract ConstraintType getType();
+
+	protected abstract void setUp();
 
 	protected abstract void apply(Constraint ct);
 
@@ -77,7 +85,7 @@ abstract class AbstractSchedulingDetector extends AbstractAdvancedDetector {
 
 }
 
-public abstract class AbstractTemporalDetector extends AbstractSchedulingDetector {
+public abstract class AbstractTemporalDetector extends AbstractSchedulingConstraintDetector {
 
 
 	public AbstractTemporalDetector(CPModel model, DisjunctiveModel disjMod) {
@@ -105,7 +113,7 @@ public abstract class AbstractTemporalDetector extends AbstractSchedulingDetecto
 	@Override
 	protected void tearDown() {}
 
-	
+
 	@Override
 	protected final void apply(Constraint c) {
 		apply( (TemporalConstraint) c);

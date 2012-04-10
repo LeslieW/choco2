@@ -116,7 +116,7 @@ public class SoftCumulativeSumTest {
                 res += " " + s.getVar(vars[i]).getVal();
             }
             res += ", obj = " + s.getVar(vars[nbTasks+makespan]).getVal();
-		    System.out.println(res);   
+		    //System.out.println(res);   
 	    }
 
         return s.getVar(vars[nbTasks+makespan]).getVal();

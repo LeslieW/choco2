@@ -69,7 +69,7 @@ public class TestProbProfile {
 
 	private final static double DELTA=0.01;
 
-	private final static boolean DISPLAY=true;
+	private final static boolean DISPLAY=false;
 
 	private IResource<SimpleTask> rsc;
 
