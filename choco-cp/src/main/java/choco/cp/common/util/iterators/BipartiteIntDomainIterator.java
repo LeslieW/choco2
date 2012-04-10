@@ -29,6 +29,8 @@ package choco.cp.common.util.iterators;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 
+import java.util.Arrays;
+
 /**
  * User : cprudhom<br/>
  * Mail : cprudhom(a)emn.fr<br/>
@@ -37,7 +39,8 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
  */
 public final class BipartiteIntDomainIterator extends DisposableIntIterator {
 
-    private int nextIdx;
+    private int max;
+    private int idx;
     private int[] values;
 
     public BipartiteIntDomainIterator() {
@@ -48,8 +51,10 @@ public final class BipartiteIntDomainIterator extends DisposableIntIterator {
      */
     public void init(final int firstIdx, final int[] someValues) {
         super.init();
-        nextIdx = firstIdx;
-        this.values = someValues;
+        max = firstIdx +1;
+        idx = 0;
+        this.values = someValues.clone();
+        Arrays.sort(values, 0, max);
     }
 
     /**
@@ -61,7 +66,7 @@ public final class BipartiteIntDomainIterator extends DisposableIntIterator {
      */
     @Override
     public boolean hasNext() {
-        return nextIdx >= 0;
+        return idx < max;
     }
 
     /**
@@ -73,9 +78,7 @@ public final class BipartiteIntDomainIterator extends DisposableIntIterator {
      */
     @Override
     public int next() {
-        final int v = nextIdx;
-        nextIdx--;
-        return values[v];
+        return values[idx++];
     }
 
 }
