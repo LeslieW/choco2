@@ -99,7 +99,7 @@ public class PreProcessConfiguration extends Configuration {
 	public static final String SYMETRIE_BREAKING_DETECTION = "ppcp.detection.cliques.symetrieBreaking";
 
 	/**
-	 * <br/><b>Goal</b>: Active symetrie breaking detection during cliques detection
+	 * <br/><b>Goal</b>: detection of a generalized disjunctive graph within the model from scheduling constraints.
 	 * <br/><b>Type</b>: boolean
 	 * <br/><b>Default value</b>: true
 	 */
@@ -107,15 +107,25 @@ public class PreProcessConfiguration extends Configuration {
 	public static final String DISJUNCTIVE_MODEL_DETECTION = "ppcp.detection.scheduling.disjMod";
 	
 	/**
-	 * <br/><b>Goal</b>: Active symetrie breaking detection during cliques detection
+	 * <br/><b>Goal</b>: infer also precedence form time windows
 	 * <br/><b>Type</b>: boolean
-	 * <br/><b>Default value</b>: false
+	 * <br/><b>Default value</b>: true
 	 */
 	@Default(value = VALUE_TRUE)
 	public static final String DMD_USE_TIME_WINDOWS= "ppcp.detection.scheduling.disjMod.timeWindows";
 	
 	/**
-	 * <br/><b>Goal</b>: Active symetrie breaking detection during cliques detection
+	 * <br/><b>Goal</b>: Generate ternary clauses to avoid the creation of cycle in the disjunctive graphs. 
+	 * Warning : generate at most a cubic number of clauses from the tasks in the disjunctive graph.
+	 * <br/><b>Type</b>: boolean
+	 * <br/><b>Default value</b>: true
+	 */
+	@Default(value = VALUE_TRUE)
+	public static final String DMD_GENERATE_CLAUSES = "ppcp.detection.scheduling.disjMod.clauses";
+	
+	
+	/**
+	 * <br/><b>Goal</b>: Remove global disjunctive constraints after the inferrence of disjunctions.
 	 * <br/><b>Type</b>: boolean
 	 * <br/><b>Default value</b>: false
 	 */
@@ -123,7 +133,7 @@ public class PreProcessConfiguration extends Configuration {
 	public static final String DMD_REMOVE_DISJUNCTIVE = "ppcp.detection.scheduling.disjMod.removeDisjunctive";
 	
 	/**
-	 * <br/><b>Goal</b>: Active symetrie breaking detection during cliques detection
+	 * <br/><b>Goal</b>: state disjunctive global constraints extracted from cumulatives.
 	 * <br/><b>Type</b>: boolean
 	 * <br/><b>Default value</b>: false
 	 */

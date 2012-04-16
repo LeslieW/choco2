@@ -11,7 +11,7 @@ public class DottyBean implements IDotty {
 		super();
 	}
 
-	public DottyBean(IDotty[] objects) {
+	public DottyBean(IDotty... objects) {
 		super();
 		this.objects = objects;
 	}

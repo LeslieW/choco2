@@ -66,6 +66,7 @@ public abstract class AbstractMinimizeModel extends AbstractInstanceModel {
 
 
 	public final void cancelHeuristic() {
+		if(heuristics != null) {heuristics.reset();}
 		heuristics = NoHeuristic.getInstance();
 	}
 
@@ -78,7 +79,7 @@ public abstract class AbstractMinimizeModel extends AbstractInstanceModel {
 	}
 
 	public final void cancelLowerBound() {
-		setComputedLowerBound(Integer.MIN_VALUE);
+		setComputedLowerBound(MIN_LOWER_BOUND);
 	}
 
 	public int getComputedLowerBound() {
@@ -144,7 +145,7 @@ public abstract class AbstractMinimizeModel extends AbstractInstanceModel {
 		//register diagnostics and config
 		final ResolutionStatus r = super.postAnalyzePP();
 		if( r == ResolutionStatus.SAT 
-				&& objective.intValue() == computedLowerBound ) {
+				&& objective.intValue() == getComputedLowerBound()) {
 			return ResolutionStatus.OPTIMUM;
 		}
 		return r;
