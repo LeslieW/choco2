@@ -80,7 +80,7 @@ public class VariableEventQueue implements EventQueue {
 	 */
 	public void propagateAllEvents() throws ContradictionException {
 		while (queue.size() != 0) {
-			PropagationEvent evt = popEvent();
+			final PropagationEvent evt = popEvent();
 			//ChocoLogging.getMainLogger().info(evt.toString());
 			//ChocoLogging.flushLogs();
 			evt.propagateEvent();

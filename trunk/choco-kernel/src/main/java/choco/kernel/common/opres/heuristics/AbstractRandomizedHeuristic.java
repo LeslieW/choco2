@@ -30,7 +30,7 @@ public abstract class AbstractRandomizedHeuristic implements IHeuristic {
 		super();
 		this.solutionLogs = new TIntArrayList();
 	}
-	
+
 	private int retrieveIteration() {
 		return solutionLogs.getQuick(solutionLogs.size() - 3);
 	}
@@ -49,6 +49,20 @@ public abstract class AbstractRandomizedHeuristic implements IHeuristic {
 		TimeCacheThread.currentTimeMillis = starth;
 	}
 
+	protected final void forceStoreSolution(final int obj) {
+		bestsol = obj;
+		iterationCount = 1;
+		storeSolution(Integer.MIN_VALUE);
+	}
+	
+	protected final void storeSolution(final int seed) {
+		if(LOGGER.isLoggable(Level.FINE)) {
+			LOGGER.log(Level.FINE, "heuristics...[obj:{0}][iter:{1}]", new Object[]{Integer.valueOf(bestsol), iterationCount});
+		}
+		solutionLogs.add(iterationCount);
+		solutionLogs.add(bestsol);
+		solutionLogs.add(seed);
+	}
 	public abstract int getLowerBound();
 
 	protected abstract int apply(int iteration, int bestsol,int seed);
@@ -58,9 +72,7 @@ public abstract class AbstractRandomizedHeuristic implements IHeuristic {
 		reset();
 		bestsol = apply(iteration, Integer.MAX_VALUE, seed);
 		iterationCount = 1;
-		solutionLogs.add(1);
-		solutionLogs.add(bestsol);
-		solutionLogs.add(seed);
+		storeSolution(seed);
 		timeCount = System.currentTimeMillis() - starth;
 		return bestsol;
 	}
@@ -74,12 +86,7 @@ public abstract class AbstractRandomizedHeuristic implements IHeuristic {
 			final int obj = apply(iterationCount, bestsol, seed);
 			if(obj<bestsol) {
 				bestsol = obj;
-				if(LOGGER.isLoggable(Level.FINE)) {
-					LOGGER.log(Level.FINE, "heuristics...[obj:{0}][iter:{1}]", new Object[]{Integer.valueOf(bestsol), iterationCount});
-				}
-				solutionLogs.add(iterationCount);
-				solutionLogs.add(bestsol);
-				solutionLogs.add(seed);
+				storeSolution(seed);
 				if(obj==getLowerBound()) {return bestsol;}
 			}
 			iterationCount++;

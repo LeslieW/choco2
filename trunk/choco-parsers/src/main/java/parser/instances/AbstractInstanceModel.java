@@ -256,7 +256,7 @@ public abstract class AbstractInstanceModel {
 				logOnError(UNSUPPORTED, e);
 			} 
 			if( isLoaded) {
-				LOGGER.config("loading...[OK]");
+				LOGGER.log(Level.CONFIG, "loading...[OK][seed:{0}]", getSeed());
 				time[1] = System.currentTimeMillis();
 				isFeasible = preprocess();
 				status = postAnalyzePP();

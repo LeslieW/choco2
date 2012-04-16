@@ -2021,7 +2021,7 @@ public class CPSolver implements Solver {
     public IntDomainVar[] getBooleanVariables() {
         ArrayList<IntDomainVar> bvs = new ArrayList<IntDomainVar>(16);
         for (int i = 0; i < getNbIntVars(); i++) {
-            IntDomainVar v = getIntVar(i);
+            IntDomainVar v = getIntVarQuick(i);
             if (v.hasBooleanDomain()) {
                 bvs.add(v);
             }

@@ -158,7 +158,7 @@ public class PreProcessCPSolver extends CPSolver {
 			if (configuration.readBoolean(PreProcessConfiguration.DMD_USE_TIME_WINDOWS) ) {
 				ModelDetectorFactory.precFromTimeWindowDetector(model, disjMod).applyThenCommit();
 			}
-			final AbstractDetector[] detectors = ModelDetectorFactory.disjunctiveModelDetectors(model, disjMod);
+			final AbstractDetector[] detectors = ModelDetectorFactory.disjunctiveModelDetectors(model, disjMod, configuration.readBoolean(PreProcessConfiguration.DMD_GENERATE_CLAUSES));
 			for (AbstractDetector det : detectors) {
 				det.applyThenCommit();
 			}

@@ -29,6 +29,7 @@ package choco.cp.solver.constraints.global.scheduling.precedence;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.tools.TaskUtils;
 import choco.kernel.model.constraints.ITemporalRelation;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
@@ -252,23 +253,19 @@ implements ITemporalSRelation {
 	}
 
 
-
 	@Override
 	public int getTotalSlack() {
-		// TODO - Precedence domain measure - created 4 juil. 2011 by Arnaud Malapert
-		return 0;
+		return TaskUtils.getTotalSlack(task1, task2);
 	}
 
 	@Override
 	public double getForwardPreserved() {
-		// TODO - Precedence domain measure - created 4 juil. 2011 by Arnaud Malapert
-		return 0;
+		return TaskUtils.getPreserved(task1, task2);
 	}
 
 	@Override
 	public double getBackwardPreserved() {
-		// TODO - Precedence domain measure - created 4 juil. 2011 by Arnaud Malapert
-		return 0;
+		return TaskUtils.getPreserved(task2, task1);
 	}
 
 	@Override

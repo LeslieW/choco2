@@ -27,6 +27,8 @@
 
 package choco.cp.model.preprocessor;
 
+import java.util.Arrays;
+
 import choco.cp.common.util.preprocessor.AbstractDetector;
 import choco.cp.common.util.preprocessor.DetectorFactory;
 import choco.cp.common.util.preprocessor.detector.AbstractIntegerVariableEqualitiesDetector;
@@ -63,7 +65,7 @@ public final class ModelDetectorFactory extends DetectorFactory {
 		resetIndexes(model);
 	}
 
-    /**
+	/**
 	 * Anslyses a model and print messages about general statistics
 	 * @return new instance of {@link choco.cp.common.util.preprocessor.detector.AbstractIntegerVariableEqualitiesDetector}
 	 */
@@ -155,22 +157,23 @@ public final class ModelDetectorFactory extends DetectorFactory {
 	public static AbstractDetector disjointFromCumulDetector(final CPModel m, DisjunctiveModel disjMod){
 		return new DisjointFromCumulModelDetector(m, disjMod);
 	}
-	
+
 	public static AbstractDetector clauseFromDisjointDetector(final CPModel m, DisjunctiveModel disjMod) {
 		return new ClauseFromDisjointModelDetector(m, disjMod);
 	}
-	
+
 	public static AbstractDetector precReductionDetector(final CPModel m, DisjunctiveModel disjMod) {
 		return new PrecReductionModelDetector(m, disjMod);
 	}
-	
+
 	public static AbstractDetector rmDisjDetector(final CPModel m){
 		return new RmUnaryModelDetector(m);
 	}
 
 
-	public static AbstractDetector[] disjunctiveModelDetectors(final CPModel m, final DisjunctiveModel disjMod) {
-		return new AbstractDetector[] {
+	public static AbstractDetector[] disjunctiveModelDetectors(final CPModel m, final DisjunctiveModel disjMod, boolean generateClauses) {
+		return 	generateClauses ?
+				new AbstractDetector[] {
 				precFromImpliedDetector(m, disjMod),
 				precFromReifiedDetector(m, disjMod),
 				precFromDisjointDetector(m, disjMod),
@@ -178,17 +181,28 @@ public final class ModelDetectorFactory extends DetectorFactory {
 				disjointDetector(m, disjMod),
 				disjointFromUnaryDetector(m, disjMod),
 				disjointFromCumulDetector(m, disjMod),
-				//clauseFromDisjointDetector(m, disjMod),
+				clauseFromDisjointDetector(m, disjMod),
 				//restore precedence graph.
 				precReductionDetector(m, disjMod)
-		};
+		} : 
+			new AbstractDetector[] {
+					precFromImpliedDetector(m, disjMod),
+					precFromReifiedDetector(m, disjMod),
+					precFromDisjointDetector(m, disjMod),
+					//compute precedence transitive closure 
+					disjointDetector(m, disjMod),
+					disjointFromUnaryDetector(m, disjMod),
+					disjointFromCumulDetector(m, disjMod),
+					//restore precedence graph.
+					precReductionDetector(m, disjMod)
+				};
 	}
 
-	public static AbstractDetector[] schedulingModelDetectors(final CPModel m, final DisjunctiveModel disjMod) {
+	public static AbstractDetector[] allSchedulingModelDetectors(final CPModel m, final DisjunctiveModel disjMod) {
 		return ArrayUtils.append( new AbstractDetector[] {
 				precFromTimeWindowDetector(m, disjMod),
 				disjFromCumulDetector(m)},
-				disjunctiveModelDetectors(m, disjMod),
+				disjunctiveModelDetectors(m, disjMod, true),
 				new AbstractDetector[] {rmDisjDetector(m)}) ;
 	}
 }

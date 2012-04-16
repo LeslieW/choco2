@@ -27,6 +27,7 @@
 
 package choco.cp.common.util.preprocessor.detector.scheduling;
 
+import gnu.trove.TIntArrayList;
 import gnu.trove.TIntIntHashMap;
 import gnu.trove.TIntObjectHashMap;
 import gnu.trove.TObjectProcedure;
@@ -90,12 +91,12 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 		return nbArcs == 0 && nbEdges == 0;
 	}
 
-	protected void setPrecClosure() {
+	protected final void setPrecClosure() {
 		savedPrecGraph = copy(precGraph);
 		floydMarshallClosure(precGraph);
 	}
 	
-	protected void unsetPrecClosure() {
+	protected final void unsetPrecClosure() {
 		if(savedPrecGraph != null) {
 			for (int i = 0; i < savedPrecGraph.length; i++) {
 				precGraph[i] = savedPrecGraph[i];
@@ -103,7 +104,20 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 		}
 	}
 	
-	public BitSet[] copyPrecGraph()	{
+	
+	public final TIntArrayList[] convertPrecGraph()	{
+		TIntArrayList[] graph = new TIntArrayList[nbNodes];
+		for (int i = 0; i < nbNodes; i++) {
+			graph[i] = new TIntArrayList();
+			for (int j = precGraph[i].nextSetBit(0); j >= 0; j = precGraph[i]
+					.nextSetBit(j + 1)) {
+				graph[i].add(j);
+			}
+		}
+		return graph;
+	}
+	
+	public final BitSet[] copyPrecGraph()	{
 		return copy(precGraph);
 	}
 	
@@ -120,6 +134,7 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 		}
 		return res;
 	}
+	
 	public final static BitSet[] getClosure(BitSet[] graph) {
 		final BitSet[] closure = copy(graph);
 		floydMarshallClosure(closure);
@@ -249,7 +264,7 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 		return storedConstraints.get(getKey(i, j));
 	}
 	
-	protected final E getEdgeConstraint(int i, int j) {
+	public final E getEdgeConstraint(int i, int j) {
 		final E cij = storedConstraints.get(getKey(i, j));
 		return cij == null ? storedConstraints.get(getKey(j, i)) : cij;
 	}

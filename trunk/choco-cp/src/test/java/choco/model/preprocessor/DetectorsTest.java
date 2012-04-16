@@ -37,6 +37,7 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.BoundAllDiff;
 import choco.cp.solver.constraints.global.matching.AllDifferent;
 import choco.cp.solver.preprocessor.PreProcessCPSolver;
+import choco.cp.solver.preprocessor.PreProcessConfiguration;
 import choco.cp.solver.search.BranchingFactory;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.iterators.DisposableIterator;
@@ -371,7 +372,7 @@ public class DetectorsTest {
 		final DisjunctiveModel disjMod = new DisjunctiveModel(model);
 		run(model, precFromImpliedDetector(model, disjMod));
 		assertEquals(0, model.getNbConstraints());
-		
+
 		// FIXME - Problem with hook - created 4 juil. 2011 by Arnaud Malapert
 		model = new CPModel();
 		model.addConstraint(precedenceImplied(t4, 3,t3, ONE));
@@ -409,7 +410,7 @@ public class DetectorsTest {
 				precedence(t1, t3),
 				precedence(t1, t3,4),
 				precedence(t1, t3,2)				
-		);
+				);
 		assertEquals(6, model.getNbConstraints());
 		DisjunctiveModel disjMod = new DisjunctiveModel(model);
 		run(model, precFromTimeWindowDetector(model, disjMod),
@@ -423,7 +424,7 @@ public class DetectorsTest {
 		model.addConstraints(
 				precedence(t1, t2,3),
 				precedenceDisjoint(t1, t2, Choco.makeBooleanVar("b1"), 4,2)
-		);
+				);
 		assertEquals(2, model.getNbConstraints());
 		final DisjunctiveModel disjMod = new DisjunctiveModel(model);
 		run(model, precFromTimeWindowDetector(model, disjMod),
@@ -443,14 +444,14 @@ public class DetectorsTest {
 				precedenceDisjoint(t1, t3, b[0],2,0),
 				precedenceDisjoint(t1, t3, b[1],1,1),
 				precedenceDisjoint(t3, t1, b[2],2,0)
-		);
+				);
 		assertEquals(4, model.getNbConstraints());
 		final DisjunctiveModel disjMod = new DisjunctiveModel(model);
 		run(model, disjointDetector(model, disjMod));
 		assertEquals(2, model.getNbConstraints());
 		//VisuFactory.getDotManager().show(disjMod);
 	}
-	
+
 	@Test
 	public void detectDisjModel(){
 		CPModel model = new CPModel();
@@ -472,16 +473,16 @@ public class DetectorsTest {
 				precedence(tv1[2], tv2[2], 10),
 				precedence(tv1[3], tv2[3], 12),
 				precedence(tv1[2], tv2[4], 0)
-		);
-		
+				);
+
 		final DisjunctiveModel disjMod = new DisjunctiveModel(model);
-		run(model, schedulingModelDetectors(model, disjMod));
+		run(model, allSchedulingModelDetectors(model, disjMod));
 		//System.out.println(model.pretty());
 		//System.out.println(disjMod.toString());
 		//System.out.println(disjMod.setupTimesToString());
 		//VizFactory.toDotty(new File("/tmp/test.dot"), disjMod);
 	}
-	
+
 
 	@Test
 	public void detectCstEq(){
@@ -491,13 +492,13 @@ public class DetectorsTest {
 				clause(new IntegerVariable[]{b[0]}, new IntegerVariable[]{b[1]}),
 				clause(new IntegerVariable[]{b[1]}, new IntegerVariable[]{b[2]}),
 				eq(b[0],1)
-		);
-		
+				);
+
 		run(model, intVarEqDet(model));
 		//System.out.println(model.pretty());
 		assertEquals(2, model.getNbBoolVar());
 		assertEquals(1, model.getNbConstraints());
-		
+
 	}
 
 
@@ -514,11 +515,11 @@ public class DetectorsTest {
 		public void apply() {
 			replaceBy(out, in);
 		}
-		
-		
-		
+
+
+
 	}
-	
+
 	@Test
 	public void detectClauseStore(){
 		CPModel model = new CPModel();
@@ -528,15 +529,15 @@ public class DetectorsTest {
 				clause(new IntegerVariable[]{b[1]}, new IntegerVariable[]{b[2]}),
 				clause(new IntegerVariable[]{b[0]}, new IntegerVariable[]{b[3]}),
 				eq(b[0],1)
-		);
+				);
 		run(model,  new TestReplaceDetector(model, b[3], b[0]));
 		//System.out.println(model.pretty());
 		assertEquals(2, model.getNbConstraints());
 		assertEquals(3, model.getNbBoolVar());
-		
-		
+
+
 	}
-	
+
 	private static void test(final CPModel model, final AbstractDetector... detectors) {
 		CPSolver solver = new CPSolver();
 		solver.read(model);
@@ -544,7 +545,7 @@ public class DetectorsTest {
 		run(model, detectors);
 		CPSolver ppsolver = new CPSolver();
 		ppsolver.read(model);
-		
+
 		solver.solveAll();
 		ppsolver.solveAll();
 		assertEquals(solver.getSolutionCount(), ppsolver.getSolutionCount());
@@ -560,20 +561,20 @@ public class DetectorsTest {
 				precedenceDisjoint(t[1], t[2], b[1]),
 				precedenceDisjoint(t[0], t[1], b[0]),
 				precedenceDisjoint(t[0], t[2], b[2]),
-				
+
 				precedenceDisjoint(t[1], t[4], b[3]),
 				precedenceDisjoint(t[2], t[4], b[4]),
 				precedenceDisjoint(t[3], t[4], b[5]),
 				precedence(t[0], t[4]),
 				precedence(t[0], t[3])				
-		);
+				);
 		final int ctCount = model.getNbConstraints() + 1;
 		DisjunctiveModel disjMod = new DisjunctiveModel(model);
-		test(model, disjunctiveModelDetectors(model, disjMod));
+		test(model, disjunctiveModelDetectors(model, disjMod, true));
 		assertEquals(ctCount, model.getNbConstraints());
 		//VisuFactory.getDotManager().show(disjMod);
 	}
-	
+
 
 	@Test
 	public void detectTransitive(){
@@ -584,43 +585,43 @@ public class DetectorsTest {
 				precedence(t[0], t[1]),
 				precedence(t[1], t[2]),
 				precedenceDisjoint(t[0], t[2], makeBooleanVar("b1")),
-				
+
 				precedence(t[3], t[4]),
 				precedence(t[4], t[5]),
 				precedenceDisjoint(t[3], t[5], makeBooleanVar("b2")),
-				
+
 				precedence(t[6], t[7]),
 				precedence(t[7], t[8]),
 				precedence(t[8], t[9]),
 				precedenceDisjoint(t[6], t[9], makeBooleanVar("b3")),
-				
+
 				precedence(t[7], t[10]),
 				precedence(t[3], t[8]),
-				
+
 				precedence(t[2], t[11]),
 				precedence(t[11], t[12]),
 				precedence(t[11], t[13]),
-				
+
 				precedence(t[0], t[14]),
 				precedence(t[13], t[14]),
-				
+
 				precedence(t[0], t[15]),
 				precedence(t[13], t[15]),
 				precedenceDisjoint(t[2], t[15], makeBooleanVar("b4")),
-				
+
 				precedenceDisjoint(t[2], t[4], makeBooleanVar("b5")),
 				precedenceDisjoint(t[2], t[5], makeBooleanVar("b6"))
-				
-		);
+
+				);
 		DisjunctiveModel disjMod = new DisjunctiveModel(model);
-		test(model, disjunctiveModelDetectors(model, disjMod));
+		test(model, disjunctiveModelDetectors(model, disjMod, true));
 		//VisuFactory.getDotManager().show(disjMod);
 		assertEquals(17, model.getNbConstraints());
-		
+
 	}
-	
+
 	@Test
-	public void testVariableRemovals(){
+	public void testModelReplacement(){
 		CPModel model = new CPModel();
 		final TaskVariable t1 = makeTaskVar("T1", 0, 20, 18);
 		final TaskVariable t2 = makeTaskVar("T2", 20, 35, 10);
@@ -628,12 +629,40 @@ public class DetectorsTest {
 		model.addConstraints(
 				precedenceDisjoint(t1, t2, b),
 				precedence(t1, t2, 10)
-		);
+				);
 		final DisjunctiveModel disjMod = new DisjunctiveModel(model);
-		run(model, schedulingModelDetectors(model, disjMod));
+		run(model, allSchedulingModelDetectors(model, disjMod));
 		//System.out.println(model.pretty());
 		assertEquals(1, model.getNbConstraints());
+		assertEquals(0, model.getNbBoolVar());
 		assertEquals(2, model.getNbStoredMultipleVars());
 	}
+
+
+	@Test
+	public void testSolverReplacement(){
+		CPModel model = new CPModel();
+		final TaskVariable t1 = makeTaskVar("T1", 0, 20, 18);
+		final TaskVariable t2 = makeTaskVar("T2", 20, 35, 10);
+		IntegerVariable b = Choco.makeBooleanVar("b");
+		model.addConstraints(
+				precedenceDisjoint(t1, t2, b),
+				precedence(t1, t2, 10)
+				);
+		PreProcessCPSolver solver = new PreProcessCPSolver();
+		solver.getConfiguration().putTrue(PreProcessConfiguration.DISJUNCTIVE_MODEL_DETECTION);
+		solver.read(model);
+		System.out.println(model.pretty());
+		assertEquals(1, model.getNbConstraints());
+		assertEquals(2, model.getNbStoredMultipleVars());
+		
+		System.out.println(solver.pretty());
+		assertEquals(3, solver.getNbConstraints());
+		assertEquals(0, solver.getNbBooleanVars());
+		assertEquals(2, solver.getNbTaskVars());
+	}
+
+
+
 
 }
