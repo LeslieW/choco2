@@ -27,9 +27,12 @@
 
 package choco.cp.common.util.preprocessor.detector.scheduling;
 
+import gnu.trove.TIntArrayList;
 import gnu.trove.TIntIntHashMap;
 import gnu.trove.TObjectProcedure;
 
+import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Iterator;
 
 import choco.cp.solver.constraints.global.scheduling.precedence.ITemporalSRelation;
@@ -45,20 +48,23 @@ import choco.kernel.solver.variables.scheduling.TaskVar;
 
 public class DisjunctiveSModel extends DisjunctiveGraph<ITemporalSRelation> {
 
-	private ITemporalSRelation[] reuseDisjuncts;
+	private ITemporalSRelation[] constraints;
 
 	public final Solver solver;
 
 	public DisjunctiveSModel(PreProcessCPSolver solver) {
 		this(solver, solver.getDisjModel());
 	}
+
 	public DisjunctiveSModel(Solver solver, DisjunctiveModel dmod) {
 		super(solver.getNbTaskVars());
 		this.solver = solver;
-		if(solver.getModel() != dmod.getModel()) throw new SolverException("cant build disjunctive model");
+		if (solver.getModel() != dmod.getModel())
+			throw new SolverException("cant build disjunctive model");
 		final TIntIntHashMap hookToIndexM = new TIntIntHashMap(nbNodes);
-		final Iterator<MultipleVariables> iter = solver.getModel().getMultipleVarIterator();
-		while(iter.hasNext()) {
+		final Iterator<MultipleVariables> iter = solver.getModel()
+				.getMultipleVarIterator();
+		while (iter.hasNext()) {
 			final MultipleVariables mv = iter.next();
 			if (mv instanceof TaskVariable) {
 				final TaskVariable tv = (TaskVariable) mv;
@@ -68,16 +74,22 @@ public class DisjunctiveSModel extends DisjunctiveGraph<ITemporalSRelation> {
 		}
 		for (int i = 0; i < dmod.nbNodes; i++) {
 			int o = hookToIndexM.get(i);
-			for (int j = dmod.precGraph[i].nextSetBit(0); j >= 0; j = dmod.precGraph[i].nextSetBit(j + 1)) {
+			for (int j = dmod.precGraph[i].nextSetBit(0); j >= 0; j = dmod.precGraph[i]
+					.nextSetBit(j + 1)) {
 				final int d = hookToIndexM.get(j);
-				if(dmod.containsConstraint(i, j)) addArc(o, d, dmod.setupTime(i, j));
+				if (dmod.containsConstraint(i, j))
+					addArc(o, d, dmod.setupTime(i, j));
 			}
-			for (int j = dmod.disjGraph[i].nextSetBit(0); j >= 0; j = dmod.disjGraph[i].nextSetBit(j + 1)) {
-				// FIXME - rel can be null ? - created 10 avr. 2012 by A. Malapert
-				if(dmod.containsConstraint(i, j)) {
+			for (int j = dmod.disjGraph[i].nextSetBit(0); j >= 0; j = dmod.disjGraph[i]
+					.nextSetBit(j + 1)) {
+				// FIXME - rel can be null ? - created 10 avr. 2012 by A.
+				// Malapert
+				if (dmod.containsConstraint(i, j)) {
 					final int d = hookToIndexM.get(j);
-					final ITemporalSRelation rel = (ITemporalSRelation) solver.getCstr(dmod.getConstraint(i, j));
-					addEdge(o, d, dmod.setupTime(i, j), dmod.setupTime(j, i), rel);
+					final ITemporalSRelation rel = (ITemporalSRelation) solver
+							.getCstr(dmod.getConstraint(i, j));
+					addEdge(o, d, dmod.setupTime(i, j), dmod.setupTime(j, i),
+							rel);
 				}
 			}
 		}
@@ -95,56 +107,104 @@ public class DisjunctiveSModel extends DisjunctiveGraph<ITemporalSRelation> {
 		return getConstraint(t1.getID(), t2.getID());
 	}
 
+	private int idx = 0;
+
 	public final IntDomainVar[] getDisjuncts() {
 		final IntDomainVar[] disjuncts = new IntDomainVar[getNbEdges()];
-		storedConstraints.forEachValue(new TObjectProcedure<ITemporalSRelation>() {
-			private int idx=0;
-			@Override
-			public boolean execute(ITemporalSRelation arg0) {
-				if( ! arg0.isFixed() ) {
-					disjuncts[idx++]=arg0.getDirection();
-				}
-				return true;
-			}
-		});
-		return disjuncts;
+		idx = 0;
+		storedConstraints
+				.forEachValue(new TObjectProcedure<ITemporalSRelation>() {
+					@Override
+					public boolean execute(ITemporalSRelation arg0) {
+						if (!arg0.isFixed()) {
+							disjuncts[idx++] = arg0.getDirection();
+						}
+						return true;
+					}
+				});
+		return idx == disjuncts.length ? disjuncts : Arrays.copyOf(disjuncts,
+				idx);
 	}
 
 	public final ITemporalSRelation[] getEdges() {
-		return getEdges(false);
+		final int n = getNbEdges();
+		constraints = new ITemporalSRelation[n];
+		idx = 0;
+		storedConstraints
+				.forEachValue(new TObjectProcedure<ITemporalSRelation>() {
+					@Override
+					public boolean execute(ITemporalSRelation arg0) {
+						if (!arg0.isFixed()) {
+							constraints[idx++] = arg0;
+						}
+						return true;
+					}
+				});
+		return idx == constraints.length ? constraints : Arrays.copyOf(
+				constraints, idx);
 	}
 
-	public final ITemporalSRelation[] getEdges(boolean forceComputation) {
-		final int n = getNbEdges();
-		if(forceComputation || reuseDisjuncts == null || reuseDisjuncts.length != n ) {
-			reuseDisjuncts = new ITemporalSRelation[n];
-			storedConstraints.forEachValue(new TObjectProcedure<ITemporalSRelation>() {
-				private int idx=0;
-				@Override
-				public boolean execute(ITemporalSRelation arg0) {
-					if( ! arg0.isFixed() ) {
-						reuseDisjuncts[idx++]=arg0;
+	public final BitSet[] generatePrecGraph()	{
+		final BitSet[] graph = copyPrecGraph();
+		//Complete Initial Precedence Graph (BitSet)
+		for (int i = 0; i < nbNodes; i++) {
+			//From currently fixed disjunctions
+			for (int j = disjGraph[i].nextSetBit(0); j >= 0; j = disjGraph[i]
+					.nextSetBit(j + 1)) {
+				if(containsRelation(i, j)) {
+					ITemporalSRelation rel = getConstraint(i, j);
+					int o, d;
+					if(rel == null) {
+						rel = getConstraint(j, i);
+						o = j;
+						d = i;
+					} else {
+						o = i;
+						d = j;
 					}
-					return true;
+					if(rel.isFixed()) {
+						if(rel.getDirVal() == 0) {
+							graph[d].set(o);
+						} else {
+							assert (rel.getDirVal() == 1);
+							graph[o].set(d);
+						}
+					}
 				}
-			});
-			// TODO - sort disjuncts according to which criteria ?- created 12 aout 2011 by Arnaud Malapert
+			}
 		}
+		return graph;
+	}
 
-		return reuseDisjuncts;
+	public final static TIntArrayList[] convertToLists(BitSet[] graph) {
+		final TIntArrayList[] res = new TIntArrayList[graph.length];
+		for (int i = 0; i < graph.length; i++) {
+			// From currently fixed disjunctions
+			res[i] = new TIntArrayList(graph[i].cardinality());
+			for (int j = graph[i].nextSetBit(0); j >= 0; j = graph[i]
+					.nextSetBit(j + 1)) {
+				res[i].add(j);
+			}
+		}
+		return res;
+	}
+
+	public final TIntArrayList[] generatePrecReductionGraph() {
+		BitSet[] graph = generatePrecGraph();
+		floydMarshallClosure(graph);
+		floydMarshallReduction(graph);
+		return convertToLists(graph);
 	}
 
 	@Override
 	protected StringBuilder toDottyNodes() {
-		final StringBuilder  b = new StringBuilder();
+		final StringBuilder b = new StringBuilder();
 		final DisposableIterator<TaskVar> iter = solver.getTaskVarIterator();
-		while(iter.hasNext()) {
+		while (iter.hasNext()) {
 			b.append(iter.next().toDotty()).append('\n');
 		}
 		iter.dispose();
 		return b;
 	}
-
-
 
 }

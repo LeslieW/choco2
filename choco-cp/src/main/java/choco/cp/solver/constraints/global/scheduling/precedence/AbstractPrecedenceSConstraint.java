@@ -171,6 +171,7 @@ implements ITemporalSRelation {
 		}
 	}
 
+	// TODO - Change to private - created 17 avr. 2012 by A. Malapert
 	protected Boolean reuseBool;
 	//idx = 1 ou idx = 2
 	public void filterOnP1P2TowardsB() throws ContradictionException {
@@ -249,7 +250,10 @@ implements ITemporalSRelation {
 	}
 
 	protected final String pretty(String name, String trueStr, String falseStr) {
-		return name + " "+vars[BIDX]+"( "+trueStr+" || "+falseStr+" )";
+		return name +" "+ vars[BIDX] + " ( "+
+				( vars[BIDX].isInstantiatedTo(1) ? trueStr : 
+					vars[BIDX].isInstantiatedTo(0) ? falseStr : trueStr+" || "+falseStr)
+					+" )";
 	}
 
 

@@ -105,17 +105,6 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 	}
 	
 	
-	public final TIntArrayList[] convertPrecGraph()	{
-		TIntArrayList[] graph = new TIntArrayList[nbNodes];
-		for (int i = 0; i < nbNodes; i++) {
-			graph[i] = new TIntArrayList();
-			for (int j = precGraph[i].nextSetBit(0); j >= 0; j = precGraph[i]
-					.nextSetBit(j + 1)) {
-				graph[i].add(j);
-			}
-		}
-		return graph;
-	}
 	
 	public final BitSet[] copyPrecGraph()	{
 		return copy(precGraph);
@@ -127,7 +116,7 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 	}
 	
 	
-	private final static BitSet[] copy(BitSet[] graph) {
+	public final static BitSet[] copy(BitSet[] graph) {
 		final BitSet[] res = new BitSet[graph.length]; 
 		for (int i = 0; i < graph.length; i++) {
 			res[i] = (BitSet) graph[i].clone();

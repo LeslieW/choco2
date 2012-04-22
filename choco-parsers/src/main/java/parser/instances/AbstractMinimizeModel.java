@@ -130,7 +130,7 @@ public abstract class AbstractMinimizeModel extends AbstractInstanceModel {
 	@Override
 	protected void logOnDiagnostics() {
 		super.logOnDiagnostics();
-		if(computedLowerBound != Integer.MIN_VALUE) {
+		if(computedLowerBound != MIN_LOWER_BOUND) {
 			logMsg.storeDiagnostic("INITIAL_LOWER_BOUND", computedLowerBound);
 		}
 		if(heuristics != null && heuristics.hasSearched()) {
