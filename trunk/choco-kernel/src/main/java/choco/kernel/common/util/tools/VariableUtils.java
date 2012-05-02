@@ -43,6 +43,7 @@ import choco.kernel.solver.variables.scheduling.TaskVar;
 import choco.kernel.solver.variables.set.SetVar;
 
 import java.lang.reflect.Array;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -452,5 +453,23 @@ public final class VariableUtils {
     public static boolean checkConstant(IntegerVariable v, int value) {
         return v.isConstant() && v.canBeEqualTo(value);
     }
+
+	public static IntDomainVar[] getBoolDecisionVars(Solver solver) {
+		IntDomainVar[] ivs = solver.getIntDecisionVars();
+		int i = 0;
+		while( i < ivs.length && ivs[i].hasBooleanDomain()) {
+			i++;
+		}
+		if(i < ivs.length) {
+			LinkedList<IntDomainVar> bvs = new LinkedList<IntDomainVar>();
+			for (IntDomainVar v : ivs) {
+				if(v.hasBooleanDomain()) {
+					bvs.add(v);
+				}
+			}
+			ivs =  bvs.toArray(new IntDomainVar[bvs.size()]);
+		}
+		return ivs;
+	}
 
 }

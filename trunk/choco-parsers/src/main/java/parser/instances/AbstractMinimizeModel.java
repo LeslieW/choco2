@@ -127,11 +127,19 @@ public abstract class AbstractMinimizeModel extends AbstractInstanceModel {
 				Options.V_OBJECTIVE,Options.V_NO_DECISION, Options.V_BOUND
 				);
 	}
+	
+	protected double getGapILB() {
+		return objective.doubleValue() / computedLowerBound;
+	}
+	
 	@Override
 	protected void logOnDiagnostics() {
 		super.logOnDiagnostics();
 		if(computedLowerBound != MIN_LOWER_BOUND) {
 			logMsg.storeDiagnostic("INITIAL_LOWER_BOUND", computedLowerBound);
+			if(getStatus() == ResolutionStatus.SAT) {
+				logMsg.storeDiagnostic("ILB_GAP", getGapILB());
+			}
 		}
 		if(heuristics != null && heuristics.hasSearched()) {
 			logMsg.storeDiagnostic("HEUR_TIME", heuristics.getTimeCount());
