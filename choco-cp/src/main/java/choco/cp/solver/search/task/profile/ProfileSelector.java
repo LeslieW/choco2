@@ -109,7 +109,7 @@ public final class ProfileSelector implements VarValPairSelector {
 					}
 				}
 			}
-			assert(sdisjunct != null );
+			assert(sdisjunct != null);
 			return new IntVarValPair(sdisjunct.getDirection(), precSelector.getBestVal(sdisjunct));
 		}
 		assert(disjSModel.isFixed());
