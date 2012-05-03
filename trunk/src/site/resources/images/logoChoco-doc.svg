@@ -61,7 +61,7 @@
        y2="372.13739" />
   </defs>
   <sodipodi:namedview
-     pagecolor="#ffffff"
+     pagecolor="#2fffff"
      bordercolor="#666666"
      borderopacity="1"
      objecttolerance="10"
@@ -69,16 +69,16 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="755"
-     inkscape:window-height="605"
+     inkscape:window-width="1920"
+     inkscape:window-height="1102"
      id="namedview3588"
      showgrid="false"
      inkscape:zoom="0.16904775"
-     inkscape:cx="788.00574"
+     inkscape:cx="-359.599"
      inkscape:cy="934.83148"
-     inkscape:window-x="1928"
-     inkscape:window-y="6"
-     inkscape:window-maximized="0"
+     inkscape:window-x="1280"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
      inkscape:current-layer="svg3586"
      fit-margin-top="0"
      fit-margin-left="0"
@@ -86,7 +86,7 @@
      fit-margin-bottom="0"
      units="m" />
   <rect
-     style="fill:#ffffff;fill-opacity:1;stroke:none"
+     style="fill:#f0f0f0;fill-opacity:1;stroke:none"
      id="rect6037"
      width="1765.7733"
      height="2289.2939"
@@ -98,7 +98,7 @@
      inkscape:connector-curvature="0"
      id="path3837"
      d="M 787.63113,2.2952412e-4 C 784.24105,0.00222952 780.8434,0.02482952 777.4437,0.07052952 342.28313,5.9116095 -5.7686426,363.42936 0.07245738,798.59045 l 0.94849002,29.3329 C 22.483298,1251.1621 374.84742,1581.6155 798.5914,1575.9276 1233.7519,1570.0865 1581.7686,1212.6038 1575.9275,777.44275 1570.1321,345.68133 1218.1715,-0.32531048 787.63113,2.2952412e-4 z"
-     style="fill:#5d4014;fill-opacity:1;stroke:none"
+     style="fill:#f0f0f0;fill-opacity:1;stroke:none"
      sodipodi:nodetypes="ccccssc" />
   <path
      style="fill:#fa931d;fill-opacity:1;stroke:none"
