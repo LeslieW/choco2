@@ -123,6 +123,11 @@ public final class TreeSConstraint extends AbstractLargeIntSConstraint {
      * @throws ContradictionException
      */
     public void awake() throws ContradictionException {
+        this.solver = tree.getSolver();
+        this.nbNodes = tree.getNbNodes();
+        this.structure = new StructuresAdvisor(this.solver, tree);
+        this.deduction = new DeductionsAdvisor(this.solver, tree, this.structure, AFFICHE);
+        this.filtering = new FilteringAdvisor(this.solver, this, this.tree, this.structure, AFFICHE);
         if (AFFICHE) {
         	LOGGER.log(Level.INFO, "*********************************");
             structure.getInputGraph().showGlobal();
@@ -131,11 +136,7 @@ public final class TreeSConstraint extends AbstractLargeIntSConstraint {
             LOGGER.log(Level.INFO, "-------------------------");
             structure.getDoms().showDoms(0);
         }
-        this.solver = tree.getSolver();
-        this.nbNodes = tree.getNbNodes();
-        this.structure = new StructuresAdvisor(this.solver, tree);
-        this.deduction = new DeductionsAdvisor(this.solver, tree, this.structure, AFFICHE);
-        this.filtering = new FilteringAdvisor(this.solver, this, this.tree, this.structure, AFFICHE);
+        propagate();
     }
 
     /**
