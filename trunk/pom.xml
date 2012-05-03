@@ -111,7 +111,7 @@
         </repository>
         <repository>
             <id>choco.repo</id>
-            <url>http://www.emn.fr/z-info/choco-solver/mvn/repository/</url>
+            <url>http://www.emn.fr/z-info/choco-repo/mvn/repository/</url>
         </repository>
     </repositories>
     <build>
