@@ -2,7 +2,7 @@
     <parent>
         <groupId>choco</groupId>
         <artifactId>choco</artifactId>
-        <version>2.1.5-SNAPSHOT</version>
+        <version>2.1.4-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>choco-visu</artifactId>
