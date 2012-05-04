@@ -4,7 +4,7 @@
     <groupId>choco</groupId>
     <artifactId>choco</artifactId>
     <packaging>pom</packaging>
-    <version>2.1.4-SNAPSHOT</version>
+    <version>2.1.4</version>
     <name>CHOCO</name>
     <url>http://www.emn.fr/z-info/choco-solver/</url>
     <licenses>
@@ -21,9 +21,9 @@
         sourceforge.net.
     </description>
     <scm>
-        <connection>scm:svn:https://choco.svn.sourceforge.net/svnroot/choco/trunk</connection>
-        <developerConnection>scm:svn:https://choco.svn.sourceforge.net/svnroot/choco/trunk</developerConnection>
-        <url>http://choco.svn.sourceforge.net/viewvc/choco/trunk</url>
+        <connection>scm:svn:https://choco.svn.sourceforge.net/svnroot/choco/tags/choco-2.1.4</connection>
+        <developerConnection>scm:svn:https://choco.svn.sourceforge.net/svnroot/choco/tags/choco-2.1.4</developerConnection>
+        <url>http://choco.svn.sourceforge.net/viewvc/choco/tags/choco-2.1.4</url>
     </scm>
     <issueManagement>
         <system>sourceforge</system>
