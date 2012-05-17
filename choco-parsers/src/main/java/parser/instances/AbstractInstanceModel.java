@@ -227,7 +227,7 @@ public abstract class AbstractInstanceModel {
 	private void logOnError(ResolutionStatus error, Exception e) {
 		LOGGER.log(Level.INFO, "s {0}", error.getName());
 		if(e != null) {
-			LOGGER.log(Level.CONFIG, parser.getInstanceFile().getName()+"...[FAIL]", e);
+			LOGGER.log(Level.CONFIG, getInstanceName()+"...[FAIL]", e);
 		}
 		status = error;
 		isFeasible = null;
@@ -237,6 +237,7 @@ public abstract class AbstractInstanceModel {
 	//***************************************************************//
 
 
+	// TODO - Create a solveObject(Object) method which does not require any parser - created 16 mai 2012 by A. Malapert
 	/**
 	 * Solve the csp given by file {@code file}
 	 *
@@ -245,7 +246,7 @@ public abstract class AbstractInstanceModel {
 	public final void solveFile(File file) {
 		initialize();
 		try {
-			LOGGER.log(Level.CONFIG, INSTANCE_MSG, file.getName());
+			if(file != null) LOGGER.log(Level.CONFIG, INSTANCE_MSG, file == null ? getInstanceName() : file.getName());
 			boolean isLoaded = false;
 			time[0] = System.currentTimeMillis();
 			try {
@@ -301,7 +302,6 @@ public abstract class AbstractInstanceModel {
 	 * can be used to access variables, constraints, etc...
 	 *
 	 * @param fichier
-	 * @return A parser object containing the description of the problem
 	 * @throws Exception
 	 * @throws Error
 	 */
@@ -410,6 +410,7 @@ public abstract class AbstractInstanceModel {
 			logMsg.appendDiagnostics("NODES", solver.getNodeCount(), rtime);
 			logMsg.appendDiagnostics("BACKTRACKS", solver.getBackTrackCount(), rtime);
 			logMsg.appendDiagnostics("RESTARTS", solver.getRestartCount(), rtime);
+			// TODO - Fail count - created 16 mai 2012 by A. Malapert
 			if(solver.isOptimizationSolver()) {
 				//best lower bound on the objective
 				logMsg.appendDiagnostic("LOWER_BOUND", solver.getSearchStrategy().getObjectiveManager().getObjectiveFloor());
@@ -428,6 +429,7 @@ public abstract class AbstractInstanceModel {
 		}
 	}
 
+	// TODO - improve formatting of numbers - created 16 mai 2012 by A. Malapert
 	protected void logOnConfiguration() {
 		logMsg.appendConfiguration( MessageFactory.getGeneralMsg(defaultConf, getClass().getSimpleName(), getInstanceName()));
 		logMsg.storeConfiguration( createTimeConfiguration() );

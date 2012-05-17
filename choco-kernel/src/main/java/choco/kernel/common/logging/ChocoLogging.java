@@ -106,7 +106,7 @@ public final class ChocoLogging {
         return Verbosity.DEFAULT;
     }
 
-	/**
+   	/**
 	 * maximal search depth for logging statements
 	 */
 	private static int LOGGING_MAX_DEPTH = 25;
@@ -114,7 +114,7 @@ public final class ChocoLogging {
 	/**
 	 * display information about search every x nodes.
 	 */
-	private static int EVERY_X_NODES = 1000;
+	private static int EVERY_X_NODES = 2000;
 
 	private ChocoLogging() {
 		super();
@@ -404,6 +404,7 @@ public final class ChocoLogging {
 			case VERBOSE: {
 				setLevel(Level.INFO, getEngineLogger(), getBranchingLogger());
 				setLevel(Level.CONFIG, getMainLogger(), getSearchLogger(), getTestLogger());
+				setLevel(Level.FINE, getSearchLogger());
 				break;
 			}
 			case SOLUTION: { 

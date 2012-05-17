@@ -144,7 +144,6 @@ public class SearchLimitManager implements GlobalSearchLimitManager {
 
 	@Override
 	public final void initialize() {
-		//starth = TimeCacheThread.currentTimeMillis;
 		starth = System.currentTimeMillis();
 		TimeCacheThread.currentTimeMillis = starth;
 		restartFromStrategyCount = 0;
@@ -165,7 +164,8 @@ public class SearchLimitManager implements GlobalSearchLimitManager {
 
 	@Override
 	public void endTreeSearch() {
-		timeCount = (int) (System.currentTimeMillis() - starth);
+		TimeCacheThread.currentTimeMillis=System.currentTimeMillis();
+		updateTimeCount();
 	}
 
 	@Override
