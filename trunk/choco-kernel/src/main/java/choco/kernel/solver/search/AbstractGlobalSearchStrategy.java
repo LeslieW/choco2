@@ -197,18 +197,18 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	}
 
 	public final void initialPropagation() {
+		long timer = -System.currentTimeMillis();
 		try {
 			newTreeSearch();
 			//initializeDegreeOfVariables();
-            long timer = -System.currentTimeMillis();
 			solver.propagate();
 			//System.out.println(solver.pretty());
             advancedInitialPropagation();
-            initialPropagation = System.currentTimeMillis() + timer;
             newFeasibleRootState();
 		} catch (ContradictionException e) {
 			solver.setFeasible(Boolean.FALSE);
 		}
+		initialPropagation = System.currentTimeMillis() + timer;
 	}
 
 
