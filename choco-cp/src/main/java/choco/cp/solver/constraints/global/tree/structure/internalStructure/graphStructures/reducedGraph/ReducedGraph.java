@@ -84,6 +84,7 @@ public class ReducedGraph {
         this.CFC = new Vector<IStateBitSet>(nbVertices);
         this.reducedGraph = new IStateBitSet[1];
         this.reducedGraph[0] = solver.getEnvironment().makeBitSet(nbVertices);
+        stronglyConnectedComponent();
     }
 
      /**
