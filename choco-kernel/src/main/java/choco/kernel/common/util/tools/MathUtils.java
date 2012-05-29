@@ -27,7 +27,6 @@
 
 package choco.kernel.common.util.tools;
 
-import java.awt.*;
 
 
 /**
@@ -154,18 +153,18 @@ public final class MathUtils {
 		}
 		return min;
 	}
-
-	public static Point bounds(int[] values) {
-		if(values == null || values.length == 0) {return new Point(Integer.MAX_VALUE, Integer.MIN_VALUE);}
-		else {
-			final Point b = new Point(values[0], values[0]);
-			for (int i = 1; i < values.length; i++) {
-				if(values[i] < b.x) {b.x= values[i];}
-				else if(values[i] > b.y) {b.y= values[i];}
-			}
-			return b;
-		}
-	}
+//
+//	public static Point bounds(int[] values) {
+//		if(values == null || values.length == 0) {return new Point(Integer.MAX_VALUE, Integer.MIN_VALUE);}
+//		else {
+//			final Point b = new Point(values[0], values[0]);
+//			for (int i = 1; i < values.length; i++) {
+//				if(values[i] < b.x) {b.x= values[i];}
+//				else if(values[i] > b.y) {b.y= values[i];}
+//			}
+//			return b;
+//		}
+//	}
 
 	public static int divFloor(int a, int b) {
 		if (b < 0) return divFloor(-a, -b);

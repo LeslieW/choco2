@@ -322,6 +322,8 @@ public class CPSolver implements Solver {
 
     protected long readingTime;
 
+    private ISolutionDisplay solutionDisplay;
+    
     public CPSolver() {
         this(new EnvironmentTrailing());
     }
@@ -425,7 +427,11 @@ public class CPSolver implements Solver {
         this.uniqueReading = uniqueReading;
     }
 
-    public final IndexFactory getIndexfactory() {
+    public final void setSolutionDisplay(ISolutionDisplay prettySolution) {
+		this.solutionDisplay = prettySolution;
+	}
+
+	public final IndexFactory getIndexfactory() {
         return indexfactory;
     }
 
@@ -619,6 +625,8 @@ public class CPSolver implements Solver {
     }
 
     public String solutionToString() {
+    	if(solutionDisplay == null) {
+    		//Default solution output
         StringBuffer buf = new StringBuffer(40);
         for (int i = 0; i < getNbIntVars(); i++) {
             IntDomainVar v = getIntVar(i);
@@ -643,6 +651,11 @@ public class CPSolver implements Solver {
             }
         }
         return new String(buf);
+    	} else {
+    		//Custom solution output
+    		return solutionDisplay.solutionToString();
+    	}
+    	
     }
 
     public void setRandomSelectors(long seed) {

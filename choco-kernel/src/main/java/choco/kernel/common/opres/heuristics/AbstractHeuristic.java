@@ -105,6 +105,11 @@ public abstract class AbstractHeuristic implements IHeuristic {
 	public boolean existsSolution() {
 		return hasSearched();
 	}
+
+	@Override
+	public String solutionToString() {
+		return null;
+	}
 	
 	
 }

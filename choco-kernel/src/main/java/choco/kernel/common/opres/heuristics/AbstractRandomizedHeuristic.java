@@ -170,7 +170,11 @@ public abstract class AbstractRandomizedHeuristic implements IHeuristic {
 		return solutionLogs.size()/3;
 	}
 
-
+	@Override
+	public String solutionToString() {
+		return null;
+	}
+	
 
 
 }
