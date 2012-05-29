@@ -66,6 +66,10 @@ public final class NoHeuristic implements IHeuristic {
 		return 0;
 	}
 	
+	@Override
+	public String solutionToString() {
+		return null;
+	}
 	
 	
 }

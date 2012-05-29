@@ -39,6 +39,7 @@ import choco.kernel.memory.IStateIntVector;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.set.AbstractLargeSetIntSConstraint;
+import choco.kernel.solver.search.ISolutionDisplay;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetVar;
 import gnu.trove.TIntArrayList;
@@ -57,7 +58,7 @@ import static choco.Options.*;
  * @since 5 déc. 2008 version 2.0.1</br>
  * @version 2.1.0</br>
  */
-public class PackSConstraint extends AbstractLargeSetIntSConstraint implements IPackSConstraint {
+public class PackSConstraint extends AbstractLargeSetIntSConstraint implements IPackSConstraint, ISolutionDisplay {
 
 	public final static StringMask ADDITIONAL_RULES = new StringMask(C_PACK_AR,1);
 	public final static StringMask DYNAMIC_LB = new StringMask(C_PACK_DLB,1 << 2);
@@ -488,7 +489,7 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 		return ivars[ivars.length-1].getVal() == nbb; //check number of bins
 	}
 
-	public final String getSolutionMsg() {
+	public final String solutionToString() {
 		StringBuilder b = new StringBuilder();
 		for (SetVar s : svars) {
 			int[] t= s.getValue();

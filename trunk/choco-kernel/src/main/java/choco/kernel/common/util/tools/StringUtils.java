@@ -54,6 +54,8 @@ import java.util.Iterator;
 public class StringUtils {
 	private StringUtils() {}
 
+	
+	
 	/**
 	 * Pads out a string upto padlen with pad chars
 	 *

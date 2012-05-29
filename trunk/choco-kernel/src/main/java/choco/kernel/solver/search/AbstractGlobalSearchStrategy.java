@@ -102,18 +102,18 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	public int baseWorld = 0;
 
 	public ShavingTools shavingTools;
-	
+
 	public GlobalSearchLimitManager limitManager;
 
 	public AbstractSearchLoop searchLoop;
 
-    protected long initialPropagation;
+	protected long initialPropagation;
 
 	protected AbstractGlobalSearchStrategy(Solver solver) {
 		super(solver);
 		traceStack = new IntBranchingTrace[solver.getNbIntVars() + solver.getNbSetVars()];
 		nextMove = INIT_SEARCH;
-        stopAtFirstSol = solver.getConfiguration().readBoolean(Configuration.STOP_AT_FIRST_SOLUTION);
+		stopAtFirstSol = solver.getConfiguration().readBoolean(Configuration.STOP_AT_FIRST_SOLUTION);
 	}
 
 
@@ -127,6 +127,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 			}
 		}
 	}
+
 
 	public IObjectiveManager getObjectiveManager() {
 		return null;
@@ -192,6 +193,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
     endTreeSearch();
   }*/
 
+
 	protected final boolean isFeasibleRootState() {
 		return solver.isFeasible() != Boolean.FALSE;
 	}
@@ -203,9 +205,13 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 			//initializeDegreeOfVariables();
 			solver.propagate();
 			//System.out.println(solver.pretty());
-            advancedInitialPropagation();
-            newFeasibleRootState();
+			advancedInitialPropagation();
+			newFeasibleRootState();
 		} catch (ContradictionException e) {
+			if (LOGGER.isLoggable(Level.FINE) && 
+					e.getContradictionCause() != null ) {
+				LOGGER.log(Level.FINE, "- Initial Propagation: Contradiction due to {0}", e.getContradictionCause());
+			}
 			solver.setFeasible(Boolean.FALSE);
 		}
 		initialPropagation = System.currentTimeMillis() + timer;
@@ -267,7 +273,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 		endTreeSearch();
 	}
 
-	
+
 	/**
 	 * called before a new search tree is explored
 	 * @throws choco.kernel.solver.ContradictionException
@@ -290,7 +296,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 		solver.worldPush();
 	}
 
-	
+
 	public void endTreeSearch() {
 		if ( ! solutionPool.isEmpty() && (!stopAtFirstSol)) {
 			solver.worldPopUntil(baseWorld);
@@ -343,10 +349,10 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 		super.recordSolution();
 		if (LOGGER.isLoggable(Level.FINE)) {
 			LOGGER.log(Level.FINE, "- Solution #{0} found. {1}.",
-					new Object[]{getSolutionCount(),partialRuntimeStatistics(true)}
-			);	
+					new Object[]{getSolutionCount(),partialRuntimeStatistics(false)}
+					);	
 			if (LOGGER.isLoggable(Level.FINER)) {
-				LOGGER.log(Level.FINER,"  {0}", solver.solutionToString());
+				LOGGER.log(Level.FINER,"{0}", solver.solutionToString());
 			}
 		}
 	}

@@ -30,10 +30,11 @@ package choco.kernel.common.opres.heuristics;
 import java.util.logging.Logger;
 
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.solver.search.ISolutionDisplay;
 import choco.kernel.solver.search.measure.IOptimizationMeasures;
 import choco.kernel.solver.search.measure.ISolutionMeasures;
 
-public interface IHeuristic extends ISolutionMeasures, IOptimizationMeasures {
+public interface IHeuristic extends ISolutionMeasures, IOptimizationMeasures, ISolutionDisplay {
 
 	public final static Logger LOGGER = ChocoLogging.makeUserLogger("heuristic");
 	

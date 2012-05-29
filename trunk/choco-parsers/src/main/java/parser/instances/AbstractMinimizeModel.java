@@ -189,6 +189,17 @@ public abstract class AbstractMinimizeModel extends AbstractInstanceModel {
 		}
 	}
 
+	
+	@Override
+	public String getValuesMessage() {
+		String str = super.getValuesMessage();
+		if(str == null && heuristics.existsSolution()) {
+			str = heuristics.solutionToString();
+		}
+		return str;
+	}
+
+
 	@Override
 	public void makeReports() {
 		super.makeReports();

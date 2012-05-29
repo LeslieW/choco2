@@ -49,6 +49,7 @@ import choco.kernel.solver.constraints.integer.extension.LargeRelation;
 import choco.kernel.solver.goals.Goal;
 import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import choco.kernel.solver.search.ISolutionDisplay;
 import choco.kernel.solver.search.ValIterator;
 import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.search.checker.SolutionCheckerEngine;
@@ -74,7 +75,7 @@ import java.util.logging.Logger;
  * Time: 16:43:08
  * Interface for Solver class, declare main expected methods.
  */
-public interface Solver extends IMeasures, IPretty {
+public interface Solver extends ISolutionDisplay, IMeasures, IPretty {
 
 	public static final SolutionCheckerEngine DEFAULT_SOLUTION_CHECKER = new SolutionCheckerEngine();
 
@@ -342,8 +343,6 @@ public interface Solver extends IMeasures, IPretty {
 
 	public abstract void postCut(SConstraint c);
 
-	public String solutionToString();
-
 	/**
 	 * <i>Network management:</i>
 	 * Retrieve a variable by its index (all integer variables of
@@ -599,7 +598,12 @@ public interface Solver extends IMeasures, IPretty {
 	 */
 	public Solution recordSolution();
 
-
+	/**
+	 * Set Custom pretty print of solutions
+	 * @param solutionDisplay the solution printer
+	 */
+	void setSolutionDisplay(ISolutionDisplay solutionDisplay);
+	
 	/**
 	 * Restore a solution by setting value to every variable
 	 * @param sol solution to restore

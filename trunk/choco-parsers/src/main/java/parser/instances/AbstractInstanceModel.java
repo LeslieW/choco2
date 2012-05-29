@@ -56,6 +56,7 @@ import choco.kernel.model.Model;
 import choco.kernel.solver.Configuration;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.search.ISolutionDisplay;
 import choco.kernel.solver.search.checker.SolutionCheckerException;
 import choco.kernel.solver.search.measure.IMeasures;
 import db.DbManager;
@@ -456,7 +457,10 @@ public abstract class AbstractInstanceModel {
 			//solution v
 			if( isFeasible == Boolean.TRUE) {
 				//display best solution
-				logMsg.appendValues(getValuesMessage());
+				final String values = getValuesMessage();
+				if(values != null) {
+					logMsg.appendValues(values.replaceAll("\n", "\nv "));
+				}
 			}
 			//diagnostics and configuration d/c 
 			logOnDiagnostics();
@@ -505,21 +509,8 @@ public abstract class AbstractInstanceModel {
 
 	public String getValuesMessage() {
 		if( solver != null && solver.existsSolution()) return solver.solutionToString();
-		else return "";
+		else return null;
 	}
-
-	//	protected String createInstanceConfiguration() {
-	//		final StringBuilder b = new StringBuilder();
-	//		if( doMaximize == Boolean.TRUE) b.append("MAXIMIZE    ");	
-	//		else if( doMaximize == Boolean.FALSE) b.append("MINIMIZE    ");
-	//		else b.append("CSP    ");
-	//
-	//		b.append(parser.getInstanceFile().getName()).append("    ");
-	//		b.append(getSeed()).append(" SEED");
-	//		return b.toString();
-	//	}
-
-
 
 	private String createTimeConfiguration() {
 		final StringBuilder b = new StringBuilder(128);
