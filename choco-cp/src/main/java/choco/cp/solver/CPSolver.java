@@ -547,6 +547,10 @@ public class CPSolver implements Solver {
     }
 
     public void addConstraint(Constraint... tabic) {
+        addConstraint(false, tabic);
+    }
+
+    public void addConstraint(boolean dynamic, Constraint... tabic) {
         Constraint ic;
         for (Constraint aTabic : tabic) {
             ic = aTabic;
@@ -560,7 +564,7 @@ public class CPSolver implements Solver {
             }
             ic.findManager(model.properties);
             mod2sol.readConstraint(ic, model
-                    .getDefaultExpressionDecomposition());
+                    .getDefaultExpressionDecomposition(), dynamic);
         }
     }
 
