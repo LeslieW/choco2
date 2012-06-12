@@ -310,11 +310,11 @@ public class CPModelToCPSolver {
 		 }
 	 }
 
-	 public void readConstraint(final Constraint ic, final Boolean decomp) {
+	 public void readConstraint(final Constraint ic, final Boolean decomp, boolean dynamic) {
 		 if (!cpsolver.mapconstraints.containsKey(ic.getIndex())) {
 			 final SConstraint c = readModelConstraint(ic, decomp);
 			 cpsolver.mapconstraints.put(ic.getIndex(), c);
-			 cpsolver.post(c);
+			 cpsolver.post(c, dynamic);
 		 }
 	 }
 
