@@ -27,7 +27,6 @@
 
 package choco;
 
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
@@ -38,12 +37,14 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.propagation.Propagator;
 import org.junit.After;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by IntelliJ IDEA.
@@ -94,7 +95,7 @@ public class ChocoSolveTest {
         m.addConstraint(A);
         m.addConstraint(B);
         s.read(m);
-        Ap = (Propagator)s.getCstr(A);
+        Ap = (Propagator) s.getCstr(A);
         Ap.setPassive();
         Ap.setActive();
         try {
@@ -167,5 +168,20 @@ public class ChocoSolveTest {
         LOGGER.info("Z : " + s.getVar(z).getInf() + " - > " + s.getVar(z).getSup());
         assertEquals(1, s.getVar(z).getInf());
         assertEquals(4, s.getVar(z).getSup());
+    }
+
+    @Test
+    public void testDiego() {
+        int n = 2;
+        CPModel m = new CPModel();
+        CPSolver s = new CPSolver();
+        IntegerVariable[] UP2 = new IntegerVariable[n];
+        for (int i = 0; i < n; i++) {
+            UP2[i] = Choco.makeIntVar("up2_" + i, 0, 1);
+            m.addVariable(UP2[i]);
+        }
+        m.addConstraint(eq(sum(UP2), 1));
+        s.read(m);
+        s.addConstraint(eq(sum(UP2), 1));
     }
 }
