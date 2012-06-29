@@ -323,7 +323,7 @@ public class CPSolver implements Solver {
     protected long readingTime;
 
     private ISolutionDisplay solutionDisplay;
-    
+
     public CPSolver() {
         this(new EnvironmentTrailing());
     }
@@ -335,7 +335,7 @@ public class CPSolver implements Solver {
     public CPSolver(Configuration configuration) {
         this(new EnvironmentTrailing(), configuration);
     }
-    
+
 
     public CPSolver(IEnvironment env, Configuration configuration) {
         this.environment = env;
@@ -428,10 +428,10 @@ public class CPSolver implements Solver {
     }
 
     public final void setSolutionDisplay(ISolutionDisplay prettySolution) {
-		this.solutionDisplay = prettySolution;
-	}
+        this.solutionDisplay = prettySolution;
+    }
 
-	public final IndexFactory getIndexfactory() {
+    public final IndexFactory getIndexfactory() {
         return indexfactory;
     }
 
@@ -558,13 +558,37 @@ public class CPSolver implements Solver {
             while (it.hasNext()) {
                 Variable v = it.next();
                 if (!mapvariables.containsKey(v.getIndex())) {
-                    v.findManager(model.properties);
-                    mod2sol.readModelVariable(v);
+                    _readVariable(v);
                 }
             }
             ic.findManager(model.properties);
             mod2sol.readConstraint(ic, model
                     .getDefaultExpressionDecomposition(), dynamic);
+        }
+    }
+
+    private void _readVariable(Variable v) {
+        v.findManager(model.properties);
+        switch (v.getVariableType()) {
+            case INTEGER:
+            case SET:
+            case REAL:
+            case CONSTANT_INTEGER:
+            case CONSTANT_DOUBLE:
+            case CONSTANT_SET:
+                mod2sol.readModelVariable(v);
+                break;
+            case INTEGER_EXPRESSION:
+            case SET_EXPRESSION:
+            case REAL_EXPRESSION:
+            case MULTIPLE_VARIABLES:
+                final Iterator<Variable> it = v.getVariableIterator();
+                while (it.hasNext()) {
+                    _readVariable(it.next());
+                }
+                break;
+            default:
+                throw new SolverException("unknown variable type :" + v.getVariableType());
         }
     }
 
@@ -629,37 +653,37 @@ public class CPSolver implements Solver {
     }
 
     public String solutionToString() {
-    	if(solutionDisplay == null) {
-    		//Default solution output
-        StringBuffer buf = new StringBuffer(40);
-        for (int i = 0; i < getNbIntVars(); i++) {
-            IntDomainVar v = getIntVar(i);
-            if (v.isInstantiated()) {
-                buf.append(v.toString());
-                buf.append(", ");
+        if (solutionDisplay == null) {
+            //Default solution output
+            StringBuffer buf = new StringBuffer(40);
+            for (int i = 0; i < getNbIntVars(); i++) {
+                IntDomainVar v = getIntVar(i);
+                if (v.isInstantiated()) {
+                    buf.append(v.toString());
+                    buf.append(", ");
+                }
             }
-        }
-        for (int j = 0; j < getNbRealVars(); j++) {
-            RealVar v = getRealVar(j);
-            if (v.isInstantiated()) {
-                buf.append(v.toString());
-                buf.append(", ");
+            for (int j = 0; j < getNbRealVars(); j++) {
+                RealVar v = getRealVar(j);
+                if (v.isInstantiated()) {
+                    buf.append(v.toString());
+                    buf.append(", ");
+                }
             }
+
+            for (int k = 0; k < getNbSetVars(); k++) {
+                SetVar v = getSetVar(k);
+                if (v.isInstantiated()) {
+                    buf.append(v.toString());
+                    buf.append(", ");
+                }
+            }
+            return new String(buf);
+        } else {
+            //Custom solution output
+            return solutionDisplay.solutionToString();
         }
 
-        for (int k = 0; k < getNbSetVars(); k++) {
-            SetVar v = getSetVar(k);
-            if (v.isInstantiated()) {
-                buf.append(v.toString());
-                buf.append(", ");
-            }
-        }
-        return new String(buf);
-    	} else {
-    		//Custom solution output
-    		return solutionDisplay.solutionToString();
-    	}
-    	
     }
 
     public void setRandomSelectors(long seed) {
@@ -1633,13 +1657,13 @@ public class CPSolver implements Solver {
         return intVars.indexOf(c);
     }
 
-    
-    @Override
-	public int getNbVars() {
-    	return getNbIntVars() + getNbRealVars() + getNbSetVars() + getNbTaskVars();
-	}
 
-	/**
+    @Override
+    public int getNbVars() {
+        return getNbIntVars() + getNbRealVars() + getNbSetVars() + getNbTaskVars();
+    }
+
+    /**
      * retrieving the total number of variables
      *
      * @return the total number of variables in the model
@@ -1722,13 +1746,13 @@ public class CPSolver implements Solver {
         return taskVars.getQuick(i);
     }
 
-    
-    @Override
-	public int getNbConstraints() {
-		return getNbIntConstraints() + (nogoodStore == null ? 0 : nogoodStore.getNbClause());
-	}
 
-	/**
+    @Override
+    public int getNbConstraints() {
+        return getNbIntConstraints() + (nogoodStore == null ? 0 : nogoodStore.getNbClause());
+    }
+
+    /**
      * retrieving the total number of constraints over integers
      *
      * @return the total number of constraints over integers in the model
@@ -1931,10 +1955,9 @@ public class CPSolver implements Solver {
                 } else {
                     this.post(FALSE);
                 }
-            } else
-            if(canBeDecomp){
+            } else if (canBeDecomp) {
                 this.post(exp.getDecomposition(this));
-            }else{
+            } else {
                 this.post(exp.getExtensionnal(this));
             }
     }
@@ -2520,7 +2543,7 @@ public class CPSolver implements Solver {
     }
 
     public IntDomainVar createNotBooleanVar(String name, IntDomainVar variable) {
-        IntDomainVar v = new BoolVarNot(this, name, (BooleanVarImpl)variable);
+        IntDomainVar v = new BoolVarNot(this, name, (BooleanVarImpl) variable);
         intVars.add(v);
         intDecisionVars.add(v);
         return v;
