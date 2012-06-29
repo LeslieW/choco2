@@ -4377,12 +4377,6 @@ public class Choco {
      * @return a constraint
      */
     public static Constraint equation(int val, IntegerVariable[] vars, int[] coeffs) {
-        if (val < 0)
-            throw new ModelException("equation does not support negative value for val :" + val + "\nConsider using scalar constraints.");
-        for (int i = 0; i < coeffs.length; i++) {
-            if (coeffs[i] < 0)
-                throw new ModelException("equation does not support negative coefficient.\nConsider using scalar constraints.");
-        }
         return new ComponentConstraint(ConstraintType.REGULAR,
                 new int[][]{coeffs, new int[]{val}}, vars);
     }
@@ -4453,12 +4447,12 @@ public class Choco {
      */
     @Deprecated
     public static Constraint equation(IntegerVariable[] vars, int[] coeffs, int val) {
-        if (val < 0)
+        /*if (val < 0)
             throw new ModelException("equation does not support negative value for val :" + val + "\nConsider using scalar constraints.");
         for (int i = 0; i < coeffs.length; i++) {
             if (coeffs[i] < 0)
                 throw new ModelException("equation does not support negative coefficient.\nConsider using scalar constraints.");
-        }
+        }*/
         return new ComponentConstraint(ConstraintType.REGULAR,
                 new int[][]{coeffs, new int[]{val}}, vars);
     }
