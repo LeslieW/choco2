@@ -31,9 +31,12 @@ import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.Model;
+import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
+import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
+import org.junit.Assert;
 import org.junit.Test;
 
 import static choco.Choco.*;
@@ -191,5 +194,183 @@ public class ReifiedSetSomeTest {
         Solver s = new CPSolver();
         s.read(model);
         s.solve();
+    }
+
+    @Test
+    public void test9() {
+        Model model = new CPModel();
+        Solver solver = new CPSolver();
+
+        SetVariable mySetVar = Choco.makeSetVar("mySetVar", 0, 2);
+        model.addVariable(mySetVar);
+        IntegerVariable[] vars = new IntegerVariable[5];
+        for (int i = 0; i < 5; i++) {
+            vars[i] = Choco.makeIntVar("v_" + i, 0, 2);
+        }
+        model.addVariables(vars);
+        Constraint c1 = Choco.leqCard(mySetVar, 2);
+        Constraint c3 = Choco.eq(0, vars[1]);
+        Constraint c4 = Choco.eq(0, vars[0]);
+        Constraint c5 = Choco.and(c3, c4);
+        model.addConstraint(Choco.implies(c1, c5));
+
+        solver.read(model);
+        try {
+            solver.propagate();
+        } catch (ContradictionException e) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void test10() {
+        Model model = new CPModel();
+        Solver solver = new CPSolver();
+
+        SetVariable mySetVar = Choco.makeSetVar("mySetVar", 0, 2);
+        model.addVariable(mySetVar);
+        IntegerVariable[] vars = new IntegerVariable[5];
+        for (int i = 0; i < 5; i++) {
+            vars[i] = Choco.makeIntVar("v_" + i, 0, 2);
+        }
+        model.addVariables(vars);
+        Constraint c1 = Choco.leqCard(mySetVar, 2);
+        Constraint c3 = Choco.eq(0, vars[1]);
+        Constraint c4 = Choco.eq(0, vars[0]);
+        Constraint c7 = Choco.implies(c1, c3);
+        Constraint c8 = Choco.implies(c1, c4);
+
+        model.addConstraint(Choco.and(c7, c8));
+
+        solver.read(model);
+        try {
+            solver.propagate();
+        } catch (ContradictionException e) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void test11() {
+        Model model = new CPModel();
+        Solver solver = new CPSolver();
+
+        SetVariable mySetVar = Choco.makeSetVar("mySetVar", 0, 2);
+        model.addVariable(mySetVar);
+        IntegerVariable[] vars = new IntegerVariable[5];
+        for (int i = 0; i < 5; i++) {
+            vars[i] = Choco.makeIntVar("v_" + i, 0, 2);
+        }
+        model.addVariables(vars);
+        Constraint c1 = Choco.leqCard(mySetVar, 2);
+        Constraint c3 = Choco.eq(0, vars[1]);
+        Constraint c4 = Choco.eq(0, vars[0]);
+        Constraint c7 = Choco.implies(c1, c3);
+        Constraint c8 = Choco.implies(c1, c4);
+
+        model.addConstraint(c7);
+        model.addConstraint(c8);
+
+        solver.read(model);
+        try {
+            solver.propagate();
+        } catch (ContradictionException e) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void test12() {
+        Model model = new CPModel();
+        Solver solver = new CPSolver();
+
+        SetVariable mySetVar = Choco.makeSetVar("mySetVar", 0, 2);
+        model.addVariable(mySetVar);
+        IntegerVariable[] vars = new IntegerVariable[5];
+        for (int i = 0; i < 5; i++) {
+            vars[i] = Choco.makeIntVar("v_" + i, 0, 2);
+        }
+        model.addVariables(vars);
+        Constraint c1 = Choco.leqCard(mySetVar, 2);
+//        Constraint notC1 = Choco.not(c1);
+//        Constraint c2 = Choco.notMember(0, mySetVar);
+        Constraint c3 = Choco.eq(0, vars[1]);
+        Constraint c4 = Choco.eq(0, vars[0]);
+        Constraint c6 = Choco.or(c3, c4);
+
+        /**
+         * Constraint: c1 => c6
+         *
+         * Modelization 1
+         */
+        model.addConstraint(Choco.implies(c1, c6));
+
+        solver.read(model);
+        try {
+            solver.propagate();
+        } catch (ContradictionException e) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void test13() {
+        Model model = new CPModel();
+        Solver solver = new CPSolver();
+
+        SetVariable mySetVar = Choco.makeSetVar("mySetVar", 0, 2);
+        model.addVariable(mySetVar);
+        IntegerVariable[] vars = new IntegerVariable[5];
+        for (int i = 0; i < 5; i++) {
+            vars[i] = Choco.makeIntVar("v_" + i, 0, 2);
+        }
+        model.addVariables(vars);
+        Constraint c1 = Choco.leqCard(mySetVar, 2);
+        Constraint notC1 = Choco.not(c1);
+        Constraint c3 = Choco.eq(0, vars[1]);
+        Constraint c4 = Choco.eq(0, vars[0]);
+        Constraint c6 = Choco.or(c3, c4);
+
+        model.addConstraint(Choco.or(notC1, c6));
+
+        solver.read(model);
+        try {
+            solver.propagate();
+        } catch (ContradictionException e) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void test14() {
+        Model model = new CPModel();
+        Solver solver = new CPSolver();
+
+        SetVariable mySetVar = Choco.makeSetVar("mySetVar", 0, 2);
+        model.addVariable(mySetVar);
+        IntegerVariable[] vars = new IntegerVariable[5];
+        for (int i = 0; i < 5; i++) {
+            vars[i] = Choco.makeIntVar("v_" + i, 0, 2);
+        }
+        model.addVariables(vars);
+        Constraint c1 = Choco.leqCard(mySetVar, 2);
+        Constraint notC1 = Choco.not(c1);
+        Constraint c3 = Choco.eq(0, vars[1]);
+        Constraint c4 = Choco.eq(0, vars[0]);
+
+        /**
+         * Constraint: c1 => c6
+         *
+         * Moselization 3
+         */
+        model.addConstraint(Choco.or(notC1, c3, c4));
+
+        solver.read(model);
+        try {
+            solver.propagate();
+        } catch (ContradictionException e) {
+
+            Assert.fail();
+        }
     }
 }

@@ -66,7 +66,7 @@ import static choco.Choco.*;
 public class Code4Doc2 {
 
     public static void main(String[] args) {
-        new Code4Doc2().ccumulative();
+        new Code4Doc2().cequation();
     }
 
     public void cabs() {
@@ -493,7 +493,7 @@ public class Code4Doc2 {
         int charge = 10;
         Random rand = new Random();
         for (int i = 0; i < coefs.length; i++) {
-            coefs[i] = rand.nextInt(10);
+            coefs[i] = -5 + rand.nextInt(10);
         }
         Constraint knapsack = equation(charge, bvars, coefs);
         m.addConstraint(knapsack);

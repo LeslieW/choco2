@@ -36,10 +36,7 @@ import choco.cp.solver.constraints.reified.ExpressionSConstraint;
 import choco.cp.solver.constraints.reified.ReifiedFactory;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.tools.StringUtils;
-import choco.kernel.model.constraints.ComponentConstraint;
-import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.constraints.ConstraintManager;
-import choco.kernel.model.constraints.MetaConstraint;
+import choco.kernel.model.constraints.*;
 import choco.kernel.model.variables.MultipleVariables;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.VariableManager;
@@ -328,7 +325,7 @@ public class CPModelToCPSolver {
 
 	 public SConstraint[] makeSConstraintAndOpposite(final Constraint ic, final Boolean decomp) {
 		 SConstraint[] cs = new SConstraint[2];
-		 ComponentConstraint cc = (ComponentConstraint) ic;
+		 AbstractConstraint cc = (AbstractConstraint) ic;
 		 ConstraintManager cm = cc.getConstraintManager();
 		 try {
 			 cs = cm.makeConstraintAndOpposite(cpsolver, cc.getVariables(), cc.getParameters(), cc.getOptions());
