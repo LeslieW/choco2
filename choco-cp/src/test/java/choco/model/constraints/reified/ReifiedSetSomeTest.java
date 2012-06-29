@@ -176,4 +176,20 @@ public class ReifiedSetSomeTest {
         s.read(m);
         s.solve();
     }
+
+    @Test
+    public void test8() {
+        Model model = new CPModel();
+        model.setDefaultExpressionDecomposition(true);
+        SetVariable Z = Choco.makeSetVar("Z", 1, 6);
+        Z.setCard(Choco.makeIntVar("cardZ", 0, 6));
+        SetVariable X = Choco.makeSetVar("X", 1, 3);
+        X.setCard(Choco.makeIntVar("cardX", 0, 3));
+
+        IntegerVariable v1 = Choco.makeIntVar("v1", 0, 1);
+        model.addConstraint(Choco.or(Choco.eq(v1, 1), Choco.isIncluded(X, Z)));
+        Solver s = new CPSolver();
+        s.read(model);
+        s.solve();
+    }
 }
