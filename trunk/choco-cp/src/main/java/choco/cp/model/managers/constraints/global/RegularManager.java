@@ -40,6 +40,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -98,67 +99,108 @@ public final class RegularManager extends IntConstraintManager {
      * @return
      */
     public SConstraint knapsack(Solver s, IntegerVariable[] vars, int goal, int[] coeffs) {
-        int[] temp = new int[coeffs.length + 1];
-        System.arraycopy(coeffs, 0, temp, 1, coeffs.length);
-        temp[0] = 0;
-        coeffs = temp;
-        int[][] P = new int[coeffs.length][goal + 1];
-        int[][] G = new int[coeffs.length][goal + 1]; // table containing minimum solution paths
+        boolean tuples = false;
+        int n = coeffs.length;
+        // first check bounds, coefficients and goal
+        if (goal < 0) {
+            tuples = true;
+        }
+        for (int i = 0; !tuples && i < n; i++) {
+            if (coeffs[i] < 0 || vars[i].getLowB() * coeffs[i] < 0 || vars[i].getUppB() * coeffs[i] < 0) {
+                tuples = true;
+            }
+        }
 
-        for (int i = 0; i < P.length; ++i)
-            for (int j = 0; j < P[0].length; ++j)
-                P[i][j] = G[i][j] = 0;
+        if (tuples) {
 
-        P[0][0] = 1;
+            List<int[]> ts = new ArrayList<int[]>();
+            explore(0, 0, new int[vars.length], vars, coeffs, goal, ts);
+            if (ts.size() == 0) {
+                return Constant.FALSE;// not satisfiable
+            }
+            DFA dfa = new DFA(ts);
+            return new Regular(dfa, s.getVar(vars), s.getEnvironment());
+        } else {
 
-        for (int i = 1; i < P.length; ++i)
-            for (int b = 0; b < goal + 1; ++b)
-                if (P[i - 1][b] == 1) {
-                    DisposableIntIterator it = vars[i - 1].getDomainIterator();
-                    while (it.hasNext()) {
-                        int value = it.next();
-                        //for (int x = bools[i - 1].getLowB(); x <= bools[i - 1].getUppB(); ++x)
-                        if (b + coeffs[i] * value <= goal)
-                            P[i][b + coeffs[i] * value] = 1;
-                    }
-                    it.dispose();
-                }
+            int[] temp = new int[coeffs.length + 1];
+            System.arraycopy(coeffs, 0, temp, 1, coeffs.length);
 
-        boolean sat = false;
-        for (int i = goal; i >= goal; --i)
-            sat |= (P[P.length - 1][goal] == 1);
 
-        G[G.length - 1][goal] = 1;
-        if (sat) {
-            for (int i = G.length - 2; i >= 0; --i)
-                for (int b = 0; b < G[0].length; b++)
-                    if (G[i + 1][b] == 1) {
-                        DisposableIntIterator it = vars[i].getDomainIterator();
+            temp[0] = 0;
+            coeffs = temp;
+            int[][] P = new int[coeffs.length][goal + 1];
+            int[][] G = new int[coeffs.length][goal + 1]; // table containing minimum solution paths
+
+            for (int i = 0; i < P.length; ++i)
+                for (int j = 0; j < P[0].length; ++j)
+                    P[i][j] = G[i][j] = 0;
+
+            P[0][0] = 1;
+
+            for (int i = 1; i < P.length; ++i)
+                for (int b = 0; b < goal + 1; ++b)
+                    if (P[i - 1][b] == 1) {
+                        DisposableIntIterator it = vars[i - 1].getDomainIterator();
                         while (it.hasNext()) {
-                            int x = it.next();
-                            //for (int x = bools[i].getLowB(); x <= bools[i].getUppB(); ++x)
-                            if (b - coeffs[i + 1] * x >= 0 && P[i][b - coeffs[i + 1] * x] == 1)
-                                G[i][b - coeffs[i + 1] * x] = 1;
+                            int value = it.next();
+                            //for (int x = bools[i - 1].getLowB(); x <= bools[i - 1].getUppB(); ++x)
+                            if (b + coeffs[i] * value <= goal)
+                                P[i][b + coeffs[i] * value] = 1;
                         }
                         it.dispose();
                     }
 
-            List<Transition> t = new LinkedList<Transition>();
-            List<Integer> ints = new LinkedList<Integer>();
-            nID = 0;
-            int[][] labels = new int[coeffs.length][goal + 1];
-            for (int i = 0; i < labels.length; ++i) {
-                Arrays.fill(labels[i], -1);
+            boolean sat = false;
+            for (int i = goal; i >= goal; --i)
+                sat |= (P[P.length - 1][goal] == 1);
+
+            G[G.length - 1][goal] = 1;
+            if (sat) {
+                for (int i = G.length - 2; i >= 0; --i)
+                    for (int b = 0; b < G[0].length; b++)
+                        if (G[i + 1][b] == 1) {
+                            DisposableIntIterator it = vars[i].getDomainIterator();
+                            while (it.hasNext()) {
+                                int x = it.next();
+                                //for (int x = bools[i].getLowB(); x <= bools[i].getUppB(); ++x)
+                                if (b - coeffs[i + 1] * x >= 0 && P[i][b - coeffs[i + 1] * x] == 1)
+                                    G[i][b - coeffs[i + 1] * x] = 1;
+                            }
+                            it.dispose();
+                        }
+
+                List<Transition> t = new LinkedList<Transition>();
+                List<Integer> ints = new LinkedList<Integer>();
+                nID = 0;
+                int[][] labels = new int[coeffs.length][goal + 1];
+                for (int i = 0; i < labels.length; ++i) {
+                    Arrays.fill(labels[i], -1);
+                }
+                generateTransitionList(0, 0, t, labels, coeffs, G, vars);
+                for (int i = 0; i <= 0; ++i) {
+                    ints.add(G.length + i - 1);
+                }
+                DFA dfa = new DFA(t, ints, ints.get(0));
+                return new Regular(dfa, s.getVar(vars), s.getEnvironment());
+            } else {
+                return Constant.FALSE;// not satisfiable
             }
-            generateTransitionList(0, 0, t, labels, coeffs, G, vars);
-            for (int i = 0; i <= 0; ++i) {
-                ints.add(G.length + i - 1);
-            }
-            DFA dfa = new DFA(t, ints, ints.get(0));
-            return new Regular(dfa, s.getVar(vars), s.getEnvironment());
-        } else {
-            return Constant.FALSE;// not satisfiable
         }
+    }
+
+    private void explore(int vidx, int sum, int[] path, IntegerVariable[] vars, int[] coeffs, int goal, List<int[]> ts) {
+        if (vidx == vars.length) {
+            if (sum == goal) {
+                ts.add(path.clone());
+            }
+            return;
+        }
+        DisposableIntIterator it = vars[vidx].getDomainIterator();
+        while (it.hasNext()) {
+            path[vidx] = it.next();
+            explore(vidx + 1, sum + coeffs[vidx] * path[vidx], path, vars, coeffs, goal, ts);
+        }
+        it.dispose();
     }
 
     /**
