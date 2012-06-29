@@ -1,5 +1,5 @@
 /**
- *  Copyright (c) 1999-2010, Ecole des Mines de Nantes
+ *  Copyright (c) 1999-2011, Ecole des Mines de Nantes
  *  All rights reserved.
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are met:
@@ -24,95 +24,72 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package samples.tutorials;
 
-package samples.tutorials.puzzles;
-
+import choco.Choco;
+import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.branching.AssignOrForbidIntVarVal;
-import choco.cp.solver.search.integer.valselector.MaxVal;
-import choco.cp.solver.search.integer.varselector.StaticVarOrder;
+import choco.cp.solver.search.integer.valselector.MinVal;
+import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import org.kohsuke.args4j.Option;
-import samples.tutorials.PatternExample;
 
-import java.text.MessageFormat;
-
-import static choco.Choco.*;
+import static choco.Choco.makeIntVar;
+import static choco.Choco.makeIntVarArray;
 
 /**
- * The Magic Serie problem
+ * <br/>
+ *
+ * @author Charles Prud'homme
+ * @since 25/05/12
  */
-public class MagicSerie extends PatternExample {
+public class AllIntervalSeries extends PatternExample {
 
     @Option(name = "-n", usage = "Order of the magic serie (default : 5)", required = false)
-    public int n = 1000;
+    public int n = 500;
 
     protected IntegerVariable[] vars;
-
-
-    @Override
-    public void printDescription() {
-
-        LOGGER.info("A magic sequence of length n is a sequence of integers x0 . . xn-1 between 0 and n-1, ");
-        LOGGER.info("such that for all i in 0 to n-1, the number i occurs exactly xi times in the sequence.");
-        LOGGER.info("(http://www.csplib.org/)");
-        LOGGER.info(MessageFormat.format("Here n = {0}\n\n", n));
-    }
+    protected IntegerVariable[] dist;
 
     @Override
     public void buildModel() {
         model = new CPModel();
         vars = new IntegerVariable[n];
         for (int i = 0; i < n; i++) {
-            vars[i] = makeIntVar("" + i, 0, n - 1, choco.Options.V_BOUND);
+            vars[i] = makeIntVar("" + i, 0, n - 1, Options.V_ENUM);
         }
-        for (int i = 0; i < n; i++) {
-            model.addConstraint(occurrence(vars[i], vars, i));
+        dist = makeIntVarArray("dist", n - 1, 1, n - 1, Options.V_ENUM);
+        for (int i = 0; i < n - 1; i++) {
+            model.addConstraint(Choco.distanceEQ(vars[i + 1], vars[i], dist[i]));
         }
-        model.addConstraint(eq(sum(vars), n));     // contrainte redondante 1
-        int[] coeff2 = new int[n - 1];
-        IntegerVariable[] vs2 = new IntegerVariable[n - 1];
-        for (int i = 1; i < n; i++) {
-            coeff2[i - 1] = i;
-            vs2[i - 1] = vars[i];
-        }
-        model.addConstraint(eq(scalar(coeff2, vs2), n)); // contrainte redondante 2
+        model.addConstraint(Choco.allDifferent(Options.C_ALLDIFFERENT_BC,vars));
+        model.addConstraint(Choco.allDifferent(Options.C_ALLDIFFERENT_BC,dist));
 
+        model.addConstraint(Choco.gt(vars[1], vars[0]));
+        model.addConstraint(Choco.gt(dist[0], dist[n - 2]));
     }
 
     @Override
     public void buildSolver() {
         solver = new CPSolver();
         solver.read(model);
-        solver.addGoal(new AssignOrForbidIntVarVal(new StaticVarOrder(solver, solver.getVar(vars)), new MaxVal()));
-        ChocoLogging.toSearch();
-    }
-
-    @Override
-    public void prettyOut() {
-        /*if (LOGGER.isLoggable(Level.INFO)) {
-            StringBuilder st = new StringBuilder();
-            // Print of the solution
-            if (solver.existsSolution()) {
-                for (int i = 0; i < n; i++) {
-                    st.append(MessageFormat.format("{0} ", solver.getVar(vars[i]).getVal()));
-                }
-            } else st.append("\nno solution to display!");
-            LOGGER.info(st.toString());
-        }*/
+        solver.addGoal(new AssignOrForbidIntVarVal(new MinDomain(solver, solver.getVar(vars)), new MinVal()));
     }
 
     @Override
     public void solve() {
+        ChocoLogging.toVerbose();
         solver.solve();
     }
 
-
-    public static void main(String[] args) {
-        new MagicSerie().execute(args);
+    @Override
+    public void prettyOut() {
     }
 
+    public static void main(String[] args) {
+        for(int i = 0 ; i< 10;i++)new AllIntervalSeries().execute(args);
+    }
 }
-

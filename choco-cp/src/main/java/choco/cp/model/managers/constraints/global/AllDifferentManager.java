@@ -31,6 +31,7 @@ import choco.Options;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.BoundAllDiff;
+import choco.cp.solver.constraints.global.PropAllDiffBC;
 import choco.cp.solver.constraints.global.matching.AllDifferent;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.model.ModelException;
@@ -63,7 +64,7 @@ public final class AllDifferentManager extends IntConstraintManager {
             if (options.contains(Options.C_ALLDIFFERENT_AC))
                 return new AllDifferent(variables, solver.getEnvironment());
             if (options.contains(Options.C_ALLDIFFERENT_BC))
-                return new BoundAllDiff(variables, true);
+                return new PropAllDiffBC(variables, solver);
             if (options.contains(Options.C_ALLDIFFERENT_CLIQUE))
                 return new BoundAllDiff(variables, false);
 

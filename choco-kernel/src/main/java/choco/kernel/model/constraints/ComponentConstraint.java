@@ -49,6 +49,7 @@ public class ComponentConstraint extends AbstractConstraint {
     }
    
 
+    @Override
     public Object getParameters() {
         return parameters;
     } 
