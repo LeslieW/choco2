@@ -433,6 +433,10 @@ public class CPModelToCPSolver {
 			 //HACK
 			 LOGGER.info("createGenericMetaConstraint");
 			 return createGenericMetaConstraint((MetaConstraint) ic, decomp);
+		 } catch (NullPointerException cce) {
+			 //HACK
+			 LOGGER.info("createGenericMetaConstraint");
+			 return createGenericMetaConstraint((MetaConstraint) ic, decomp);
 		 }
 	 }
 
