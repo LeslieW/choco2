@@ -722,7 +722,6 @@ public class GeostTest {
         System.out.println("Avant 'Solver.read'");
         s.read(m);
         System.out.println("Avant 'Solver.solve'");
-        ChocoLogging.toVerbose();
         s.solve();
         System.out.println("Après 'Solver.solve'");
     }
