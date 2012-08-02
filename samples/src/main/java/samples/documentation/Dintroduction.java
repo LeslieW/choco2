@@ -88,7 +88,7 @@ class Dintroduction {
         //totex
 
         //totex imagicsquare4
-        // All rows must be equal to the magic sum
+        // All row's sum must be equal to the magic sum
         for (int i = 0; i < n; i++) {
             m.addConstraint(Choco.eq(Choco.sum(var[i]), magicSum));
         }
@@ -101,7 +101,7 @@ class Dintroduction {
                 // Copy of var in the column order
                 varCol[i][j] = var[j][i];
             }
-            // Each column?s sum is equal to the magic sum
+            // All column's sum is equal to the magic sum
             m.addConstraint(Choco.eq(Choco.sum(varCol[i]), magicSum));
         }
         //totex
@@ -113,7 +113,7 @@ class Dintroduction {
             varDiag1[i] = var[i][i]; // Copy of var in varDiag1
             varDiag2[i] = var[(n - 1) - i][i]; // Copy of var in varDiag2
         }
-        // Every diagonal?s sum has to be equal to the magic sum
+        // All diagonal's sum has to be equal to the magic sum
         m.addConstraint(Choco.eq(Choco.sum(varDiag1), magicSum));
         m.addConstraint(Choco.eq(Choco.sum(varDiag2), magicSum));
         //totex

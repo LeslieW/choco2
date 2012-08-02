@@ -27,19 +27,19 @@
 
 package samples.documentation;
 
-import static choco.Choco.*;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.automaton.FA.CostAutomaton;
-import choco.kernel.model.constraints.automaton.FA.IAutomaton;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.constraints.automaton.FA.ICostAutomaton;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.Solver;
+
+import static choco.Choco.*;
 
 /*
 * User : charles
@@ -218,23 +218,44 @@ public class Code4Doc4 {
             c[i][REST][0] = new int[]{0, 0, 2};
 
 
-
-           
         }
 
-        ICostAutomaton cauto = CostAutomaton.makeMultiResources(auto,c,z);
+        ICostAutomaton cauto = CostAutomaton.makeMultiResources(auto, c, z);
 
         m.addConstraint(multiCostRegular(z, x, cauto));
         Solver s = new CPSolver();
         s.read(m);
-        System.out.println(s.minimize(s.getVar(z[0]),false));
-          //  s.solve();
-            System.out.println(s.getVar(z[0]).pretty());
-            System.out.println(s.runtimeStatistics());
+        System.out.println(s.minimize(s.getVar(z[0]), false));
+        //  s.solve();
+        System.out.println(s.getVar(z[0]).pretty());
+        System.out.println(s.runtimeStatistics());
         //totex
     }
-    
-    public void cneq1(){
+
+    public void cnand1() {
+        //totex cnand1
+        Model m = new CPModel();
+        Solver s = new CPSolver();
+        IntegerVariable v1 = makeIntVar("v1", 0, 1);
+        IntegerVariable v2 = makeIntVar("v2", 0, 1);
+        m.addConstraint(nand(eq(v1, 1), eq(v2, 1)));
+        s.read(m);
+        s.solve();
+        //totex
+    }
+
+    public void cnand2() {
+        //totex cnand2
+        Model m = new CPModel();
+        Solver s = new CPSolver();
+        IntegerVariable[] vars = makeBooleanVarArray("b", 10);
+        m.addConstraint(nand(vars));
+        s.read(m);
+        s.solve();
+        //totex
+    }
+
+    public void cneq1() {
         //totex cneq1
         Model m = new CPModel();
         Solver s = new CPSolver();
@@ -246,7 +267,7 @@ public class Code4Doc4 {
         //totex
     }
 
-    public void cneq2(){
+    public void cneq2() {
         //totex cneq2
         Model m = new CPModel();
         Solver s = new CPSolver();
@@ -256,11 +277,11 @@ public class Code4Doc4 {
         IntegerExpressionVariable w2 = minus(v2, 1);
         m.addConstraint(neq(w1, w2));
         s.read(m);
-        s.solve();        
+        s.solve();
         //totex
     }
 
-    public void cneqcard(){
+    public void cneqcard() {
         //totex cneqcard
         Model m = new CPModel();
         Solver s = new CPSolver();
@@ -273,7 +294,7 @@ public class Code4Doc4 {
         //totex
     }
 
-    public void cnot(){
+    public void cnot() {
         //totex cnot
         Model m = new CPModel();
         Solver s = new CPSolver();
@@ -284,7 +305,7 @@ public class Code4Doc4 {
         //totex
     }
 
-    public void cnotmember(){
+    public void cnotmember() {
         //totex cnotmember
         Model m = new CPModel();
         Solver s = new CPSolver();
@@ -294,47 +315,47 @@ public class Code4Doc4 {
         m.addConstraint(notMember(y, x));
         m.addConstraint(eqCard(y, card));
         s.read(m);
-        s.solveAll();        
+        s.solveAll();
         //totex
     }
 
-    public void cnth(){
+    public void cnth() {
         //totex cnth
         Model m = new CPModel();
         Solver s = new CPSolver();
         int[][] values = new int[][]{
-            {1, 2, 0, 4, -323},
-            {2, 1, 0, 3, 42},
-            {6, 1, -7, 4, -40},
-            {-1, 0, 6, 2, -33},
-            {2, 3, 0, -1, 49}};
+                {1, 2, 0, 4, -323},
+                {2, 1, 0, 3, 42},
+                {6, 1, -7, 4, -40},
+                {-1, 0, 6, 2, -33},
+                {2, 3, 0, -1, 49}};
         IntegerVariable index1 = makeIntVar("index1", -3, 10);
         IntegerVariable index2 = makeIntVar("index2", -3, 10);
         IntegerVariable var = makeIntVar("value", -20, 20);
         m.addConstraint(nth(index1, index2, values, var));
         s.read(m);
-        s.solveAll();        
+        s.solveAll();
         //totex
     }
 
-    public void coccurrence(){
+    public void coccurrence() {
         //totex coccurrence
         Model m = new CPModel();
         Solver s = new CPSolver();
-        int n=7;
+        int n = 7;
         IntegerVariable[] x = makeIntVarArray("X", n, 0, 10);
         IntegerVariable z = makeIntVar("Z", 0, 10);
         m.addConstraint(occurrence(z, x, 3));
         s.read(m);
-        s.solve();        
+        s.solve();
         //totex
     }
 
-    public void coccurrencemax(){
+    public void coccurrencemax() {
         //totex coccurrencemax
         Model m = new CPModel();
         Solver s = new CPSolver();
-        int n=7;
+        int n = 7;
         IntegerVariable[] x = makeIntVarArray("X", n, 0, 10);
         IntegerVariable z = makeIntVar("Z", 0, 10);
         m.addConstraint(occurrenceMax(z, x, 3));
@@ -343,11 +364,11 @@ public class Code4Doc4 {
         //totex
     }
 
-    public void coccurrencemin(){
+    public void coccurrencemin() {
         //totex coccurrencemin
         Model m = new CPModel();
         Solver s = new CPSolver();
-        int n=7;
+        int n = 7;
         IntegerVariable[] x = makeIntVarArray("X", n, 0, 10);
         IntegerVariable z = makeIntVar("Z", 0, 10);
         m.addConstraint(occurrenceMin(z, x, 3));
@@ -356,14 +377,14 @@ public class Code4Doc4 {
         //totex
     }
 
-    public void coppositesign(){
+    public void coppositesign() {
         //totex coppositesign
         Model m = new CPModel();
         Solver s = new CPSolver();
         IntegerVariable x = makeIntVar("x", -1, 1);
         IntegerVariable y = makeIntVar("y", -1, 1);
         IntegerVariable z = makeIntVar("z", 0, 1000);
-        m.addConstraint(oppositeSign(x,y));
+        m.addConstraint(oppositeSign(x, y));
         m.addConstraint(eq(z, plus(mult(x, -425), mult(y, 391))));
         s.read(m);
         s.solve();
@@ -371,9 +392,7 @@ public class Code4Doc4 {
     }
 
 
-
-public static void main(String[] args)
-{
-    new Code4Doc4().cmulticostregular();
-}
+    public static void main(String[] args) {
+        new Code4Doc4().cmulticostregular();
+    }
 }

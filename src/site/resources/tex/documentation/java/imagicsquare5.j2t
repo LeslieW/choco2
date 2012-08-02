@@ -4,6 +4,6 @@
                 // Copy of var in the column order
                 varCol[i][j] = var[j][i];
             }
-            // Each column?s sum is equal to the magic sum
+            // All column's sum is equal to the magic sum
             m.addConstraint(Choco.eq(Choco.sum(varCol[i]), magicSum));
         }
