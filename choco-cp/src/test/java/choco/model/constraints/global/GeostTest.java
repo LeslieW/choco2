@@ -28,7 +28,6 @@
 
 package choco.model.constraints.global;
 
-import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.geost.Constants;
@@ -54,6 +53,8 @@ import org.junit.Test;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
 
 
 public class GeostTest {
@@ -88,14 +89,14 @@ public class GeostTest {
             List<GeostObject> obj2 = new ArrayList<GeostObject>();
 
             for (int i = 0; i < nbOfObj; i++) {
-                IntegerVariable shapeId = Choco.makeIntVar("sid", i, i);
+                IntegerVariable shapeId = makeIntVar("sid", i, i);
                 IntegerVariable coords[] = new IntegerVariable[this.dim];
                 for (int j = 0; j < coords.length; j++) {
-                    coords[j] = Choco.makeIntVar("x" + j, 0, 2);
+                    coords[j] = makeIntVar("x" + j, 0, 2);
                 }
-                IntegerVariable start = Choco.makeIntVar("start", 1, 1);
-                IntegerVariable duration = Choco.makeIntVar("duration", 1, 1);
-                IntegerVariable end = Choco.makeIntVar("end", 1, 1);
+                IntegerVariable start = makeIntVar("start", 1, 1);
+                IntegerVariable duration = makeIntVar("duration", 1, 1);
+                IntegerVariable end = makeIntVar("end", 1, 1);
                 obj2.add(new GeostObject(dim, i, shapeId, coords, start, duration, end));
             }
 
@@ -131,7 +132,7 @@ public class GeostTest {
             ectr2.add(n2);
 
             //create the geost constraint object
-            Constraint geost = Choco.geost(this.dim, obj2, sb2, ectr2);
+            Constraint geost = geost(this.dim, obj2, sb2, ectr2);
             m.addConstraint(geost);
             //post the geost constraint to the choco problem
             Solver s = new CPSolver();
@@ -172,7 +173,7 @@ public class GeostTest {
             ectr.add(n);
 
 
-            Constraint geost = Choco.geost(this.dim, rp.getObjects(), rp.getSBoxes(), ectr);
+            Constraint geost = geost(this.dim, rp.getObjects(), rp.getSBoxes(), ectr);
             m.addConstraint(geost);
             Solver s = new CPSolver();
             s.read(m);
@@ -264,13 +265,13 @@ public class GeostTest {
             }
 
 
-            Constraint geost = Choco.geost(dim, parser.getObjects(), parser.getShiftedBoxes(), ectr);
+            Constraint geost = geost(dim, parser.getObjects(), parser.getShiftedBoxes(), ectr);
 
             // /////////////Add the constraint to the choco problem//////////////
             m.addConstraint(geost);
 
             for (int i = 0; i < parser.getObjects().size() - 2; i++) {
-                m.addConstraint(Choco.lex(parser.getObjects().get(i).getCoordinates(), parser.getObjects().get(i + 1).getCoordinates()));
+                m.addConstraint(lex(parser.getObjects().get(i).getCoordinates(), parser.getObjects().get(i + 1).getCoordinates()));
             }
 
             Solver s = new CPSolver();
@@ -300,14 +301,14 @@ public class GeostTest {
         List<GeostObject> obj2 = new ArrayList<GeostObject>();
 
         for (int i = 0; i < nbOfObj; i++) {
-            IntegerVariable shapeId = Choco.makeIntVar("sid", 0, 0);
+            IntegerVariable shapeId = makeIntVar("sid", 0, 0);
             IntegerVariable coords[] = new IntegerVariable[this.dim];
             for (int j = 0; j < coords.length; j++) {
-                coords[j] = Choco.makeIntVar("x" + j, 0, 2);
+                coords[j] = makeIntVar("x" + j, 0, 2);
             }
-            IntegerVariable start = Choco.makeIntVar("start", 1, 1);
-            IntegerVariable duration = Choco.makeIntVar("duration", 1, 1);
-            IntegerVariable end = Choco.makeIntVar("end", 1, 1);
+            IntegerVariable start = makeIntVar("start", 1, 1);
+            IntegerVariable duration = makeIntVar("duration", 1, 1);
+            IntegerVariable end = makeIntVar("end", 1, 1);
             obj2.add(new GeostObject(dim, i, shapeId, coords, start, duration, end));
         }
         for (int i = 0; i < obj2.size(); i++) {
@@ -341,7 +342,7 @@ public class GeostTest {
         NonOverlappingModel n2 = new NonOverlappingModel(Constants.NON_OVERLAPPING, ectrDim2, objOfEctr2);
         ectr2.add(n2);
 
-        Constraint geost2 = Choco.geost(this.dim, obj2, sb2, ectr2);
+        Constraint geost2 = geost(this.dim, obj2, sb2, ectr2);
         m.addConstraint(geost2);
         Solver s = new CPSolver();
         s.read(m);
@@ -402,14 +403,14 @@ public class GeostTest {
         List<GeostObject> obj = new ArrayList<GeostObject>();
 
         for (int i = 0; i < nbOfObj; i++) {
-            IntegerVariable shapeId = Choco.makeIntVar("sid", i, i);
+            IntegerVariable shapeId = makeIntVar("sid", i, i);
             IntegerVariable coords[] = new IntegerVariable[dim];
-            coords[0] = Choco.makeIntVar("x", domOrigins[i][0], domOrigins[i][1]);
-            coords[1] = Choco.makeIntVar("y", domOrigins[i][2], domOrigins[i][3]);
+            coords[0] = makeIntVar("x", domOrigins[i][0], domOrigins[i][1]);
+            coords[1] = makeIntVar("y", domOrigins[i][2], domOrigins[i][3]);
 
-            IntegerVariable start = Choco.makeIntVar("start", 1, 1);
-            IntegerVariable duration = Choco.makeIntVar("duration", 1, 1);
-            IntegerVariable end = Choco.makeIntVar("end", 1, 1);
+            IntegerVariable start = makeIntVar("start", 1, 1);
+            IntegerVariable duration = makeIntVar("duration", 1, 1);
+            IntegerVariable end = makeIntVar("end", 1, 1);
             obj.add(new GeostObject(dim, i, shapeId, coords, start, duration, end));
 
 
@@ -449,7 +450,7 @@ public class GeostTest {
         //ctrlVs.add(v3);
 
         //create the geost constraint
-        Constraint geost = Choco.geost(dim, obj, sb, ectr, ctrlVs);
+        Constraint geost = geost(dim, obj, sb, ectr, ctrlVs);
 
         //NOTA: you can choose to not take into account of the greedy mode by creating the geost constraint as follows:
         //Geost_Constraint geost = new Geost_Constraint(vars, dim, obj, sb, ectr);
@@ -495,19 +496,19 @@ public class GeostTest {
         List<GeostObject> objects = new ArrayList<GeostObject>();
 
         for (int i = 0; i < nbOfObj; i++) {
-            IntegerVariable shapeId = Choco.makeIntVar("sid_" + i, domShapes[i][0], domShapes[i][1]);
+            IntegerVariable shapeId = makeIntVar("sid_" + i, domShapes[i][0], domShapes[i][1]);
             IntegerVariable coords[] = new IntegerVariable[dim];
-            coords[0] = Choco.makeIntVar("x_" + i, domOrigins[i][0], domOrigins[i][1]);
-            coords[1] = Choco.makeIntVar("y_" + i, domOrigins[i][2], domOrigins[i][3]);
+            coords[0] = makeIntVar("x_" + i, domOrigins[i][0], domOrigins[i][1]);
+            coords[1] = makeIntVar("y_" + i, domOrigins[i][2], domOrigins[i][3]);
 
             // ++ Modification
             // Additional Constraint
-            m.addConstraint(Choco.geq(coords[0], 1));
+            m.addConstraint(geq(coords[0], 1));
             // -- Modification
 
-            IntegerVariable start = Choco.makeIntVar("start", 0, 0);
-            IntegerVariable duration = Choco.makeIntVar("duration", 1, 1);
-            IntegerVariable end = Choco.makeIntVar("end", 1, 1);
+            IntegerVariable start = makeIntVar("start", 0, 0);
+            IntegerVariable duration = makeIntVar("duration", 1, 1);
+            IntegerVariable end = makeIntVar("end", 1, 1);
             objects.add(new GeostObject(dim, i, shapeId, coords, start, duration, end));
         }
 
@@ -542,7 +543,7 @@ public class GeostTest {
         ectr.add(n);
 
         // create the geost constraint
-        Constraint geost = Choco.geost(dim, objects, sb, ectr);
+        Constraint geost = geost(dim, objects, sb, ectr);
 
         // post the geost constraint to the choco problem
         m.addConstraint(geost);
@@ -563,9 +564,9 @@ public class GeostTest {
 
     @Test
     public void test_ajdvries() {
-        for(int nbO = 4; nbO < 257; nbO*=4){
+        for (int nbO = 4; nbO < 257; nbO *= 4) {
             boolean inc = true;
-            do{
+            do {
                 int width = nbO * 5;
                 int height = nbO * 5;
                 int maxX = width - 5;
@@ -579,15 +580,15 @@ public class GeostTest {
                 List<IntegerVariable> x = new ArrayList<IntegerVariable>();
                 List<IntegerVariable> y = new ArrayList<IntegerVariable>();
                 for (int a = 0; a < 16; a++) {
-                    IntegerVariable varX = Choco.makeIntVar("img_" + a + "_x", 0, maxX);
-                    IntegerVariable varY = Choco.makeIntVar("img_" + a + "_y", 0, maxY);
+                    IntegerVariable varX = makeIntVar("img_" + a + "_x", 0, maxX);
+                    IntegerVariable varY = makeIntVar("img_" + a + "_y", 0, maxY);
                     x.add(varX);
 
                     y.add(varY);
                     IntegerVariable coordinates[] = new IntegerVariable[]{varX, varY};
 
-                    geosts.add(new GeostObject(2, a, Choco.constant(a), coordinates, Choco.constant(0), Choco.constant(1),
-                            Choco.constant(1)));
+                    geosts.add(new GeostObject(2, a, constant(a), coordinates, constant(0), constant(1),
+                            constant(1)));
 
                     sb.add(new ShiftedBox(a, new int[]{0, 0}, new int[]{5, 5}));
                 }
@@ -609,14 +610,14 @@ public class GeostTest {
 
                 // Definition of the GEOST constraint
                 GeostOptions.increment = inc;
-                Constraint geost = Choco.geost(2, geosts, sb, ectr, ctrlVs);
+                Constraint geost = geost(2, geosts, sb, ectr, ctrlVs);
                 m.addConstraint(geost);
 
                 Solver solver = new CPSolver();
                 solver.read(m);
                 Assert.assertTrue(solver.solve());
-                inc ^=true;
-            }while(!inc);
+                inc ^= true;
+            } while (!inc);
         }
 
     }
@@ -633,15 +634,15 @@ public class GeostTest {
         ShiftedBox block = new ShiftedBox(currentShapeId, new int[]{0, 0}, new int[]{20, 1});
         boxesById.put(currentShapeId, block);
 
-        IntegerVariable[] fixedCoordinates = new IntegerVariable[]{Choco.constant(0), Choco.constant(0)};
-        IntegerVariable[] variableCoordinates = new IntegerVariable[]{Choco.makeIntVar("variable", 0, 0), Choco.constant(0)};
+        IntegerVariable[] fixedCoordinates = new IntegerVariable[]{constant(0), constant(0)};
+        IntegerVariable[] variableCoordinates = new IntegerVariable[]{makeIntVar("variable", 0, 0), constant(0)};
 
 
-        geosts.add(new GeostObject(2, 0, Choco.constant(currentShapeId), fixedCoordinates, Choco.constant(0),
-                Choco.constant(1), Choco.constant(1)));
+        geosts.add(new GeostObject(2, 0, constant(currentShapeId), fixedCoordinates, constant(0),
+                constant(1), constant(1)));
 
-        geosts.add(new GeostObject(2, 1, Choco.constant(currentShapeId), fixedCoordinates, Choco.constant(0),
-                Choco.constant(1), Choco.constant(1)));
+        geosts.add(new GeostObject(2, 1, constant(currentShapeId), fixedCoordinates, constant(0),
+                constant(1), constant(1)));
 
         List<IExternalConstraint> ectr = new ArrayList<IExternalConstraint>();
 
@@ -658,13 +659,72 @@ public class GeostTest {
         ctrlVs.add(v0);
 
         // Definition of the GEOST constraint
-        Constraint geost = Choco.geost(2, geosts, new ArrayList<ShiftedBox>(boxesById.values()), ectr, ctrlVs);
+        Constraint geost = geost(2, geosts, new ArrayList<ShiftedBox>(boxesById.values()), ectr, ctrlVs);
         model.addConstraint(geost);
 
         CPSolver solver = new CPSolver();
         solver.read(model);
 
         Assert.assertFalse(solver.solve());
+    }
+
+    @Test
+    public void testSerge() {
+        // On this very first experiment, we'll consider only a single shape
+        //  for each object
+        // Labels to be placed are:
+        // - a label of size (2,2) near (6,3) : at (7,4) or at (4,1)
+        // - a label of size (2,4) near (3,2) : at (4,3) or at (0,3)
+        // Graphically, this gives (a and b are alternatives for label 1, c and d for 2):
+        //
+        //        5                               a   a
+        //        4   d   d   d   d   c   c   c   ac  a
+        //        3   d   d   d   d   c   c   1c  c
+        //        2               2   b   b
+        //        1                   b   b
+        //        0
+        //            0   1   2   3   4   5   6   7   8
+        //
+        // Expected solutions are: "1=a,2=d", "1=b,2=c" and "1=b,2=d"
+
+        // Both labels 1 and 2 will have a single shape each
+
+        IntegerVariable X1 = makeIntVar("X1", 4, 7);
+        IntegerVariable Y1 = makeIntVar("Y1", 1, 4);
+        IntegerVariable[] p1 = new IntegerVariable[]{X1, Y1};
+        GeostObject lab1 = new GeostObject(2, 1, constant(1), p1,
+                constant(0), constant(1), constant(1));
+        ShiftedBox sb1 = new ShiftedBox(1, new int[]{0, 0}, new int[]{2, 2});
+
+        IntegerVariable X2 = makeIntVar("X2", 0, 4);
+        IntegerVariable Y2 = makeIntVar("Y2", 3, 3);
+        IntegerVariable[] p2 = new IntegerVariable[]{X2, Y2};
+        GeostObject lab2 = new GeostObject(2, 2, constant(2), p2,
+                constant(0), constant(1), constant(1));
+        ShiftedBox sb2 = new ShiftedBox(2, new int[]{0, 0}, new int[]{4, 2});
+
+        List<GeostObject> gos = new ArrayList<GeostObject>();
+        gos.add(lab1);
+        gos.add(lab2);
+        List<ShiftedBox> SBs = new ArrayList<ShiftedBox>();
+        SBs.add(sb1);
+        SBs.add(sb2);
+
+        int[] ectrDim = new int[]{0, 1};
+        int[] objOfEctr = new int[]{1, 2}; // IDs of labels
+        List<IExternalConstraint> ectr = new ArrayList<IExternalConstraint>();
+        ectr.add(new NonOverlappingModel(Constants.NON_OVERLAPPING,
+                ectrDim, objOfEctr));
+
+        Model m = new CPModel();
+        m.addConstraint(geost(2, gos, SBs, ectr));
+        Solver s = new CPSolver();
+        System.out.println("Avant 'Solver.read'");
+        s.read(m);
+        System.out.println("Avant 'Solver.solve'");
+        ChocoLogging.toVerbose();
+        s.solve();
+        System.out.println("Après 'Solver.solve'");
     }
 
 }
