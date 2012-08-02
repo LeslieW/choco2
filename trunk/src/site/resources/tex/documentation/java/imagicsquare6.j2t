@@ -4,6 +4,6 @@
             varDiag1[i] = var[i][i]; // Copy of var in varDiag1
             varDiag2[i] = var[(n - 1) - i][i]; // Copy of var in varDiag2
         }
-        // Every diagonal?s sum has to be equal to the magic sum
+        // All diagonal's sum has to be equal to the magic sum
         m.addConstraint(Choco.eq(Choco.sum(varDiag1), magicSum));
         m.addConstraint(Choco.eq(Choco.sum(varDiag2), magicSum));

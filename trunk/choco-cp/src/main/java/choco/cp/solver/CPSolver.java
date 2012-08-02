@@ -1657,6 +1657,13 @@ public class CPSolver implements Solver {
         return intVars.indexOf(c);
     }
 
+    public final int getSetVarIndex(SetVar c) {
+        return setVars.indexOf(c);
+    }
+
+    public final int getRealVarIndex(RealVar c) {
+        return floatVars.indexOf(c);
+    }
 
     @Override
     public int getNbVars() {

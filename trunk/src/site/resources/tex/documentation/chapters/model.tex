@@ -30,7 +30,7 @@ In that specific case, a Constraint Programming (CP) {\tt Model} object has been
 
 %Choco provides a large API to create different types of variables : \textbf{integer}, \textbf{real} and \textbf{set}. 
 
-A Variable is defined by a type (\hyperlink{integervariable}{integer}, \hyperlink{realvariable}{real}, or \hyperlink{setvariable}{set} variable), a name, and the values of its domain. When creating a simple variable, some options can be set to specify its domain representation (ex: enumerated or bounded) within the {\tt Solver}.
+A Variable is defined by a type (\hyperlink{integervariable}{integer}, \hyperlink{realvariable}{real}, or \hyperlink{setvariable}{set} variable), a name, and the values of its domain. When creating a simple variable, some options can be set to specify its domain representation (\eg enumerated or bounded) within the {\tt Solver}.
 %Some kinds of variables have options for their domain, it may have an effect on what kind of specific object is created when the model is read by the solver.
 \begin{note}
 The choice of the domain should be considered. The efficiency of the solver often depends on judicious choice of the domain type.
@@ -72,7 +72,7 @@ Expression variables represent the result of combinations between variables of t
 \begin{notedef}
 \textbf{\tt IntegerExpressionVariable} and \textbf{\tt RealExpressionVariable}.
 \end{notedef}
-One can define a buffered expression variable to make a constraint easy to read, for example:
+One can define an expression variable to define an operation, for example:
 \lstinputlisting{java/mexpressionvariable.j2t}
 
 %\section{Operators}\label{model:operators}\hypertarget{model:operators}{}
@@ -100,7 +100,7 @@ See also the code examples for these constraints.
 
 By default, each variable added to a model is a decision variable, \textit{i.e.} is included in the default search strategy. A variable can be stated as a non decision one if its value can be computed by side-effect. To specify non decision variables, one can 
 \begin{itemize}
-\item exclude them from its search strategies (see \hyperlink{solver:searchstrategy}{search strategy} for more details);
+\item exclude them from the search strategies (see \hyperlink{solver:searchstrategy}{search strategy} for more details);
 \item specify non-decision variables (adding \hyperlink{vnodecision:vnodecisionoptions}{\tt Options.V\_NO\_DECISION} to their options) and keep the default search strategy.
 \end{itemize}
 \lstinputlisting{java/mnodecision1.j2t}
@@ -250,7 +250,7 @@ Such a relation may be defined by three means:
 \end{itemize}
 On the one hand, constraints based on tables may be rather memory consuming in case of large domains, although one relation table may be shared by several constraints. On the other hand, predicate constraints require little memory as they do not cache truth values, but imply some run-time overhead for calling the feasibility test. Table constraints are thus well suited for constraints over small domains; while predicate constraints are well suited for situations with large domains. 
 
-Different levels of consistency can be enforced on constraints in extension (when selecting an API) and, for Arc Consistency, different filtering algorithms can be used (when selecting an option)
+Different levels of consistency can be enforced on constraints in extension (when selecting an API) and, for Arc Consistency, different filtering algorithms can be used (when selecting an option).
 The Choco API for creating constraints in extension are as follows:
 
 \begin{notedef}
@@ -314,10 +314,10 @@ Specific API are also provided to reify boolean constraints:
 
 
 \subsubsection{Handling complex expressions.}\label{model:handlingcomplexexpressions}\hypertarget{model:handlingcomplexexpressions}{}
-In order to build complex combinations of constraints, Choco also provides a more simple and direct API with the following logical meta-constraints taking constraints in arguments:
+In order to build complex combinations of constraints, Choco also provides a simpler and more direct API with the following logical meta-constraints taking constraints in arguments:
 \begin{notedef}\tt
   \begin{itemize}
-  \item \hyperlink{and:andconstraint}{and}, \hyperlink{or:orconstraint}{or}, \hyperlink{implies:impliesconstraint}{implies}, \hyperlink{ifonlyif:ifonlyifconstraint}{ifOnlyIf}, \hyperlink{ifthenelse:ifthenelseconstraint}{ifThenElse}, \hyperlink{not:notconstraint}{not}, nand, nor
+  \item \hyperlink{and:andconstraint}{and}, \hyperlink{or:orconstraint}{or}, \hyperlink{implies:impliesconstraint}{implies}, \hyperlink{ifonlyif:ifonlyifconstraint}{ifOnlyIf}, \hyperlink{ifthenelse:ifthenelseconstraint}{ifThenElse}, \hyperlink{not:notconstraint}{not}, \hyperlink{nand:nandconstraint}{nand}, \hyperlink{nor:norconstraint}{nor}
   \end{itemize}
 \end{notedef}
 For example, the following expression
@@ -333,14 +333,14 @@ The language available on expressions currently matches the language used in the
 At the solver level, there exists two different ways to represent expressions:
 \begin{itemize}
 \item \emph{by extension:} the first way is to handle expressions as \hyperlink{model:arbitraryconstraintsinextension}{constraints in extension}. The expression is then used to check a tuple in a dynamic way just like a n-ary relation that is defined without listing all the possible tuples. The expression is then propagated using the GAC3rm algorithm. This is very powerful as arc-consistency is achieved on the corresponding constraints.
-\item \emph{by decomposition:} the second way is to decompose the expression automatically by introducing intermediate variables and eventually the generic \hyperlink{reifiedconstraint:reifiedconstraintconstraint}{\tt reifiedConstraint}. By doing so, the level of pruning decreases but expressions of larger arity involving large domains can be represented.
+\item \emph{by decomposition:} the second way is to decompose the expression automatically by introducing intermediate variables and possibly the generic \hyperlink{reifiedconstraint:reifiedconstraintconstraint}{\tt reifiedConstraint}. By doing so, the level of pruning decreases but expressions of larger arity involving large domains can be represented.
 \end{itemize}
 The way to represent expressions is decided at the modeling level. Representation \emph{by extension} is the default. Representation \emph{by decomposition} can be set instead by:
 \begin{lstlisting}
   model.setDefaultExpressionDecomposition(true);
 \end{lstlisting}
 
-Representation \emph{by decomposition} can also be decided individually for some expressions, by setting option \hyperlink{edecomp:edecompoptions}{\tt Options.E\_DECOMP} when adding the constraint.
+Representation \emph{by decomposition} can also be controlled individually for some expressions, by setting option \hyperlink{edecomp:edecompoptions}{\tt Options.E\_DECOMP} when adding the constraint.
 For example, the following code tells the solver to decompose e1 but not e2 :
 \begin{lstlisting}
 	model.setDefaultExpressionDecomposition(false);
@@ -531,13 +531,13 @@ Now, let see a short example: one declares two constraints involving the two sam
 \item each of the variables points to ten constraints: the very same constraint is considered as different from a model to another.  
 \end{itemize}
 
-This must be kept in mind while you write your program: whatever a model is used or not, a shared variable stores references to the constraints it is involved in. 
+This must be kept in mind while you write your program: whether a model is used or not, a shared variable stores references to the constraints it is involved in. 
 
 \vspace{1cm}
 \begin{notedef}
-Do not count on the garbage collector to manage this (even if the \mylst{finalize()} method was declared for a \mylst{Model}): while a variable references a constraint declared in an obsolete model, neither the model nor the constraint can be safely destroy. 
+Do not count on the garbage collector to manage this (even if the \mylst{finalize()} method was declared for a \mylst{Model}): while a variable references a constraint declared in an obsolete model, neither the model nor the constraint can be safely destroyed. 
 
-A good habit to have is to delete constraints of a model when this one is not used anymore, by calling \mylst{model.removeConstraints()}. This breaks links between constraint and variable of a model, prevents from large memory consumption and can stabilize performances by reusing \mylst{Model}s.
+A good habit to have is to delete constraints of a model when this one is not used anymore, by calling \mylst{model.removeConstraints()}. This breaks links between constraint and variable of a model, prevents large memory consumption and can stabilize performances by reusing \mylst{Model}s.
 
 
 Consider the following code, \mylst{model2} is faster and consumes less memory than \mylst{model1} for the same result.
