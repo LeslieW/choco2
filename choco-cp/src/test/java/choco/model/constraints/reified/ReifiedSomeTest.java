@@ -1950,7 +1950,7 @@ public class ReifiedSomeTest {
 
     }
 
-     @Test
+    @Test
     public void test_melpen6() {
         CPSolver s = new CPSolver();
         CPModel m = new CPModel();
@@ -1963,6 +1963,94 @@ public class ReifiedSomeTest {
         s.read(m);
         s.solveAll();
         Assert.assertEquals(s.getSolutionCount(), 9);
+
+    }
+
+    @Test
+    public void test_wellaweg1() {
+        CPSolver s = new CPSolver();
+        CPModel m = new CPModel();
+
+        RealVariable r1 = Choco.makeRealVar("r1", 0.4, 0.6);
+        IntegerVariable b = Choco.makeIntVar("x", 0, 1);
+
+        m.addConstraint(
+                Choco.reifiedConstraint(b,
+                        Choco.geq(r1, 0.5),
+                        Choco.leq(r1, 0.5)
+                )
+        );
+        m.addConstraint(Choco.eq(b, 1));
+
+        s.read(m);
+        s.solveAll();
+        Assert.assertEquals(s.getSolutionCount(), 131072);
+
+    }
+
+    @Test
+    public void test_wellaweg2() {
+        Model m = new CPModel();
+        Solver s = new CPSolver();
+//        IntegerVariable a = Choco.makeIntVar("a", 1, 4);
+        RealVariable a = Choco.makeRealVar("a", 0.0, 4.0);
+        IntegerVariable AB = Choco.makeBooleanVar("AB");
+
+        IntegerVariable b1 = Choco.makeBooleanVar("b1");
+
+        m.addConstraint(Choco.reifiedConstraint(b1, Choco.eq(AB, 1), Choco.neq(AB, 1)));
+
+        IntegerVariable b2 = Choco.makeBooleanVar("b2");
+        m.addConstraint(Choco.reifiedConstraint(b2, Choco.eq(Choco.plus(a, 1), 2), Choco.neq(Choco.plus(a, 1), 2)));
+
+        //    AB==1 OR a + 1 = 2
+        m.addConstraint(Choco.or(b1, b2));
+
+
+        s.read(m);
+        s.solve();
+
+    }
+
+
+    @Test
+    public void test_wellaweg3() {
+        CPModel m = new CPModel();
+
+        IntegerVariable row[] = new IntegerVariable[3];
+        row[0] = Choco.makeIntVar("R0", 0, 20);
+        row[1] = Choco.makeIntVar("R1", 0, 20);
+        row[2] = Choco.makeIntVar("R2", 0, 20);
+
+        IntegerExpressionVariable calc[] = new IntegerExpressionVariable[2];
+        calc[0] = Choco.mult(row[0], 2);
+        calc[1] = Choco.mult(row[0], row[1]);
+
+        Constraint[] constraints = new Constraint[3];
+        constraints[0] = Choco.eq(row[0], 2);
+        constraints[1] = Choco.eq(row[1], calc[0]);
+        constraints[2] = Choco.eq(row[2], calc[1]);
+
+        m.addConstraint(constraints[0]);
+
+        IntegerVariable[] ab = new IntegerVariable[2];
+        for (int i = 0; i < 2; i++) {
+            ab[i] = Choco.makeBooleanVar("A" + (i + 1));
+            m.addConstraint(Choco.reifiedConstraint(ab[i], constraints[i + 1]));
+        }
+
+        m.addConstraints(Choco.eq(10, row[2]));
+
+
+        //one row must be wrong
+        int max_abs = 1;
+        m.addConstraints(Choco.eq(ab.length - max_abs, Choco.sum(ab)));
+        Solver s = new CPSolver();
+        s.read(m);
+        s.solveAll();
+
+        Assert.assertEquals(2, s.getSolutionCount());
+
 
     }
 

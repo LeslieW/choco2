@@ -40,7 +40,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  */
 public final class ReifiedBinXnor extends AbstractTernIntSConstraint {
 
-     /**
+    /**
      * A constraint to ensure :
      * b = v1 xnor v2
      */
@@ -56,8 +56,8 @@ public final class ReifiedBinXnor extends AbstractTernIntSConstraint {
         if (v0.isInstantiated()) {
             filter0();
         } else {
-            if(v1.isInstantiated())filter(v1.getVal(), v2);
-            if(v2.isInstantiated())filter(v2.getVal(), v1);
+            if (v1.isInstantiated()) filter(v1.getVal(), v2);
+            if (v2.isInstantiated()) filter(v2.getVal(), v1);
         }
     }
 
@@ -71,25 +71,29 @@ public final class ReifiedBinXnor extends AbstractTernIntSConstraint {
                 }
                 break;
             case 1:
-            if (v1.isInstantiated()) {
+                if (v1.isInstantiated()) {
                     v2.instantiate(v1.getVal(), this, false);
                 } else if (v2.isInstantiated()) {
                     v1.instantiate(v2.getVal(), this, false);
                 }
-            break;
+                break;
         }
     }
 
     private void filter(int val, IntDomainVar v) throws ContradictionException {
-        switch (val){
+        switch (val) {
             case 0:
                 if (v.isInstantiated()) {
-                    v0.instantiate(Math.abs(v.getVal() - 1), this, false);
+                    v0.instantiate(1 - v.getVal(), this, false);
+                } else if (v0.isInstantiated()) {
+                    v.instantiate(1 - v0.getVal(), this, false);
                 }
                 break;
             case 1:
                 if (v.isInstantiated()) {
                     v0.instantiate(v.getVal(), this, false);
+                } else if (v0.isInstantiated()) {
+                    v.instantiate(v0.getVal(), this, false);
                 }
                 break;
         }
@@ -115,12 +119,15 @@ public final class ReifiedBinXnor extends AbstractTernIntSConstraint {
     public void awakeOnInf(int varIdx) throws ContradictionException {
 
     }
+
     @Override
     public void awakeOnSup(int varIdx) throws ContradictionException {
     }
+
     @Override
     public void awakeOnBounds(int varIndex) throws ContradictionException {
     }
+
     @Override
     public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
     }
@@ -135,10 +142,10 @@ public final class ReifiedBinXnor extends AbstractTernIntSConstraint {
     }
 
     public Boolean isEntailed() {
-        if(v0.isInstantiatedTo(1)
-                && v1.isInstantiated() && v2.isInstantiated()){
+        if (v0.isInstantiatedTo(1)
+                && v1.isInstantiated() && v2.isInstantiated()) {
             return v1.getVal() == v2.getVal();
-        }else if(v0.isInstantiatedTo(0)){
+        } else if (v0.isInstantiatedTo(0)) {
             return v1.getVal() != v2.getVal();
         }
         return null;
