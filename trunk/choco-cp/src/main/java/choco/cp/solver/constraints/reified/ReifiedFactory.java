@@ -27,7 +27,6 @@
 
 package choco.cp.solver.constraints.reified;
 
-import choco.cp.solver.constraints.integer.channeling.ReifiedBinXor;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
@@ -49,9 +48,9 @@ public class ReifiedFactory {
     /**
      * Following the type of constraints, create a reified constraint.
      *
-     * @param bool    boolean variable for reification
-     * @param cons    a constraint
-     * @param solver    the solver
+     * @param bool   boolean variable for reification
+     * @param cons   a constraint
+     * @param solver the solver
      * @return a SConstraint
      * @throws UnsupportedOperationException when an expression constraint is in the scope.
      */
@@ -82,11 +81,12 @@ public class ReifiedFactory {
             case INTEGER:
                 return new ReifiedIntSConstraint(bool, (AbstractIntSConstraint) cons, (AbstractIntSConstraint) oppcons);
             case EXPRESSION:
-                ExpressionSConstraint ec = (ExpressionSConstraint)cons;
-                ExpressionSConstraint oec = (ExpressionSConstraint)cons;
+                ExpressionSConstraint ec = (ExpressionSConstraint) cons;
+                ExpressionSConstraint oec = (ExpressionSConstraint) oppcons;
                 IntDomainVar vec = ec.expr.extractResult(solver);
                 IntDomainVar voec = oec.expr.extractResult(solver);
-                return new ReifiedBinXor(bool, vec, voec);
+                solver.post(solver.neq(vec, voec));
+                return solver.eq(bool, vec);
             default:
                 return new ReifiedAllSConstraint(bool, (AbstractSConstraint) cons, (AbstractSConstraint) oppcons);
 
