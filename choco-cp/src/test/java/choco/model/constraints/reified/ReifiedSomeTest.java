@@ -2001,7 +2001,7 @@ public class ReifiedSomeTest {
         m.addConstraint(Choco.reifiedConstraint(b1, Choco.eq(AB, 1), Choco.neq(AB, 1)));
 
         IntegerVariable b2 = Choco.makeBooleanVar("b2");
-        m.addConstraint(Choco.reifiedConstraint(b2, Choco.eq(Choco.plus(a, 1), 2), Choco.neq(Choco.plus(a, 1), 2)));
+       // m.addConstraint(Choco.reifiedConstraint(b2, Choco.eq(Choco.plus(a, 1), 2), Choco.neq(Choco.plus(a, 1), 2)));
 
         //    AB==1 OR a + 1 = 2
         m.addConstraint(Choco.or(b1, b2));
