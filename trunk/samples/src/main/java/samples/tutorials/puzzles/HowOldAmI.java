@@ -46,7 +46,7 @@ import static choco.Choco.*;
 public class HowOldAmI extends PatternExample {
 
     /**
-     * Easy simple problem defined by:
+     * Easy problem defined by:
      * "Six years ago, my brother was two time my age.
      * In five years, we will have 40 years together.
      * How old am I?"
