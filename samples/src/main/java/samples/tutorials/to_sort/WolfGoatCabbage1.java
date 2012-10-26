@@ -51,7 +51,7 @@ public class WolfGoatCabbage1 extends PatternExample {
 
     protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
-    @Option(name = "-s", usage = "Number of steps (default : 8)", required = true)
+    @Option(name = "-s", usage = "Number of steps (default : 8)")
     protected int numberOfStates = 8;
     WGC_State[] states;
 

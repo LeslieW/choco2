@@ -26,122 +26,149 @@
  */
 package samples.tutorials.puzzles;
 
-import choco.Choco;
-import choco.cp.model.CPModel;
-import choco.cp.solver.CPSolver;
-import choco.cp.solver.search.integer.branching.AssignOrForbidIntVarVal;
-import choco.cp.solver.search.integer.valselector.MinVal;
-import choco.cp.solver.search.integer.varselector.MinDomain;
-import choco.kernel.model.variables.integer.IntegerVariable;
-import org.kohsuke.args4j.Option;
-import samples.tutorials.PatternExample;
+import static choco.Choco.allDifferent;
+import static choco.Choco.constant;
+import static choco.Choco.eq;
+import static choco.Choco.increasingSum;
+import static choco.Choco.lt;
+import static choco.Choco.makeIntVarArray;
+import static choco.Choco.times;
 
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
-import java.util.Arrays;
+
+import org.kohsuke.args4j.Option;
+
+import samples.tutorials.PatternExample;
+import choco.cp.model.CPModel;
+import choco.cp.solver.CPSolver;
+import choco.cp.solver.search.integer.valselector.MaxVal;
+import choco.cp.solver.search.integer.varselector.MinDomain;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.util.tools.ArrayUtils;
+import choco.kernel.memory.IStateInt;
+import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.search.integer.IntVarValPair;
+import choco.kernel.solver.search.integer.VarValPairSelector;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
  * <br/>
  *
  * @author Charles Prud'homme
+ * Modified A. Malapert (Oct. 2012)
  * @since 13/04/11
  */
 public class Partition extends PatternExample {
-    static final NumberFormat formatter = new DecimalFormat("#0.00");
-    @Option(name = "-n", usage = "Numbers to partition", required = false)
-    int size = 24;
+	static final NumberFormat formatter = new DecimalFormat("#0.00");
 
-    @Override
-    public void printDescription() {
-        LOGGER.info("This problem consists in finding a partition of numbers 1..2*N into two sets A and B such that:");
-        LOGGER.info("a) A and B have the same cardinality");
-        LOGGER.info("b) sum of numbers in A = sum of numbers in B");
-        LOGGER.info("c) sum of squares of numbers in A = sum of squares of numbers in B");
-        LOGGER.info(MessageFormat.format("Here n = {0}\n\n", size));
-    }
+	@Option(name = "-n", usage = "Numbers to partition", required = false)
+	int size = 24;
 
-    IntegerVariable[] xy;
+	IntegerVariable[] x,y;
 
-    @Override
-    public void buildModel() {
-        model = new CPModel();
-        IntegerVariable[] x = new IntegerVariable[size], y = new IntegerVariable[size];
-        for (int i = 0; i < size; i++) {
-            x[i] = Choco.makeIntVar("x", 1, 2 * size);
-            y[i] = Choco.makeIntVar("y", 1, 2 * size);
-        }
+	@Override
+	public void printDescription() {
+		LOGGER.info("This problem consists in finding a partition of numbers 1..2*N into two sets A and B such that:");
+		LOGGER.info("a) A and B have the same cardinality");
+		LOGGER.info("b) sum of numbers in A = sum of numbers in B");
+		LOGGER.info("c) sum of squares of numbers in A = sum of squares of numbers in B");
+		LOGGER.info("See problem 49 at http://www.csplib.org/");
+		LOGGER.info(MessageFormat.format("Here n = {0}\n\n", size));
+	}
 
-        // break symmetries
-        for (int i = 0; i < size - 1; i++) {
-            model.addConstraint(Choco.lt(x[i], x[i + 1]));
-            model.addConstraint(Choco.lt(y[i], y[i + 1]));
-        }
-        model.addConstraint(Choco.lt(x[0], y[0]));
 
-        xy = new IntegerVariable[2 * size];
-        for (int i = size - 1; i >= 0; i--) {
-            xy[i] = x[i];
-            xy[size + i] = y[i];
-        }
+	@Override
+	public void buildModel() {
+		model = new CPModel();
+		final int ub =2*size;
+		////////////////////////
+		// Define Numbers 
+		x = makeIntVarArray("x", size,1, ub);
+		y = makeIntVarArray("y", size,1, ub);
 
-        int[] coeffs = new int[2 * size];
-        for (int i = size - 1; i >= 0; i--) {
-            coeffs[i] = 1;
-            coeffs[size + i] = -1;
-        }
-        model.addConstraint(Choco.eq(Choco.scalar(coeffs, xy), 0));
+		/////////////////////////////////
+		// symmetry breaking constraints
+		model.addConstraint(eq(x[0],1));
+		for (int i = 0; i < size - 1; i++) {
+			model.addConstraint(lt(x[i], x[i + 1]));
+			model.addConstraint(lt(y[i], y[i + 1]));
+		}
 
-        IntegerVariable[] sxy, sx = new IntegerVariable[size], sy = new IntegerVariable[size];
-        sxy = new IntegerVariable[2 * size];
-        for (int i = 0; i < size; i++) {
-            sx[i] = Choco.makeIntVar("sx", 1, 4 * size * size);
-            sy[i] = Choco.makeIntVar("sy", 1, 4 * size * size);
-        }
-        for (int i = size - 1; i >= 0; i--) {
-            model.addConstraint(Choco.times(x[i], x[i], sx[i]));
-            sxy[i] = sx[i];
-            model.addConstraint(Choco.times(y[i], y[i], sy[i]));
-            sxy[size + i] = sy[i];
-        }
-        model.addConstraint(Choco.eq(Choco.scalar(coeffs, sxy), 0));
+		//////////////////////////
+		// Define squared numbers 
+		final int sub = ub*ub;
+		IntegerVariable[] sx = makeIntVarArray("sx", size,1, sub);
+		IntegerVariable[] sy = makeIntVarArray("sy", size,1, sub);
+		for (int i = 0; i < size; i++) {
+			model.addConstraints(
+					times(x[i], x[i], sx[i]),
+					times(y[i], y[i], sy[i])
+					);
+		}
 
-        coeffs = new int[size];
-        Arrays.fill(coeffs, 1);
-        model.addConstraint(Choco.eq(Choco.scalar(coeffs, x), 2 * size * (2 * size + 1) / 4));
-        model.addConstraint(Choco.eq(Choco.scalar(coeffs, y), 2 * size * (2 * size + 1) / 4));
-        model.addConstraint(Choco.eq(Choco.scalar(coeffs, sx), 2 * size * (2 * size + 1) * (4 * size + 1) / 12));
-        model.addConstraint(Choco.eq(Choco.scalar(coeffs, sy), 2 * size * (2 * size + 1) * (4 * size + 1) / 12));
+		///////////////////
+		//Sum of numbers 
+		final IntegerVariable sumb = constant( (ub * (ub+1)) / 4);
+		model.addConstraints(
+				increasingSum(x, sumb),
+				increasingSum(y, sumb)
+				);
+		//////////////////////////
+		// Sum of squared numbers 
+		//http://www.les-suites.fr/somme-des-n-premiers-carres.htm
+		final IntegerVariable sumc = constant((ub * (ub+1) * (2 * ub +1))/12);
+		model.addConstraints(
+				increasingSum(sx, sumc),
+				increasingSum(sy, sumc)
+				);
 
-        model.addConstraint(Choco.allDifferent(xy));
-    }
+		/////////////////////////
+		// Redondant constraints
+		//model.addConstraint(eq(sum(x), sum(y)));
+		//model.addConstraint(eq(sum(sx), sum(sy)));
+		// Partitioning 
+		final IntegerVariable[] xy = ArrayUtils.append(x,y);
+		model.addConstraint(allDifferent(xy));
+	}
 
-    @Override
-    public void buildSolver() {
-        solver = new CPSolver();
-        solver.read(model);
-        solver.addGoal(new AssignOrForbidIntVarVal(new MinDomain(solver, solver.getVar(xy)), new MinVal()));
-    }
+	@Override
+	public void buildSolver() {
+		solver = new CPSolver();
+		solver.read(model);
+		solver.clearGoals();
+		solver.setVarIntSelector(new MinDomain(solver));
+		solver.setValIntSelector(new MaxVal());
+		//It would be far better to use a dedicated search strategy
+		// Try to assign the highest remaining value to the last free variable of x then y
+		solver.generateSearchStrategy();
+	}
 
-    @Override
-    public void solve() {
-        solver.solve();
-    }
+	@Override
+	public void solve() {
+		ChocoLogging.toSearch();
+		//solver.launch();
+		solver.solve();
+	}
 
-    @Override
-    public void prettyOut() {
-        StringBuilder st = new StringBuilder("A: ");
-        for(int i = 0 ; i < size; i++){
-            st.append(solver.getVar(xy[i]).getVal()).append(" ");
-        }
-        st.append("\nB: ");
-        for(int i = size ; i < 2*size; i++){
-            st.append(solver.getVar(xy[i]).getVal()).append(" ");
-        }
-        LOGGER.info(st.toString());
-    }
+	@Override
+	public void prettyOut() {
+		StringBuilder st = new StringBuilder("A: ");
+		for(int i = 0 ; i < size; i++){
+			st.append(solver.getVar(x[i]).getVal()).append(" ");
+		}
+		st.append("\nB: ");
+		for(int i = 0 ; i < size; i++){
+			st.append(solver.getVar(y[i]).getVal()).append(" ");
+		}
+		LOGGER.info(st.toString());
+	}
 
-    public static void main(String[] args) {
-        new Partition().execute(args);
-    }
+	public static void main(String[] args) {
+		new Partition().execute(args);
+	}
 }
+
