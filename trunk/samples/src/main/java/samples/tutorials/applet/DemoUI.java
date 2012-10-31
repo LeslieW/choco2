@@ -28,6 +28,7 @@
 package samples.tutorials.applet;
 
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.ChocoLogging.*;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -121,7 +122,7 @@ public class DemoUI {
             e.printStackTrace();
         }
         Handler handler = new StreamHandler(out, ChocoLogging.LIGHT_FORMATTER);
-        ChocoLogging.setHandler(ChocoLogging.getMainLogger(), handler);
+        ChocoLogging.getChocoLogger().addHandler(handler);
         System.setOut(out);
 
         JScrollPane scroll = new JScrollPane(result);

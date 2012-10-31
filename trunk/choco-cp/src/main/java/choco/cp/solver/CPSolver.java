@@ -316,7 +316,7 @@ public class CPSolver implements Solver {
      * Another way to define search is by using the api similar to ilog on
      * search goals.
      */
-    private Goal ilogGoal = null;
+    protected Goal ilogGoal = null;
 
     protected final Configuration configuration;
 

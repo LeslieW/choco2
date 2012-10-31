@@ -27,14 +27,25 @@
 
 package choco.kernel.common.logging;
 
+import static java.util.logging.Logger.getLogger;
 import gnu.trove.TObjectIntHashMap;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.AccessControlException;
 import java.util.Properties;
-import java.util.logging.*;
-
-import static java.util.logging.Logger.getLogger;
+import java.util.logging.FileHandler;
+import java.util.logging.Formatter;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+import java.util.logging.StreamHandler;
+import java.util.logging.XMLFormatter;
 
 
 /**
@@ -47,18 +58,18 @@ import static java.util.logging.Logger.getLogger;
 public final class ChocoLogging {
 
 	public final static String START_MESSAGE =
-		"** CHOCO : Constraint Programming Solver\n"+
-		"** CHOCO v2.1.5 (August, 2012), Copyleft (c) 1999-2012";
-
+			"** CHOCO : Constraint Programming Solver\n"+
+					"** CHOCO v2.1.6 (August, 2012), Copyleft (c) 1999-2012";
+	
 	public final static Formatter LIGHT_FORMATTER = new LightFormatter();
-
-	public final static Formatter DETAILED_FORMATTER = new DetailedFormatter();
-
-	public final static Handler DEFAULT_HANDLER = new StreamHandler(System.out, LIGHT_FORMATTER);
-
-	public final static Handler DETAILED_HANDLER = new StreamHandler(System.out, DETAILED_FORMATTER);
-
-	public final static Handler ERROR_HANDLER = new StreamHandler(System.err, DETAILED_FORMATTER);
+	
+	private ChocoLogging() {
+		super();
+	}
+	
+	////////////////////////////////////////////////////////////////////
+	///////////////////// Loggers  /////////////////////////////////////
+	////////////////////////////////////////////////////////////////////
 
 	public final static Logger[] CHOCO_LOGGERS = new Logger[] {
 		getLogger("choco"),
@@ -73,89 +84,7 @@ public final class ChocoLogging {
 		getLogger("choco.api.test"),
 	};
 
-	static {
-		try {
-			setLevel(Level.ALL, DEFAULT_HANDLER, DETAILED_HANDLER);
-			setLevel(Level.WARNING, ERROR_HANDLER);
-			setDefaultHandler();
-			setVerbosity(loadProperties());
-		} catch (AccessControlException e) {
-			// Do nothing if this is an applet !
-			// TODO: see how to make it work with an applet !
-		}
-	}
-
-    /**
-     * Load the properties file and return default value to logging verbosity, if defined.
-     * @return Default verbosity
-     */
-    private static Verbosity loadProperties() {
-        try {
-            Properties properties = new Properties();
-            InputStream is = ChocoLogging.class.getResourceAsStream("/verbosity.properties");
-            properties.load(is);
-            final String key = "verbosity.level";
-            if (!properties.isEmpty()
-                    && properties.containsKey(key)) {
-                Integer verb = Integer.parseInt(properties.getProperty(key));
-                if (verb >= 0 && verb <= 6) {
-                    return Verbosity.values()[verb];
-                }
-            }
-        } catch (IOException ignored) {}
-        return Verbosity.DEFAULT;
-    }
-
-   	/**
-	 * maximal search depth for logging statements
-	 */
-	private static int LOGGING_MAX_DEPTH = 25;
-
-	/**
-	 * display information about search every x nodes.
-	 */
-	private static int EVERY_X_NODES = 2000;
-
-	private ChocoLogging() {
-		super();
-	}
-
-
-	public static final int getEveryXNodes() {
-		return EVERY_X_NODES;
-	}
-
-
-	public static final void setEveryXNodes(int everyXnodes) {
-		if(everyXnodes > 0) EVERY_X_NODES = everyXnodes;
-	}
-
-
-	/**
-	 * set the maximal search depth for logging statements
-	 */
-	public static final void setLoggingMaxDepth(int loggingMaxDepth) {
-		if( loggingMaxDepth > 1) LOGGING_MAX_DEPTH = loggingMaxDepth;
-	}
-
-	/**
-	 * get the maximal search depth for logging statements
-	 */
-	public final static int getLoggingMaxDepth() {
-		return LOGGING_MAX_DEPTH;
-	}
-
-
-	/**
-	 * create a new user logger with valid name
-	 * @param name
-	 * @return
-	 */
-	public static Logger makeUserLogger(String name) {
-		return Logger.getLogger(getMainLogger().getName()+"."+name);
-	}
-
-	protected static Logger getChocoLogger() {
+	public static Logger getChocoLogger() {
 		return CHOCO_LOGGERS[0];
 	}
 
@@ -187,12 +116,129 @@ public final class ChocoLogging {
 		return CHOCO_LOGGERS[7];
 	}
 
-	public static Formatter getDefaultFormatter() {
-		return LIGHT_FORMATTER;
+
+	/**
+	 * create a new user logger with valid name
+	 * @param name
+	 * @return the newly created logger
+	 */
+	public static Logger makeUserLogger(String name) {
+		final Logger logger = Logger.getLogger(getMainLogger().getName()+"."+name);
+		logger.setUseParentHandlers(true);
+		return logger;
+	}
+
+	
+	////////////////////////////////////////////////////////////////////
+	///////////////////// Handlers /////////////////////////////////////
+	////////////////////////////////////////////////////////////////////
+	
+
+	private final static Handler DEFAULT_HANDLER = new StreamHandler(System.out, LIGHT_FORMATTER);
+
+	private static final int FILE_SIZE = 8388608; // 1 Mo
+
+	private final static String DEFAULT_LOGFILE= "choco.log";
+
+	private final static String DEFAULT_XML_LOGFILE= "choco.log.xml"; 
+
+	
+
+	static {
+		try {
+			DEFAULT_HANDLER.setLevel(Level.ALL);
+			setDefaultHandler();
+			setVerbosity(loadProperties());
+		} catch (AccessControlException e) {
+			// Do nothing if this is an applet !
+			// TODO: see how to make it work with an applet !
+		}
+	}
+
+	
+	/**
+	 * set the default handler for all loggers
+	 */
+	public static void setDefaultHandler() {
+		// clear Handlers
+		for (Logger logger : CHOCO_LOGGERS) {
+			logger.setUseParentHandlers(true);
+			for (Handler h : logger.getHandlers()) {
+				logger.removeHandler(h);
+			}
+		}
+		final Logger log = getChocoLogger();
+		log.setUseParentHandlers(false);
+		log.addHandler(DEFAULT_HANDLER);
+	}
+
+	/**
+	 * Load the properties file and return default value to logging verbosity, if defined.
+	 * @return Default verbosity
+	 */
+	private static Verbosity loadProperties() {
+		try {
+			Properties properties = new Properties();
+			InputStream is = ChocoLogging.class.getResourceAsStream("/verbosity.properties");
+			properties.load(is);
+			final String key = "verbosity.level";
+			if (!properties.isEmpty()
+					&& properties.containsKey(key)) {
+				Integer verb = Integer.parseInt(properties.getProperty(key));
+				if (verb >= 0 && verb <= 6) {
+					return Verbosity.values()[verb];
+				}
+			}
+		} catch (IOException ignored) {}
+		return Verbosity.DEFAULT;
+	}
+
+	
+	////////////////////////////////////////////////////////////////////
+	///////////////////// Branching Configuration //////////////////////
+	////////////////////////////////////////////////////////////////////
+	/**
+	 * maximal search depth for logging statements
+	 */
+	private static int LOGGING_MAX_DEPTH = 25;
+
+	/**
+	 * display information about search every x nodes.
+	 */
+	private static int EVERY_X_NODES = 2000;
+
+
+	public static final int getEveryXNodes() {
+		return EVERY_X_NODES;
+	}
+
+
+	public static final void setEveryXNodes(int everyXnodes) {
+		if(everyXnodes > 0) EVERY_X_NODES = everyXnodes;
+	}
+
+
+	/**
+	 * set the maximal search depth for logging statements
+	 */
+	public static final void setLoggingMaxDepth(int loggingMaxDepth) {
+		if( loggingMaxDepth > 1) LOGGING_MAX_DEPTH = loggingMaxDepth;
+	}
+
+	/**
+	 * get the maximal search depth for logging statements
+	 */
+	public final static int getLoggingMaxDepth() {
+		return LOGGING_MAX_DEPTH;
 	}
 
 
 
+	
+	////////////////////////////////////////////////////////////////////
+	///////////////////// Flush logs  //////////////////////////////////
+	////////////////////////////////////////////////////////////////////
+	
 	public static void flushLog(Logger logger) {
 		for (Handler h : logger.getHandlers()) {
 			h.flush();
@@ -209,174 +255,133 @@ public final class ChocoLogging {
 		}
 	}
 
-	protected static void clearHandlers() {
-		for (Logger logger : CHOCO_LOGGERS) {
-			clearHandlers(logger);
-		}
-	}
-
-	protected static void clearHandlers(Logger logger) {
-		logger.setUseParentHandlers(true);
-		for (Handler h : logger.getHandlers()) {
-			logger.removeHandler(h);
-		}
+	////////////////////////////////////////////////////////////////////
+	///////////////////// Set up log files  ////////////////////////////
+	////////////////////////////////////////////////////////////////////
+	
+	private static String checkLogfile(String name, String ext, String defaultName) {
+		if(name != null && ! name.isEmpty() ) {
+			return name.endsWith(ext) ? name : name+ext;
+		} 
+		return defaultName;
 	}
 
 	/**
-	 * set the default handler (out and err) for all loggers
+	 * Write all log messages into text files (five rolling files).
+	 * @param logfile the output file
 	 */
-	public static void setDefaultHandler() {
-		clearHandlers();
-		Logger log = getChocoLogger();
-		log.setUseParentHandlers(false);
-		log.addHandler(DEFAULT_HANDLER);
-		log.addHandler(ERROR_HANDLER);
-	}
-
-
-	public static void setLevel(Level level, Handler...handlers){
-		for (Handler h : handlers) {
-			h.setLevel(level);
-		}
-
-	}
-
-	public static OutputStream setFileHandler(File file, Level level, Formatter formatter) {
+	public static void recordLogs(String logfile) {
 		try {
-			final OutputStream stream = new FileOutputStream(file);
-			Handler handler = new StreamHandler(stream, formatter);
-			handler.setLevel(level);
-			clearHandlers();
-			Logger log = getChocoLogger();
-			log.setUseParentHandlers(false);
-			log.addHandler(handler);
-			return stream;
-		} catch (FileNotFoundException e) {
-			getChocoLogger().log(Level.SEVERE, "cant create stream", e);
-		}
-		return null;
-	}
-
-	/**
-	 * remove handlers and write error logs into a file (warning and severe message)
-	 * @param file the error log file
-	 * @return the error stream
-	 */
-	public static OutputStream setErrorFileHandler(File file) {
-		return setFileHandler(file, Level.WARNING, DETAILED_FORMATTER);
-	}
-
-	/**
-	 * remove handlers and write logs into a file
-	 * @param file the log file
-	 * @return the log stream
-	 */
-	public static OutputStream setFileHandler(File file) {
-		return setFileHandler(file, Level.ALL, LIGHT_FORMATTER);
-	}
-
-
-	/**
-	 * remove other handlers and set the only handler for this logger
-	 */
-	public static void setHandler(Logger logger, Handler handler) {
-		clearHandlers(logger);
-		logger.setUseParentHandlers(false);
-		logger.addHandler(handler);
-
-	}
-
-	protected static void addHandler(Handler handler, Logger...loggers) {
-		for (Logger logger : loggers) {
-			if( ! logger.getUseParentHandlers()) {
-				logger.addHandler(handler);
+			String filename = checkLogfile(logfile, ".log", DEFAULT_LOGFILE);
+			FileHandler handler = new FileHandler(filename, FILE_SIZE, 5,false);
+			handler.setFormatter(LIGHT_FORMATTER);
+			getChocoLogger().addHandler(handler);
+			//Check branching logger (xml logging is activated)
+			if(! getBranchingLogger().getUseParentHandlers()) {
+				getBranchingLogger().addHandler(handler);
 			}
+		} catch (IOException e) {
+			getChocoLogger().warning("Failed to initialize logger file handler.");
 		}
+
 	}
 
-	public static OutputStream addFileHandler(File file, Level level, Formatter formatter) {
+	/**
+	 * Write log messages into an xml file (with the exception of branching messages).
+	 * @param logfile the output xml file
+	 */
+	public static void recordXmlLogs(String logfile) {
 		try {
-			final OutputStream stream = new FileOutputStream(file);
-			Handler handler = new StreamHandler(stream, formatter);
-			handler.setLevel(level);
-			addHandler(handler,CHOCO_LOGGERS);
-			return stream;
-		} catch (FileNotFoundException e) {
-			getChocoLogger().log(Level.SEVERE, "cant create stream", e);
+			String filename = checkLogfile(logfile, ".xml", DEFAULT_XML_LOGFILE);
+			FileHandler handler = new FileHandler(filename, false);
+			handler.setFormatter(new XMLFormatter());
+			//Exclude branching logger for this handler
+			getBranchingLogger().setUseParentHandlers(false);
+			for (Handler h : getChocoLogger().getHandlers()) {
+				getBranchingLogger().addHandler(h);
+			}
+			//
+			getChocoLogger().addHandler(handler);
+			
+		} catch (IOException e) {
+			getChocoLogger().warning("Failed to initialize logger xml handler.");
 		}
-		return null;
+
 	}
 	/**
-	 * add a new handler whichs receive error logs
-	 * @param file the error log file
-	 * @return the error stream
+	 * Write error log messages into a file (warning and severe message).
+	 * @param logfile the output file
 	 */
-	public static OutputStream addErrorFileHandler(File file) {
-		return addFileHandler(file, Level.WARNING, DETAILED_FORMATTER);
+	public static void recordErrorLogs(String logfile) {
+		try {
+			String filename = checkLogfile(logfile, ".log", DEFAULT_LOGFILE);
+			FileHandler handler = new FileHandler(filename, false);
+			handler.setFormatter(new SimpleFormatter());
+			handler.setLevel(Level.WARNING);
+			getChocoLogger().addHandler(handler);
+			//Check branching logger (xml logging is activated)
+			if(! getBranchingLogger().getUseParentHandlers()) {
+				getBranchingLogger().addHandler(handler);
+			}
+		} catch (IOException e) {
+			getChocoLogger().warning("Failed to initialize logger error handler.");
+		}
+	}
+
+
+	////////////////////////////////////////////////////////////////////
+	///////////////////// Set up Verbosity  ////////////////////////////
+	////////////////////////////////////////////////////////////////////
+	
+	/**
+	 * Set verbosity to SILENT <i>(syntaxic sugar)</i>
+	 */
+	public static void toSilent(){
+		setVerbosity(Verbosity.SILENT);
 	}
 
 	/**
-	 * add a new handler whichs receive logs
-	 * @param file the log file
-	 * @return the stream
+	 * Set verbosity to QUIET <i>(syntaxic sugar)</i>
 	 */
-	public static OutputStream addFileHandler(File file) {
-		return addFileHandler(file, Level.ALL, LIGHT_FORMATTER);
+	public static void toQuiet(){
+		setVerbosity(Verbosity.QUIET);
 	}
 
-	public static void setLevel(final Level level, final Logger logger) {
-		logger.setLevel(level);
+	/**
+	 * Set verbosity to DEFAULT <i>(syntaxic sugar)</i>
+	 */
+	public static void toDefault(){
+		setVerbosity(Verbosity.DEFAULT);
 	}
+
+	/**
+	 * Set verbosity to SILENT <i>(syntaxic sugar)</i>
+	 */
+	public static void toVerbose(){
+		setVerbosity(Verbosity.VERBOSE);
+	}
+
+	/**
+	 * Set verbosity to SOLUTION <i>(syntaxic sugar)</i>
+	 */
+	public static void toSolution(){
+		setVerbosity(Verbosity.SOLUTION);
+	}
+
+	/**
+	 * Set verbosity to SEARCH <i>(syntaxic sugar)</i>
+	 */
+	public static void toSearch(){
+		setVerbosity(Verbosity.SEARCH);
+	}
+
 
 	public static void setLevel(final Level level, final Logger... loggers) {
 		for (Logger logger : loggers) {
 			logger.setLevel(level);
 		}
 	}
-
-    /**
-     * Set verbosity to SILENT <i>(syntaxic sugar)</i>
-     */
-    public static void toSilent(){
-        setVerbosity(Verbosity.SILENT);
-    }
-
-    /**
-     * Set verbosity to QUIET <i>(syntaxic sugar)</i>
-     */
-    public static void toQuiet(){
-        setVerbosity(Verbosity.QUIET);
-    }
-
-    /**
-     * Set verbosity to DEFAULT <i>(syntaxic sugar)</i>
-     */
-    public static void toDefault(){
-        setVerbosity(Verbosity.DEFAULT);
-    }
-
-    /**
-     * Set verbosity to SILENT <i>(syntaxic sugar)</i>
-     */
-    public static void toVerbose(){
-        setVerbosity(Verbosity.VERBOSE);
-    }
-
-    /**
-     * Set verbosity to SOLUTION <i>(syntaxic sugar)</i>
-     */
-    public static void toSolution(){
-        setVerbosity(Verbosity.SOLUTION);
-    }
-
-    /**
-     * Set verbosity to SEARCH <i>(syntaxic sugar)</i>
-     */
-    public static void toSearch(){
-        setVerbosity(Verbosity.SEARCH);
-    }
-
-    /**
+	/**
 	 * set the choco verbosity level
 	 * @param verbosity the new verbosity level
 	 */
@@ -427,6 +432,10 @@ public final class ChocoLogging {
 		}
 	}
 
+
+	////////////////////////////////////////////////////////////////////
+	///////////////////// Display Logger Tree  /////////////////////////
+	////////////////////////////////////////////////////////////////////
 	
 	public final static String toDotty() {
 		final StringBuilder b = new StringBuilder();
@@ -449,9 +458,9 @@ public final class ChocoLogging {
 		return new String(b);
 	}
 
-	
+
 	public static void main(String[] args) {
 		System.out.println(toDotty());
 	}
-	
+
 }

@@ -49,16 +49,19 @@ public final class LoggingExample implements Example {
             ChocoLogging.setVerbosity(verb);
             ChocoLogging.getMainLogger().log(Level.SEVERE, "verbosity: {0}", verb);
             new Queen().execute();
+            ChocoLogging.flushLogs();
             for (Logger logger : ChocoLogging.CHOCO_LOGGERS) {
                 final Level l = logger.getLevel();
                 logger.log(l, "{1}: {2}", new Object[]{-1, logger.getName(), l});
             }
         }
-
     }
 
     public static void main(String[] args) {
-        new LoggingExample().execute(args);
+    	ChocoLogging.recordXmlLogs(null);
+    	ChocoLogging.recordLogs(null);
+    	ChocoLogging.recordErrorLogs(null);
+    	new LoggingExample().execute("SEARCH");
     }
 
 }

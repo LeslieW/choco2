@@ -120,6 +120,7 @@ public class GolombRuler extends PatternExample {
     public void buildSolver() {
         solver = new CPSolver();
         solver.read(model);
+       // solver.addGoal(new AssignVar(new StaticVarOrder(solver, solver.getVar(ticks)), new IncreasingDomain()));
         solver.addGoal(new AssignVar(new StaticVarOrder(solver, solver.getVar(ticks)), new IncreasingDomain()));
     }
 
