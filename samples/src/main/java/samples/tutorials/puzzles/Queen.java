@@ -117,8 +117,8 @@ public class Queen extends PatternExample {
             }
             ret.append("\n\n\n");
         }
-//        LOGGER.info(ret.toString());
-        System.out.printf("%s\n", ret.toString());
+        LOGGER.info(ret.toString());
+//        System.out.printf("%s\n", ret.toString());
         solver.printRuntimeStatistics();
     }
 

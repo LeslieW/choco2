@@ -33,31 +33,17 @@ import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
+
 /**
  * @author Arnaud Malapert</br> 
  * @since 16 avr. 2009 version 2.1.0</br>
  * @version 2.1.0</br>
  */
-abstract class AbstractFormatter extends Formatter {
+public final class LightFormatter extends Formatter {
 
 	// Line separator string.  This is the value of the line.separator
 	// property at the moment that the SimpleFormatter was created.
-	protected static final String lineSeparator =(String) System.getProperty("line.separator");
-	
-	protected final void setWarningSign(LogRecord record, StringBuilder buffer) {
-		if(record.getLevel().intValue()> Level.INFO.intValue()) {
-			buffer.append("/!\\ ");
-		}
-	}
-}
-
-/**
- * @author Arnaud Malapert</br> 
- * @since 16 avr. 2009 version 2.1.0</br>
- * @version 2.1.0</br>
- */
-public final class LightFormatter extends AbstractFormatter {
-
+	private static final String lineSeparator =(String) System.getProperty("line.separator");
 	/**
 	 * Format the given LogRecord.
 	 * @param record the log record to be formatted.
@@ -66,7 +52,9 @@ public final class LightFormatter extends AbstractFormatter {
 	@Override
 	public synchronized String format(LogRecord record) {
 		StringBuilder sb = new StringBuilder();
-		setWarningSign(record, sb);
+		if(record.getLevel().intValue()> Level.INFO.intValue()) {
+			sb.append("[").append(record.getLevel().getLocalizedName()).append("] ");
+		}
 		sb.append(formatMessage(record));
 		sb.append(lineSeparator);
 		if (record.getThrown() != null) {

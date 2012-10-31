@@ -358,7 +358,7 @@ public abstract class AbstractInstanceModel {
 	}
 
 
-		
+
 	/**
 	 * compute the resolution status after the preprocessing stage (no solver build yet).
 	 */
@@ -370,10 +370,10 @@ public abstract class AbstractInstanceModel {
 
 	public boolean applyCP() {
 		return ! defaultConf.readBoolean(BasicSettings.CANCEL_CP_SOLVE) &&
-		( 
-				status == UNKNOWN || 
-				( StrategyFactory.isOptimize(defaultConf) && status == SAT) 
-		);
+				( 
+						status == UNKNOWN || 
+						( StrategyFactory.isOptimize(defaultConf) && status == SAT) 
+						);
 	}
 	/**
 	 * compute the resolution status after the cp search (solver is not null).
@@ -410,6 +410,9 @@ public abstract class AbstractInstanceModel {
 			final double rtime = getFullSecTime();
 			logMsg.appendDiagnostics("NODES", solver.getNodeCount(), rtime);
 			logMsg.appendDiagnostics("BACKTRACKS", solver.getBackTrackCount(), rtime);
+			if(solver.getFailCount() != Integer.MIN_VALUE) {
+				logMsg.appendDiagnostics("FAILURES", solver.getFailCount(), rtime);
+			}
 			logMsg.appendDiagnostics("RESTARTS", solver.getRestartCount(), rtime);
 			// TODO - Fail count - created 16 mai 2012 by A. Malapert
 			if(solver.isOptimizationSolver()) {
@@ -491,7 +494,7 @@ public abstract class AbstractInstanceModel {
 					solver.getSolutionCount(), objective, solver.getTimeCount(), 
 					solver.getNodeCount(), solver.getBackTrackCount(), 
 					solver.getFailCount(), solver.getRestartCount()
-			);
+					);
 		} else {
 			measuresID = dbManager.insertEntryAndRetrieveGPK(DbTables.T_MEASURES, 0, objective, 0, 0, 0, 0, 0);
 		}
