@@ -27,31 +27,6 @@
 
 package choco.model.constraints.global;
 
-import static choco.Choco.allDifferent;
-import static choco.Choco.eq;
-import static choco.Choco.leq;
-import static choco.Choco.lt;
-import static choco.Choco.makeBooleanVar;
-import static choco.Choco.makeIntVar;
-import static choco.Choco.mult;
-import static choco.Choco.neq;
-import static choco.Choco.or;
-import static choco.Choco.plus;
-import static choco.Choco.power;
-import static choco.Choco.reifiedConstraint;
-import static choco.Choco.scalar;
-import static org.junit.Assert.assertEquals;
-
-import java.util.logging.Logger;
-
-import junit.framework.Assert;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -60,10 +35,20 @@ import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
-import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.SolverException;
+import junit.framework.Assert;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import java.util.logging.Logger;
+
+import static choco.Choco.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by IntelliJ IDEA.
@@ -202,7 +187,7 @@ public class ReifiedIntConstraintTest {
 
 
 
-	@Test
+	@Test(expected = SolverException.class)
 	public void test4() {
 		IntegerVariable F = makeIntVar("F", 0, 9);
 		IntegerVariable O = makeIntVar("O", 0, 9);
@@ -220,8 +205,10 @@ public class ReifiedIntConstraintTest {
 				eq(bv,1)
 				);
 		model.addConstraints(reifiedConstraint(bv, eq( FOUR, power(sqrt, 2))));
+//        model.addConstraint(eq( FOUR, power(sqrt, 2)));
 		final CPSolver solver = new CPSolver();
 		solver.read(model);
+        System.out.println(solver.pretty());
 		solver.solve();
 		Assert.assertTrue("Did not find any solution", solver.existsSolution());
 	}
