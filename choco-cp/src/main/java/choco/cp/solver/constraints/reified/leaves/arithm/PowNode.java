@@ -27,9 +27,12 @@
 
 package choco.cp.solver.constraints.reified.leaves.arithm;
 
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.reified.ArithmNode;
 import choco.kernel.solver.constraints.reified.INode;
 import choco.kernel.solver.constraints.reified.NodeType;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /*
  * Created by IntelliJ IDEA.
@@ -40,19 +43,34 @@ import choco.kernel.solver.constraints.reified.NodeType;
  */
 public final class PowNode extends INode implements ArithmNode {
 
-	public PowNode(INode[] subt) {
-		super(subt, NodeType.POW);
-	}
+    public PowNode(INode[] subt) {
+        super(subt, NodeType.POW);
+    }
 
-	public int eval(int[] tuple) {
-		return (int)Math.pow(((ArithmNode) subtrees[0]).eval(tuple) , ((ArithmNode) subtrees[1]).eval(tuple));
-	}
+    public int eval(int[] tuple) {
+        return (int) Math.pow(((ArithmNode) subtrees[0]).eval(tuple), ((ArithmNode) subtrees[1]).eval(tuple));
+    }
 
-	public boolean isDecompositionPossible() {
-		return false;
-	}
+    public IntDomainVar extractResult(Solver s) {
+//        assert subtrees.length == 12;
+//        IntDomainVar var = subtrees[0].extractResult(s);
+//        int exp = subtrees[1].extractResult(s).getInf();
+//        int a = var.getInf() * var.getInf();
+//        int b = var.getSup() * var.getSup();
+//        int lb = a < b ? a : b;
+//        int ub = a > b ? a : b;
+//        IntDomainVar sum = s.createBoundIntVar(StringUtils.randomName(), lb, ub);
+        // TODO create POWER constraint
+        throw new SolverException("\n\nThe constraint POWER is not available as is in Choco.\n" +
+                "Actually, any POWER constraints are translated into a TABLE constraints in the Solver.\n" +
+                "As a consequence, POWER constraint cannot be reified.\n");
+    }
+
+    public boolean isDecompositionPossible() {
+        return false;
+    }
 
     public String pretty() {
-        return "("+subtrees[0].pretty()+"^"+subtrees[1].pretty()+")";
+        return "(" + subtrees[0].pretty() + "^" + subtrees[1].pretty() + ")";
     }
 }
