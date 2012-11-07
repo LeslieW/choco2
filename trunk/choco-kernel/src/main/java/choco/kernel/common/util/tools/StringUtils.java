@@ -126,7 +126,7 @@ public class StringUtils {
 		for (int i = begin; i < end; i++) {
 			buffer.append(elems[i].pretty()).append(", ");
 		}
-		buffer.deleteCharAt(buffer.length() - 2);
+		if(begin < end) buffer.deleteCharAt(buffer.length() - 2);
 		buffer.append('}');
 		return new String(buffer);
 	}
