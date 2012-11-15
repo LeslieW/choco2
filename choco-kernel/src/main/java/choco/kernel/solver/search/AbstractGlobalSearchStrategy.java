@@ -280,7 +280,6 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 */
 	public void newTreeSearch() throws ContradictionException {
 		assert(solver.getSearchStrategy() == this);
-		LOGGER.info(ChocoLogging.START_MESSAGE);
 		baseWorld = solver.getWorldIndex();
 		resetSolutions();
 		initialTrace.setBranching(this.mainGoal);

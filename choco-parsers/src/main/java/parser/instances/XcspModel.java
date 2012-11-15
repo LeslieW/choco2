@@ -242,14 +242,14 @@ public class XcspModel extends AbstractInstanceModel {
 	@Override
 	protected void logOnDiagnostics() {
 		super.logOnDiagnostics();
-		logMsg.storeDiagnostic("CHECKS",  ValidityChecker.nbCheck);
-		logMsg.storeDiagnostic("AC",  ObjectFactory.algorithmAC);
+		logMsg.appendDiagnostic("CHECKS",  ValidityChecker.nbCheck);
+		logMsg.appendDiagnostic("AC",  ObjectFactory.algorithmAC);
 	}
 
 	@Override
 	protected void logOnConfiguration() {
 		super.logOnConfiguration();
-		logMsg.storeConfiguration(PreProcessConfiguration.getPreProcessMsg(defaultConf)
+		logMsg.appendConfiguration(PreProcessConfiguration.getPreProcessMsg(defaultConf)
                 + cheuri+" HEURISTIC    "
                 + defaultConf.readBoolean(BasicSettings.RANDOM_VALUE)+" RANDVAL");
 	}

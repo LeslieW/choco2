@@ -92,14 +92,23 @@ public abstract class AbstractInstanceModel {
 
 	protected final Configuration defaultConf;
 
-	protected final ReportFormatter logMsg = new ReportFormatter();
+	protected final ReportFormatter logMsg;
 
 	public AbstractInstanceModel(InstanceFileParser parser, Configuration defaultConfiguration) {
+		this(parser, defaultConfiguration, new ReportFormatter());
+	}
+	
+
+	public AbstractInstanceModel(InstanceFileParser parser,
+			Configuration defaultConf, ReportFormatter logMsg) {
 		super();
 		this.parser = parser;
-		this.defaultConf = defaultConfiguration;
-
+		this.defaultConf = defaultConf;
+		this.logMsg = logMsg;
 	}
+
+
+
 
 	public final Configuration getConfiguration() {
 		return defaultConf;
@@ -111,7 +120,7 @@ public abstract class AbstractInstanceModel {
 	}
 
 	public void initialize() {
-		parser.cleanup();
+		if(parser != null) parser.cleanup();
 		Arrays.fill(time, 0);
 		isFeasible = null;
 		status = ERROR;
@@ -188,10 +197,10 @@ public abstract class AbstractInstanceModel {
 
 	private final static String INSTANCE_MSG="========================================================\nTreatment of: {0}";
 
-	private final static String DESCR_MSG="{0}...dim:[nbv:{1}][nbc:{2}][nbconstants:{3}]";
+	protected final static String DESCR_MSG="{0}...dim:[nbv:{1}][nbc:{2}][nbconstants:{3}]";
 
 
-	private void logOnModel() {
+	protected void logOnModel() {
 		if(LOGGER.isLoggable(Level.CONFIG)) {
 			if(model == null) LOGGER.log(Level.CONFIG, "model...[null]");
 			else {
@@ -203,7 +212,7 @@ public abstract class AbstractInstanceModel {
 		}
 	}
 
-	private void logOnSolver() {
+	protected void logOnSolver() {
 		if(LOGGER.isLoggable(Level.CONFIG)) {
 			if(solver == null) LOGGER.log(Level.CONFIG, "solver...[null]");
 			else {
@@ -215,7 +224,7 @@ public abstract class AbstractInstanceModel {
 		}
 	}
 
-	private void logOnPP() {
+	protected void logOnPP() {
 		if(LOGGER.isLoggable(Level.CONFIG)) {
 			if( isFeasible == Boolean.TRUE && StrategyFactory.isOptimize(defaultConf) ) {
 				LOGGER.log(Level.CONFIG, "preprocessing...[status:{0}][obj:{1}]", new Object[]{status, objective});
@@ -226,7 +235,7 @@ public abstract class AbstractInstanceModel {
 	}
 
 	private void logOnError(ResolutionStatus error, Exception e) {
-		LOGGER.log(Level.INFO, "s {0}", error.getName());
+		LOGGER.log(Level.SEVERE, "s {0}", error.getName());
 		if(e != null) {
 			LOGGER.log(Level.CONFIG, getInstanceName()+"...[FAIL]", e);
 		}
@@ -428,7 +437,7 @@ public abstract class AbstractInstanceModel {
 			//nogood
 			if (solver instanceof CPSolver) {
 				final ClauseStore ngs = ( (CPSolver) solver).getNogoodStore();
-				if( ngs != null) logMsg.storeDiagnostic("NBNOGOODS", ngs.getNbClause());
+				if( ngs != null) logMsg.appendDiagnostic("NBNOGOODS", ngs.getNbClause());
 			}
 		}
 	}
@@ -436,11 +445,11 @@ public abstract class AbstractInstanceModel {
 	// TODO - improve formatting of numbers - created 16 mai 2012 by A. Malapert
 	protected void logOnConfiguration() {
 		logMsg.appendConfiguration( MessageFactory.getGeneralMsg(defaultConf, getClass().getSimpleName(), getInstanceName()));
-		logMsg.storeConfiguration( createTimeConfiguration() );
-		logMsg.storeConfiguration( BasicSettings.getInstModelMsg(defaultConf) );
+		logMsg.appendConfiguration( createTimeConfiguration() );
+		logMsg.appendConfiguration( BasicSettings.getInstModelMsg(defaultConf) );
 		if (solver != null) {
-			logMsg.storeConfiguration( MessageFactory.getShavingMsg(solver));
-			logMsg.storeConfiguration( MessageFactory.getRestartMsg(solver));
+			logMsg.appendConfiguration( MessageFactory.getShavingMsg(solver));
+			logMsg.appendConfiguration( MessageFactory.getRestartMsg(solver));
 		}
 	}
 
@@ -499,9 +508,7 @@ public abstract class AbstractInstanceModel {
 			measuresID = dbManager.insertEntryAndRetrieveGPK(DbTables.T_MEASURES, 0, objective, 0, 0, 0, 0, 0);
 		}
 		dbManager.jdbcTemplate.update(DbTables.T_LIMITS.createInsertQuery(false), new Object[] { measuresID, solverID});
-		for (String c: logMsg.getDbInformations()) {
-			dbManager.insertConfiguration(solverID, c);
-		}
+		dbManager.insertConfiguration(solverID, logMsg.getLoggingMessage());
 	}
 
 

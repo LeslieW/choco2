@@ -136,14 +136,14 @@ public abstract class AbstractMinimizeModel extends AbstractInstanceModel {
 	protected void logOnDiagnostics() {
 		super.logOnDiagnostics();
 		if(computedLowerBound != MIN_LOWER_BOUND) {
-			logMsg.storeDiagnostic("INITIAL_LOWER_BOUND", computedLowerBound);
+			logMsg.appendDiagnostic("INITIAL_LOWER_BOUND", computedLowerBound);
 			if(getStatus() == ResolutionStatus.SAT) {
-				logMsg.storeDiagnostic("ILB_GAP", getGapILB());
+				logMsg.appendDiagnostic("ILB_GAP", getGapILB());
 			}
 		}
 		if(heuristics != null && heuristics.hasSearched()) {
-			logMsg.storeDiagnostic("HEUR_TIME", heuristics.getTimeCount());
-			logMsg.storeDiagnostic("HEUR_ITERATION", heuristics.getIterationCount());
+			logMsg.appendDiagnostic("HEUR_TIME", heuristics.getTimeCount());
+			logMsg.appendDiagnostic("HEUR_ITERATION", heuristics.getIterationCount());
 		}
 	}
 
