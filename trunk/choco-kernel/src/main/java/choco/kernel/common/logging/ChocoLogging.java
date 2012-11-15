@@ -50,7 +50,7 @@ import java.util.logging.XMLFormatter;
 
 /**
  * A final class which handles choco logging statements.
- * Most of choco class propose a static final field LOGGER.
+ * Most of choco classes propose a static final field LOGGER.
  * @author Arnaud Malapert</br> 
  * @since 16 avr. 2009 version 2.0.3</br>
  * @version 2.0.3</br>
@@ -59,7 +59,7 @@ public final class ChocoLogging {
 
 	public final static String START_MESSAGE =
 			"** CHOCO : Constraint Programming Solver\n"+
-					"** CHOCO v2.1.6 (August, 2012), Copyleft (c) 1999-2012";
+					"** CHOCO v2.1.6 (November, 2012), Copyleft (c) 1999-2012";
 	
 	public final static Formatter LIGHT_FORMATTER = new LightFormatter();
 	
@@ -146,20 +146,22 @@ public final class ChocoLogging {
 
 	static {
 		try {
+			clearHandlers();
 			DEFAULT_HANDLER.setLevel(Level.ALL);
-			setDefaultHandler();
+			getChocoLogger().addHandler(DEFAULT_HANDLER);
 			setVerbosity(loadProperties());
+			getChocoLogger().info(ChocoLogging.START_MESSAGE);
 		} catch (AccessControlException e) {
 			// Do nothing if this is an applet !
 			// TODO: see how to make it work with an applet !
 		}
 	}
 
-	
 	/**
 	 * set the default handler for all loggers
 	 */
-	public static void setDefaultHandler() {
+	public static void clearHandlers() {
+		flushLogs();
 		// clear Handlers
 		for (Logger logger : CHOCO_LOGGERS) {
 			logger.setUseParentHandlers(true);
@@ -167,11 +169,9 @@ public final class ChocoLogging {
 				logger.removeHandler(h);
 			}
 		}
-		final Logger log = getChocoLogger();
-		log.setUseParentHandlers(false);
-		log.addHandler(DEFAULT_HANDLER);
+		getChocoLogger().setUseParentHandlers(false);
 	}
-
+	
 	/**
 	 * Load the properties file and return default value to logging verbosity, if defined.
 	 * @return Default verbosity
@@ -268,7 +268,7 @@ public final class ChocoLogging {
 
 	/**
 	 * Write all log messages into text files (five rolling files).
-	 * @param logfile the output file
+	 * @param logfile a filename pattern
 	 */
 	public static void recordLogs(String logfile) {
 		try {
