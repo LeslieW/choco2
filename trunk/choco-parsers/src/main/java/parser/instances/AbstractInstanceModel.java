@@ -130,6 +130,10 @@ public abstract class AbstractInstanceModel {
 		objective = null;
 		logMsg.reset();
 	}
+	
+	public void terminate() {
+		ChocoLogging.flushLogs();
+	}
 
 	//*****************************************************************//
 	//*******************  Getters/Setters ***************************//
@@ -303,12 +307,12 @@ public abstract class AbstractInstanceModel {
 		} catch (Exception e) {
 			logOnError(ERROR, e);
 		} 
-		ChocoLogging.flushLogs();
+		terminate();
 	}
 
 
 	/**
-	 * Parse the xml and return the parser object (Christophe parser) which
+	 * Parse the xml and return the parser object which
 	 * can be used to access variables, constraints, etc...
 	 *
 	 * @param fichier
@@ -468,10 +472,10 @@ public abstract class AbstractInstanceModel {
 			logMsg.appendStatus(status.getName());
 			//solution v
 			if( isFeasible == Boolean.TRUE) {
-				//display best solution
+				//display last solution
 				final String values = getValuesMessage();
 				if(values != null) {
-					logMsg.appendValues(values.replaceAll("\n", "\nv "));
+					logMsg.appendValues(values);
 				}
 			}
 			//diagnostics and configuration d/c 
@@ -538,6 +542,9 @@ public abstract class AbstractInstanceModel {
 	//*******************  Time Measures  ****************************//
 	//***************************************************************//
 
+	public final long getStartTime() {
+		return time[0];
+	}
 	public final long getParseTime() {
 		return (time[1] - time[0]);
 	}

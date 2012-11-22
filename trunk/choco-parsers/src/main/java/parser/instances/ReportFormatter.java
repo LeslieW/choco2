@@ -56,7 +56,7 @@ public class ReportFormatter {
 	}
 
 	public void appendValues(String values) {
-		b.append("v ").append(values).append('\n');
+		b.append("v ").append(values.replaceAll("\n", "\nv ")).append('\n');
 	}
 
 	public void appendDiagnostic(String value) {

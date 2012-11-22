@@ -408,7 +408,7 @@ public final class ChocoLogging {
 			}
 			case VERBOSE: {
 				setLevel(Level.INFO, getEngineLogger(), getBranchingLogger());
-				setLevel(Level.CONFIG, getMainLogger(), getSearchLogger(), getTestLogger());
+				setLevel(Level.CONFIG, getMainLogger(), getTestLogger());
 				setLevel(Level.FINE, getSearchLogger());
 				break;
 			}
