@@ -86,7 +86,7 @@ public class ShavingTools {
 				final IntDomainVar[] newVars = new IntDomainVar[vars.length - 1];
 				System.arraycopy(vars, 0, newVars, 0, idx);
 				System.arraycopy(vars, idx + 1, newVars, idx, vars.length - idx - 1);
-				return vars;
+				return newVars;
 			}
 		}
 		return vars;
