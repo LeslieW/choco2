@@ -344,15 +344,15 @@ public class DomOverWDegBranching extends AbstractLargeIntBranchingStrategy impl
 			reuseCstr = (AbstractSConstraint) cause;
 			if (SConstraintType.INTEGER.equals(reuseCstr.getConstraintType())) {
 				try {
-					reuseCstr.getExtension(ABSTRACTCONTRAINT_EXTENSION).add(1);
+					reuseCstr.getExtension(ABSTRACTCONTRAINT_EXTENSION).increment();
 				} catch (NullPointerException npe) {
 					// If there was a postCut, the extension has not been generated at the Branching creation
 					reuseCstr.addExtension(ABSTRACTCONTRAINT_EXTENSION);
-					reuseCstr.getExtension(ABSTRACTCONTRAINT_EXTENSION).add(1);
+					reuseCstr.getExtension(ABSTRACTCONTRAINT_EXTENSION).increment();
 				}
 				for (int k = 0; k < reuseCstr.getNbVars(); k++) {
 					AbstractVar var = (AbstractVar) ((AbstractIntSConstraint) reuseCstr).getVar(k);
-					var.getExtension(ABSTRACTVAR_EXTENSION).add(1);
+					var.getExtension(ABSTRACTVAR_EXTENSION).increment();
 				}
 			}
 		}

@@ -59,7 +59,7 @@ public class DisjointFromUnaryModelDetector extends AbstractRscDetector {
 			for (int j = i+1; j < n; j++) {
 				final TaskVariable t2 = rsc.getTask(j);
 				if( ! disjMod.containsRelation(t1, t2) && isDisjoint(rsc, i, j)) {
-					IntegerVariable dir = Choco.makeBooleanVar(StringUtils.dirRandomName(t1.getName(), t2.getName()));
+					IntegerVariable dir = Choco.makeBooleanVar(StringUtils.randomName(t1, t2));
 					TemporalConstraint c = (TemporalConstraint) Choco.precedenceDisjoint(t1, t2, dir);
 					disjMod.addEdge(t1.getHook(), t2.getHook(), c);
 					add(dir);add(c);

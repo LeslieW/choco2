@@ -108,7 +108,7 @@ public class PertCPM extends PatternExample {
 				startsAfterEnd(moving,painting)
 		);
 		//add a single disjonction
-		direction = makeBooleanVar(StringUtils.dirName(facade.getName(), plumbing.getName()));
+		direction = makeBooleanVar( "b_" + facade.getName() + "_" + plumbing.getName());
 		model.addConstraint(
 				precedenceDisjoint(facade, plumbing, direction, 1, 3)
 		);

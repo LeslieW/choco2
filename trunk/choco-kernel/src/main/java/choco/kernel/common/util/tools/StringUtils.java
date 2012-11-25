@@ -27,18 +27,20 @@
 
 package choco.kernel.common.util.tools;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import choco.IPretty;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.common.util.iterators.EmptyIterator;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.model.variables.scheduling.ITaskVariable;
+import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.search.limit.Limit;
 import choco.kernel.solver.search.measure.ISearchMeasures;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.ITask;
-
-import java.util.Collection;
-import java.util.Iterator;
 
 /*
  * User : charles
@@ -373,17 +375,12 @@ public class StringUtils {
 		return new String(b);
 	}
 
-
-
-	public static String dirName(String n1, String n2){
-		return "dir" +
-		( 
-				( n1 != null && n2 != null && ! n1.isEmpty() && ! n2.isEmpty() ) ?
-						"-" + n1 + "-" + n2 : ""
-		);
+	
+	public static String randomName(ITask t1,ITask t2){
+		return randomName()+"_" + t1.getName() + "_" +t2.getName();
 	}
-
-	public static String dirRandomName(String n1, String n2){
-		return randomName()+"-"+dirName(n1, n2);
+	
+	public static String randomName(TaskVariable t1,TaskVariable t2){
+		return randomName()+"_" + t1.getName() + "_" +t2.getName();
 	}
 }

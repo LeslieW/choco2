@@ -37,7 +37,8 @@ package choco.kernel.solver.branch;
  * Usefull for dynamic branching like {@link DomOverWDegBranching}
  */
 public final class Extension {
-    protected int nb = 0;
+    
+	public int nb = 0;
 
     public final void set(int val){
         nb = val;
@@ -50,7 +51,15 @@ public final class Extension {
     public final void add(int val){
         nb +=val;
     }
+    
+    public final void increment() {
+    	nb++;
+    }
 
+    public final void decrement() {
+    	nb++;
+    }
+    
 	@Override
 	public String toString() {
 		return String.valueOf(nb);

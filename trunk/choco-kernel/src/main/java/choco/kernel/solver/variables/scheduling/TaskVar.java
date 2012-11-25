@@ -30,9 +30,15 @@
  */
 package choco.kernel.solver.variables.scheduling;
 
+import java.util.HashMap;
+
 import choco.kernel.common.IIndex;
 import choco.kernel.common.util.iterators.DisposableIterator;
-import choco.kernel.memory.structure.*;
+import choco.kernel.memory.structure.APartiallyStoredCstrList;
+import choco.kernel.memory.structure.Couple;
+import choco.kernel.memory.structure.PartiallyStoredIntVector;
+import choco.kernel.memory.structure.PartiallyStoredTaskCstrList;
+import choco.kernel.memory.structure.PartiallyStoredVector;
 import choco.kernel.model.variables.scheduling.ITaskVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
@@ -74,6 +80,35 @@ public final class TaskVar<C extends AbstractSConstraint & TaskPropagator> exten
 
 	private final PropagationEngine propagationEngine;
 
+	/**
+	 * The number of extensions registered to this class
+	 */
+	private static int TASKVAR_EXTENSIONS_NB = 0;
+	
+	/**
+	 * The set of registered extensions (in order to deliver one and only one index for each extension !)
+	 */
+	private static final HashMap<String, Integer> REGISTERED_TASKVAR_EXTENSIONS = new HashMap<String, Integer>();
+
+    /**
+	 * Returns a new number of extension registration
+	 * @param name A name for the extension (should be an UID, like the absolute path for instance)
+	 * @return a number that can be used for specifying an extension (setExtension method)
+	 */
+	public static int getTaskVarExtensionNumber(String name) {
+		Integer ind = REGISTERED_TASKVAR_EXTENSIONS.get(name);
+		if (ind == null) {
+			ind = TASKVAR_EXTENSIONS_NB++;
+			REGISTERED_TASKVAR_EXTENSIONS.put(name, ind);
+		}
+		return ind;
+	}
+	
+	/**
+	 * The extensions of this constraint, in order to add some data linked to this constraint (for specific algorithms)
+	 */
+	private Extension[] extensions;
+	
 	/**
 	 * Initializes a new variable.
 	 * @param solver The model this variable belongs to
@@ -326,15 +361,41 @@ public final class TaskVar<C extends AbstractSConstraint & TaskPropagator> exten
 	}
 
 
+	/**
+	 * Returns the queried extension
+	 * @param extensionNumber should use the number returned by getTaskVarExtensionNumber
+	 * @return the queried extension
+	 */
 	@Override
 	public Extension getExtension(int extensionNumber) {
-		return null;
+		return extensions[extensionNumber];
 	}
 
-    @Override
-    public void addExtension(final int extensionNumber) {
-    	throw new UnsupportedOperationException("Not yet implemented");
-    }
+	/**
+	 * Adds a new extension value.
+	 * @param extensionNumber should use the number returned by getTaskVarExtensionNumber
+     */
+	@Override
+	public void addExtension(int extensionNumber) {
+		if(extensions == null) {
+			extensions = new Extension[extensionNumber+1];
+		}else if (extensionNumber >= extensions.length) {
+			Extension[] newArray = new Extension[extensions.length * 2];
+			System.arraycopy(extensions, 0, newArray, 0, extensions.length);
+			extensions = newArray;
+		}
+		extensions[extensionNumber] = new Extension();
+	}
+	
+	/**
+	 * Adds a new extension with an initial value.
+	 * @param extensionNumber should use the number returned by getTaskVarExtensionNumber
+     */
+		public void addExtension(int extensionNumber, int value) {
+			addExtension(extensionNumber);
+			extensions[extensionNumber].set(value);
+		}
+
 
     public final boolean detectOrPostConsistencyConstraint(Solver solver) {
 		final DisposableIterator<SConstraint> iter = getConstraintsIterator();

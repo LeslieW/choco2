@@ -151,11 +151,11 @@ public class DomWDegUtils {
 		if(cause != null) {
 			if(INTEGER.isTypeOf(cause)) {
 				try {
-					getConstraintExtension(cause).add(1);
+					getConstraintExtension(cause).increment();
 				} catch (NullPointerException npe) {
 					// If there was a postCut, the extension has not been generated at the Branching creation
 					addConstraintExtension(cause);
-					getConstraintExtension(cause).add(1);
+					getConstraintExtension(cause).increment();
 				}
 			}
 		}
@@ -176,16 +176,16 @@ public class DomWDegUtils {
 		if(cause != null) {
 			if( INTEGER.isTypeOf(cause)) {
 				try {
-					getConstraintExtension(cause).add(1);
+					getConstraintExtension(cause).increment();
 					final int n = cause.getNbVars();
 					for (int k = 0; k < n; k++) {
-						getVarExtension(cause.getVarQuick(k)).add(1);
+						getVarExtension(cause.getVarQuick(k)).increment();
 					}
 				} catch (NullPointerException npe) {
 					// If there was a postCut, the extension has not been generated at the Branching creation
 					//final AbstractSConstraint reuseCstr = (AbstractSConstraint) cause;
 					addConstraintExtension(cause);
-					getConstraintExtension(cause).add(1);
+					getConstraintExtension(cause).increment();
 					addConstraintToVarWeights(cause);
 				}
 			}

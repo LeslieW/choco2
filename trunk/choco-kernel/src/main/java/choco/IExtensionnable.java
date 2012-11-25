@@ -50,7 +50,7 @@ public interface IExtensionnable {
     /**
 	 * Adds a new extension.
 	 *
-	 * @param extensionNumber should use the number returned by getAbstractSConstraintExtensionNumber
 	 */
 	void addExtension(int extensionNumber);
+
 }
