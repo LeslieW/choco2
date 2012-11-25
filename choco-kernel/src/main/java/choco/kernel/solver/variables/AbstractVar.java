@@ -44,7 +44,7 @@ import java.util.HashMap;
  */
 public abstract class AbstractVar implements Var {
 
-    protected PropagationEngine propagationEngine;
+	protected PropagationEngine propagationEngine;
 
 	/**
 	 * A name may be associated to each variable.
@@ -69,12 +69,13 @@ public abstract class AbstractVar implements Var {
 	 * The number of extensions registered to this class
 	 */
 	private static int ABSTRACTVAR_EXTENSIONS_NB = 0;
+
 	/**
 	 * The set of registered extensions (in order to deliver one and only one index for each extension !)
 	 */
 	private static final HashMap<String, Integer> REGISTERED_ABSTRACTVAR_EXTENSIONS = new HashMap<String, Integer>();
 
-    /**
+	/**
 	 * Returns a new number of extension registration
 	 * @param name A name for the extension (should be an UID, like the absolute path for instance)
 	 * @return a number that can be used for specifying an extension (setExtension method)
@@ -91,9 +92,9 @@ public abstract class AbstractVar implements Var {
 	/**
 	 * The extensions of this constraint, in order to add some data linked to this constraint (for specific algorithms)
 	 */
-	public Extension[] extensions = new Extension[4];
-	// TODO - Create extension on demand ? - created 16 févr. 2012 by A. Malapert
-	
+	private Extension[] extensions;
+
+
 	public String getName() {
 		return name;
 	}
@@ -103,10 +104,10 @@ public abstract class AbstractVar implements Var {
 	 * Initializes a new variable.
 	 * @param solver The model this variable belongs to
 	 * @param name The name of the variable
-     * @param constraints constraints stored specific structure
+	 * @param constraints constraints stored specific structure
 	 */
 	public AbstractVar(final Solver solver, final String name,
-                       final APartiallyStoredCstrList<? extends SConstraint> constraints) {
+			final APartiallyStoredCstrList<? extends SConstraint> constraints) {
 		this.propagationEngine = solver.getPropagationEngine();
 		this.name = name;
 		this.constraints = constraints;
@@ -120,27 +121,29 @@ public abstract class AbstractVar implements Var {
 		return HashCoding.hashCodeMe(new Object[]{index});
 	}
 
-    /**
-     * Unique index
-     * (Different from hashCode, can change from one execution to another one)
-     *
-     * @return the indice of the objet
-     */
-    @Override
-    public final long getIndex() {
-        return index;
-    }
+	/**
+	 * Unique index
+	 * (Different from hashCode, can change from one execution to another one)
+	 *
+	 * @return the indice of the objet
+	 */
+	@Override
+	public final long getIndex() {
+		return index;
+	}
 
-    public final int getPriority() {
-        return constraints.getPriority();
-    }
+	public final int getPriority() {
+		return constraints.getPriority();
+	}
 
     /**
 	 * Adds a new extension.
-	 * @param extensionNumber should use the number returned by getAbstractSConstraintExtensionNumber
+	 * @param extensionNumber should use the number returned by getAbstractVarExtensionNumber
      */
 	public void addExtension(int extensionNumber) {
-		if (extensionNumber >= extensions.length) {
+		if(extensions == null) {
+			extensions = new Extension[extensionNumber+1];
+		}else if (extensionNumber >= extensions.length) {
 			Extension[] newArray = new Extension[extensions.length * 2];
 			System.arraycopy(extensions, 0, newArray, 0, extensions.length);
 			extensions = newArray;
@@ -148,11 +151,21 @@ public abstract class AbstractVar implements Var {
 		extensions[extensionNumber] = new Extension();
 	}
 
+ 	/**
+	 * Adds a new extension with an initial value.
+	 * @param extensionNumber should use the number returned by getAbstractVarExtensionNumber
+     */
+	public void addExtension(int extensionNumber, int value) {
+		addExtension(extensionNumber);
+		extensions[extensionNumber].set(value);
+	}
+
 	/**
 	 * Returns the queried extension
-	 * @param extensionNumber should use the number returned by getAbstractSConstraintExtensionNumber
+	 * @param extensionNumber should use the number returned by getAbstractVarExtensionNumber
 	 * @return the queried extension
 	 */
+	@Override
 	public Extension getExtension(int extensionNumber) {
 		return extensions[extensionNumber];
 	}

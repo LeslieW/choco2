@@ -111,7 +111,7 @@ public class DomOverWDegRPC extends DoubleHeuristicIntVarSelector implements
         Object cause = e.getContradictionCause();
         if (cause != null && cause instanceof AbstractSConstraint) {
             AbstractSConstraint c = (AbstractSConstraint) cause;
-            c.getExtension(ABSTRACTCONTRAINT_EXTENSION).add(1);
+            c.getExtension(ABSTRACTCONTRAINT_EXTENSION).increment();
         }
     }
 }

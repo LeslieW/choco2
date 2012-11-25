@@ -243,18 +243,18 @@ public class DomOverWDegBinBranching extends AbstractAssignOrForbidBranching {
 			final AbstractSConstraint causeCstr = (AbstractSConstraint) cause;
 			if (SConstraintType.INTEGER.equals(causeCstr.getConstraintType())) {
 				try {
-					causeCstr.getExtension(CONSTRAINT_EXTENSION).add(1);
+					causeCstr.getExtension(CONSTRAINT_EXTENSION).increment();
 				} catch (NullPointerException npe) {
 					// If there was a postCut, the extension has not been
 					// generated at the Branching creation
 					causeCstr.addExtension(CONSTRAINT_EXTENSION
                     );
-					causeCstr.getExtension(CONSTRAINT_EXTENSION).add(1);
+					causeCstr.getExtension(CONSTRAINT_EXTENSION).increment();
 				}
 				for (int k = 0; k < causeCstr.getNbVars(); k++) {
 					AbstractVar var = (AbstractVar) ((AbstractIntSConstraint) causeCstr)
 					.getVar(k);
-					var.getExtension(VAR_EXTENSION).add(1);
+					var.getExtension(VAR_EXTENSION).increment();
 				}
 			}
 		}

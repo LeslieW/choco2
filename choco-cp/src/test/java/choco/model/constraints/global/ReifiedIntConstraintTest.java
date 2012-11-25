@@ -182,7 +182,7 @@ public class ReifiedIntConstraintTest {
 
 	@BeforeClass
 	public final static void setUpLogging() {
-		ChocoLogging.toSolution();
+		//ChocoLogging.toSolution();
 	}
 
 

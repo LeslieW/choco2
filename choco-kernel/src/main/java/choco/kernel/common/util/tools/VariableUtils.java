@@ -318,7 +318,7 @@ public final class VariableUtils {
     //***************************************************************//
 
     public static IntDomainVar createDirVar(Solver solver, TaskVar t1, TaskVar t2) {
-    	return solver.createBooleanVar(StringUtils.dirRandomName(t1.getName(), t2.getName()));
+    	return solver.createBooleanVar(StringUtils.randomName(t1, t2));
     }
 
     public static IntDomainVar[] getStartVars(TaskVar... tasks) {

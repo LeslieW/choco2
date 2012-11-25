@@ -149,7 +149,7 @@ public class Partition extends PatternExample {
 
 	@Override
 	public void solve() {
-		ChocoLogging.toSearch();
+		//ChocoLogging.toSearch();
 		//solver.launch();
 		solver.solve();
 	}

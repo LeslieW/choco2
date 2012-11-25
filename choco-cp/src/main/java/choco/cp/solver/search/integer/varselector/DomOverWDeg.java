@@ -112,7 +112,7 @@ public class DomOverWDeg extends DoubleHeuristicIntVarSelector implements Propag
 		if (cause != null) {
 			reuseCstr = (AbstractSConstraint) cause;
             if(SConstraintType.INTEGER.equals(reuseCstr.getConstraintType())){
-			    reuseCstr.getExtension(ABSTRACTCONTRAINT_EXTENSION).add(1);
+			    reuseCstr.getExtension(ABSTRACTCONTRAINT_EXTENSION).increment();
             }
 		}
 	}
