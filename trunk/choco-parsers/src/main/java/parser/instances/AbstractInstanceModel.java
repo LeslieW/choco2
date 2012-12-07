@@ -97,7 +97,7 @@ public abstract class AbstractInstanceModel {
 	public AbstractInstanceModel(InstanceFileParser parser, Configuration defaultConfiguration) {
 		this(parser, defaultConfiguration, new ReportFormatter());
 	}
-	
+
 
 	public AbstractInstanceModel(InstanceFileParser parser,
 			Configuration defaultConf, ReportFormatter logMsg) {
@@ -130,7 +130,7 @@ public abstract class AbstractInstanceModel {
 		objective = null;
 		logMsg.reset();
 	}
-	
+
 	public void terminate() {
 		ChocoLogging.flushLogs();
 	}
@@ -258,8 +258,8 @@ public abstract class AbstractInstanceModel {
 	 * @param file instance file to solve
 	 */
 	public final void solveFile(File file) {
-		initialize();
 		try {
+			initialize();
 			if(file != null) LOGGER.log(Level.CONFIG, INSTANCE_MSG, file == null ? getInstanceName() : file.getName());
 			boolean isLoaded = false;
 			time[0] = System.currentTimeMillis();
@@ -303,11 +303,10 @@ public abstract class AbstractInstanceModel {
 				//reporting
 				makeReports();
 			}
-
+			terminate();
 		} catch (Exception e) {
 			logOnError(ERROR, e);
 		} 
-		terminate();
 	}
 
 

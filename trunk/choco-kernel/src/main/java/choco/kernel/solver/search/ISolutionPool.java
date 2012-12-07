@@ -34,7 +34,7 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
 
-public interface ISolutionPool {
+public interface ISolutionPool extends ISolutionMonitor {
 
 	public final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
@@ -57,13 +57,6 @@ public interface ISolutionPool {
 	 * @return
 	 */
 	Solution getBestSolution();
-
-	
-	/**
-	 * use {@link AbstractSearchStrategy#writeSolution(Solution)} with the target object of the pool, if any.
-	 * @param solver
-	 */
-	void recordSolution(Solver solver);
 
 	/**
 	 * A List with the solution from the last solution recorded to the first according.

@@ -54,7 +54,9 @@ public abstract class AbstractSearchStrategy implements ISolutionMeasures {
 
 
 	protected ISolutionPool solutionPool;
-
+	
+	protected ISolutionMonitor solutionMonitor;
+	
 	/**
 	 * count of the solutions found during search
 	 */
@@ -95,11 +97,19 @@ public abstract class AbstractSearchStrategy implements ISolutionMeasures {
 	public final void setSolutionPool(ISolutionPool solutionPool) {
 		if(solutionPool == null) {
 			this.solutionPool = NoSolutionPool.SINGLETON;
-		}
-		this.solutionPool = solutionPool;
+		} else this.solutionPool = solutionPool;
 	}
 
-	
+
+	/**
+	 * a null argument cancel the solution monitoring.
+	 */
+	public final void setSolutionMonitor(ISolutionMonitor solutionMonitor) {
+		if(solutionMonitor == null) {
+			this.solutionMonitor= ISolutionMonitor.NO_MONITORING;
+		} else this.solutionMonitor = solutionMonitor;
+	}
+
 	public final void resetSolutions() {
 		solutionPool.clear();
 		nbSolutions = 0;
@@ -119,6 +129,7 @@ public abstract class AbstractSearchStrategy implements ISolutionMeasures {
 		solver.setFeasible(Boolean.TRUE);
 		nbSolutions++;
 		solutionPool.recordSolution(solver);
+		solutionMonitor.recordSolution(solver);
 	}
 
 
