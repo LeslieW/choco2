@@ -41,7 +41,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  */
 public abstract class AbstractIntDomain implements IntDomain {
 
-    final PropagationEngine propagationEngine;
+	final PropagationEngine propagationEngine;
 
 
 	/**
@@ -62,48 +62,44 @@ public abstract class AbstractIntDomain implements IntDomain {
 	protected int currentSupPropagated;
 
 
-    IDeltaDomain deltaDom;
+	IDeltaDomain deltaDom;
 
-    protected AbstractIntDomain(final IntDomainVar aVariable,final PropagationEngine propagationEngine) {
-        this.propagationEngine = propagationEngine;
-        this.variable = aVariable;
+	protected AbstractIntDomain(final IntDomainVar aVariable,final PropagationEngine propagationEngine) {
+		this.propagationEngine = propagationEngine;
+		this.variable = aVariable;
 
-    }
+	}
 
-    @Override
-    public int fastNextValue(int x) {
-        return this.getNextValue(x);
-    }
+	@Override
+	public int fastNextValue(int x) {
+		return this.getNextValue(x);
+	}
 
-    @Override
-    public int fastPrevValue(int x) {
-        return this.getPrevValue(x);
-    }
+	@Override
+	public int fastPrevValue(int x) {
+		return this.getPrevValue(x);
+	}
 
-    /**
+	/**
 	 * Internal var: update on the variable upper bound caused by its i-th
 	 * constraint.
 	 * Returns a boolean indicating whether the call indeed added new information.
 	 *
 	 * @param x   The new upper bound
 	 * @param cause constraint causing the modification
-     * @param forceAwake
-     * @return a boolean indicating whether the call indeed added new information.
+	 * @param forceAwake
+	 * @return a boolean indicating whether the call indeed added new information.
 	 * @throws ContradictionException contradiction exception
 	 */
 	public boolean updateSup(final int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
 		if (_updateSup(x, cause)) {
-            boolean awake = true;
 			final int val = getInf();
-			if (getSup() == x){
-                awake = forceAwake;// if the event has not change (promotion), keep the given awake policy
-            }
-			if (val == getSup()) {
+			if ( getSup() == val) {
 				restrict(val);
-				propagationEngine.postInstInt(variable, cause, awake);
+				propagationEngine.postInstInt(variable, cause, true);
+			} else {
+				propagationEngine.postUpdateSup(variable, cause, forceAwake);
 			}
-			else
-				propagationEngine.postUpdateSup(variable, cause, awake);
 			return true;
 		} else
 			return false;
@@ -116,25 +112,20 @@ public abstract class AbstractIntDomain implements IntDomain {
 	 *
 	 * @param x   The new lower bound.
 	 * @param cause constraint causing the modification
-     * @param forceAwake
-     * @return a boolean indicating whether the call indeed added new information
+	 * @param forceAwake
+	 * @return a boolean indicating whether the call indeed added new information
 	 * @throws ContradictionException contradiction exception
 	 */
 
 	public boolean updateInf(final int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
 		if (_updateInf(x, cause)) {
-            boolean awake = true;
 			final int val = getSup();
-			if (getInf() == x){
-                awake = forceAwake; //TODO: remove and test, forceAwake should be forget for instantiation!
-            }
-			if (val == getInf()) {
-				//        instantiate(getInf(), cause);
+			if (getInf() == val) {
 				restrict(val);
-				propagationEngine.postInstInt(variable, cause, awake);
-			} else
-				propagationEngine.postUpdateInf(variable, cause, awake);
-			// TODO      solver.getChocEngine().postUpdateInf(variable, cause, oldinf);
+				propagationEngine.postInstInt(variable, cause, true);
+			} else {
+				propagationEngine.postUpdateInf(variable, cause, forceAwake);
+			}
 			return true;
 		} else
 			return false;
@@ -152,15 +143,15 @@ public abstract class AbstractIntDomain implements IntDomain {
 	 *
 	 * @param x   The removed value
 	 * @param cause constraint causing the modification
-     * @param forceAwake
-     * @return a boolean indicating whether the call indeed added new information.
+	 * @param forceAwake
+	 * @return a boolean indicating whether the call indeed added new information.
 	 * @throws ContradictionException contradiction exception
 	 */
 
 	public boolean removeVal(final int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
 		if (_removeVal(x, cause)) {
 			// we must forget the cause when the event is promoted !
-            if (getInf() == getSup())
+			if (getInf() == getSup())
 				propagationEngine.postInstInt(variable, cause, true);
 			else if (x < getInf())
 				propagationEngine.postUpdateInf(variable, cause, true);
@@ -182,8 +173,8 @@ public abstract class AbstractIntDomain implements IntDomain {
 	 * @param a   the first removed value
 	 * @param b   the last removed value
 	 * @param cause constraint causing the modification
-     * @param forceAwake
-     * @return a boolean indicating whether the call indeed added new information.
+	 * @param forceAwake
+	 * @return a boolean indicating whether the call indeed added new information.
 	 * @throws ContradictionException contradiction exception
 	 */
 
@@ -209,8 +200,8 @@ public abstract class AbstractIntDomain implements IntDomain {
 	 *
 	 * @param x   the new upper bound
 	 * @param cause constraint causing the modification
-     * @param forceAwake
-     * @return a boolean indicating whether the call indeed added new information.
+	 * @param forceAwake
+	 * @return a boolean indicating whether the call indeed added new information.
 	 * @throws ContradictionException contradiction exception
 	 */
 
@@ -233,7 +224,7 @@ public abstract class AbstractIntDomain implements IntDomain {
 	 *
 	 * @param x the new instantiate value
 	 * @param cause constraint causing the modification
-     * @return wether it is a real modification or not
+	 * @return wether it is a real modification or not
 	 * @throws ContradictionException contradiction exception
 	 */
 
@@ -262,7 +253,7 @@ public abstract class AbstractIntDomain implements IntDomain {
 	 *
 	 * @param x the new lower bound
 	 * @param cause constraint causing the modification
-     * @return a boolean indicating wether the update has been done
+	 * @return a boolean indicating wether the update has been done
 	 * @throws ContradictionException contradiction exception
 	 */
 
@@ -287,7 +278,7 @@ public abstract class AbstractIntDomain implements IntDomain {
 	 *
 	 * @param x the new upper bound
 	 * @param cause constraint causing the modification
-     * @return wether the update has been done
+	 * @return wether the update has been done
 	 * @throws ContradictionException contradiction exception
 	 */
 	boolean _updateSup(final int x, final SConstraint cause) throws ContradictionException {
@@ -309,13 +300,13 @@ public abstract class AbstractIntDomain implements IntDomain {
 	 *
 	 * @param x the value to remove
 	 * @param cause constraint causing the modification
-     * @return wether the removal has been done
+	 * @return wether the removal has been done
 	 * @throws ContradictionException contradiction excpetion
 	 */
 	boolean _removeVal(final int x, final SConstraint cause) throws ContradictionException {
 		final int infv = getInf();
-        final int supv = getSup();
-        if (infv <= x && x <= supv) {
+		final int supv = getSup();
+		if (infv <= x && x <= supv) {
 			if (x == infv) {
 				_updateInf(x + 1, cause);
 				if (getInf() == supv) {
@@ -344,44 +335,44 @@ public abstract class AbstractIntDomain implements IntDomain {
 	}
 
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////// DELTA DOMAIN /////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////// DELTA DOMAIN /////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public final DisposableIntIterator getDeltaIterator() {
-        return deltaDom.iterator();
-    }
+	public final DisposableIntIterator getDeltaIterator() {
+		return deltaDom.iterator();
+	}
 
-    @Override
-    public void freezeDeltaDomain() {
-        deltaDom.freeze();
-    }
+	@Override
+	public void freezeDeltaDomain() {
+		deltaDom.freeze();
+	}
 
-    /**
-     * release the delta domain
-     *
-     * @return wether it was a new update
-     */
-    @Override
-    public boolean releaseDeltaDomain() {
-        return deltaDom.release();
-    }
+	/**
+	 * release the delta domain
+	 *
+	 * @return wether it was a new update
+	 */
+	@Override
+	public boolean releaseDeltaDomain() {
+		return deltaDom.release();
+	}
 
-    @Override
-    public final void clearDeltaDomain() {
-        deltaDom.clear();
-    }
+	@Override
+	public final void clearDeltaDomain() {
+		deltaDom.clear();
+	}
 
-    /**
-     * checks whether the delta domain has indeed been released (ie: chechks that no domain updates are pending)
-     */
-    @Override
-    public boolean getReleasedDeltaDomain() {
-        return deltaDom.isReleased();
-    }
+	/**
+	 * checks whether the delta domain has indeed been released (ie: chechks that no domain updates are pending)
+	 */
+	@Override
+	public boolean getReleasedDeltaDomain() {
+		return deltaDom.isReleased();
+	}
 
-    @Override
-    public final IDeltaDomain copyDelta() {
-        return deltaDom.copy();
-    }
+	@Override
+	public final IDeltaDomain copyDelta() {
+		return deltaDom.copy();
+	}
 }
