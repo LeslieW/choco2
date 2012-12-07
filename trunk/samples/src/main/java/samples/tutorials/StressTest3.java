@@ -69,7 +69,6 @@ public class StressTest3 extends PatternExample {
     @Override
     public void solve() {
         ChocoLogging.toVerbose();
-        IntVarEvent.propagations = 0;
         solver.solve();
             }
 
@@ -77,7 +76,6 @@ public class StressTest3 extends PatternExample {
     public void prettyOut() {
         System.out.printf("%dms\n", solver.getReadingTimeCount());
         System.out.printf("%dms\n", solver.getInitialPropagationTimeCount());
-        System.out.printf("%d prop.\n", IntVarEvent.propagations);
     }
 
     public static void main(String[] args) {
