@@ -103,15 +103,10 @@ public class IntVarEvent<C extends AbstractSConstraint & IntPropagator> extends 
 
     final IntDomain _domain;
 
-    final TIntHashSet counters;
-    public static long propagations = 0;
-
-
-    public static final int[] EVENTS = new int[]{INCINF_MASK, DECSUP_MASK, REMVAL_MASK, INSTINT_MASK};
+     public static final int[] EVENTS = new int[]{INCINF_MASK, DECSUP_MASK, REMVAL_MASK, INSTINT_MASK};
 
     public IntVarEvent(IntDomainVarImpl var) {
         super(var);
-        counters = new TIntHashSet();
         _domain = var.getDomain();
         eventType = EMPTYEVENT;
     }
@@ -182,7 +177,6 @@ public class IntVarEvent<C extends AbstractSConstraint & IntPropagator> extends 
 //        int evtCause = oldCause;
         C evtCause = (C) cause;
         freeze();
-        counters.clear();
         if ((propagatedEvents & INSTINT_MASK) != 0 && (evtType & INSTINT_MASK) != 0)
             propagateInstEvent(evtCause);
         if ((propagatedEvents & INCINF_MASK) != 0 && (evtType & INCINF_MASK) != 0)
@@ -192,7 +186,6 @@ public class IntVarEvent<C extends AbstractSConstraint & IntPropagator> extends 
         if ((propagatedEvents & REMVAL_MASK) != 0 && (evtType & REMVAL_MASK) != 0)
             propagateRemovalsEvent(evtCause);
 
-        propagations += counters.size();
         // last, release event
         return release();
     }
@@ -206,7 +199,6 @@ public class IntVarEvent<C extends AbstractSConstraint & IntPropagator> extends 
         try {
             while (cit.hasNext()) {
                 Couple<C> cc = cit.next();
-                counters.add(cc.i);
                 cc.c.awakeOnInst(cc.i);
             }
         } finally {
@@ -224,7 +216,6 @@ public class IntVarEvent<C extends AbstractSConstraint & IntPropagator> extends 
         try {
             while (cit.hasNext()) {
                 Couple<C> cc = cit.next();
-                counters.add(cc.i);
                 cc.c.awakeOnInf(cc.i);
             }
         } finally {
@@ -241,7 +232,6 @@ public class IntVarEvent<C extends AbstractSConstraint & IntPropagator> extends 
         try {
             while (cit.hasNext()) {
                 Couple<C> cc = cit.next();
-                counters.add(cc.i);
                 cc.c.awakeOnSup(cc.i);
             }
         } finally {
@@ -258,7 +248,6 @@ public class IntVarEvent<C extends AbstractSConstraint & IntPropagator> extends 
         try {
             while (cit.hasNext()) {
                 Couple<C> cc = cit.next();
-                counters.add(cc.i);
                 DisposableIntIterator iter = _domain.getDeltaIterator();
                 try {
                     cc.c.awakeOnRemovals(cc.i, iter);

@@ -70,14 +70,12 @@ public class Ordering extends PatternExample {
     @Override
     public void solve() {
         ChocoLogging.toVerbose();
-        IntVarEvent.propagations = 0;
         solver.solve();
     }
 
     @Override
     public void prettyOut() {
         System.out.printf("%dms\n", solver.getReadingTimeCount());
-        System.out.printf("%d prop.\n", IntVarEvent.propagations);
     }
 
     public static void main(String[] args) {
