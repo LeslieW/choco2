@@ -115,7 +115,7 @@ public class BinPackingModel extends AbstractMinimizeModel {
 	public Solver buildSolver() {
 		Solver s = super.buildSolver(); // create the solver
 		s.read(model);  //read the model
-	    solver.setSolutionDisplay(((PackSConstraint)this.solver.getCstr(this.pack)));
+	    s.setSolutionDisplay(((PackSConstraint)s.getCstr(this.pack)));
 		s.clearGoals();
 		if(defaultConf.readBoolean(BasicSettings.LIGHT_MODEL) ) {
 			s.addGoal(BranchingFactory.lexicographic(s, s.getVar(modeler.getBins())));

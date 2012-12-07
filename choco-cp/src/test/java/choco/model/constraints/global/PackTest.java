@@ -193,7 +193,7 @@ public class PackTest {
 		s.propagate();
 		IntDomainVar[] vars = s.getVar(modeler.bins);
 		int[] vals = new int[]{0,1,2,0,1,2};
-		LOGGER.severe(StringUtils.pretty(s.getVar(modeler.bins)));
+		//LOGGER.severe(StringUtils.pretty(s.getVar(modeler.bins)));
 
 		for (int i = 0; i < vars.length; i++) {
 			assertTrue(vars[i].isInstantiatedTo(vals[i]));
