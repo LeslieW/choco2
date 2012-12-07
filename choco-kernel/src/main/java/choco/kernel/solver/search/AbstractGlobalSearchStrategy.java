@@ -199,7 +199,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	}
 
 	public final void initialPropagation() {
-		long timer = -System.currentTimeMillis();
+		final long timer = -System.currentTimeMillis();
 		try {
 			newTreeSearch();
 			//initializeDegreeOfVariables();

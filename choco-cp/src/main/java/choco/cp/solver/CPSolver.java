@@ -324,6 +324,8 @@ public class CPSolver implements Solver {
 
     private ISolutionDisplay solutionDisplay;
 
+    private ISolutionMonitor solutionMonitor;
+
     public CPSolver() {
         this(new EnvironmentTrailing());
     }
@@ -416,6 +418,8 @@ public class CPSolver implements Solver {
         this.valSetIterator = null;
         this.varRealSelector = null;
         this.varRealSelector = null;
+        this.solutionDisplay = null;
+        this.solutionMonitor = null;
         this.model = null;
     }
 
@@ -430,8 +434,12 @@ public class CPSolver implements Solver {
     public final void setSolutionDisplay(ISolutionDisplay prettySolution) {
         this.solutionDisplay = prettySolution;
     }
+    
+    public final void setSolutionMonitor(ISolutionMonitor solutionMonitor) {
+		this.solutionMonitor = solutionMonitor;
+	}
 
-    public final IndexFactory getIndexfactory() {
+	public final IndexFactory getIndexfactory() {
         return indexfactory;
     }
 
@@ -769,6 +777,7 @@ public class CPSolver implements Solver {
 
         assert strategy != null;
         strategy.setSolutionPool(StrategyFactory.createSolutionPool(strategy));
+        strategy.setSolutionMonitor(solutionMonitor);
         generateSearchLoop();
         strategy.setLimitManager(LimitFactory.createLimitManager(strategy));
         strategy.setShavingTools(StrategyFactory.createShavingTools(this));
@@ -2026,21 +2035,20 @@ public class CPSolver implements Solver {
      *               literals
      */
     public void addNogood(IntDomainVar[] poslit, IntDomainVar[] neglit) {
-        if (nogoodStore == null) {
-            nogoodStore = new ClauseStore(getBooleanVariables(), environment);
-            postCut(nogoodStore);
-        }
+        initNogoodBase();
         nogoodStore.addNoGood(poslit, neglit);
         propNogoodWorld = this.getWorldIndex();
         nogoodStore.constAwake(false);
         //put the nogood store last in the static list
     }
-
-
+    
+    
+    
     public void initNogoodBase() {
-        if (nogoodStore != null) {
-            nogoodStore.setActiveSilently();
-            nogoodStore.constAwake(false);
+    	if (nogoodStore == null) {
+    		nogoodStore = new ClauseStore(getBooleanVariables(), environment);
+    		postCut(nogoodStore);
+    		//FIXME Problem with variable weights (Dom/WDeg) dans strategy.initMainGoal(cc);
         }
     }
 
