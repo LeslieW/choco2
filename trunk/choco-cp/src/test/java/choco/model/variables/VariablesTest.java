@@ -27,11 +27,34 @@
 
 package choco.model.variables;
 
+import static choco.Choco.constant;
+import static choco.Choco.eq;
+import static choco.Choco.makeBooleanVar;
+import static choco.Choco.makeBooleanVarArray;
+import static choco.Choco.makeIntVarArray;
+import static choco.Choco.makeSetVar;
+import static choco.Choco.makeSetVarArray;
+import static choco.Choco.neq;
+import static choco.Choco.sum;
+import static java.text.MessageFormat.format;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import choco.Choco;
 import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.TimesXYZ;
+import choco.cp.solver.search.BranchingFactory;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.StringUtils;
@@ -47,18 +70,8 @@ import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.AbstractIntBranchingStrategy;
+import choco.kernel.solver.search.ISolutionMonitor;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Logger;
-
-import static choco.Choco.*;
-import static java.text.MessageFormat.format;
-import static junit.framework.Assert.*;
 
 /**
  * @author Arnaud Malapert
@@ -469,5 +482,67 @@ public class VariablesTest {
 
         }
     }
+    
+    @Test
+    public void testDynAdditionBoolTrail() throws ContradictionException {
+    	model = new CPModel();
+    	final CPSolver s = new CPSolver();
+        final IntegerVariable bvar = makeBooleanVar("b");
+         model.addVariables(bvar);
+         s.read(model);	
+         final IntDomainVar b1 = s.getVar(bvar);
+         s.worldPush();
+         b1.instantiate(0, null, false);
+         s.createBooleanVar("new");
+         s.worldPop();
+         assertFalse("is instantiated", b1.isInstantiated());
+         assertEquals("is not boolean", b1.getDomainSize(), 2);
+    }
+    @Test
+    public void testDynAdditionSolRestore() throws ContradictionException {
+    	  ChocoLogging.toSearch();
+          model = new CPModel();
+          final CPSolver s = new CPSolver();
+          final IntegerVariable[] vars = makeBooleanVarArray("b", 3);
+          model.addConstraint( eq(sum(vars),2));
+          s.read(model);
+          s.setSolutionMonitor(new ISolutionMonitor() {
 
+                  @Override
+                  public void recordSolution(Solver solver) {
+                          if(solver.getSolutionCount() == 3) {
+                        	  final IntDomainVar b = s.createBoundIntVar("NEW", 0,1);
+                        	  solver.postCut( solver.neq(0, b));
+                          }
+                  }
+          });
+          s.clearGoals();
+          s.addGoal(BranchingFactory.lexicographic(s));
+          s.solveAll();
+    }
+    @Test
+    public void testDynAdditionIncWDEG() throws ContradictionException {
+    	 ChocoLogging.toSearch();
+         model = new CPModel();
+         final CPSolver s = new CPSolver();
+         final IntegerVariable[] vars = makeBooleanVarArray("b", 4);
+         model.addConstraint( eq(sum(vars),2));
+         s.read(model);
+         s.setSolutionMonitor(new ISolutionMonitor() {
+
+                 @Override
+                 public void recordSolution(Solver solver) {
+                         if(solver.getSolutionCount() == 1) {
+                       	  final IntDomainVar b = s.createBoundIntVar("NEW", 0,1);
+                       	  solver.postCut( solver.eq(0, b));
+                       	  solver.postCut( solver.neq(b, s.getVar(vars[0])));
+                         }
+                 }
+         });
+         s.clearGoals();
+         s.setSolutionPoolCapacity(0);
+         s.addGoal(BranchingFactory.incDomWDeg(s));
+         s.solveAll();
+    }
+    
 }
