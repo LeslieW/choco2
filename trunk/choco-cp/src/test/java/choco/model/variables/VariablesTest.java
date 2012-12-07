@@ -500,7 +500,7 @@ public class VariablesTest {
     }
     @Test
     public void testDynAdditionSolRestore() throws ContradictionException {
-    	  ChocoLogging.toSearch();
+    	  //ChocoLogging.toSearch();
           model = new CPModel();
           final CPSolver s = new CPSolver();
           final IntegerVariable[] vars = makeBooleanVarArray("b", 3);
@@ -522,7 +522,7 @@ public class VariablesTest {
     }
     @Test
     public void testDynAdditionIncWDEG() throws ContradictionException {
-    	 ChocoLogging.toSearch();
+    	 //ChocoLogging.toSearch();
          model = new CPModel();
          final CPSolver s = new CPSolver();
          final IntegerVariable[] vars = makeBooleanVarArray("b", 4);
