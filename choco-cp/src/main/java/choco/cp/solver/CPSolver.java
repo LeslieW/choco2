@@ -584,7 +584,7 @@ public class CPSolver implements Solver {
             case CONSTANT_INTEGER:
             case CONSTANT_DOUBLE:
             case CONSTANT_SET:
-                mod2sol.readModelVariable(v);
+                this.mapvariables.put(v.getIndex(), mod2sol.readModelVariable(v));
                 break;
             case INTEGER_EXPRESSION:
             case SET_EXPRESSION:
