@@ -34,6 +34,7 @@ import choco.cp.solver.constraints.set.MemberXiY;
 import choco.cp.solver.search.BranchingFactory;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -331,6 +332,21 @@ public class MemberTest {
            // System.out.printf("%d vs. %d\n", solver1.getTimeCount(), solver2.getTimeCount());
 
         }
+    }
+    
+    @Test
+    public void testBugMember() {
+    	Model m = new CPModel();
+		IntegerVariable iv = makeIntVar("iv", 1, 9);
+		SetVariable sv = makeSetVar("sv", 1, 9);
+		m.addConstraint(eq(iv, 8));
+		m.addConstraint(eq(sv, constant(new int[] { 8 })));
+		m.addConstraint(member(sv, iv));
+		Solver s = new CPSolver();
+		s.read(m);
+		s.solveAll();
+		Assert.assertTrue(s.isFeasible());
+		Assert.assertEquals(1, s.getSolutionCount());
     }
 
 }
