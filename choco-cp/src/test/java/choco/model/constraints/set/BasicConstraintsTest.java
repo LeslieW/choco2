@@ -443,4 +443,18 @@ public class BasicConstraintsTest {
 		assertTrue(cardr == contr);
 	}
 
+	  @Test
+	    public void test11() {
+	    	Model m = new CPModel();
+			IntegerVariable iv = makeIntVar("iv", 1, 9);
+			SetVariable sv = makeSetVar("sv", 1, 9);
+			m.addConstraint(eq(iv, 8));
+			m.addConstraint(eq(sv, constant(new int[] { 8 })));
+			m.addConstraint(member(sv, iv));
+			Solver s = new CPSolver();
+			s.read(m);
+			s.solveAll();
+			assertTrue(s.isFeasible());
+			assertEquals(1, s.getSolutionCount());
+	    }
 }
