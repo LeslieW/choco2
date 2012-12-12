@@ -183,10 +183,6 @@ public class IntervalIntDomain extends AbstractIntDomain {
         return false;
     }
 
-    public boolean isBoolean() {
-        return false;
-    }
-
     public String pretty() {
         final StringBuilder ret = new StringBuilder(32);
         ret.append('[').append(this.getInf()).append(" .. ").append(this.getSup()).append(']');

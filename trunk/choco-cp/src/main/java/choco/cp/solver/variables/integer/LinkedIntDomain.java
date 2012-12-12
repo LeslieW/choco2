@@ -430,15 +430,6 @@ public class LinkedIntDomain extends AbstractIntDomain {
         return true;
     }
 
-    /**
-     * Checks if this is a boolean domain, that is the values are 0 or 1.
-     *
-     * @return tue if this is a boolean domain.
-     */
-    public boolean isBoolean() {
-        return offset == 0 && nextIndex.size() == 2;
-    }
-
     public String toString() {
         return "{" + getInf() + "..." + getSup() + '}';
     }

@@ -337,10 +337,6 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
         return true;
     }
 
-    public boolean isBoolean() {
-        return (offset == 0) && (offset + capacity - 1 == 1);
-    }
-
     protected DisposableIntIterator _cachedDeltaIntDomainIterator = null;
 
     public String toString() {

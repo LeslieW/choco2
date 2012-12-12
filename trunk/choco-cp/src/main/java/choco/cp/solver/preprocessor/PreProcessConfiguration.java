@@ -150,6 +150,7 @@ public class PreProcessConfiguration extends Configuration {
 	public final static void cancelSchedulingPreProcess(Configuration conf) {
 		conf.putFalse(DISJUNCTIVE_MODEL_DETECTION);
 		conf.putFalse(DMD_USE_TIME_WINDOWS);
+		conf.putFalse(DMD_GENERATE_CLAUSES);
 		conf.putFalse(DMD_REMOVE_DISJUNCTIVE);
 		conf.putFalse(DISJUNCTIVE_FROM_CUMULATIVE_DETECTION);
 	}

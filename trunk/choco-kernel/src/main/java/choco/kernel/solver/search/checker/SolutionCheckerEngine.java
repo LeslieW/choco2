@@ -112,8 +112,8 @@ public class SolutionCheckerEngine extends AbstractSolutionCheckerEngine {
      */
 	public boolean inspectConstraint(final SConstraint<?> c) {
 		if( isSatisfied(c)) {
-			if(LOGGER.isLoggable(Level.FINE)) {
-				LOGGER.log(Level.FINE, "  {0}: {1}", new Object[]{reuseLabel, c.pretty()});
+			if(LOGGER.isLoggable(Level.FINEST)) {
+				LOGGER.log(Level.FINEST, "  {0}: {1}", new Object[]{reuseLabel, c.pretty()});
 			}
 			return true;
 		}else if(LOGGER.isLoggable(Level.INFO)) {
@@ -138,7 +138,7 @@ public class SolutionCheckerEngine extends AbstractSolutionCheckerEngine {
 				isOk = c.isSatisfied();
 			}
 		}else{
-			reuseLabel = "is isSatisified()";
+			reuseLabel = "is isSatisfied()";
 			isOk = c.isSatisfied();
 		}
 		return isOk;

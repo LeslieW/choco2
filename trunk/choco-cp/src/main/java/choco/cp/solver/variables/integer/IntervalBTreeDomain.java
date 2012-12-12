@@ -327,15 +327,6 @@ public final class IntervalBTreeDomain extends AbstractIntDomain {
     }
 
     /**
-     * Check if this domain is a 0-1 domain
-     *
-     * @return false
-     */
-    public boolean isBoolean() {
-        return false;
-    }
-
-    /**
      * pretty print of the domain
      *
      * @return a new string

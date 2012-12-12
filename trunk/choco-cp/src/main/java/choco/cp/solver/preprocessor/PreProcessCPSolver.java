@@ -163,7 +163,7 @@ public class PreProcessCPSolver extends CPSolver {
 				det.applyThenCommit();
 			}
 			if (configuration.readBoolean(PreProcessConfiguration.DMD_REMOVE_DISJUNCTIVE) ) {
-				ModelDetectorFactory.rmDisjDetector(model);
+				ModelDetectorFactory.rmDisjDetector(model).applyThenCommit();
 			}
 			
 		}
