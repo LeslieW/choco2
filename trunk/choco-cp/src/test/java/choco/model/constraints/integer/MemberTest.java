@@ -334,19 +334,6 @@ public class MemberTest {
         }
     }
     
-    @Test
-    public void testBugMember() {
-    	Model m = new CPModel();
-		IntegerVariable iv = makeIntVar("iv", 1, 9);
-		SetVariable sv = makeSetVar("sv", 1, 9);
-		m.addConstraint(eq(iv, 8));
-		m.addConstraint(eq(sv, constant(new int[] { 8 })));
-		m.addConstraint(member(sv, iv));
-		Solver s = new CPSolver();
-		s.read(m);
-		s.solveAll();
-		Assert.assertTrue(s.isFeasible());
-		Assert.assertEquals(1, s.getSolutionCount());
-    }
+  
 
 }

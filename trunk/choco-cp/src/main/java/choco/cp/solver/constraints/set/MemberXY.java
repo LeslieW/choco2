@@ -48,31 +48,39 @@ public final class MemberXY extends AbstractBinSetIntSConstraint {
 		super(iv, set);
 	}
 
-    @Override
-    public int getFilteredEventMask(int idx) {
-        if(idx == 0){
-            return IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK + IntVarEvent.REMVAL_MASK;
-        }
-        return SetVarEvent.REMENV_MASK + SetVarEvent.INSTSET_MASK;
-    }
+	@Override
+	public int getFilteredEventMask(int idx) {
+		if(idx == 0){
+			return IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK + IntVarEvent.REMVAL_MASK;
+		}
+		return SetVarEvent.REMENV_MASK + SetVarEvent.INSTSET_MASK;
+	}
 
-    public void filter() throws ContradictionException {
-		DisposableIntIterator it = v0.getDomain().getIterator();
-		int count = 0, val = Integer.MAX_VALUE;
-		while (it.hasNext()) {
-			val = it.next();
-			if (v1.isInDomainEnveloppe(val)) {
-				count += 1;
-				if (count > 1) break;
+	public void filter() throws ContradictionException {
+		final DisposableIntIterator it = v0.getDomain().getIterator();
+		try {
+			boolean found = false;
+			int val = Integer.MAX_VALUE;
+			while (it.hasNext()) {
+				final int cval = it.next();
+				if (v1.isInDomainEnveloppe(cval)) {
+					if(found) return;
+					else {
+						found=true;
+						val=cval;
+					}
+				}
 			}
+			if (found) {
+				v0.instantiate(val, this, false);
+				v1.addToKernel(val, this, false);
+			} else {
+				this.fail();
+			}
+		} finally {
+			it.dispose();
 		}
-        it.dispose();
-		if (count == 0)
-			this.fail();
-		else if (count == 1) {
-			v0.instantiate(val, this, false);
-			v1.addToKernel(val, this, false);
-		}
+
 	}
 
 	public void awakeOnInf(int idx) throws ContradictionException {
@@ -102,27 +110,27 @@ public final class MemberXY extends AbstractBinSetIntSConstraint {
 
 
 	public void propagate() throws ContradictionException {
-        int left = Integer.MIN_VALUE;
-        int right = left;
+		int left = Integer.MIN_VALUE;
+		int right = left;
 		DisposableIntIterator it = v0.getDomain().getIterator();
-        try{
-            while (it.hasNext()) {
-                int val = it.next();
-                if (!v1.isInDomainEnveloppe(val)) {
-                    if (val == right + 1) {
-                        right = val;
-                    } else {
-                        v0.removeInterval(left, right, this, false);
-                        left = val;
-                        right = val;
-                    }
-//                    v0.removeVal(val, this, false);
-                }
-            }
-            v0.removeInterval(left, right, this, false);
-        }finally {
-            it.dispose();
-        }
+		try{
+			while (it.hasNext()) {
+				int val = it.next();
+				if (!v1.isInDomainEnveloppe(val)) {
+					if (val == right + 1) {
+						right = val;
+					} else {
+						v0.removeInterval(left, right, this, false);
+						left = val;
+						right = val;
+					}
+					//                    v0.removeVal(val, this, false);
+				}
+			}
+			v0.removeInterval(left, right, this, false);
+		}finally {
+			it.dispose();
+		}
 		filter();
 	}
 
@@ -134,11 +142,11 @@ public final class MemberXY extends AbstractBinSetIntSConstraint {
 		DisposableIntIterator it = v0.getDomain().getIterator();
 		while (it.hasNext()) {
 			if (!v1.isInDomainKernel(it.next())){
-                it.dispose();
-                return false;
-            }
+				it.dispose();
+				return false;
+			}
 		}
-        it.dispose();
+		it.dispose();
 		return true;
 	}
 
@@ -153,28 +161,28 @@ public final class MemberXY extends AbstractBinSetIntSConstraint {
 
 	public Boolean isEntailed() {
 		boolean allInKernel = true;
-        boolean allOutEnv = true;
-        DisposableIntIterator it = v0.getDomain().getIterator();
-        while(it.hasNext()){
-            int val = it.next();
-            if(!v1.isInDomainKernel(val)){
-                allInKernel = false;
-            }
-            if(v1.isInDomainEnveloppe(val)){
-                allOutEnv = false;
-            }
-        }
-        it.dispose();
-        if(allInKernel){
-            return Boolean.TRUE;
-        }else if(allOutEnv){
-            return Boolean.FALSE;
-        }
-        return null;
+		boolean allOutEnv = true;
+		DisposableIntIterator it = v0.getDomain().getIterator();
+		while(it.hasNext()){
+			int val = it.next();
+			if(!v1.isInDomainKernel(val)){
+				allInKernel = false;
+			}
+			if(v1.isInDomainEnveloppe(val)){
+				allOutEnv = false;
+			}
+		}
+		it.dispose();
+		if(allInKernel){
+			return Boolean.TRUE;
+		}else if(allOutEnv){
+			return Boolean.FALSE;
+		}
+		return null;
 	}
 
-    @Override
-    public AbstractSConstraint<Var> opposite(Solver solver) {
+	@Override
+	public AbstractSConstraint<Var> opposite(Solver solver) {
 		return new NotMemberXY(v1, v0);
-    }
+	}
 }
