@@ -69,6 +69,12 @@ public abstract class AbstractIntDomain implements IntDomain {
 		this.variable = aVariable;
 
 	}
+	
+	@Override
+	public boolean isBoolean() {
+		return getInf() >=0 && getSup() <= 1;
+	}
+
 
 	@Override
 	public int fastNextValue(int x) {

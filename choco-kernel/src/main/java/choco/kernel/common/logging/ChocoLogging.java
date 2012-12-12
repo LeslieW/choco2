@@ -424,6 +424,10 @@ public final class ChocoLogging {
 				setLevel(Level.FINEST, getMainLogger(), getSearchLogger());
 				break;
 			}
+			case FINEST: {
+				setLevel(Level.FINEST,CHOCO_LOGGERS);
+				break;
+			}
 			default: {
 				setVerbosity(Verbosity.VERBOSE);
 			}

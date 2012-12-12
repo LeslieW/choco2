@@ -376,10 +376,6 @@ public class BipartiteIntDomain extends AbstractIntDomain {
         return true;
     }
 
-    public boolean isBoolean() {
-        return false;
-    }
-
     public String pretty() {
         final StringBuilder buf = new StringBuilder("{");
         final int maxDisplay = 15;

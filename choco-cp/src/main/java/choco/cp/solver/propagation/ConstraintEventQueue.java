@@ -41,157 +41,158 @@ import java.util.Iterator;
  */
 public class ConstraintEventQueue implements EventQueue {
 
-    /**
-     * The propagation engine using this queue.
-     */
+	/**
+	 * The propagation engine using this queue.
+	 */
 
-    private PropagationEngine engine;
-
-
-    /**
-     * A private structure to store all the constraint. The left part of the bipartite
-     * set contains the events to propagate.
-     */
-
-    private BipartiteSet<PropagationEvent> partition;
+	private PropagationEngine engine;
 
 
-    /**
-     * Constructs a new queue for the specified engine.
-     */
+	/**
+	 * A private structure to store all the constraint. The left part of the bipartite
+	 * set contains the events to propagate.
+	 */
 
-    public ConstraintEventQueue(PropagationEngine engine) {
-        this.engine = engine;
-        this.partition = new BipartiteSet<PropagationEvent>();
-    }
-
-    /**
-     * Clear datastructures for safe reuses
-     */
-    public void clear() {
-        partition.clear();
-    }
+	private BipartiteSet<PropagationEvent> partition;
 
 
-    /**
-     * Checks if the queue is empty.
-     */
+	/**
+	 * Constructs a new queue for the specified engine.
+	 */
 
-    public boolean isEmpty() {
-        return this.partition.getNbLeft() == 0;
-    }
+	public ConstraintEventQueue(PropagationEngine engine) {
+		this.engine = engine;
+		this.partition = new BipartiteSet<PropagationEvent>();
+	}
 
-
-    /**
-     * Pops the next var to propagate.
-     */
-
-    public PropagationEvent popEvent() {
-        PropagationEvent event = this.partition.moveLastLeft();
-        if (event == null) {
-            LOGGER.severe("Error: There is no more events in the queue.");
-        } else {
-            if (!((ConstraintEvent) event).isInitialized()) {
-                engine.decPendingInitConstAwakeEvent();
-            }
-        }
-        return event;
-    }
+	/**
+	 * Clear datastructures for safe reuses
+	 */
+	public void clear() {
+		partition.clear();
+	}
 
 
-    /**
-     * Adds a new var in the queue.
-     *
-     * @return True if the var had to be added.
-     */
+	/**
+	 * Checks if the queue is empty.
+	 */
 
-    public boolean pushEvent(PropagationEvent event) {
-        if (!this.partition.isLeft(event)) {
-            this.partition.moveLeft(event);
-            return true;
-        }
-        return false;
-    }
+	public boolean isEmpty() {
+		return this.partition.getNbLeft() == 0;
+	}
 
 
-    /**
-     * Removes all the events from the queue.
-     */
+	/**
+	 * Pops the next var to propagate.
+	 */
 
-    public void flushEventQueue() {
-        this.partition.moveAllRight();
-    }
-
-
-    /**
-     * Adds a new constraint in the right part of the set (will not be propagated).
-     * It should be done just after creating the constraint.
-     */
-
-    public void add(PropagationEvent event) {
-        if (this.partition.isIn(event)) {
-            this.partition.moveRight(event);
-        } else {
-            this.partition.addRight(event);
-        }
-    }
+	public PropagationEvent popEvent() {
+		PropagationEvent event = this.partition.moveLastLeft();
+		assert(event != null);
+		//        if (event == null) {
+		//            LOGGER.severe("Error: There is no more events in the queue.");
+		//        } else {
+		if (!((ConstraintEvent) event).isInitialized()) {
+			engine.decPendingInitConstAwakeEvent();
+		}
+		//        }
+		return event;
+	}
 
 
-    /**
-     * Removes the var from the left part.
-     */
+	/**
+	 * Adds a new var in the queue.
+	 *
+	 * @return True if the var had to be added.
+	 */
 
-    public boolean remove(PropagationEvent event) {
-        if (this.partition.isLeft(event)) {
-            if (!((ConstraintEvent) event).isInitialized()) {
-                engine.decPendingInitConstAwakeEvent();
-            }
-            this.partition.moveRight(event);
-            return true;
-        }
-        return false;
-    }
+	public boolean pushEvent(PropagationEvent event) {
+		if (!this.partition.isLeft(event)) {
+			this.partition.moveLeft(event);
+			return true;
+		}
+		return false;
+	}
 
 
-    /**
-     * Propagates one var in the queue.
-     *
-     * @throws choco.kernel.solver.ContradictionException
-     *
-     */
+	/**
+	 * Removes all the events from the queue.
+	 */
 
-    public void propagateAllEvents() throws ContradictionException {
-        while (partition.getNbLeft() != 0) {
-            this.popEvent().propagateEvent();
-        }
-    }
+	public void flushEventQueue() {
+		this.partition.moveAllRight();
+	}
 
-    /**
-     * Propagates one var in the queue.
-     *
-     * @throws choco.kernel.solver.ContradictionException
-     *
-     */
 
-    public void propagateOneEvent() throws ContradictionException {
-        if (partition.getNbLeft() != 0) {
-            this.popEvent().propagateEvent();
-        }
-    }
+	/**
+	 * Adds a new constraint in the right part of the set (will not be propagated).
+	 * It should be done just after creating the constraint.
+	 */
 
-    public int size() {
-        return partition.getNbLeft();
-    }
+	public void add(PropagationEvent event) {
+		if (this.partition.isIn(event)) {
+			this.partition.moveRight(event);
+		} else {
+			this.partition.addRight(event);
+		}
+	}
 
-    public PropagationEvent get(int idx) {
-        for (Iterator<PropagationEvent> it = partition.leftIterator(); it.hasNext();) {
-            PropagationEvent event = it.next();
-            if (idx == 0) {
-                return event;
-            } else {
-                idx--;
-            }
-        }
-        return null;
-    }
+
+	/**
+	 * Removes the var from the left part.
+	 */
+
+	public boolean remove(PropagationEvent event) {
+		if (this.partition.isLeft(event)) {
+			if (!((ConstraintEvent) event).isInitialized()) {
+				engine.decPendingInitConstAwakeEvent();
+			}
+			this.partition.moveRight(event);
+			return true;
+		}
+		return false;
+	}
+
+
+	/**
+	 * Propagates one var in the queue.
+	 *
+	 * @throws choco.kernel.solver.ContradictionException
+	 *
+	 */
+
+	public void propagateAllEvents() throws ContradictionException {
+		while (partition.getNbLeft() != 0) {
+			this.popEvent().propagateEvent();
+		}
+	}
+
+	/**
+	 * Propagates one var in the queue.
+	 *
+	 * @throws choco.kernel.solver.ContradictionException
+	 *
+	 */
+
+	public void propagateOneEvent() throws ContradictionException {
+		if (partition.getNbLeft() != 0) {
+			this.popEvent().propagateEvent();
+		}
+	}
+
+	public int size() {
+		return partition.getNbLeft();
+	}
+
+	public PropagationEvent get(int idx) {
+		for (Iterator<PropagationEvent> it = partition.leftIterator(); it.hasNext();) {
+			PropagationEvent event = it.next();
+			if (idx == 0) {
+				return event;
+			} else {
+				idx--;
+			}
+		}
+		return null;
+	}
 }

@@ -42,12 +42,9 @@ final class OneValueIntDomain extends AbstractIntDomain {
 
     private final int value;
 
-    private final boolean isBoolean;
-
     OneValueIntDomain(final IntDomainVar aVariable, final int theValue, final PropagationEngine propagationEngine) {
         super(aVariable, propagationEngine);
         value = theValue;
-        isBoolean = (value == 0 || value == 1);
     }
 
 
@@ -182,14 +179,6 @@ final class OneValueIntDomain extends AbstractIntDomain {
     @Override
     public boolean isEnumerated() {
         return true;
-    }
-
-    /**
-     * Is it a 0/1 domain ?
-     */
-    @Override
-    public boolean isBoolean() {
-        return isBoolean;
     }
 
     /**
