@@ -146,8 +146,7 @@ public final class FcspModel extends AbstractInstanceModel {
 			//				s.launch();
 			//				return s.isFeasible();
 			//			} else return s.solve();
-			ChocoLogging.setLoggingMaxDepth(200);
-            s.launch();
+		    s.launch();
 			return s.isFeasible();
 		} else {
 			return Boolean.FALSE;

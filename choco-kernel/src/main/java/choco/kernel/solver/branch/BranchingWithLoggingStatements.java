@@ -29,6 +29,7 @@ package choco.kernel.solver.branch;
 
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.tools.StringUtils;
+import choco.kernel.solver.Configuration;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.SConstraint;
@@ -40,12 +41,13 @@ public class BranchingWithLoggingStatements extends AbstractIntBranchingStrategy
 
 	public final AbstractIntBranchingStrategy internalBranching;
 
-	private int nextInformationNode = ChocoLogging.getEveryXNodes();
+	private int nextInformationNode;
 
 	public BranchingWithLoggingStatements(AbstractIntBranchingStrategy internalBranching) {
 		super();
 		this.internalBranching = internalBranching;
 		this.setSolver(internalBranching.manager);
+		nextInformationNode = getEveryXNodes();
 	}
 
 	@Override
@@ -75,17 +77,25 @@ public class BranchingWithLoggingStatements extends AbstractIntBranchingStrategy
 		return new String(b);
 	}
 
+	private int getEveryXNodes() {
+		return manager.solver.getConfiguration().readInt(Configuration.EVERY_X_NODES);
+	}
+
+	private int getLoggingMaxDepth() {
+		return manager.solver.getConfiguration().readInt(Configuration.LOGGING_MAX_DEPTH);
+	}
+	
 	@Override
 	public void goDownBranch(IntBranchingDecision decision)
 	throws ContradictionException {
 		if(LOGGER.isLoggable(Level.INFO)) {
 			if(manager.getNodeCount() >= nextInformationNode) {
 				LOGGER.log(Level.INFO, "- Partial Search - {0}.", manager.partialRuntimeStatistics(false));
-				nextInformationNode = manager.getNodeCount() + ChocoLogging.getEveryXNodes();
+				nextInformationNode = manager.getNodeCount() + getEveryXNodes();
 				ChocoLogging.flushLogs();
 			}  
 			if (LOGGER.isLoggable(Level.CONFIG) &&
-					manager.solver.getWorldIndex()  < ChocoLogging.getLoggingMaxDepth()) {
+					manager.getSearchLoop().getDepthCount()  < getLoggingMaxDepth()) {
 				LOGGER.log(Level.CONFIG, makeLoggingMessage(decision, LOG_DOWN_MSG, manager.solver.getWorldIndex()));
 				ChocoLogging.flushLogs();
 			}
@@ -93,11 +103,12 @@ public class BranchingWithLoggingStatements extends AbstractIntBranchingStrategy
 		internalBranching.goDownBranch(decision);
 	}
 
+
 	@Override
 	public void goUpBranch(IntBranchingDecision decision)
 	throws ContradictionException {
 		if ( LOGGER.isLoggable(Level.CONFIG) 
-				&& manager.solver.getWorldIndex() + 1 < ChocoLogging.getLoggingMaxDepth()) {
+				&& manager.getSearchLoop().getDepthCount() + 1 < getLoggingMaxDepth()) {
 			LOGGER.log(Level.CONFIG, makeLoggingMessage(decision, LOG_UP_MSG, manager.solver.getWorldIndex() + 1));
 		}
 		internalBranching.goUpBranch(decision);
