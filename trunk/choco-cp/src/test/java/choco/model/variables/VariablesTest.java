@@ -433,7 +433,6 @@ public class VariablesTest {
     @Test
     public void testBugStynes() {
 //        ChocoLogging.toVerbose();
-        ChocoLogging.setEveryXNodes(Integer.MAX_VALUE);
         for (int i = 2000; i < 2001; i++) {
             int n = i;
             Model m1 = modelStynes(n, 0);

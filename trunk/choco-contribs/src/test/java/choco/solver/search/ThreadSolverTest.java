@@ -109,7 +109,6 @@ public class ThreadSolverTest {
 
     public ThreadSolverTest() {
 //        ChocoLogging.setVerbosity(Verbosity.VERBOSE);
-        ChocoLogging.setEveryXNodes(Integer.MAX_VALUE);
         int n = 14;
         model(n);
         Solver s = new CPSolver();

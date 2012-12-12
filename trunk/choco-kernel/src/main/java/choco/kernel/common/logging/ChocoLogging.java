@@ -193,48 +193,7 @@ public final class ChocoLogging {
 		return Verbosity.DEFAULT;
 	}
 
-	
-	////////////////////////////////////////////////////////////////////
-	///////////////////// Branching Configuration //////////////////////
-	////////////////////////////////////////////////////////////////////
-	/**
-	 * maximal search depth for logging statements
-	 */
-	private static int LOGGING_MAX_DEPTH = 25;
-
-	/**
-	 * display information about search every x nodes.
-	 */
-	private static int EVERY_X_NODES = 2000;
-
-
-	public static final int getEveryXNodes() {
-		return EVERY_X_NODES;
-	}
-
-
-	public static final void setEveryXNodes(int everyXnodes) {
-		if(everyXnodes > 0) EVERY_X_NODES = everyXnodes;
-	}
-
-
-	/**
-	 * set the maximal search depth for logging statements
-	 */
-	public static final void setLoggingMaxDepth(int loggingMaxDepth) {
-		if( loggingMaxDepth > 1) LOGGING_MAX_DEPTH = loggingMaxDepth;
-	}
-
-	/**
-	 * get the maximal search depth for logging statements
-	 */
-	public final static int getLoggingMaxDepth() {
-		return LOGGING_MAX_DEPTH;
-	}
-
-
-
-	
+		
 	////////////////////////////////////////////////////////////////////
 	///////////////////// Flush logs  //////////////////////////////////
 	////////////////////////////////////////////////////////////////////

@@ -233,14 +233,12 @@ public class CPSolver implements Solver {
     private int propNogoodWorld = -1;
 
 
-    @Deprecated
     public void setLoggingMaxDepth(int loggingMaxDepth) {
-        ChocoLogging.setLoggingMaxDepth(loggingMaxDepth);
+        configuration.putInt(Configuration.LOGGING_MAX_DEPTH, loggingMaxDepth);
     }
 
-    @Deprecated
     public int getLoggingMaxDepth() {
-        return ChocoLogging.getLoggingMaxDepth();
+        return configuration.readInt(Configuration.LOGGING_MAX_DEPTH);
     }
 
 
@@ -250,7 +248,6 @@ public class CPSolver implements Solver {
      * you can easily provide set your own policy with @{link {@link AbstractSearchStrategy#setSolutionPool(ISolutionPool)}.
      */
     @Override
-    @Deprecated
     public void setSolutionPoolCapacity(int capacity) {
         configuration.putInt(Configuration.SOLUTION_POOL_CAPACITY, capacity);
     }
@@ -616,7 +613,6 @@ public class CPSolver implements Solver {
      * Set the precision of the search for a real model.
      */
     @Override
-    @Deprecated
     public final void setPrecision(double aPrecision) {
         configuration.putDouble(Configuration.REAL_PRECISION, aPrecision);
     }
@@ -625,7 +621,6 @@ public class CPSolver implements Solver {
      * Get the precision of the search for a real model.
      */
     @Override
-    @Deprecated
     public final double getPrecision() {
         return configuration.readDouble(Configuration.REAL_PRECISION);
     }
@@ -634,7 +629,6 @@ public class CPSolver implements Solver {
      * Set the minimal width reduction between two propagations.
      */
     @Override
-    @Deprecated
     public final void setReduction(double aReduction) {
         configuration.putDouble(Configuration.REAL_REDUCTION, aReduction);
     }
@@ -643,7 +637,6 @@ public class CPSolver implements Solver {
      * Get the minimal width reduction between two propagations.
      */
     @Override
-    @Deprecated
     public final double getReduction() {
         return configuration.readDouble(Configuration.REAL_REDUCTION);
     }
@@ -1192,7 +1185,6 @@ public class CPSolver implements Solver {
 
     /**
      * @return true if only the first solution must be found
-     * @deprecated
      */
     public final boolean getFirstSolution() {
         return configuration.readBoolean(Configuration.STOP_AT_FIRST_SOLUTION);
@@ -1201,7 +1193,6 @@ public class CPSolver implements Solver {
     /**
      * Sets wether only the first solution must be found
      *
-     * @deprecated
      */
     public final void setFirstSolution(boolean stopAtFirstSolution) {
         configuration.putBoolean(Configuration.STOP_AT_FIRST_SOLUTION, stopAtFirstSolution);
@@ -1415,9 +1406,7 @@ public class CPSolver implements Solver {
      * function
      *
      * @param maximize indicates wether the strategy is maximizing or not (minimizing)
-     * @deprecated
      */
-    @Deprecated
     public void setDoMaximize(boolean maximize) {
         StrategyFactory.setDoOptimize(this, maximize);
     }
@@ -1452,7 +1441,6 @@ public class CPSolver implements Solver {
     /**
      * set the value before reading the model (>=0);
      *
-     * @deprecated
      */
     public void setHorizon(int horizon) {
         if (makespan == null) {
@@ -2310,34 +2298,28 @@ public class CPSolver implements Solver {
         return this.feasible;
     }
 
-    @Deprecated
     public void setMinimizationObjective(IntVar obj) {
         objective = obj;
         configuration.putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
     }
 
-    @Deprecated
     public void setMaximizationObjective(IntVar obj) {
         objective = obj;
         configuration.putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MAXIMIZE);
     }
 
-    @Deprecated
     public boolean useRecomputation() {
         return configuration.readInt(Configuration.RECOMPUTATION_GAP) > 1;
     }
 
-    @Deprecated
     public void setRecomputation(boolean on) {
         configuration.putInt(Configuration.RECOMPUTATION_GAP, (on ? 10 : 1));
     }
 
-    @Deprecated
     public final int getRecomputationGap() {
         return configuration.readInt(Configuration.RECOMPUTATION_GAP);
     }
 
-    @Deprecated
     public void setRecomputationGap(int aRecomputationGap) {
         configuration.putInt(Configuration.RECOMPUTATION_GAP, aRecomputationGap);
     }

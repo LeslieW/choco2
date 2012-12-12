@@ -192,13 +192,11 @@ public interface Solver extends ISolutionDisplay, IMeasures, IPretty {
 
 	/**
 	 * @return true if only the first solution must be found
-	 * @deprecated
-	 */
+	*/
 	public boolean getFirstSolution();
 
 	/**
 	 * Sets wether only the first solution must be found
-	 * @deprecated
 	 */
 	public void setFirstSolution(boolean firstSolution);
 
@@ -275,16 +273,13 @@ public interface Solver extends ISolutionDisplay, IMeasures, IPretty {
 	 *
 	 * @param restart
 	 */
-	@Deprecated
 	public void setRestart(boolean restart);
 
 	/**
 	 * a boolean indicating if the strategy minize or maximize the objective function
 	 *
 	 * @param doMaximize
-	 * @deprecated
 	 */
-	@Deprecated
 	public void setDoMaximize(boolean doMaximize);
 
 	/**
@@ -494,32 +489,24 @@ public interface Solver extends ISolutionDisplay, IMeasures, IPretty {
 	/**
 	 * Set the precision of the search for a real model.
 	 * @param precision the new precision
-	 * @deprecated
 	 */
-	@Deprecated
 	public void setPrecision(double precision);
 	/**
 	 * Get the precision of the search for a real model.
 	 * @return the actual precision
-	 * @deprecated
 	 */
-	@Deprecated
 	public double getPrecision();
 
 	/**
 	 * Set the minimal width reduction between two propagations.
 	 * @param reduction new width reduction
-	 * @deprecated
 	 */
-	@Deprecated
 	public void setReduction(double reduction);
 
 	/**
 	 * Get the minimal width reduction between two propagations.
 	 * @return width reduction
-	 * @deprecated
 	 */
-	@Deprecated
 	public double getReduction();
 
 
@@ -542,7 +529,6 @@ public interface Solver extends ISolutionDisplay, IMeasures, IPretty {
 
 	public Boolean minimize(Var obj, boolean restart);
 
-	@Deprecated
 	public void setSolutionPoolCapacity(int capacity);
 
 	public void printRuntimeStatistics();
@@ -552,14 +538,12 @@ public interface Solver extends ISolutionDisplay, IMeasures, IPretty {
 	 * set the maximal search depth for logging statements
 	 * @see ChocoLogging
 	 */
-	@Deprecated
 	public void setLoggingMaxDepth(int loggingMaxDepth);
 
 	/**
 	 * get the maximal search depth for logging statements
 	 * @see ChocoLogging
 	 */
-	@Deprecated
 	public int getLoggingMaxDepth();
 
 	/**

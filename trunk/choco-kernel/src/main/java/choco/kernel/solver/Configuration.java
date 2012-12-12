@@ -319,6 +319,22 @@ public class Configuration extends Properties {
 	@Default(value = "1234567")
 	public static final String CEQ_ORDER = "cp.propagation.constraints.order";
 
+	/**
+	 * <br/><b>Goal</b>: display (verbose) information about search every x nodes.
+	 * <br/><b>Type</b>: int
+	 * <br/><b>Default value</b>: 5000
+	 */
+	@Default(value = "5000")
+	public static final String EVERY_X_NODES= "cp.logging.every";
+
+	/**
+	 * <br/><b>Goal</b>: maximal depth for the trace of the search tree.
+	 * <br/><b>Type</b>: int
+	 * <br/><b>Default value</b>: 50
+	 */
+	@Default(value = "50")
+	public static final String LOGGING_MAX_DEPTH= "cp.logging.depth";
+	
 
 	/**
 	 * Creates an empty property list with loaded default values.

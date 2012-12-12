@@ -152,8 +152,7 @@ public class KnapsackTest {
 //        s.setTimeLimit(20000);
 
 //        System.out.printf("%s\n", s.pretty());
-        ChocoLogging.setEveryXNodes(Integer.MAX_VALUE);
-//        ChocoLogging.toVerbose();
+     //     ChocoLogging.toVerbose();
         if (opt) {
             s.maximize(s.getVar(power), false);
         } else {
