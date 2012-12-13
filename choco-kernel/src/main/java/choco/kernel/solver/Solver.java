@@ -794,7 +794,6 @@ public interface Solver extends ISolutionDisplay, IMeasures, IPretty {
 
 	public RealConstant createRealConstant(String name, double val);
 
-	@Deprecated
 	public void setCardReasoning(boolean creas);
 
 	public LargeRelation makeLargeRelation(int[] min, int[] max, List<int[]> tuples, boolean feas);
