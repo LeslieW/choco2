@@ -407,34 +407,35 @@ public class ClausesTest {
 		});
 		s.clearGoals();
 		s.addGoal(BranchingFactory.lexicographic(s, s.getVar(vars)));
-		s.generateSearchStrategy();
 		s.solveAll();
 		assertEquals(5, s.getSolutionCount());
 	}
 	
-//	@Test
-//	public void testNogood2() {
-//		final CPModel mod = new CPModel();
-//		final CPSolver s = new CPSolver();
-//		final IntegerVariable[] vars = makeBooleanVarArray("b", 3);
-//		mod.addVariables(vars);
-//		mod.addConstraint(clause(new IntegerVariable[]{vars[0]}, new IntegerVariable[]{vars[1], vars[2]}));
-//		s.read(mod);
-//		final IntDomainVar[] bvs = s.getVar(vars);
-//		s.setSolutionMonitor(new ISolutionMonitor() {
-//
-//			@Override
-//			public void recordSolution(Solver solver) {
-//				if(solver.getSolutionCount() == 1) {
-//					//Suppress second solution
-//					s.addNogood(new IntDomainVar[]{}, new IntDomainVar[]{bvs[0], bvs[1]});
-//				}
-//			}
-//		});
-//		s.clearGoals();
-//		s.addGoal(BranchingFactory.lexicographic(s, s.getVar(vars)));
-//		s.generateSearchStrategy();
-//		s.solveAll();
-//		assertEquals(5, s.getSolutionCount());
-//	}
+	@Test
+	public void testNogood2() {
+		ChocoLogging.toSearch();
+		final CPModel mod = new CPModel();
+		final CPSolver s = new CPSolver();
+		final IntegerVariable[] vars = makeBooleanVarArray("b", 3);
+		mod.addVariables(vars);
+		s.read(mod);
+		final IntDomainVar[] bvs = s.getVar(vars);
+		//s.addNogood(new IntDomainVar[]{bvs[0]},new IntDomainVar[]{bvs[1]});
+		s.setSolutionMonitor(new ISolutionMonitor() {
+
+			@Override
+			public void recordSolution(Solver solver) {
+				if(solver.getSolutionCount() == 1) {
+					//Suppress second solution
+					s.addNogood(new IntDomainVar[]{},new IntDomainVar[]{bvs[1], bvs[2]});
+				}
+			}
+		});
+		s.clearGoals();
+		s.addGoal(BranchingFactory.lexicographic(s, s.getVar(vars)));
+		s.solveAll();
+		assertEquals(6, s.getSolutionCount());
+		assertEquals(11,s.getNodeCount());
+		assertEquals(10, s.getBackTrackCount());
+	}
 }
