@@ -2393,7 +2393,6 @@ public class CPSolver implements Solver {
         return mapconstraints.get(ic.getIndex());
     }
 
-    @Deprecated
     public final void setCardReasoning(boolean creas) {
         configuration.putBoolean(Configuration.CARD_REASONNING, creas);
     }
@@ -2404,13 +2403,13 @@ public class CPSolver implements Solver {
      */
     @Override
     public Solution recordSolution() {
-        Solution sol = new Solution(this);
+    	//FIXME should be delegated to the search strategy
+        //For instance,solution is not checked, no logging statements.
+    	Solution sol = new Solution(this);
         strategy.writeSolution(sol);
         return sol;
     }
-    //FIXME should be delegated to the search strategy
-    //For example, measures are not updated, solution is not check, no logging statements.
-
+   
 
     /**
      * Restore a solution by getting every variables' value.
@@ -2419,20 +2418,20 @@ public class CPSolver implements Solver {
     public void restoreSolution(Solution sol) {
         try {
             // Integer variables
-            int nbv = getNbIntVars();
+            int nbv = Math.min(getNbIntVars(),sol.getNbIntValues());
             for (int i = 0; i < nbv; i++) {
                 if (sol.getIntValue(i) != Solution.NULL) {
                     getIntVarQuick(i).setVal(sol.getIntValue(i));
                 }
             }
             // Set variables
-            nbv = getNbSetVars();
+            nbv = Math.min(getNbSetVars(),sol.getNbSetValues());
             for (int i = 0; i < nbv; i++) {
                 getSetVarQuick(i).setVal(sol.getSetValue(i));
             }
 
             // Real variables
-            nbv = getNbRealVars();
+            nbv = Math.min(getNbRealVars(),sol.getNbRealValues());
             for (int i = 0; i < nbv; i++) {
                 getRealVarQuick(i).intersect(sol.getRealValue(i));
             }

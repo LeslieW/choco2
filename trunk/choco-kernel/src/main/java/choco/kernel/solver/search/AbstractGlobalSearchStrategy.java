@@ -299,6 +299,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	public void endTreeSearch() {
 		if ( ! solutionPool.isEmpty() && (!stopAtFirstSol)) {
 			solver.worldPopUntil(baseWorld);
+			solver.worldPush();
 			restoreBestSolution();
 		}
 		if (!isEncounteredLimit() && !existsSolution()) {
