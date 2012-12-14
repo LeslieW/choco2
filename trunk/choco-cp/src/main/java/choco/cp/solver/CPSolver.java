@@ -431,12 +431,12 @@ public class CPSolver implements Solver {
     public final void setSolutionDisplay(ISolutionDisplay prettySolution) {
         this.solutionDisplay = prettySolution;
     }
-    
-    public final void setSolutionMonitor(ISolutionMonitor solutionMonitor) {
-		this.solutionMonitor = solutionMonitor;
-	}
 
-	public final IndexFactory getIndexfactory() {
+    public final void setSolutionMonitor(ISolutionMonitor solutionMonitor) {
+        this.solutionMonitor = solutionMonitor;
+    }
+
+    public final IndexFactory getIndexfactory() {
         return indexfactory;
     }
 
@@ -1192,7 +1192,6 @@ public class CPSolver implements Solver {
 
     /**
      * Sets wether only the first solution must be found
-     *
      */
     public final void setFirstSolution(boolean stopAtFirstSolution) {
         configuration.putBoolean(Configuration.STOP_AT_FIRST_SOLUTION, stopAtFirstSolution);
@@ -1440,7 +1439,6 @@ public class CPSolver implements Solver {
 
     /**
      * set the value before reading the model (>=0);
-     *
      */
     public void setHorizon(int horizon) {
         if (makespan == null) {
@@ -2029,14 +2027,13 @@ public class CPSolver implements Solver {
         nogoodStore.constAwake(false);
         //put the nogood store last in the static list
     }
-    
-    
-    
+
+
     public void initNogoodBase() {
-    	if (nogoodStore == null) {
-    		nogoodStore = new ClauseStore(getBooleanVariables(), environment);
-    		postCut(nogoodStore);
-    		//FIXME Problem with variable weights (Dom/WDeg) dans strategy.initMainGoal(cc);
+        if (nogoodStore == null) {
+            nogoodStore = new ClauseStore(getBooleanVariables(), environment);
+            postCut(nogoodStore);
+            //FIXME Problem with variable weights (Dom/WDeg) dans strategy.initMainGoal(cc);
         }
     }
 
@@ -2105,7 +2102,7 @@ public class CPSolver implements Solver {
         int lastStaticIdx = constraints.getLastStaticIndex();
         for (int i = indexOfLastInitializedStaticConstraint.get() + 1; i <= lastStaticIdx; i++) {
             Propagator c = constraints.get(i);
-            if (c != null) {
+            if (c != null && c != nogoodStore) {
                 c.setPassive(); // Set passive to ensure correct first
                 // propagation (as in addListerner)
                 c.constAwake(true);
@@ -2403,13 +2400,13 @@ public class CPSolver implements Solver {
      */
     @Override
     public Solution recordSolution() {
-    	//FIXME should be delegated to the search strategy
+        //FIXME should be delegated to the search strategy
         //For instance,solution is not checked, no logging statements.
-    	Solution sol = new Solution(this);
+        Solution sol = new Solution(this);
         strategy.writeSolution(sol);
         return sol;
     }
-   
+
 
     /**
      * Restore a solution by getting every variables' value.
@@ -2418,20 +2415,20 @@ public class CPSolver implements Solver {
     public void restoreSolution(Solution sol) {
         try {
             // Integer variables
-            int nbv = Math.min(getNbIntVars(),sol.getNbIntValues());
+            int nbv = Math.min(getNbIntVars(), sol.getNbIntValues());
             for (int i = 0; i < nbv; i++) {
                 if (sol.getIntValue(i) != Solution.NULL) {
                     getIntVarQuick(i).setVal(sol.getIntValue(i));
                 }
             }
             // Set variables
-            nbv = Math.min(getNbSetVars(),sol.getNbSetValues());
+            nbv = Math.min(getNbSetVars(), sol.getNbSetValues());
             for (int i = 0; i < nbv; i++) {
                 getSetVarQuick(i).setVal(sol.getSetValue(i));
             }
 
             // Real variables
-            nbv = Math.min(getNbRealVars(),sol.getNbRealValues());
+            nbv = Math.min(getNbRealVars(), sol.getNbRealValues());
             for (int i = 0; i < nbv; i++) {
                 getRealVarQuick(i).intersect(sol.getRealValue(i));
             }
