@@ -40,8 +40,8 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * User: hcambaza
  * Date: 23 avr. 2008
  * Time: 15:30:18
- *
- *
+ * <p/>
+ * <p/>
  * [BUG 3297805]: fix
  */
 public final class MultNode extends INode implements ArithmNode {
@@ -59,10 +59,10 @@ public final class MultNode extends INode implements ArithmNode {
         IntDomainVar v2 = subtrees[1].extractResult(s);
         IntDomainVar v3;
 
-        long i1 =(long)v1.getInf();
-        long s1 = (long)v1.getSup();
-        long i2 =(long)v2.getInf();
-        long s2 = (long)v2.getSup();
+        long i1 = (long) v1.getInf();
+        long s1 = (long) v1.getSup();
+        long i2 = (long) v2.getInf();
+        long s2 = (long) v2.getSup();
 
 
         long a = i1 * i2;
@@ -71,14 +71,11 @@ public final class MultNode extends INode implements ArithmNode {
         long d = s1 * s2;
         long _lb = Math.min(Math.min(Math.min(a, b), c), d);
         long _ub = Math.max(Math.max(Math.max(a, b), c), d);
-        int lb = (int)Math.max(_lb, Integer.MIN_VALUE);
-        int ub = (int)Math.min(_ub, Integer.MAX_VALUE);
-        if(lb==0 && ub == 1){
+        int lb = (int) Math.max(_lb, Integer.MIN_VALUE);
+        int ub = (int) Math.min(_ub, Integer.MAX_VALUE);
+        if (lb == 0 && ub == 1) {
             v3 = s.createBooleanVar(StringUtils.randomName());
-        }else
-        if (v1.hasEnumeratedDomain() && v2.hasEnumeratedDomain()) {
-            v3 = s.createEnumIntVar(StringUtils.randomName(), lb, ub);
-        } else {
+        } else { // Times only performs BC, so bounded variable is enough
             v3 = s.createBoundIntVar(StringUtils.randomName(), lb, ub);
         }
         s.post(new TimesXYZ(v1, v2, v3));
