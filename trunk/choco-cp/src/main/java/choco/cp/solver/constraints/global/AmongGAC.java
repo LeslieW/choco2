@@ -65,6 +65,7 @@ public final class AmongGAC extends AbstractLargeIntSConstraint {
     private TIntHashSet setValues;
 
     private IStateInt[] occs;
+    private IStateInt[] sizes;
 
     /**
      * Constructs a constraint with the specified priority.
@@ -84,8 +85,10 @@ public final class AmongGAC extends AbstractLargeIntSConstraint {
         UB = environment.makeInt(0);
         this.setValues = new TIntHashSet(values);
         this.occs = new IStateInt[nb_vars];
+        this.sizes = new IStateInt[nb_vars];
         for (int i = 0; i < nb_vars; i++) {
             occs[i] = environment.makeInt(0);
+            sizes[i] = environment.makeInt(0);
         }
     }
 
@@ -126,7 +129,9 @@ public final class AmongGAC extends AbstractLargeIntSConstraint {
                 nb += (var.canBeInstantiatedTo(value) ? 1 : 0);
             }
             occs[i].set(nb);
-            if (nb == var.getDomainSize()) {
+            int size = var.getDomainSize();
+            sizes[i].set(size);
+            if (nb == size) {
                 lb++;
             } else if (nb == 0) {
 
@@ -211,9 +216,10 @@ public final class AmongGAC extends AbstractLargeIntSConstraint {
                 if (setValues.contains(val)) {
                     occs[varIdx].add(-1);
                 }
+                sizes[varIdx].add(-1);
                 IntDomainVar var = vars[varIdx];
                 int nb = occs[varIdx].get();
-                if (nb == var.getDomainSize()) {  //Can only be instantiated to a value in the group
+                if (nb == sizes[varIdx].get()) {  //Can only be instantiated to a value in the group
                     LB.add(1);
                     both.set(varIdx, false);
                     filter();
@@ -257,9 +263,12 @@ public final class AmongGAC extends AbstractLargeIntSConstraint {
             IntDomainVar v = vars[i];
             left = right = Integer.MIN_VALUE;
             for (int value : values) {
+                /*
+                USELESS => will be entailed just after
                 if (setValues.contains(value)) {
                     occs[i].add(-1);
-                }
+                    sizes[i].add(-1);
+                }*/
                 if (value == right + 1) {
                     right = value;
                 } else {
