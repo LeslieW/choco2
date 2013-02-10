@@ -194,7 +194,7 @@ public class PPSearch {
                 ibb = new ImpactBasedBranching(s, bvs);
                 if (!ibb.getImpactStrategy().initImpacts(initialisationtime))
                     return false;
-                s.attachGoal(ibb);
+                s.addGoal(ibb);
                 if (randval) ibb.setRandomValueChoice(randvalseed);
                 AssignVar dwd2 = BranchingFactory.minDomIncDom(s, ovs);
                 s.addGoal(dwd2);
@@ -288,7 +288,7 @@ public class PPSearch {
         if (isNaryExtensional()) {
             return 1;
         }
-        for (; it.hasNext();) {
+        while(it.hasNext()) {
             SConstraint constraint = it.next();
             if (constraint instanceof Cumulative) return 2;
             if (constraint instanceof AllDifferent) return 2;

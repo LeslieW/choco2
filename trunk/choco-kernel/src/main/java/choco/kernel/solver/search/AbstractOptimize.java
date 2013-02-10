@@ -125,7 +125,7 @@ public abstract class AbstractOptimize extends AbstractGlobalSearchStrategy {
 
 
 	protected final void bottomUpSearch() {
-		// TODO - Not compatible with restarts - created 5 juil. 2011 by Arnaud Malapert
+		// FIXME - Not compatible with restarts - created 5 juil. 2011 by Arnaud Malapert
 		final int oldBaseWorld = baseWorld;
 		baseWorld = solver.getWorldIndex();
 		solver.worldPush();

@@ -292,6 +292,7 @@ public class PreProcessCPSolver extends CPSolver {
 		try {
 			propagate();
 		} catch (ContradictionException e) {
+			setFeasible(Boolean.FALSE);
 			return false;
 		}
 		proptime = (int) System.currentTimeMillis() - proptime;

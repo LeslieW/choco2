@@ -99,6 +99,7 @@ public class DomWDegUtils {
 		for (Iterator<Integer> it = s.getIntConstantSet().iterator(); it.hasNext();) {
 			addVariableExtension(s.getIntConstant(it.next()));
 		}
+		iter.dispose();
 	}
 
 	public static boolean hasAtLeastTwoNotInstVars(SConstraint<?> c) {

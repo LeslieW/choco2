@@ -52,7 +52,7 @@ public class PVariable {
 	public PVariable(String name, PDomain domain) {
 		this.name = name;
 		this.domain = domain;
-		this.index = Integer.parseInt(name.substring(1,name.length()));
+		this.index = name.hashCode(); //Integer.parseInt(name.substring(1,name.length()));
 	}
 
 	public int getIdx() {
