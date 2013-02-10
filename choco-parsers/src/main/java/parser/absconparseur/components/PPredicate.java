@@ -62,7 +62,7 @@ public class PPredicate  extends PFunction {
 		this.formalParameters =  PredicateManager.extractFormalParameters(formalParametersExpression,true);
 		this.functionalExpression = functionalExpression.trim();
 		this.unversalPostfixExpression = PredicateManager.buildUniversalPostfixExpression(functionalExpression, formalParameters);
-        this.index = parseInt(name.substring(1).replaceAll("_", "00"));
+        this.index = name.hashCode(); //parseInt(name.substring(1).replaceAll("_", "00"));
     }
 
     public void setFormalParameters(String[] formalParameters) {

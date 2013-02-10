@@ -82,8 +82,7 @@ public class DisjunctiveSModel extends DisjunctiveGraph<ITemporalSRelation> {
 			}
 			for (int j = dmod.disjGraph[i].nextSetBit(0); j >= 0; j = dmod.disjGraph[i]
 					.nextSetBit(j + 1)) {
-				// FIXME - rel can be null ? - created 10 avr. 2012 by A.
-				// Malapert
+				// FIXME - rel can be null ? - created 10 avr. 2012 
 				if (dmod.containsConstraint(i, j)) {
 					final int d = hookToIndexM.get(j);
 					final ITemporalSRelation rel = (ITemporalSRelation) solver

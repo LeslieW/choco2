@@ -91,6 +91,16 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 		return nbArcs == 0 && nbEdges == 0;
 	}
 
+	/**
+	 * 
+	 * @param i the index of the task
+	 * @return a bitset with its successors indices (WARNING: do not modify the bitset!)
+	 */
+	public BitSet getPrecSuccessors(int i) {
+		//FIXME Implement unmodifiable bitset ?
+		return precGraph[i];
+	}
+	
 	protected final void setPrecClosure() {
 		savedPrecGraph = copy(precGraph);
 		floydMarshallClosure(precGraph);
@@ -103,8 +113,6 @@ public class DisjunctiveGraph<E extends ITemporalRelation<?, ?>> implements IDot
 			}
 		}
 	}
-	
-	
 	
 	public final BitSet[] copyPrecGraph()	{
 		return copy(precGraph);

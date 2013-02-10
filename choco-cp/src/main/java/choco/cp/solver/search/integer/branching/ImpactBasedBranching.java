@@ -40,7 +40,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import java.util.*;
 
 /**
- * Impact based branchging based on the code from Hadrien
+ * Impact based branching based on the code from Hadrien
  * <p/>
  * Written by Guillaumme on 17 may 2008
  */

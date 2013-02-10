@@ -27,6 +27,17 @@
 
 package parser.instances;
 
+import static parser.instances.xcsp.XcspSettings.Heuristic.IMPACT;
+
+import java.io.File;
+
+import parser.absconparseur.components.PVariable;
+import parser.absconparseur.tools.InstanceParser;
+import parser.absconparseur.tools.SolutionChecker;
+import parser.absconparseur.tools.UnsupportedConstraintException;
+import parser.chocogen.ChocoFactory;
+import parser.chocogen.ObjectFactory;
+import parser.instances.xcsp.XcspSettings;
 import choco.cp.model.CPModel;
 import choco.cp.solver.constraints.integer.extension.ValidityChecker;
 import choco.cp.solver.preprocessor.PreProcessCPSolver;
@@ -35,18 +46,9 @@ import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.model.Model;
+import choco.kernel.solver.Configuration;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.checker.SolutionCheckerException;
-import parser.absconparseur.components.PVariable;
-import parser.absconparseur.tools.InstanceParser;
-import parser.absconparseur.tools.SolutionChecker;
-import parser.absconparseur.tools.UnsupportedConstraintException;
-import parser.chocogen.ChocoFactory;
-import parser.chocogen.ObjectFactory;
-import parser.instances.xcsp.XcspSettings;
-import static parser.instances.xcsp.XcspSettings.Heuristic.IMPACT;
-
-import java.io.File;
 
 
 class ParserWrapper implements InstanceFileParser {
@@ -95,13 +97,8 @@ public class XcspModel extends AbstractInstanceModel {
 	private XcspSettings.Heuristic cheuri;
 	private String[] values;
 
-	public XcspModel() {
-		this(new XcspSettings());
-		PreProcessConfiguration.cancelSchedulingPreProcess(getConfiguration());
-	}
 
-
-	public XcspModel(XcspSettings settings) {
+	public XcspModel(Configuration settings) {
 		super(new ParserWrapper(), settings);
 	}
 
