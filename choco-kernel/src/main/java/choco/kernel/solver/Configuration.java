@@ -243,6 +243,15 @@ public class Configuration extends Properties {
 	public static final String INIT_SHAVE_ONLY_DECISIONS = "cp.init.propagation.shaving.only_decision_vars";
 
 	/**
+	 * <br/><b>Goal</b>: time limit for the initialization step of impact based search in milliseconds.
+	 * <br/><b>Type</b>: int
+	 * <br/><b>Default value</b>: 1000 (ms)
+	 */
+	@Default(value = "1000")
+	public static final String INIT_IMPACT_TIME_LIMIT = "cp.init.impact.limit.time.value";
+
+	
+	/**
 	 * <br/><b>Goal</b>: Apply a bottom-up search algorithm (optimization).
 	 * <br/><i> The top-down strategy (default) starts with a upper bound and tries to improve it.</i>
 	 * <br/><i> The bottom-up starts with a lower bound as target upper bound which is incremented by one unit until the

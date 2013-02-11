@@ -27,6 +27,11 @@
 
 package choco.solver.search;
 
+import java.util.logging.Logger;
+
+import org.junit.Assert;
+import org.junit.Test;
+
 import choco.Choco;
 import choco.Options;
 import choco.cp.model.CPModel;
@@ -37,11 +42,8 @@ import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.Configuration;
 import choco.kernel.solver.Solver;
-import org.junit.Assert;
-import org.junit.Test;
-
-import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -66,9 +68,10 @@ public class ImpactTest {
         }
 
         s.read(m);
+        s.getConfiguration().putInt(Configuration.INIT_IMPACT_TIME_LIMIT, 100);
         ImpactBasedBranching ibb = new ImpactBasedBranching(s);
-        ibb.getImpactStrategy().initImpacts(100);
         s.addGoal(ibb);
+       // ChocoLogging.toVerbose();
         s.solve();
         Assert.assertEquals(0, s.getSolutionCount());
         Assert.assertEquals(260650, s.getNodeCount());
@@ -89,13 +92,52 @@ public class ImpactTest {
         s.read(m);
 
         ImpactBasedBranching ibb = new ImpactBasedBranching(s);
-        ibb.getImpactStrategy().initImpacts(100);
+        s.getConfiguration().putInt(Configuration.INIT_IMPACT_TIME_LIMIT, 100);
         s.addGoal(ibb);
 
         s.solve();
         Assert.assertEquals(0, s.getSolutionCount());
         Assert.assertEquals(260650, s.getNodeCount());
     }
+
+    @Test
+    public void test3() {
+        Model m = new CPModel();
+        Solver s = new CPSolver();
+        IntegerVariable[] vs1 = Choco.makeIntVarArray("v", 2, 0, 10, Options.V_ENUM);
+        m.addConstraint(Choco.eq(Choco.plus(vs1[0], vs1[1]),-1));
+        s.read(m);
+        s.getConfiguration().putInt(Configuration.INIT_IMPACT_TIME_LIMIT, 100);
+        ImpactBasedBranching ibb = new ImpactBasedBranching(s);
+        s.addGoal(ibb);
+        ChocoLogging.toVerbose();
+        s.solve();
+        Assert.assertEquals(0, s.getSolutionCount());
+        Assert.assertEquals(0, s.getNodeCount());
+    }
+    
+    @Test
+    public void test4() {
+        Model m = new CPModel();
+        Solver s = new CPSolver();
+        IntegerVariable[] vs1 = Choco.makeIntVarArray("v1", 3, 0, 1, Options.V_ENUM);
+        for (int i = 0; i < vs1.length; i++) {
+            for (int j = i + 1; j < vs1.length; j++) {
+                m.addConstraint(Choco.neq(vs1[i], vs1[j]));
+            }
+        }
+        s.read(m);
+
+        ImpactBasedBranching ibb = new ImpactBasedBranching(s);
+        s.getConfiguration().putInt(Configuration.INIT_IMPACT_TIME_LIMIT, 100);
+        s.addGoal(ibb);
+
+        s.solve();
+        Assert.assertEquals(0, s.getSolutionCount());
+        Assert.assertEquals(0, s.getNodeCount());
+    }
+
+
 
     @Test
     public void testMagicSquare() {
@@ -135,7 +177,7 @@ public class ImpactTest {
         CPSolver s = new CPSolver();
         s.read(m);
         ImpactBasedBranching ibb = new ImpactBasedBranching(s);
-        ibb.getImpactStrategy().initImpacts(1000000);
+        s.getConfiguration().putInt(Configuration.INIT_IMPACT_TIME_LIMIT, 1000000);
 
         s.setTimeLimit(65000);
         s.setGeometricRestart(14, 1.5d);

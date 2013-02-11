@@ -27,6 +27,7 @@
 
 package choco.kernel.solver.branch;
 
+import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 
@@ -80,7 +81,7 @@ public abstract class AbstractBranchingStrategy implements BranchingStrategy {
 	 * This method is called before launching the search. it may be used to intialiaze data structures or counters for
 	 * instance.
 	 */
-	public void initBranching() {
+	public void initBranching() throws ContradictionException {
 		// Nothing to do by default
 	}
 
