@@ -32,6 +32,7 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.branch.AbstractBranchingStrategy;
 import choco.kernel.solver.branch.AbstractIntBranchingStrategy;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import static choco.Choco.FALSE;
 import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.*;
 import choco.kernel.solver.search.AbstractSearchLoop;
 import choco.kernel.solver.search.IntBranchingTrace;
@@ -102,11 +103,15 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 	@Override
 	public void initSearch() {
 		br = searchStrategy.mainGoal;
-		while (br != null) {
-			br.initBranching();
-			br = br.getNextBranching();
+		try {
+			while (br != null) {
+				br.initBranching();
+				br = br.getNextBranching();
+			}
+			searchStrategy.nextMove = OPEN_NODE;
+		} catch (ContradictionException e) {
+			searchStrategy.nextMove = STOP;
 		}
-		searchStrategy.nextMove = OPEN_NODE;
 	}
 
 
@@ -191,7 +196,7 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 			//Other variables should be fixed by propagation or remained not instantiated 
 			searchStrategy.nextMove = moveAfterSolution; //set the next move (backtrack, restart or stop)
 			stop = true; //a solution has been found, we should run the loop again to find another solution
-                        searchStrategy.recordSolution(); //record the solution (could change the nextMove)
+			searchStrategy.recordSolution(); //record the solution (could change the nextMove)
 		} catch (ContradictionException e) {
 			searchStrategy.nextMove = e.getContradictionMove();
 		}

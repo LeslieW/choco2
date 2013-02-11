@@ -192,8 +192,6 @@ public class PPSearch {
         if (isScheduling()) {
             if (!isMixedScheduling()) { //pure scheduling
                 ibb = new ImpactBasedBranching(s, bvs);
-                if (!ibb.getImpactStrategy().initImpacts(initialisationtime))
-                    return false;
                 s.addGoal(ibb);
                 if (randval) ibb.setRandomValueChoice(randvalseed);
                 AssignVar dwd2 = BranchingFactory.minDomIncDom(s, ovs);
@@ -201,15 +199,11 @@ public class PPSearch {
             } else {                    //side constraints added
                 ibb = new ImpactBasedBranching(s, concat(getBooleanVars(s), getOtherVars(s)));
                 if (randval) ibb.setRandomValueChoice(randvalseed);
-                if (!ibb.getImpactStrategy().initImpacts(initialisationtime))
-                    return false;
                 s.attachGoal(ibb);
             }
         } else {                        //general case
             ibb = new ImpactBasedBranching(s);
             if (randval) ibb.setRandomValueChoice(randvalseed);
-            if (!ibb.getImpactStrategy().initImpacts(initialisationtime))
-                return false;
             s.attachGoal(ibb);
         }
         return true;

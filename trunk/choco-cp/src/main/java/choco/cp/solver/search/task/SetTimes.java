@@ -152,7 +152,7 @@ public class SetTimes extends AbstractLargeIntBranchingStrategy {
 	
 
 	@Override
-	public void initBranching() {
+	public void initBranching() throws ContradictionException {
 		super.initBranching();
 		select.set(0, this.tasksL.size());
 		nselect.clear();

@@ -134,7 +134,7 @@ public class BranchingWithLoggingStatements extends AbstractIntBranchingStrategy
 
 
 	@Override
-	public void initBranching() {
+	public void initBranching() throws ContradictionException {
 		super.initBranching();
 		internalBranching.initBranching();
 	}

@@ -27,17 +27,21 @@
 
 package choco.cp.solver.search.integer.branching;
 
-import choco.cp.solver.CPSolver;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+
 import choco.kernel.common.TimeCacheThread;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.solver.Configuration;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.AbstractLargeIntBranchingStrategy;
 import choco.kernel.solver.search.IntBranchingDecision;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-
-import java.util.*;
 
 /**
  * Impact based branching based on the code from Hadrien
@@ -53,7 +57,7 @@ public class ImpactBasedBranching extends AbstractLargeIntBranchingStrategy {
 	protected Random randomBreakTies;
 
 	private static final int ABSTRACTVAR_EXTENSION =
-		AbstractVar.getAbstractVarExtensionNumber("choco.cp.cpsolver.search.integer.ImpactBasedBranching");
+			AbstractVar.getAbstractVarExtensionNumber("choco.cp.cpsolver.search.integer.ImpactBasedBranching");
 
 	static IntDomainVar[] varsFromSolver(Solver s) {
 		IntDomainVar[] vars = new IntDomainVar[s.getNbIntVars()];
@@ -71,6 +75,14 @@ public class ImpactBasedBranching extends AbstractLargeIntBranchingStrategy {
 			var.addExtension(ABSTRACTVAR_EXTENSION);
 		}
 		_ibs = ibs;
+	}
+
+	@Override
+	public void initBranching() throws ContradictionException {
+		super.initBranching();
+		if(_solver.getNodeCount() == 0) {
+			_ibs.initImpacts();
+		}
 	}
 
 	public ImpactBasedBranching(Solver solver, IntDomainVar[] vars) {
@@ -197,7 +209,6 @@ public class ImpactBasedBranching extends AbstractLargeIntBranchingStrategy {
 			_solver.propagate();
 		} catch (ContradictionException e) {
 			_ibs.doAfterFail(var, val);
-
 			throw e;
 		}
 		_ibs.doAfterPropagDownBranch(var, val);
@@ -227,7 +238,7 @@ public class ImpactBasedBranching extends AbstractLargeIntBranchingStrategy {
 		 * return the impact of the variable var.
 		 *
 		 * @param var variable
-         * @return the value of the impact.
+		 * @return the value of the impact.
 		 */
 		public double getEnumImpactVar(IntDomainVar var);
 
@@ -235,7 +246,7 @@ public class ImpactBasedBranching extends AbstractLargeIntBranchingStrategy {
 		 * Only one impact is stored for a BoundIntVar (not an impact per value)
 		 *
 		 * @param var variable
-         * @return the value of the impact.
+		 * @return the value of the impact.
 		 */
 		public double getBoundImpactVar(IntDomainVar var);
 
@@ -243,8 +254,8 @@ public class ImpactBasedBranching extends AbstractLargeIntBranchingStrategy {
 		 * return the impact of the choice var == val.
 		 *
 		 * @param var variable
-         * @param val value
-         * @return the value of the impact.
+		 * @param val value
+		 * @return the value of the impact.
 		 */
 		public double getImpactVal(IntDomainVar var, int val);
 
@@ -279,6 +290,75 @@ public class ImpactBasedBranching extends AbstractLargeIntBranchingStrategy {
 			this.dataS = dataS;
 		}
 
+
+
+		//		/**
+		//		 * Each value of each variable is tried to initialize
+		//		 * impact. A pruning according to this singleton
+		//		 * consistency phase's is done.
+		//		 *
+		//		 * @param timelimit limit to achieve the singleton algorithm
+		//		 * @return true if no contradiction occured
+		//		 */
+		//		public boolean initImpacts(int timelimit) {
+		//			if (timelimit != 0) {
+		//				long tps = TimeCacheThread.currentTimeMillis;
+		//				_branching._solver.generateSearchStrategy();
+		//				_branching.setSolver(_branching._solver.getSearchStrategy());
+		//				try {
+		//					_branching._solver.propagate();
+		//					_branching._solver.worldPush();
+		//					for (int i = 0; i < svars.size(); i++) {
+		//						//for (Object svar : svars) {
+		//						IntDomainVar v = (IntDomainVar) svars.get(i);
+		//						if (!v.isInstantiated() && v.hasEnumeratedDomain()) {
+		//							DisposableIntIterator it = v.getDomain().getIterator();
+		//							while (it != null && it.hasNext()) {
+		//								int val = it.next();
+		//								boolean cont = false;
+		//								if (v.hasBooleanDomain() && val > v.getInf() && val < v.getSup())
+		//									break;							
+		//								_branching._solver.worldPush();
+		//								try {
+		//									_branching.goDownBranch(v, val);
+		//								} catch (ContradictionException e) {
+		//									cont = true;
+		//								}
+		//								_branching._solver.worldPop();
+		//								if (cont) {
+		//									_branching._solver.worldPop();
+		//									try {
+		//										v.remVal(val);
+		//										_branching._solver.propagate();
+		//									} catch (ContradictionException e) {
+		//										return false;
+		//									}
+		//									_branching._solver.worldPush();								
+		//								}
+		//								if ((TimeCacheThread.currentTimeMillis - tps) > timelimit) {
+		//									_branching._solver.worldPop();
+		//									_branching._solver.getSearchStrategy().clearTrace();
+		//									((CPSolver) _branching._solver).resetSearchStrategy();
+		//									return true;
+		//								}
+		//							}
+		//							it.dispose();
+		//						}
+		//
+		//					}
+		//					_branching._solver.worldPop();
+		//				} catch (ContradictionException e) {
+		//					return false;
+		//				} catch (Exception e) {
+		//					e.printStackTrace();
+		//				}
+		//				_branching._solver.getSearchStrategy().clearTrace();
+		//				((CPSolver) _branching._solver).resetSearchStrategy();
+		//			}
+		//			return true;
+		//
+		//		}
+
 		/**
 		 * Each value of each variable is tried to initialize
 		 * impact. A pruning according to this singleton
@@ -286,70 +366,49 @@ public class ImpactBasedBranching extends AbstractLargeIntBranchingStrategy {
 		 *
 		 * @param timelimit limit to achieve the singleton algorithm
 		 * @return true if no contradiction occured
+		 * @throws ContradictionException 
 		 */
-		public boolean initImpacts(int timelimit) {
-			if (timelimit != 0) {
+		public void initImpacts() throws ContradictionException {
+			int timelimit = _branching._solver.getConfiguration().readInt(Configuration.INIT_IMPACT_TIME_LIMIT);
+			if (timelimit > 0) {
 				long tps = TimeCacheThread.currentTimeMillis;
-				_branching._solver.generateSearchStrategy();
-				_branching.setSolver(_branching._solver.getSearchStrategy());
-				try {
-					_branching._solver.propagate();
-					_branching._solver.worldPush();
-					for (int i = 0; i < svars.size(); i++) {
-						//for (Object svar : svars) {
-						IntDomainVar v = (IntDomainVar) svars.get(i);
-						if (!v.isInstantiated() && v.hasEnumeratedDomain()) {
-							DisposableIntIterator it = v.getDomain().getIterator();
-							while (it != null && it.hasNext()) {
-								int val = it.next();
-								boolean cont = false;
-								if (v.hasBooleanDomain() && val > v.getInf() && val < v.getSup())
-									break;							
-								_branching._solver.worldPush();
-								try {
-									_branching.goDownBranch(v, val);
-								} catch (ContradictionException e) {
-									cont = true;
-								}
+				_branching._solver.propagate();
+				_branching._solver.worldPush();
+				for (int i = 0; i < svars.size(); i++) {
+					//for (Object svar : svars) {
+					IntDomainVar v = (IntDomainVar) svars.get(i);
+					if (!v.isInstantiated() && v.hasEnumeratedDomain()) {
+						DisposableIntIterator it = v.getDomain().getIterator();
+						while (it.hasNext()) {
+							int val = it.next();
+							_branching._solver.worldPush();
+							doBeforePropagDownBranch(v, val);
+							try {
+								v.setVal(val);
+								_branching._solver.propagate();
+								doAfterPropagDownBranch(v, val);
 								_branching._solver.worldPop();
-								if (cont) {
-									_branching._solver.worldPop();
-									try {
-										v.remVal(val);
-										_branching._solver.propagate();
-									} catch (ContradictionException e) {
-										return false;
-									}
-									_branching._solver.worldPush();								
-								}
-								if ((TimeCacheThread.currentTimeMillis - tps) > timelimit) {
-									_branching._solver.worldPop();
-									_branching._solver.getSearchStrategy().clearTrace();
-									((CPSolver) _branching._solver).resetSearchStrategy();
-									return true;
-								}
+							} catch (ContradictionException e) {
+								doAfterFail(v, val);
+								_branching._solver.worldPop();
+								v.remVal(val);
+								_branching._solver.propagate();
+								_branching._solver.worldPush();		
 							}
-							it.dispose();
+
+							if ((TimeCacheThread.currentTimeMillis - tps) > timelimit) {
+								_branching._solver.worldPop();
+								return;
+							}
 						}
-
+						it.dispose();
 					}
-					_branching._solver.worldPop();
-				} catch (ContradictionException e) {
-					return false;
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				_branching._solver.getSearchStrategy().clearTrace();
-				((CPSolver) _branching._solver).resetSearchStrategy();
-			}
-			return true;
 
+				}
+				_branching._solver.worldPop();
+			}
 		}
 
-
-//		public void goDownBranch(Object x, int i) throws ContradictionException {
-//			_branching.goDownBranch(x, i);
-//		}
 
 		protected static class ImpactStorage {
 
@@ -467,9 +526,9 @@ public class ImpactBasedBranching extends AbstractLargeIntBranchingStrategy {
 
 		/**
 		 * Return impact by giving directly the adress in the table
-         * @param idx index
-         * @return value
-         */
+		 * @param idx index
+		 * @return value
+		 */
 		public double getImpactVal(int idx) {
 			if (nbDecOnVarVal[idx] > 0) {
 				return impact[idx] / (double) nbDecOnVarVal[idx];
@@ -514,11 +573,11 @@ public class ImpactBasedBranching extends AbstractLargeIntBranchingStrategy {
 		/**
 		 * The sizes of the domains are stored before and after each choice.
 		 * The search space reduction is then computed as the product of pAfter[i]/pBfore[i] for all i
-         * @param x variable
-         * @param val value
-         * @param pAfter domain size after the choice
-         * @param pBefore domain size before the choice
-         */
+		 * @param x variable
+		 * @param val value
+		 * @param pAfter domain size after the choice
+		 * @param pBefore domain size before the choice
+		 */
 		public void computeSearchReduction(IntDomainVar x, int val, int[] pAfter, int[] pBefore) {
 			double reduc = 1.0;
 			for (int i = 0; i < pAfter.length; i++) {
