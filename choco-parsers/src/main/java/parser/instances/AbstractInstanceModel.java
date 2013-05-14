@@ -426,7 +426,6 @@ public abstract class AbstractInstanceModel {
 				logMsg.appendDiagnostics("FAILURES", solver.getFailCount(), rtime);
 			}
 			logMsg.appendDiagnostics("RESTARTS", solver.getRestartCount(), rtime);
-			// TODO - Fail count - created 16 mai 2012 by A. Malapert
 			if(solver.isOptimizationSolver()) {
 				//best lower bound on the objective
 				logMsg.appendDiagnostic("LOWER_BOUND", solver.getSearchStrategy().getObjectiveManager().getObjectiveFloor());
