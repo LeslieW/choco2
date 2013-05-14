@@ -42,6 +42,7 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Configuration;
 import choco.kernel.solver.ResolutionPolicy;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.search.checker.SolutionCheckerException;
 import choco.kernel.visu.IVisuManager;
 
 /**

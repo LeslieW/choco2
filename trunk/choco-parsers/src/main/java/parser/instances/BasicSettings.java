@@ -27,8 +27,12 @@
 
 package parser.instances;
 
+import static parser.instances.BasicSettings.BRANCHING;
+import static parser.instances.BasicSettings.MIN_VALUE;
+import static parser.instances.BasicSettings.RANDOM_VALUE;
 import choco.cp.solver.preprocessor.PreProcessConfiguration;
 import choco.kernel.solver.Configuration;
+import choco.kernel.solver.Configuration.Default;
 import choco.kernel.solver.search.limit.Limit;
 
 import java.io.File;
@@ -64,12 +68,33 @@ public class BasicSettings extends PreProcessConfiguration{
 	public static final String LIGHT_MODEL = "tools.cp.model.light";
 
 	/**
+	 * 
+	 * <br/><b>Goal</b>: indicates the branching strategy.
+	 *  
+	 * <br/><b>Type</b>: String
+	 * <br/><b>Default value</b>: LEX
+	 */
+	@Default(value = "LEX")
+	public static final String BRANCHING = "tools.branching.variable";
+	//TODO Change branching keys
+
+	
+	/**
 	 * <br/><b>Goal</b>: indicates if selection is random in value-selection heuristics.
 	 * <br/><b>Type</b>: boolean
 	 * <br/><b>Default value</b>: false
 	 */
 	@Default(value = VALUE_FALSE)
 	public static final String RANDOM_VALUE = "tools.random.value";
+
+	/**
+	 * <br/><b>Goal</b>: indicates if value-selection is either min-val or max-val
+	 * Note that {@link BasicSettings#RANDOM_VALUE} cancels this property.
+	 * <br/><b>Type</b>: boolean
+	 * <br/><b>Default value</b>: true
+	 */
+	@Default(value = VALUE_TRUE)
+	public static final String MIN_VALUE = "tools.branching.value.min";
 
 	/**
 	 * <br/><b>Goal</b>: indicates if the ties are broken randomly in variable-selection or value-selection heuristics.
@@ -134,6 +159,15 @@ public class BasicSettings extends PreProcessConfiguration{
 		}
 	}
 	
+	public static String getBranchingMsg(Configuration conf) {
+		//FIXME only the branching factory knows what branching is really applied !
+		StringBuilder b = new StringBuilder();
+		b.append(conf.readString(BRANCHING)).append(" BRANCHING    ");
+		if( conf.readBoolean(RANDOM_VALUE) ) b.append("RAND_VAL    ");
+		else if( conf.readBoolean(MIN_VALUE) ) b.append("MIN_VAL");
+		else b.append("MAX_VALUE");
+		return b.toString();
+	}
 
 	public static String getInstModelMsg(Configuration conf) {
 		final StringBuilder b = new StringBuilder(32);
@@ -142,5 +176,14 @@ public class BasicSettings extends PreProcessConfiguration{
 		if( conf.readBoolean(RANDOM_TIE_BREAKING)) b.append("RAND_TIE_BREAKING");
 		return new String(b);
 	}
+	
+
+	public static void main(String[] args) throws IOException {
+		BasicSettings settings = new BasicSettings();
+		File f = File.createTempFile("settings-",".properties");
+		System.out.println("Generate "+f);
+		settings.storeDefault(f, "");
+	}
+
 	
 }

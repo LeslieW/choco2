@@ -41,6 +41,7 @@ import choco.kernel.solver.search.limit.FailLimit;
 import choco.kernel.solver.search.limit.Limit;
 import choco.kernel.solver.search.limit.NodeLimit;
 import choco.kernel.solver.search.limit.RestartLimit;
+import choco.kernel.solver.search.limit.SolutionLimit;
 import choco.kernel.solver.search.limit.TimeLimit;
 
 /**
@@ -98,6 +99,7 @@ public final class LimitFactory {
 			strategy.solver.monitorFailLimit(true);
 			return new FailLimit(strategy, theLimit);
 		}
+		case SOLUTION : return new SolutionLimit(strategy, theLimit);
 		default: 
 			return null;
 		}

@@ -33,6 +33,7 @@ import choco.Options;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.configure.LimitFactory;
+import choco.cp.solver.search.BranchingFactory;
 import choco.cp.solver.search.SearchLimitManager;
 import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
@@ -40,6 +41,7 @@ import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.Configuration;
 import choco.kernel.solver.search.limit.Limit;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -67,7 +69,7 @@ public class LimitTest {
 		model.addConstraint(Options.C_ALLDIFFERENT_AC,allDifferent(vars));
 		solver=new CPSolver();
 		solver.read(model);
-        solver.attachGoal(new AssignVar(new MinDomain(solver), new IncreasingDomain()));
+        solver.addGoal(BranchingFactory.minDomMinVal(solver));
 	}
 
 
@@ -91,10 +93,19 @@ public class LimitTest {
 		check(Limit.BACKTRACK);
 	}
 
+	
 	@Test
-	public void testFailTimeLimit() {
+	public void testFailLimit() {
         solver.setFailLimit(SIZE/10);
 		check(Limit.FAIL);
+	}
+
+	
+	@Test
+	public void testSolutionLimit() {
+        solver.getConfiguration().putEnum(Configuration.SEARCH_LIMIT, Limit.SOLUTION);
+		solver.getConfiguration().putInt(Configuration.SEARCH_LIMIT_BOUND, 4);
+		check(Limit.SOLUTION);
 	}
 
 
