@@ -29,24 +29,13 @@ package parser.instances;
 
 public enum ResolutionStatus {
 
-	UNSAT("UNSATISFIABLE"),
-	SAT("SATISFIABLE"),
-	OPTIMUM("OPTIMUM_FOUND"),
-	TIMEOUT("TIMEOUT"),
-	UNKNOWN("UNKNOWN"),
-	ERROR("ERROR"),
-	UNSUPPORTED("UNSUPPORTED");
-
-	private final String name;
-
-	private ResolutionStatus(String name) {
-		this.name = name;
-	}
-
-
-	public final String getName() {
-		return name;
-	}
+	UNSAT,
+	SAT,
+	OPTIMUM,
+	TIMEOUT,
+	UNKNOWN,
+	ERROR,
+	UNSUPPORTED;
 
 	public boolean isValidWithCSP() {
 		return  ! (this == ResolutionStatus.UNSUPPORTED || this  == ResolutionStatus.ERROR);
