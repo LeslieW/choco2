@@ -145,6 +145,22 @@ public final class ChocoColor {
 		return palette;
 	}
 
+	public static Paint[] createLinearGradientPaintArray(Color color1, Color color2, int n) {
+		final Paint[] palette = new Paint[n];
+		float[] rgb1 = color1.getRGBComponents(null);
+		float[] rgb2 = color2.getRGBComponents(null);
+		for (int i = 0; i < n; i++) {
+			float t = (float) i / (float) n;
+			float ct = 1-t;
+			palette[i] = new Color( 
+					ct*rgb1[0] + t*rgb2[0],
+					ct*rgb1[1] + t*rgb2[1],
+					ct*rgb1[2] + t*rgb2[2]
+					);
+		}
+		return palette;
+	}
+
 	protected static DrawingSupplier createDrawingSupplier(Paint[] palette) {
 		return new DefaultDrawingSupplier(
 				palette, 
@@ -167,11 +183,11 @@ public final class ChocoColor {
 	public static DrawingSupplier createJFreeDrawingSupplier() {
 		return createDrawingSupplier(ChartColor.createDefaultPaintArray());
 	}
-	
+
 	private static String toHex(Paint paint) {
 		return Integer.toHexString(( (Color) paint).getRGB()).substring(2).toUpperCase();
 	}
-	
+
 	public static void browsePalette(Paint[] paints) throws IOException, URISyntaxException {
 		if(paints != null && paints.length > 0) {
 			StringBuilder b =new StringBuilder();
@@ -205,11 +221,11 @@ public final class ChocoColor {
 	}
 
 	public static void main(String [] args) throws IOException, URISyntaxException {
-		browsePalette(createDefaultPaintArray());
-		System.out.println(toHex(COLOR_124_1));
-		System.out.println(toHex(COLOR_124_2));
-		System.out.println(toHex(COLOR_124_3));
-		System.out.println(toHex(COLOR_211_4));
+		browsePalette(createLinearGradientPaintArray(Color.YELLOW, Color.RED, 40));
+//		System.out.println(toHex(COLOR_124_1));
+//		System.out.println(toHex(COLOR_124_2));
+//		System.out.println(toHex(COLOR_124_3));
+//		System.out.println(toHex(COLOR_211_4));
 	}
 
 
