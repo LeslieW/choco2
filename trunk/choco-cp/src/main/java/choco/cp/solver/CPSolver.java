@@ -1428,7 +1428,7 @@ public class CPSolver implements Solver {
 
     @Override
     public boolean isOptimizationSolver() {
-        return objective != null; // && ( strategy == null || strategy instanceof AbstractOptimize);
+        return objective != null;
     }
 
     @Deprecated

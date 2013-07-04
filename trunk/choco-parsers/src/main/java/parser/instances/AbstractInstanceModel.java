@@ -239,10 +239,8 @@ public abstract class AbstractInstanceModel {
 	}
 
 	private void logOnError(ResolutionStatus error, Exception e) {
-		LOGGER.log(Level.SEVERE, "s {0}", error.getName());
-		if(e != null) {
-			LOGGER.log(Level.CONFIG, getInstanceName()+"...[FAIL]", e);
-		}
+		LOGGER.log(Level.INFO, "s {0}", error);
+		LOGGER.log(Level.SEVERE, getInstanceName()+"...[FAIL]", e);
 		status = error;
 		isFeasible = null;
 	}
@@ -400,7 +398,7 @@ public abstract class AbstractInstanceModel {
 					//cp did not find any solution
 					return solver.isEncounteredLimit() ? SAT : OPTIMUM;
 				}
-			}else return SAT; //deal with CSP
+			} else return SAT; //deal with CSP
 		}	
 		else if ( isFeasible == Boolean.FALSE) return UNSAT;
 		else if (solver == null) return ERROR; 
@@ -462,7 +460,7 @@ public abstract class AbstractInstanceModel {
 	public void consoleReport() {
 		if(LOGGER.isLoggable(Level.INFO)) {
 			//status s
-			logMsg.appendStatus(status.getName());
+			logMsg.appendStatus(status.toString());
 			//objective o
 			if( objective != null) logMsg.appendObjective(objective);
 			//solution v
@@ -487,7 +485,7 @@ public abstract class AbstractInstanceModel {
 	public void databaseReport() {
 		//insert solver
 		Integer solverID = dbManager.insertEntryAndRetrieveGPK(DbTables.T_SOLVERS,
-				getInstanceName(), status.getName(), getFullSecTime(), "", //getValuesMessage(),
+				getInstanceName(), status.toString(), getFullSecTime(), "", //getValuesMessage(),
 				dbManager.getModelID(solver), dbManager.getEnvironmentID(), getSeed(), new Timestamp(System.currentTimeMillis()));
 		// TODO - Set visibility of getModelID - created 4 juil. 2011 by Arnaud Malapert
 		Integer measuresID;
