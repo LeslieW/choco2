@@ -199,7 +199,7 @@ public abstract class AbstractInstanceModel {
 
 
 
-	private final static String INSTANCE_MSG="========================================================\nTreatment of: {0}";
+	private final static String INSTANCE_MSG="i {0}";
 
 	protected final static String DESCR_MSG="{0}...dim:[nbv:{1}][nbc:{2}][nbconstants:{3}]";
 
@@ -260,7 +260,6 @@ public abstract class AbstractInstanceModel {
 	public final void solveFile(File file) {
 		try {
 			initialize();
-			if(file != null) LOGGER.log(Level.CONFIG, INSTANCE_MSG, file == null ? getInstanceName() : file.getName());
 			boolean isLoaded = false;
 			time[0] = System.currentTimeMillis();
 			try {
@@ -271,7 +270,7 @@ public abstract class AbstractInstanceModel {
 				logOnError(UNSUPPORTED, e);
 			} 
 			if( isLoaded) {
-				LOGGER.log(Level.CONFIG, "loading...[OK][seed:{0}]", getSeed());
+				LOGGER.log(Level.INFO, INSTANCE_MSG, getInstanceName());
 				time[1] = System.currentTimeMillis();
 				isFeasible = preprocess();
 				status = postAnalyzePP();
@@ -408,14 +407,10 @@ public abstract class AbstractInstanceModel {
 		else return solver.isEncounteredLimit() ? TIMEOUT : UNKNOWN;
 	}
 
-
 	protected void logOnDiagnostics() {
 		logMsg.appendDiagnostic("RUNTIME", getFullSecTime());
 		//objective
-		if( objective != null) {
-			logMsg.appendDiagnostic("OBJECTIVE", objective);
-			if(initialObjective != null) logMsg.appendDiagnostic("INITIAL_OBJECTIVE", initialObjective);
-		}
+		if(initialObjective != null) logMsg.appendDiagnostic("INITIAL_OBJECTIVE", initialObjective);
 		//measures
 		if(solver != null) {
 			logMsg.appendDiagnostic("NBSOLS ", solver.getSolutionCount());
@@ -468,6 +463,8 @@ public abstract class AbstractInstanceModel {
 		if(LOGGER.isLoggable(Level.INFO)) {
 			//status s
 			logMsg.appendStatus(status.getName());
+			//objective o
+			if( objective != null) logMsg.appendObjective(objective);
 			//solution v
 			if( isFeasible == Boolean.TRUE) {
 				//display last solution

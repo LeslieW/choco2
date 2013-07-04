@@ -54,6 +54,10 @@ public class ReportFormatter {
 	public final void appendStatus(String status) {
 		b.append("s ").append(status).append('\n');
 	}
+	
+	public final void appendObjective(Number objective) {
+		b.append("o ").append(objective).append('\n');
+	}
 
 	public void appendValues(String values) {
 		b.append("v ").append(values.replaceAll("\n", "\nv ")).append('\n');
