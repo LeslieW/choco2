@@ -20,11 +20,6 @@
             <artifactId>choco-cp</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>choco</groupId>
-            <artifactId>choco-db</artifactId>
-            <version>${project.version}</version>
-        </dependency>
 
         <dependency>
             <groupId>choco</groupId>

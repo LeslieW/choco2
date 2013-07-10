@@ -29,6 +29,15 @@
 
 package cli;
 
+import java.io.File;
+import java.util.Random;
+import java.util.logging.Level;
+
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.Option;
+
+import parser.instances.AbstractInstanceModel;
+import parser.instances.BasicSettings;
 import choco.cp.solver.configure.LimitFactory;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
@@ -37,18 +46,6 @@ import choco.kernel.solver.Configuration;
 import choco.kernel.solver.search.limit.Limit;
 import cli.explorer.FileExplorer;
 import cli.explorer.FileProcedure;
-import db.DbManager;
-import db.EmbeddedDbConnector;
-import db.IDbConnector;
-import db.RemoteDbConnector;
-import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.Option;
-import parser.instances.AbstractInstanceModel;
-import parser.instances.BasicSettings;
-
-import java.io.File;
-import java.util.Random;
-import java.util.logging.Level;
 
 /**
  * The class define a command pattern designed for benchmarking.
@@ -66,9 +63,6 @@ public abstract class AbstractBenchmarkCmd extends AbstractCmdLine implements Fi
 
 	@Option(name="-u",aliases={"--url"},usage="connect to remote database at URL.")
 	protected String databaseURL;
-
-	@Option(name="-e",aliases={"--export"},usage="activate embedded database and export it to odb file")
-	protected File databaseFile;
 
 	@Option(name="-p",aliases={"--properties"},usage="user properties file")
 	protected File propertyFile;
@@ -92,23 +86,11 @@ public abstract class AbstractBenchmarkCmd extends AbstractCmdLine implements Fi
 	
 	protected Random seeder;
 
-	private IDbConnector dbConnector;
-
 	protected AbstractInstanceModel instance;
 
 	public AbstractBenchmarkCmd(Configuration settings) {
 		super(true);
 		this.settings = settings;
-	}
-
-	private void makeDbConnector() throws CmdLineException {
-		if( databaseFile == null) {
-			if( databaseURL == null) dbConnector = DISCONNECTED;
-			else dbConnector = new RemoteDbConnector(databaseURL);
-		} else { 
-			if( databaseURL == null) dbConnector = new EmbeddedDbConnector(databaseFile);
-			else throw new CmdLineException("choose between embedded (-f) and remote (-u) database.");
-		}
 	}
 
 
@@ -123,11 +105,10 @@ public abstract class AbstractBenchmarkCmd extends AbstractCmdLine implements Fi
 		if( propertyFile != null) {
 			PropertyUtils.loadProperties(settings, propertyFile);
 		}
-		makeDbConnector();
 		if( timeLimit != null) {
 			LimitFactory.setSearchLimit(settings, Limit.TIME, timeLimit * 1000);
 		}
-		LOGGER.log(Level.CONFIG, "cmd...[seed:{0}][db:{1}][output:{2}]", new Object[]{seed, dbConnector, outputDirectory});
+		LOGGER.log(Level.CONFIG, "cmd...[seed:{0}][output:{1}]", new Object[]{seed, outputDirectory});
 	}
 
 
@@ -135,39 +116,18 @@ public abstract class AbstractBenchmarkCmd extends AbstractCmdLine implements Fi
 
 	protected void configureInstance() {
 		if(outputDirectory != null) instance.getConfiguration().putFile(BasicSettings.OUTPUT_DIRECTORY, outputDirectory);
-		instance.setDatabaseManager(dbConnector.getDatabaseManager());
 		instance.getConfiguration().putLong(Configuration.RANDOM_SEED, seed);
 	}
 
 	@Override
 	protected void execute() {
 		//configure
-		dbConnector.setUp();
 		instance = createInstance();
 		configureInstance();
 		final boolean ok = FileExplorer.explore(this, inputFile, arguments); //run benchmark
 		assert ok; //for junit 
-		dbConnector.tearDown();
 	}
 
 
-	public final static IDbConnector DISCONNECTED =  new IDbConnector() {
-
-		@Override
-		public void tearDown() {}
-
-		@Override
-		public void setUp() {}
-
-		@Override
-		public DbManager getDatabaseManager() {return null;}
-
-		@Override
-		public String toString() {
-			return "null";
-		}
-
-
-	};
-
+	
 }
