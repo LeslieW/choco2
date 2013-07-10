@@ -135,6 +135,8 @@ public final class ChocoLogging {
 	
 
 	private final static Handler DEFAULT_HANDLER = new StreamHandler(System.out, LIGHT_FORMATTER);
+	
+	private final static Handler ERROR_HANDLER = new StreamHandler(System.err, LIGHT_FORMATTER);
 
 	private static final int FILE_SIZE = 8388608; // 1 Mo
 
@@ -149,6 +151,8 @@ public final class ChocoLogging {
 			clearHandlers();
 			DEFAULT_HANDLER.setLevel(Level.ALL);
 			getChocoLogger().addHandler(DEFAULT_HANDLER);
+			ERROR_HANDLER.setLevel(Level.SEVERE);
+			getChocoLogger().addHandler(ERROR_HANDLER);
 			setVerbosity(loadProperties());
 			getChocoLogger().info(ChocoLogging.START_MESSAGE);
 		} catch (AccessControlException e) {
