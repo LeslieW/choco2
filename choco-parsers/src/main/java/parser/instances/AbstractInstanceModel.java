@@ -36,7 +36,6 @@ import static parser.instances.ResolutionStatus.UNSAT;
 import static parser.instances.ResolutionStatus.UNSUPPORTED;
 
 import java.io.File;
-import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -54,13 +53,9 @@ import choco.cp.solver.constraints.integer.bool.sat.ClauseStore;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.solver.Configuration;
-import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.search.ISolutionDisplay;
 import choco.kernel.solver.search.checker.SolutionCheckerException;
 import choco.kernel.solver.search.measure.IMeasures;
-import db.DbManager;
-import db.DbTables;
 
 /**
  * A class to provide facilities for loading and solving instance described by a file (txt, xml, ...). </br>
@@ -88,8 +83,6 @@ public abstract class AbstractInstanceModel {
 	protected Solver solver;
 
 	//logs and reporting	
-	protected DbManager dbManager;
-
 	protected final Configuration defaultConf;
 
 	protected final ReportFormatter logMsg;
@@ -163,17 +156,6 @@ public abstract class AbstractInstanceModel {
 		return defaultConf.readLong(Configuration.RANDOM_SEED);
 	}
 
-	public final boolean isDatabaseReporting() {
-		return dbManager != null;
-	}
-
-	public final DbManager getDatabaseManager() {
-		return dbManager;
-	}
-
-	public final void setDatabaseManager(DbManager dbManager) {
-		this.dbManager = dbManager;
-	}
 
 	public final InstanceFileParser getParser() {
 		return parser;
@@ -401,7 +383,7 @@ public abstract class AbstractInstanceModel {
 			} else return SAT; //deal with CSP
 		}	
 		else if ( isFeasible == Boolean.FALSE) return UNSAT;
-		else if (solver == null) return ERROR; 
+		else if (solver == null) return ERROR; //FIXME First condition ? 
 		else return solver.isEncounteredLimit() ? TIMEOUT : UNKNOWN;
 	}
 
@@ -451,7 +433,6 @@ public abstract class AbstractInstanceModel {
 
 	public void makeReports() {
 		consoleReport();
-		if( isDatabaseReporting()) databaseReport();
 	}
 
 	/**
@@ -478,35 +459,6 @@ public abstract class AbstractInstanceModel {
 		}
 	}
 
-	/**
-	 * connect to a embedded, local or remote database and add an entry associated with the current resolution.
-	 * Method does not commit changes.
-	 */
-	public void databaseReport() {
-		//insert solver
-		Integer solverID = dbManager.insertEntryAndRetrieveGPK(DbTables.T_SOLVERS,
-				getInstanceName(), status.toString(), getFullSecTime(), "", //getValuesMessage(),
-				dbManager.getModelID(solver), dbManager.getEnvironmentID(), getSeed(), new Timestamp(System.currentTimeMillis()));
-		// TODO - Set visibility of getModelID - created 4 juil. 2011 by Arnaud Malapert
-		Integer measuresID;
-		if( solver != null) {
-			//insert measures
-			if(solver.existsSolution()) {
-				for (Solution sol : solver.getSearchStrategy().getStoredSolutions()) {
-					dbManager.insertMeasures(solverID, sol.getMeasures());
-				}
-			}
-			measuresID = dbManager.insertEntryAndRetrieveGPK(DbTables.T_MEASURES, 
-					solver.getSolutionCount(), objective, solver.getTimeCount(), 
-					solver.getNodeCount(), solver.getBackTrackCount(), 
-					solver.getFailCount(), solver.getRestartCount()
-					);
-		} else {
-			measuresID = dbManager.insertEntryAndRetrieveGPK(DbTables.T_MEASURES, 0, objective, 0, 0, 0, 0, 0);
-		}
-		dbManager.jdbcTemplate.update(DbTables.T_LIMITS.createInsertQuery(false), new Object[] { measuresID, solverID});
-		dbManager.insertConfiguration(solverID, logMsg.getLoggingMessage());
-	}
 
 
 	//*****************************************************************//
