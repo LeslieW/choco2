@@ -71,7 +71,7 @@ public abstract class AbstractBenchmarkCmd extends AbstractCmdLine implements Fi
 	protected File outputDirectory;
 
 	@Option(name="-s",aliases={"--seed", "-seed"},usage="global seed")
-	protected long seed;
+	protected Long seed;
 
 	// TODO - Change time limit option from -tl to -t - created 16 févr. 2012 by A. Malapert
 	@Option(name="-tl",aliases={"--timeLimit", "-time"},usage="time limit in seconds")
@@ -116,7 +116,7 @@ public abstract class AbstractBenchmarkCmd extends AbstractCmdLine implements Fi
 
 	protected void configureInstance() {
 		if(outputDirectory != null) instance.getConfiguration().putFile(BasicSettings.OUTPUT_DIRECTORY, outputDirectory);
-		instance.getConfiguration().putLong(Configuration.RANDOM_SEED, seed);
+		if(seed != null) instance.getConfiguration().putLong(Configuration.RANDOM_SEED, seed);
 	}
 
 	@Override
