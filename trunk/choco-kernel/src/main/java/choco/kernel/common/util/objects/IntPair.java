@@ -27,7 +27,7 @@
 
 package choco.kernel.common.util.objects;
 
-import com.sun.tools.javac.util.Pair;
+
 /**
  * User : cprudhom
  * Mail : cprudhom(a)emn.fr

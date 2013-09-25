@@ -61,9 +61,6 @@ public abstract class AbstractBenchmarkCmd extends AbstractCmdLine implements Fi
 	@Option(name="-f",aliases={"--file","-file"},usage="Instance File or directory with optional wildcard pattern arguments.",required=true)
 	protected File inputFile;
 
-	@Option(name="-u",aliases={"--url"},usage="connect to remote database at URL.")
-	protected String databaseURL;
-
 	@Option(name="-p",aliases={"--properties"},usage="user properties file")
 	protected File propertyFile;
 
@@ -83,7 +80,8 @@ public abstract class AbstractBenchmarkCmd extends AbstractCmdLine implements Fi
 	}
 
 	protected final Configuration settings;
-	
+
+	//TODO Remove field ?
 	protected Random seeder;
 
 	protected AbstractInstanceModel instance;

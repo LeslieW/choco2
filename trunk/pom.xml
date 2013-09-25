@@ -61,30 +61,6 @@
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
-	<!-- The following code includes tools.jar for JDKs on Windows, Linux and 
-		Solaris (it is already included in the runtime for Mac OS X and some free JDKs). 
-		From http://maven.apache.org/general.html#tools-jar-dependency
-		-->
-	<profiles>
-		<profile>
-			<id>default-tools.jar</id>
-			<activation>
-				<property>
-					<name>java.vendor</name>
-					<value>Sun Microsystems Inc.</value>
-				</property>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>com.sun</groupId>
-					<artifactId>tools</artifactId>
-					<version>1.4.2</version>
-					<scope>system</scope>
-					<systemPath>${java.home}/../lib/tools.jar</systemPath>
-				</dependency>
-			</dependencies>
-		</profile>
-	</profiles>
 	<modules>
 		<module>choco-kernel</module>
 		<module>choco-cp</module>
@@ -145,8 +121,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.2</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.7</source>
+					<target>1.7</target>
 					<encoding>ISO-8859-1</encoding>
 				</configuration>
 			</plugin>
