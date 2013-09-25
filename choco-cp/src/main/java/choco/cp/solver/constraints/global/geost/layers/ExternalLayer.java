@@ -28,25 +28,33 @@
 package choco.cp.solver.constraints.global.geost.layers;
 
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
+
 import choco.cp.solver.constraints.global.geost.Constants;
 import choco.cp.solver.constraints.global.geost.Setup;
-import choco.cp.solver.constraints.global.geost.externalConstraints.*;
+import choco.cp.solver.constraints.global.geost.externalConstraints.DistGeq;
+import choco.cp.solver.constraints.global.geost.externalConstraints.DistLeq;
+import choco.cp.solver.constraints.global.geost.externalConstraints.DistLinear;
+import choco.cp.solver.constraints.global.geost.externalConstraints.ExternalConstraint;
+import choco.cp.solver.constraints.global.geost.externalConstraints.NonOverlapping;
 import choco.cp.solver.constraints.global.geost.frames.DistLinearFrame;
 import choco.cp.solver.constraints.global.geost.frames.ForbiddenRegionFrame;
 import choco.cp.solver.constraints.global.geost.frames.Frame;
 import choco.cp.solver.constraints.global.geost.frames.NonOverlappingFrame;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Obj;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Region;
-import choco.cp.solver.constraints.global.geost.internalConstraints.*;
+import choco.cp.solver.constraints.global.geost.internalConstraints.DistGeqIC;
+import choco.cp.solver.constraints.global.geost.internalConstraints.DistLeqIC;
+import choco.cp.solver.constraints.global.geost.internalConstraints.DistLinearIC;
+import choco.cp.solver.constraints.global.geost.internalConstraints.InternalConstraint;
+import choco.cp.solver.constraints.global.geost.internalConstraints.Outbox;
 import choco.kernel.common.logging.ChocoLogging;
-import com.sun.tools.javac.util.Pair;
+import choco.kernel.common.util.objects.Pair;
 import choco.kernel.model.variables.geost.ShiftedBox;
 import choco.kernel.solver.SolverException;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Logger;
 
 
 /**

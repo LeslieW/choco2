@@ -27,12 +27,12 @@
 
 package choco.kernel.model.constraints.geost;
 
-import com.sun.tools.javac.util.Pair;
-
 import java.io.FileOutputStream;
 import java.io.ObjectOutput;
 import java.util.HashMap;
 import java.util.List;
+
+import choco.kernel.common.util.objects.Pair;
 
 /**
  * Created by IntelliJ IDEA.

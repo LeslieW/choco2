@@ -27,28 +27,42 @@
 
 package choco.cp.solver.constraints.global.geost.layers;
 
+import static java.text.MessageFormat.format;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
 import choco.cp.solver.constraints.global.Geost_Constraint;
 import choco.cp.solver.constraints.global.geost.Constants;
 import choco.cp.solver.constraints.global.geost.Setup;
-import choco.cp.solver.constraints.global.geost.externalConstraints.*;
+import choco.cp.solver.constraints.global.geost.externalConstraints.DistGeq;
+import choco.cp.solver.constraints.global.geost.externalConstraints.DistLeq;
+import choco.cp.solver.constraints.global.geost.externalConstraints.DistLinear;
+import choco.cp.solver.constraints.global.geost.externalConstraints.ExternalConstraint;
+import choco.cp.solver.constraints.global.geost.externalConstraints.NonOverlapping;
 import choco.cp.solver.constraints.global.geost.frames.ForbiddenRegionFrame;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Obj;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Point;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Region;
-import choco.cp.solver.constraints.global.geost.internalConstraints.*;
+import choco.cp.solver.constraints.global.geost.internalConstraints.DistGeqIC;
+import choco.cp.solver.constraints.global.geost.internalConstraints.DistLeqIC;
+import choco.cp.solver.constraints.global.geost.internalConstraints.DistLinearIC;
+import choco.cp.solver.constraints.global.geost.internalConstraints.ForbiddenRegion;
+import choco.cp.solver.constraints.global.geost.internalConstraints.InternalConstraint;
+import choco.cp.solver.constraints.global.geost.internalConstraints.Outbox;
 import choco.kernel.common.logging.ChocoLogging;
-import com.sun.tools.javac.util.Pair;
+import choco.kernel.common.util.objects.Pair;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.model.variables.geost.ShiftedBox;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-
-import java.util.*;
-import java.util.logging.Logger;
-
-import static java.text.MessageFormat.format;
 
 class MemoStore {
     public boolean active;

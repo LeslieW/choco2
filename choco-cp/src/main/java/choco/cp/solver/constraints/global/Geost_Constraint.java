@@ -28,6 +28,9 @@
 package choco.cp.solver.constraints.global;
 
 
+import java.util.HashMap;
+import java.util.List;
+
 import choco.cp.solver.constraints.global.geost.Constants;
 import choco.cp.solver.constraints.global.geost.Setup;
 import choco.cp.solver.constraints.global.geost.externalConstraints.ExternalConstraint;
@@ -38,7 +41,7 @@ import choco.cp.solver.constraints.global.geost.layers.GeometricKernel;
 import choco.cp.solver.constraints.global.geost.layers.IntermediateLayer;
 import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-import com.sun.tools.javac.util.Pair;
+import choco.kernel.common.util.objects.Pair;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.model.variables.geost.ShiftedBox;
 import choco.kernel.solver.ContradictionException;
@@ -47,9 +50,6 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-
-import java.util.HashMap;
-import java.util.List;
 
 public final class Geost_Constraint extends AbstractLargeIntSConstraint {
 
