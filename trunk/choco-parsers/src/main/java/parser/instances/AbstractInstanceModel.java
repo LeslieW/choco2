@@ -181,10 +181,16 @@ public abstract class AbstractInstanceModel {
 
 
 
-	private final static String INSTANCE_MSG="i {0}";
+	protected final static String INSTANCE_MSG="i {0}";
 
 	protected final static String DESCR_MSG="{0}...dim:[nbv:{1}][nbc:{2}][nbconstants:{3}]";
 
+
+	protected void logOnInstance() {
+		if(LOGGER.isLoggable(Level.INFO)) {
+			LOGGER.log(Level.INFO,INSTANCE_MSG, getInstanceName());
+		}
+	}
 
 	protected void logOnModel() {
 		if(LOGGER.isLoggable(Level.CONFIG)) {
@@ -250,7 +256,7 @@ public abstract class AbstractInstanceModel {
 				logOnError(UNSUPPORTED, e);
 			} 
 			if( isLoaded) {
-				LOGGER.log(Level.INFO, INSTANCE_MSG, getInstanceName());
+				logOnInstance();
 				time[1] = System.currentTimeMillis();
 				isFeasible = preprocess();
 				status = postAnalyzePP();
@@ -423,7 +429,7 @@ public abstract class AbstractInstanceModel {
 	protected void logOnConfiguration() {
 		logMsg.appendConfiguration( MessageFactory.getGeneralMsg(defaultConf, getClass().getSimpleName(), getInstanceName()));
 		logMsg.appendConfiguration( createTimeConfiguration() );
-		logMsg.appendConfiguration( BasicSettings.getInstModelMsg(defaultConf) );
+		logMsg.appendConfiguration( BasicSettings.getBranchingMsg(defaultConf) );
 		if (solver != null) {
 			logMsg.appendConfiguration( MessageFactory.getShavingMsg(solver));
 			logMsg.appendConfiguration( MessageFactory.getRestartMsg(solver));

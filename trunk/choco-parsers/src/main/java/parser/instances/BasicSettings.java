@@ -27,16 +27,12 @@
 
 package parser.instances;
 
-import static parser.instances.BasicSettings.BRANCHING;
-import static parser.instances.BasicSettings.MIN_VALUE;
-import static parser.instances.BasicSettings.RANDOM_VALUE;
-import choco.cp.solver.preprocessor.PreProcessConfiguration;
-import choco.kernel.solver.Configuration;
-import choco.kernel.solver.Configuration.Default;
-import choco.kernel.solver.search.limit.Limit;
-
 import java.io.File;
 import java.io.IOException;
+
+import choco.cp.solver.preprocessor.PreProcessConfiguration;
+import choco.kernel.solver.Configuration;
+import choco.kernel.solver.search.limit.Limit;
 
 // TODO - Rename with Configuration suffix - created 12 août 2011 by Arnaud Malapert
 public class BasicSettings extends PreProcessConfiguration{
@@ -159,24 +155,18 @@ public class BasicSettings extends PreProcessConfiguration{
 		}
 	}
 	
+	public static String getLightModelMsg(Configuration conf) {
+		return conf.readBoolean(LIGHT_MODEL)  ? "LIGHT" : "HEAVY";
+	}
+	
 	public static String getBranchingMsg(Configuration conf) {
-		//FIXME only the branching factory knows what branching is really applied !
 		StringBuilder b = new StringBuilder();
-		b.append(conf.readString(BRANCHING)).append(" BRANCHING    ");
+		b.append("BRANCHING ").append(conf.readString(BRANCHING)).append("    ");
 		if( conf.readBoolean(RANDOM_VALUE) ) b.append("RAND_VAL    ");
 		else if( conf.readBoolean(MIN_VALUE) ) b.append("MIN_VAL");
 		else b.append("MAX_VALUE");
 		return b.toString();
 	}
-
-	public static String getInstModelMsg(Configuration conf) {
-		final StringBuilder b = new StringBuilder(32);
-		if( conf.readBoolean(LIGHT_MODEL)) b.append("LIGHT_MODEL    ");
-		if( conf.readBoolean(RANDOM_VALUE)) b.append("RAND_VAL    ");
-		if( conf.readBoolean(RANDOM_TIE_BREAKING)) b.append("RAND_TIE_BREAKING");
-		return new String(b);
-	}
-	
 
 	public static void main(String[] args) throws IOException {
 		BasicSettings settings = new BasicSettings();

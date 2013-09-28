@@ -1,6 +1,5 @@
 package parser.instances;
 
-import static parser.instances.BasicSettings.*;
 import java.util.ArrayList;
 import java.util.List;
 
