@@ -293,6 +293,7 @@ public abstract class AbstractInstanceModel {
 			logOnError(ERROR, e);
 		} catch (Error e) {
 			logOnError(ERROR, e);
+			throw e;
 		} 
 		
 	}
