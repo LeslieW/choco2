@@ -88,8 +88,5 @@ public class ReportFormatter {
 		if(value != null && value.length() != 0) b.append("c ").append(value).append('\n');
 	}
 
-	
-
-
 
 }
