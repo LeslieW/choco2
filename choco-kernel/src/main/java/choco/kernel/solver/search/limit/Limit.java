@@ -43,7 +43,6 @@ public enum Limit {
     FAIL("Fails"),
     SOLUTION("Solutions"),
     RESTART("Restarts"),
-    CUSTOM(""),
     UNDEF("");
 
     private final String unit;

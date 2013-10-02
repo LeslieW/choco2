@@ -226,9 +226,9 @@ public abstract class AbstractInstanceModel {
 		}
 	}
 
-	private void logOnError(ResolutionStatus error, Exception e) {
+	private void logOnError(ResolutionStatus error, Throwable e) {
 		LOGGER.log(Level.INFO, "s {0}", error);
-		LOGGER.log(Level.SEVERE, getInstanceName()+"...[FAIL]", e);
+		LOGGER.log(Level.SEVERE, getInstanceName()+" [FAIL]", e);
 		status = error;
 		isFeasible = null;
 	}
@@ -291,7 +291,10 @@ public abstract class AbstractInstanceModel {
 			terminate();
 		} catch (Exception e) {
 			logOnError(ERROR, e);
+		} catch (Error e) {
+			logOnError(ERROR, e);
 		} 
+		
 	}
 
 
@@ -429,8 +432,8 @@ public abstract class AbstractInstanceModel {
 	protected void logOnConfiguration() {
 		logMsg.appendConfiguration( MessageFactory.getGeneralMsg(defaultConf, getClass().getSimpleName(), getInstanceName()));
 		logMsg.appendConfiguration( createTimeConfiguration() );
-		logMsg.appendConfiguration( BasicSettings.getBranchingMsg(defaultConf) );
 		if (solver != null) {
+			logMsg.appendConfiguration( BasicSettings.getBranchingMsg(solver.getConfiguration()) );
 			logMsg.appendConfiguration( MessageFactory.getShavingMsg(solver));
 			logMsg.appendConfiguration( MessageFactory.getRestartMsg(solver));
 		}
