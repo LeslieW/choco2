@@ -408,7 +408,7 @@ public class ClausesTest {
 
     @Test
     public void testNogood2() {
-        ChocoLogging.toSearch();
+        //ChocoLogging.toSearch();
         final CPModel mod = new CPModel();
         final CPSolver s = new CPSolver();
         final IntegerVariable[] vars = makeBooleanVarArray("b", 3);

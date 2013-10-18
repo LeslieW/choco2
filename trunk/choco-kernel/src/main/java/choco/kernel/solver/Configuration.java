@@ -279,6 +279,14 @@ public class Configuration extends Properties {
 	public static final String SOLUTION_POOL_CAPACITY = "cp.solution.pool_capacity";
 
 	/**
+	 * <br/><b>Goal</b>: Determine if the solution pool records the last solutions or only the first ones.
+	 * <br/><b>Type</b>: boolean
+	 * <br/><b>Default value</b>: true
+	 */
+	@Default(value = VALUE_TRUE)
+	public static final String LAST_SOLUTION_POOL= "cp.solution.pool.last";
+
+	/**
 	 * <br/><b>Goal</b>:
 	 * <br/><b>Type</b>: boolean
 	 * <br/><b>Default value</b>: true

@@ -166,7 +166,7 @@ public class TestTrees {
 //		toDotty(tree);
 		DisjTreeTL tree2 = new DisjTreeTL(l);
 		tree2.setMode(TreeMode.ECT);
-		VisuFactory.getDotManager().show(tree2);
+		//VisuFactory.getDotManager().show(tree2);
 	}
 
 	

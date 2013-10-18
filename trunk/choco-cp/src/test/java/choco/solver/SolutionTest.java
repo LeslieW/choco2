@@ -38,6 +38,7 @@ import org.junit.Test;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.Configuration;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.ISolutionPool;
@@ -63,51 +64,83 @@ public class SolutionTest {
         
 	}
 	
-	private Solver run(int capa) {
+	private Solver run(int capa, boolean lastsols) {
+		//ChocoLogging.toSearch();
 		final Solver s = new CPSolver();
+        s.getConfiguration().putBoolean(Configuration.LAST_SOLUTION_POOL, lastsols);
         s.setSolutionPoolCapacity(capa);
         s.read(model);
         s.solveAll();
         return s;
-  	
+	}
+	
+	private void check(Solver solver, int[] solutions) {
+		ISolutionPool pool = solver.getSearchStrategy().getSolutionPool();
+		if(solutions == null) assertEquals(0, pool.size());
+		else {
+			assertEquals(solutions.length, pool.size());
+			List<Solution> sols = pool.asList();
+			for (int i = 0; i <solutions.length; i++) {
+	        	solver.worldPop();
+	        	solver.worldPush();
+	        	solver.restoreSolution(sols.get(i));
+	            assertEquals(solutions[i], solver.getIntVar(0).getVal());
+			}
+		}
 	}
 	@Test
     public void test0(){
-		Solver s = run(0);
-        ISolutionPool pool = s.getSearchStrategy().getSolutionPool();
-        assertEquals(0, pool.size());
-        
-        s = run(1);
-        pool = s.getSearchStrategy().getSolutionPool();
-        assertEquals(1, pool.size());
-        
-        s = run(5);
-        pool = s.getSearchStrategy().getSolutionPool();
-        assertEquals(5, pool.size());
-        List<Solution> sols = pool.asList();
-        for (int i = 0; i <5; i++) {
-        	s.worldPop();
-        	s.worldPush();
-        	s.restoreSolution(sols.get(i));
-            assertEquals(10 - i, s.getIntVar(0).getVal());
-		}
-        
-        s = run(12);
-        pool = s.getSearchStrategy().getSolutionPool();
-        assertEquals(10, pool.size());
-        sols = pool.asList();
-        for (int i = 0; i <10; i++) {
-        	s.worldPop();
-        	s.worldPush();
-        	s.restoreSolution(sols.get(i));
-            assertEquals(10 - i, s.getIntVar(0).getVal());
-		}
-        
-    }
-    
-    @Test
+		Solver s = run(0,true);
+		check(s,null);
+	}
+	
+	@Test
     public void test1(){
-    	Solver s = run(1);
+		Solver s = run(1,true);
+		check(s,new int[] {10});
+		
+		s = run(1,false);
+		check(s,new int[] {1});
+	}
+	
+	@Test
+    public void test5(){
+		Solver s = run(5,true);
+		check(s,new int[] {10,9,8,7,6});
+		
+		s = run(5,false);
+		check(s,new int[] {5,4,3,2,1});
+	}
+
+	private final static int[] SOLS={10,9,8,7,6,5,4,3,2,1};
+	
+	@Test
+    public void test10(){
+		Solver s = run(10,true);
+		check(s,SOLS);
+		s = run(10,false);
+		check(s,SOLS);
+	}
+	
+	@Test
+    public void test12(){
+		Solver s = run(12,true);
+		check(s,SOLS);
+		s = run(12,false);
+		check(s,SOLS);
+	}
+	
+	@Test
+    public void testAll(){
+		Solver s = run(Integer.MAX_VALUE,true);
+		check(s,SOLS);
+	}
+	
+
+   
+    @Test
+    public void testNewVar(){
+    	Solver s = run(1,false);
         ISolutionPool pool = s.getSearchStrategy().getSolutionPool();
         assertEquals(1, pool.size());
         s.createBoundIntVar("NEW", 0, 5);

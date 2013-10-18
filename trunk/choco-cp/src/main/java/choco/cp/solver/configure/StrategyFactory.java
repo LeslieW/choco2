@@ -136,7 +136,7 @@ public final class StrategyFactory {
 	}
 
 	public static ISolutionPool createSolutionPool(AbstractGlobalSearchStrategy strategy) {
-		return SolutionPoolFactory.makeDefaultSolutionPool(strategy, strategy.solver.getConfiguration().readInt(Configuration.SOLUTION_POOL_CAPACITY));
+		return SolutionPoolFactory.makeDefaultSolutionPool(strategy, strategy.solver.getConfiguration().readInt(Configuration.SOLUTION_POOL_CAPACITY), strategy.solver.getConfiguration().readBoolean(Configuration.LAST_SOLUTION_POOL));
 	}
 
 	public static boolean isUsingShavingTools(Solver solver) {

@@ -110,7 +110,6 @@ public class ImpactTest {
         s.getConfiguration().putInt(Configuration.INIT_IMPACT_TIME_LIMIT, 100);
         ImpactBasedBranching ibb = new ImpactBasedBranching(s);
         s.addGoal(ibb);
-        ChocoLogging.toVerbose();
         s.solve();
         Assert.assertEquals(0, s.getSolutionCount());
         Assert.assertEquals(0, s.getNodeCount());

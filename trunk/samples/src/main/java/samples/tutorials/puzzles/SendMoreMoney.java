@@ -29,9 +29,10 @@ package samples.tutorials.puzzles;
 
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.ContradictionException;
 import samples.tutorials.PatternExample;
-
 import static choco.Choco.*;
 
 
@@ -92,7 +93,15 @@ public class SendMoreMoney extends PatternExample {
 
     @Override
     public void solve() {
-        solver.solve();
+    	//ChocoLogging.toSearch();
+    	try {
+			solver.propagate();
+		} catch (ContradictionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	System.out.println(solver.pretty());
+    	solver.solve();
     }
 
     @Override

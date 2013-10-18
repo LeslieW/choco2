@@ -47,7 +47,7 @@ public final class SolutionPoolFactory {
 	/**
 	 * pool with a nil capacity (not resizable).
 	 */
-	public static ISolutionPool makeNoSolutionPool() {
+	public static ISolutionPool makeNoSolution() {
 		return NoSolutionPool.SINGLETON;
 	}
 
@@ -55,8 +55,16 @@ public final class SolutionPoolFactory {
 	 * pool of unit capacity, contains the last solution (not resizable);
 	 * 
 	 */
-	public static ISolutionPool makeOneSolutionPool(AbstractGlobalSearchStrategy strategy) {
-		return new OneSolutionPool(strategy);
+	public static ISolutionPool makeLastSolution(AbstractGlobalSearchStrategy strategy) {
+		return new LastSolutionPool(strategy);
+	}
+
+	/**
+	 * pool of unit capacity, contains the first solution (not resizable);
+	 * 
+	 */
+	public static ISolutionPool makeFirstSolution(AbstractGlobalSearchStrategy strategy) {
+		return new FirstSolutionPool(strategy);
 	}
 
 
@@ -64,25 +72,32 @@ public final class SolutionPoolFactory {
 	/**
 	 * contains the last/best solutions (capa > 0).
 	 */
-	public static ISolutionPool makeFifoSolutionPool(AbstractGlobalSearchStrategy strategy, int capacity) {
-		return new FifoSolutionPool(strategy, capacity);
+	public static ISolutionPool makeLastSolutions(AbstractGlobalSearchStrategy strategy, int capacity) {
+		return new LastSolutionsPool(strategy, capacity);
 	}
 
 	/**
-	 * record all solution (not resizable).
+	 * contains the first/worst solutions (capa > 0).
 	 */
-	public static ISolutionPool makeInfiniteSolutionPool(AbstractGlobalSearchStrategy strategy) {
-		return new InfiniteSolutionPool(strategy);
+	public static ISolutionPool makeFirstSolutions(AbstractGlobalSearchStrategy strategy, int capacity) {
+		return new FirstSolutionsPool(strategy, capacity);
 	}
 
-	public static ISolutionPool makeDefaultSolutionPool(AbstractGlobalSearchStrategy strategy, int capacity) {
-		if(capacity == 1) return makeOneSolutionPool(strategy);
-		else if(capacity == Integer.MAX_VALUE) return makeInfiniteSolutionPool(strategy);
-		else if( capacity < 1) return makeNoSolutionPool();
-		else return makeFifoSolutionPool(strategy, capacity);
+	/**
+	 * record all solution.
+	 */
+	public static ISolutionPool makeAllSolutions(AbstractGlobalSearchStrategy strategy) {
+		return new AllSolutionsPool(strategy);
 	}
 
+	public static ISolutionPool makeDefaultSolutionPool(AbstractGlobalSearchStrategy strategy, int capacity, boolean lastsols) {
+		if(capacity == 1) return lastsols ? makeLastSolution(strategy) : makeFirstSolution(strategy);
+		else if(capacity == Integer.MAX_VALUE) return makeAllSolutions(strategy);
+		else if( capacity < 1) return makeNoSolution();
+		else return lastsols ? makeLastSolutions(strategy, capacity) : makeFirstSolutions(strategy, capacity);
+	}
 
+	
 
 }
 
@@ -117,14 +132,14 @@ abstract class AbstractSolutionPool implements ISolutionPool {
 		return size() == 0;
 	}
 
-	
+
 	@Override
 	public void clear() {}
 
 
 	@Override
 	public void resizeCapacity(int capacity) {
-		ChocoLogging.getEngineLogger().log(Level.WARNING, "- Solution pool: not resizable (capacity:{0}",getCapacity());
+		ChocoLogging.getEngineLogger().log(Level.SEVERE, "- Solution pool: not resizable (capacity:{0}",getCapacity());
 	}
 
 	@Override
@@ -135,19 +150,13 @@ abstract class AbstractSolutionPool implements ISolutionPool {
 
 }
 
+abstract class OneSolutionPool extends AbstractSolutionPool {
 
-final class OneSolutionPool extends AbstractSolutionPool {
-
-	private final Solution solution;
+	protected final Solution solution;
 
 	public OneSolutionPool(AbstractGlobalSearchStrategy strategy) {
 		super(strategy, 1);
 		solution = new Solution(strategy.solver);
-	}
-
-	@Override
-	public List<Solution> asList() {
-		return isEmpty() ? Collections.<Solution>emptyList() : Arrays.<Solution>asList(solution);
 	}
 
 	@Override
@@ -156,19 +165,41 @@ final class OneSolutionPool extends AbstractSolutionPool {
 	}
 
 	@Override
+	public List<Solution> asList() {
+		return isEmpty() ? Collections.<Solution>emptyList() : Arrays.<Solution>asList(solution);
+	}
+}
+
+final class LastSolutionPool extends OneSolutionPool {
+
+	public LastSolutionPool(AbstractGlobalSearchStrategy strategy) {
+		super(strategy);
+	}
+
+	@Override
 	public void recordSolution(Solver solver) {
 		strategy.writeSolution(solution);
+	}
+}
+
+final class FirstSolutionPool extends OneSolutionPool {
+
+	public FirstSolutionPool(AbstractGlobalSearchStrategy strategy) {
+		super(strategy);
+	}
+
+	@Override
+	public void recordSolution(Solver solver) {
+		if( strategy.getSolutionCount() ==1 ) strategy.writeSolution(solution);
 	}
 }
 
 
 final class NoSolutionPool extends AbstractSolutionPool {
 
-	protected final static NoSolutionPool SINGLETON = new NoSolutionPool();
+	public final static NoSolutionPool SINGLETON = new NoSolutionPool();
 
-
-	
-	protected NoSolutionPool() {
+	private NoSolutionPool() {
 		super(null, 0);
 	}
 
@@ -177,7 +208,6 @@ final class NoSolutionPool extends AbstractSolutionPool {
 	public List<Solution> asList() {
 		return Collections.emptyList();
 	}
-
 
 	@Override
 	public Solution getBestSolution() {
@@ -190,25 +220,22 @@ final class NoSolutionPool extends AbstractSolutionPool {
 
 	@Override
 	public int size() {
-		return capacity;
+		return 0;
 	}
 
-	
+
 }
 
 
 
-
-class InfiniteSolutionPool extends AbstractSolutionPool {
+final class AllSolutionsPool extends AbstractSolutionPool {
 
 	/**
 	 * The historical record of solutions that were found
 	 */
 	protected final LinkedList<Solution> solutions = new LinkedList<Solution>();
 
-
-
-	public InfiniteSolutionPool(AbstractGlobalSearchStrategy strategy) {
+	public AllSolutionsPool(AbstractGlobalSearchStrategy strategy) {
 		super(strategy, Integer.MAX_VALUE);
 	}
 
@@ -235,14 +262,16 @@ class InfiniteSolutionPool extends AbstractSolutionPool {
 	}
 }
 
-class FifoSolutionPool extends AbstractSolutionPool {
-	
+
+
+class LastSolutionsPool extends AbstractSolutionPool {
+
 	/**
 	 * The historical record of solutions that were found
 	 */
 	protected final LinkedList<Solution> solutions = new LinkedList<Solution>();
-	
-	protected FifoSolutionPool(AbstractGlobalSearchStrategy strategy,
+
+	protected LastSolutionsPool(AbstractGlobalSearchStrategy strategy,
 			int capacity) {
 		super(strategy, capacity);
 		for (int i = 0; i < capacity; i++) {
@@ -251,12 +280,12 @@ class FifoSolutionPool extends AbstractSolutionPool {
 	}
 
 	@Override
-	public List<Solution> asList() {
+	public final List<Solution> asList() {
 		return Collections.<Solution>unmodifiableList(solutions.subList(0, size()));
 	}
 
 	@Override
-	public Solution getBestSolution() {
+	public final Solution getBestSolution() {
 		return isEmpty() ? null : solutions.peekFirst();
 	}
 
@@ -268,7 +297,7 @@ class FifoSolutionPool extends AbstractSolutionPool {
 	}
 
 	@Override
-	public void resizeCapacity(int capacity) {
+	public final void resizeCapacity(int capacity) {
 		if(capacity > this.capacity) {
 			for (int i = this.capacity; i < capacity; i++) {
 				solutions.add(new Solution(strategy.solver));
@@ -279,8 +308,21 @@ class FifoSolutionPool extends AbstractSolutionPool {
 			}
 		}
 		this.capacity = capacity;
+	}	
+}
+
+
+final class FirstSolutionsPool extends LastSolutionsPool{
+
+
+	protected FirstSolutionsPool(AbstractGlobalSearchStrategy strategy,
+			int capacity) {
+		super(strategy, capacity);
 	}
-	
-	
-	
+
+	@Override
+	public void recordSolution(Solver solver) {
+		if( strategy.getSolutionCount() <= capacity) super.recordSolution(solver); 
+	}
+
 }
