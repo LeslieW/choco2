@@ -65,16 +65,18 @@ class DisjProblem extends AbstractTestProblem {
 	public final void generateSolver() {
 		generateSolver(Disjunctive.Policy.DEFAULT);
 	}
-	
+
 	public void generateSolver(Disjunctive.Policy rule) {
 		this.generateSolver(rule, null);
 	}
-	
+
 	public void generateSolver(Disjunctive.Policy rule, Configuration conf) {
 		super.generateSolver(conf);
 		Disjunctive cstr = (Disjunctive) solver.getCstr(this.rsc);
-		setFlags(TestDisjunctive.SETTINGS);
-		cstr.setFilteringPolicy(rule);
+		if(cstr != null) {
+			setFlags(TestDisjunctive.SETTINGS);
+			cstr.setFilteringPolicy(rule);
+		}
 	}
 
 

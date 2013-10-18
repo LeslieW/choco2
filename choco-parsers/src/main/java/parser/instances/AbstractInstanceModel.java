@@ -393,7 +393,7 @@ public abstract class AbstractInstanceModel {
 			} else return SAT; //deal with CSP
 		}	
 		else if ( isFeasible == Boolean.FALSE) return UNSAT;
-		else if (solver == null) return ERROR; //FIXME First condition ? 
+		else if (solver == null) return ERROR; //FIXME Why not unknown ?
 		else return solver.isEncounteredLimit() ? TIMEOUT : UNKNOWN;
 	}
 

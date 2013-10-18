@@ -2088,7 +2088,7 @@ public class ReifiedSomeTest {
         m.addConstraints(Choco.eq(ab.length - max_abs, Choco.sum(ab)));
         Solver s = new CPSolver();
         s.read(m);
-        ChocoLogging.toSearch();
+        //ChocoLogging.toSearch();
         s.solveAll();
 
         Assert.assertEquals(6, s.getSolutionCount());
@@ -2126,7 +2126,7 @@ public class ReifiedSomeTest {
             m.addConstraint(Choco.reifiedConstraint(ab[i - 1], constraints[i]));
         }
 
-        ChocoLogging.toSolution();
+        //ChocoLogging.toSolution();
 
         Solver s = new CPSolver();
         s.read(m);
