@@ -152,8 +152,9 @@ class DotManager extends AbstractVisuManager {
 	@Override
 	protected boolean doShow(Object chart, int width, int height) {
 		File file = export(null, null, chart, width, height);
-		if(file != null) {
-			VisuFactory.launchCommand(false, "/home/nono/bin/xdot", file.getAbsolutePath());
+		File dotty =new File("/usr/bin/dotty");
+		if(file != null && file.exists() && dotty.exists()) {
+			VisuFactory.launchCommand(false, dotty.getAbsolutePath(), file.getAbsolutePath());
 			return true;
 		} else return false;
 	}
