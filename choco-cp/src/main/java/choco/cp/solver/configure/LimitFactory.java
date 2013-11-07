@@ -58,38 +58,38 @@ public final class LimitFactory {
 	}
 
 
-	public final static void setSearchLimit(Configuration conf, Limit type, int limitBound) {
+	public final static void setSearchLimit(Configuration conf, Limit type, long limitBound) {
 		conf.putEnum(SEARCH_LIMIT, type);
-		conf.putInt(SEARCH_LIMIT_BOUND, limitBound);
+		conf.putLong(SEARCH_LIMIT_BOUND, limitBound);
 	}
 
-	public final static void setSearchLimit(Solver solver, Limit type, int limitBound) {
+	public final static void setSearchLimit(Solver solver, Limit type, long limitBound) {
 		setSearchLimit(solver.getConfiguration(), type, limitBound);
 	}
 
 	public final static AbstractGlobalSearchLimit makeSearchLimit(AbstractGlobalSearchStrategy strategy) {
 		final Configuration conf = strategy.solver.getConfiguration();
 		Limit lim = conf.readEnum(SEARCH_LIMIT, Limit.class);
-		return makeLimit(strategy, lim, conf.readInt(SEARCH_LIMIT_BOUND));
+		return makeLimit(strategy, lim, conf.readLong(SEARCH_LIMIT_BOUND));
 	}
 
-	public final static void setRestartLimit(Configuration conf, Limit type, int limitBound) {
+	public final static void setRestartLimit(Configuration conf, Limit type, long limitBound) {
 		conf.putEnum(RESTART_LIMIT, type);
-		conf.putInt(RESTART_LIMIT_BOUND, limitBound);
+		conf.putLong(RESTART_LIMIT_BOUND, limitBound);
 	}
 	
-	public final static void setRestartLimit(Solver solver, Limit type, int limitBound) {
+	public final static void setRestartLimit(Solver solver, Limit type, long limitBound) {
 		setRestartLimit(solver.getConfiguration(), type, limitBound);
 	}
 
 	public final static AbstractGlobalSearchLimit makeRestartLimit(AbstractGlobalSearchStrategy strategy) {
 		final Configuration conf = strategy.solver.getConfiguration();
 		Limit lim = conf.readEnum(RESTART_LIMIT, Limit.class);
-		return makeLimit(strategy, lim, conf.readInt(RESTART_LIMIT_BOUND));
+		return makeLimit(strategy, lim, conf.readLong(RESTART_LIMIT_BOUND));
 	}
 
 
-	public final static AbstractGlobalSearchLimit createLimit(AbstractGlobalSearchStrategy strategy, Limit type, int theLimit) {
+	public final static AbstractGlobalSearchLimit createLimit(AbstractGlobalSearchStrategy strategy, Limit type, long theLimit) {
 		switch (type) {
 		case TIME: return new TimeLimit(strategy, theLimit);
 		case NODE: return new NodeLimit(strategy, theLimit);
@@ -112,17 +112,17 @@ public final class LimitFactory {
 	public final static SearchLimitManager createLimitManager(AbstractGlobalSearchStrategy strategy) {
 		final SearchLimitManager limitManager = new SearchLimitManager(strategy);
 		limitManager.setSearchLimit(makeSearchLimit(strategy)); //controlling the search
-		limitManager.setRestartLimit(makeRestartLimit(strategy)); //controlling the restart
+		limitManager.setRestartLimit(makeRestartLimit(strategy)); //controlling the restarts
 		//controlling the restart strategy
 		limitManager.setRestartStrategy(
 				RestartFactory.createRestartStrategy(strategy.solver),
-				LimitFactory.createLimit(strategy, getPolicyLimit(strategy.solver), Integer.MAX_VALUE)
+				LimitFactory.createLimit(strategy, getPolicyLimit(strategy.solver), Long.MAX_VALUE)
 		);
 		return limitManager;
 	}
 	
-	public final static AbstractGlobalSearchLimit makeLimit(AbstractGlobalSearchStrategy strategy, Limit type, int theLimit) {
-		if( strategy != null && type !=null && theLimit != Integer.MAX_VALUE) {
+	public final static AbstractGlobalSearchLimit makeLimit(AbstractGlobalSearchStrategy strategy, Limit type, long theLimit) {
+		if( strategy != null && type !=null && theLimit != Long.MAX_VALUE) {
 			return createLimit(strategy, type, theLimit);
 		} else {return null;}
 	}

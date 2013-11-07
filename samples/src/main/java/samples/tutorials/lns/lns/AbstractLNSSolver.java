@@ -207,7 +207,7 @@ public void monitorTimeLimit(boolean b)
 { throw new RuntimeException("Deprecated"); }
 
 @Override
-public abstract void setTimeLimit(int timeLimit);
+public abstract void setTimeLimit(long timeLimit);
 
 
 @Override
@@ -218,13 +218,13 @@ public void monitorNodeLimit(boolean b)
 { throw new RuntimeException("Deprecated"); }
 
 @Override
-public abstract void setRestartLimit(int restartLimit);
+public abstract void setRestartLimit(long restartLimit);
 
 @Override
 public abstract long getNodeCount();
 
 @Override
-public abstract void setNodeLimit(int nodeLimit);
+public abstract void setNodeLimit(long nodeLimit);
 
 @Override
 public abstract long getBackTrackCount();
@@ -234,7 +234,7 @@ public void monitorBackTrackLimit(boolean b)
 { throw new RuntimeException("Deprecated"); }
 
 @Override
-public abstract void setBackTrackLimit(int backtracklimit);
+public abstract void setBackTrackLimit(long backtracklimit);
 
 @Override
 public abstract long getFailCount();
@@ -244,7 +244,7 @@ public void monitorFailLimit(boolean b)
 { throw new RuntimeException("NO: CP specific"); }
 
 @Override
-public abstract void setFailLimit(int failLimit);
+public abstract void setFailLimit(long failLimit);
 
 
 /* LOG */
