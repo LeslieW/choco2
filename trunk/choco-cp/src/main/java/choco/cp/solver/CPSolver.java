@@ -1056,7 +1056,7 @@ public class CPSolver implements Solver {
      * Sets the time limit i.e. the maximal time before stopping the search
      * algorithm
      */
-    public void setTimeLimit(int timeLimit) {
+    public void setTimeLimit(long timeLimit) {
         LimitFactory.setSearchLimit(this, Limit.TIME, timeLimit);
     }
 
@@ -1065,7 +1065,7 @@ public class CPSolver implements Solver {
      * Sets the node limit i.e. the maximal number of nodes explored by the
      * search algorithm
      */
-    public void setNodeLimit(int nodeLimit) {
+    public void setNodeLimit(long nodeLimit) {
         LimitFactory.setSearchLimit(this, Limit.NODE, nodeLimit);
     }
 
@@ -1073,7 +1073,7 @@ public class CPSolver implements Solver {
      * Sets the backtrack limit i.e. the maximal number of backtracks explored
      * by the search algorithm
      */
-    public void setBackTrackLimit(int backTrackLimit) {
+    public void setBackTrackLimit(long backTrackLimit) {
         LimitFactory.setSearchLimit(this, Limit.BACKTRACK, backTrackLimit);
     }
 
@@ -1081,7 +1081,7 @@ public class CPSolver implements Solver {
      * Sets the fail limit i.e. the maximal number of fail explored by the
      * search algorithm
      */
-    public void setFailLimit(int failLimit) {
+    public void setFailLimit(long failLimit) {
         LimitFactory.setSearchLimit(this, Limit.FAIL, failLimit);
     }
 
@@ -1089,7 +1089,7 @@ public class CPSolver implements Solver {
      * Sets the restart limit i.e. the maximal number of restart performed during the search algorithm.
      * The limit does not stop the search only the restart process.
      */
-    public void setRestartLimit(int restartLimit) {
+    public void setRestartLimit(long restartLimit) {
         LimitFactory.setRestartLimit(this, Limit.RESTART, restartLimit);
     }
 

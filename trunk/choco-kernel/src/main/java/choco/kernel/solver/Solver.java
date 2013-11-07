@@ -167,28 +167,28 @@ public interface Solver extends ISolutionDisplay, IMeasures, IPretty {
 	/**
 	 * Sets the time limit i.e. the maximal time before stopping the search algorithm
 	 */
-	public void setTimeLimit(int timeLimit);
+	public void setTimeLimit(long timeLimit);
 
 	/**
 	 * Sets the node limit i.e. the maximal number of nodes explored by the search algorithm
 	 */
-	public void setNodeLimit(int nodeLimit);
+	public void setNodeLimit(long nodeLimit);
 
 	/**
 	 * Sets the backtrack limit i.e. the maximal number of backtracks before stopping the search algorithm
 	 */
-	public void setBackTrackLimit(int backtracklimit);
+	public void setBackTrackLimit(long backtracklimit);
 
 	/**
-	 * Sets the fail limit i.e. the maximal numnber of fails before stopping the search algorithm
+	 * Sets the fail limit i.e. the maximal number of fails before stopping the search algorithm
 	 */
-	public void setFailLimit(int failLimit);
+	public void setFailLimit(long failLimit);
 
 	/**
 	 * Sets the restart limit i.e. the maximal number of restart performed during the search algorithm.
 	 * The limit does not stop the search only the restart process.
 	 */
-	public void setRestartLimit(int restartLimit);
+	public void setRestartLimit(long restartLimit);
 
 	/**
 	 * @return true if only the first solution must be found
