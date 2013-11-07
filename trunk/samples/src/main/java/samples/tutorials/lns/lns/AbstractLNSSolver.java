@@ -166,7 +166,7 @@ public abstract Boolean checkSolution();
 public abstract boolean existsSolution();
 
 @Override
-public abstract int getSolutionCount();
+public abstract long getSolutionCount();
 
 @Override
 public abstract Solution recordSolution();
@@ -181,7 +181,7 @@ public abstract boolean getFirstSolution();
 public abstract void setFirstSolution(boolean firstSolution);
 
 @Override
-public abstract int getNbSolutions();
+public abstract long getNbSolutions();
 
 @Override
 public abstract String solutionToString();
@@ -200,7 +200,7 @@ public abstract AbstractGlobalSearchLimit getEncounteredLimit();
 
 
 @Override
-public abstract int getTimeCount();
+public abstract long getTimeCount();
 
 @Override
 public void monitorTimeLimit(boolean b)
@@ -211,7 +211,7 @@ public abstract void setTimeLimit(int timeLimit);
 
 
 @Override
-public abstract int getRestartCount();
+public abstract long getRestartCount();
 
 @Override
 public void monitorNodeLimit(boolean b)
@@ -221,13 +221,13 @@ public void monitorNodeLimit(boolean b)
 public abstract void setRestartLimit(int restartLimit);
 
 @Override
-public abstract int getNodeCount();
+public abstract long getNodeCount();
 
 @Override
 public abstract void setNodeLimit(int nodeLimit);
 
 @Override
-public abstract int getBackTrackCount();
+public abstract long getBackTrackCount();
 
 @Override
 public void monitorBackTrackLimit(boolean b)
@@ -237,7 +237,7 @@ public void monitorBackTrackLimit(boolean b)
 public abstract void setBackTrackLimit(int backtracklimit);
 
 @Override
-public abstract int getFailCount();
+public abstract long getFailCount();
 
 @Override
 public void monitorFailLimit(boolean b)

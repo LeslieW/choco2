@@ -111,7 +111,7 @@ public class ReifiedSearchTest {
 	@Test
 	@Ignore
 	public void testAbsBoundVar() {
-		int nbexpectedsol = 289;
+		long nbexpectedsol = 289;
 		for (int seed = 0; seed < 10; seed++) {
 			m = new CPModel();
 			s = new CPSolver();
@@ -131,7 +131,7 @@ public class ReifiedSearchTest {
 
 			s.solveAll();
 			if (nbexpectedsol == -1)
-				nbexpectedsol = s.getNbSolutions();
+				nbexpectedsol = s.getSolutionCount();
 
 			LOGGER.info("" + s.getNbSolutions());
 
@@ -201,7 +201,7 @@ public class ReifiedSearchTest {
 	@Test
 	public void testLargeOrForGecode() {
 		//public static void main(String[] args) {
-		int nbexpectedsol = -1;
+		long nbexpectedsol = -1;
 		for (int seed = 0; seed < 10; seed++) {
 
 			CPModel m = new CPModel();
@@ -238,7 +238,7 @@ public class ReifiedSearchTest {
 	@Test
 	public void testIfThenElse() {
 		//public static void main(String[] args) {
-		int nbexpectedsol = -1;
+		long nbexpectedsol = -1;
 		for (int seed = 0; seed < 10; seed++) {
 			CPModel m = new CPModel();
 			CPSolver s = new CPSolver();
@@ -268,7 +268,7 @@ public class ReifiedSearchTest {
 	@Test
 	public void testIfThenElse2() {
 		//public static void main(String[] args) {
-		int nbexpectedsol = -1;
+		long nbexpectedsol = -1;
 		for (int seed = 0; seed < 10; seed++) {
 			CPModel m1 = new CPModel();
 			m1.setDefaultExpressionDecomposition(false);
@@ -853,7 +853,7 @@ public class ReifiedSearchTest {
 
 	@Test
 	public void testDeepak() {
-		int nbexpectedsol = -1; //initialize to -1 if number of solutions to hard to compute by hand
+		long nbexpectedsol = -1; //initialize to -1 if number of solutions to hard to compute by hand
 
 		for (int seed = 0; seed < 10; seed++) {
 			LOGGER.info("seed " + seed);
@@ -896,7 +896,7 @@ public class ReifiedSearchTest {
 
 	@Test
 	public void testDeepakDecomp() {
-		int nbexpectedsol = -1; //initialize to -1 if number of solutions to hard to compute by hand
+		long nbexpectedsol = -1; //initialize to -1 if number of solutions to hard to compute by hand
 
 		for (int seed = 0; seed < 10; seed++) {
 			LOGGER.info("seed " + seed);

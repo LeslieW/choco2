@@ -58,13 +58,13 @@ public class SearchTest {
 	@Test
 	public void testnode() {
 		//ChocoLogging.setVerbosity(Verbosity.SEARCH);
-        int n1 = testNQueens(true);
-        int n2 = testNQueens(false);
+        long n1 = testNQueens(true);
+        long n2 = testNQueens(false);
         assertEquals("Nb Nodes", n1 ,n2);
 	}
 
 	//return the number of nodes needed to solve the problem
-	private int testNQueens(boolean withgoal) {
+	private long testNQueens(boolean withgoal) {
 		int NB_REINES = 8;
 
 		Model m = new CPModel();

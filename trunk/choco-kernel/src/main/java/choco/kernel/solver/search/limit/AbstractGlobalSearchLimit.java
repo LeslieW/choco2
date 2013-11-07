@@ -54,17 +54,17 @@ public abstract class AbstractGlobalSearchLimit implements IPretty {
 	/**
 	 * maximal value limitting the search exploration
 	 */
-	protected int nbMax;
+	protected long nbMax;
 	
 	
-	public AbstractGlobalSearchLimit(AbstractGlobalSearchStrategy theStrategy,int theLimit, String unit) {
+	public AbstractGlobalSearchLimit(AbstractGlobalSearchStrategy theStrategy,long theLimit, String unit) {
 		strategy = theStrategy;
 		nbMax = theLimit;
 		this.type=null;
 		this.unit=unit;
 	}
 
-	public AbstractGlobalSearchLimit(AbstractGlobalSearchStrategy theStrategy,int theLimit, Limit type) {
+	public AbstractGlobalSearchLimit(AbstractGlobalSearchStrategy theStrategy,long theLimit, Limit type) {
 		strategy = theStrategy;
 		nbMax = theLimit;
 		this.type=type;
@@ -98,16 +98,16 @@ public abstract class AbstractGlobalSearchLimit implements IPretty {
 	 * get the current counter
 	 */
 
-	public abstract int getNb();
+	public abstract long getNb();
 
 	/**
 	 * @return the limit value
 	 */
-	public final int getNbMax() {
+	public final long getNbMax() {
 		return nbMax;
 	}
 
-	public void setNbMax(int nbMax) {
+	public void setNbMax(long nbMax) {
 		this.nbMax = nbMax;
 	}
 

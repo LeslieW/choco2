@@ -198,9 +198,9 @@ protected final TIntHashSet removed = new TIntHashSet();
 private final IEnvironment environment;
 private final Solver solver;
 
-public int lastWorld = -1;
-public int lastNbOfBacktracks = -1;
-public int lastNbOfRestarts = -1;
+public long lastWorld = -1;
+public long lastNbOfBacktracks = -1;
+public long lastNbOfRestarts = -1;
 private TIntHashSet boundUpdate;
 private boolean computed;
 
@@ -737,9 +737,9 @@ protected void filterUp(final double reallp) throws ContradictionException {
 
 protected void checkWorld() throws ContradictionException
 {
-        int currentworld = environment.getWorldIndex();
-        int currentbt = solver.getBackTrackCount();
-        int currentrestart = solver.getRestartCount();
+        long currentworld = environment.getWorldIndex();
+        long currentbt = solver.getBackTrackCount();
+        long currentrestart = solver.getRestartCount();
         //System.err.println("TIME STAMP : "+currentbt+"   BT COUNT : "+solver.getBackTrackCount());
         // assert (currentbt == solver.getBackTrackCount());
         if (currentworld < lastWorld || currentbt != lastNbOfBacktracks || currentrestart > lastNbOfRestarts)
@@ -993,9 +993,9 @@ public void rebuildCostRegInfo() throws ContradictionException
 
 public final boolean needPropagation()
 {
-        int currentworld = environment.getWorldIndex();
-        int currentbt = solver.getBackTrackCount();
-        int currentrestart = solver.getRestartCount();
+        long currentworld = environment.getWorldIndex();
+        long currentbt = solver.getBackTrackCount();
+        long currentrestart = solver.getRestartCount();
 
         return (currentworld < lastWorld || currentbt != lastNbOfBacktracks || currentrestart > lastNbOfRestarts);
 

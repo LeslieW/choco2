@@ -33,13 +33,13 @@ import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 public final class NodeLimit extends AbstractGlobalSearchLimit {
 
 	
-	public NodeLimit(AbstractGlobalSearchStrategy theStrategy, int theLimit) {
+	public NodeLimit(AbstractGlobalSearchStrategy theStrategy, long theLimit) {
 		super(theStrategy, theLimit, Limit.NODE);
 	}
 
 
 	@Override
-	public final int getNb() {
+	public final long getNb() {
 		return strategy.getNodeCount();
 	}
 	

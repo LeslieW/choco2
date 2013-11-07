@@ -131,7 +131,7 @@ public class GoalSearchSolver extends AbstractGlobalSearchStrategy {
 //  int lastRealMove = DOWN_BRANCH;
 
   public Boolean nextSolution() {
-    int previousNbSolutions = getSolutionCount();
+    long previousNbSolutions = getSolutionCount();
     encounteredLimit = null;
     boolean stop = false;
 

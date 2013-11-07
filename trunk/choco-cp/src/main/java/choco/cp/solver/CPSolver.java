@@ -1005,7 +1005,7 @@ public class CPSolver implements Solver {
      * @return the number of solutions to the model that were encountered during
      *         the search
      */
-    public int getNbSolutions() {
+    public long getNbSolutions() {
         return strategy.getSolutionCount();
     }
 
@@ -1100,7 +1100,7 @@ public class CPSolver implements Solver {
      * @return
      */
     @Override
-    public int getReadingTimeCount() {
+    public long getReadingTimeCount() {
         return model == null ? 0 : (int) readingTime;
     }
 
@@ -1111,7 +1111,7 @@ public class CPSolver implements Solver {
      * @return
      */
     @Override
-    public int getInitialPropagationTimeCount() {
+    public long getInitialPropagationTimeCount() {
         return strategy == null ? 0 : 0;
     }
 
@@ -1120,7 +1120,7 @@ public class CPSolver implements Solver {
      *
      * @return time count
      */
-    public final int getTimeCount() {
+    public final long getTimeCount() {
         return strategy == null ? 0 : strategy.getTimeCount();
     }
 
@@ -1129,7 +1129,7 @@ public class CPSolver implements Solver {
      *
      * @return node count
      */
-    public final int getNodeCount() {
+    public final long getNodeCount() {
         return strategy == null ? 0 : strategy.getNodeCount();
     }
 
@@ -1138,7 +1138,7 @@ public class CPSolver implements Solver {
      *
      * @return strategy == null ? 0 : backtrack count
      */
-    public final int getBackTrackCount() {
+    public final long getBackTrackCount() {
         return strategy == null ? 0 : strategy.getBackTrackCount();
     }
 
@@ -1147,18 +1147,18 @@ public class CPSolver implements Solver {
      *
      * @return fail count
      */
-    public final int getFailCount() {
+    public final long getFailCount() {
         return strategy == null ? 0 : strategy.getFailCount();
     }
 
 
     @Override
-    public final int getRestartCount() {
+    public final long getRestartCount() {
         return strategy == null ? 0 : strategy.getRestartCount();
     }
 
     @Override
-    public final int getSolutionCount() {
+    public final long getSolutionCount() {
         return strategy == null ? 0 : strategy.getSolutionCount();
     }
 

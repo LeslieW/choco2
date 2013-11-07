@@ -227,7 +227,7 @@ public class TaillardJobShopProblem {
     private static void test(int jobs, int machines, int[][] timesMatrix,
             int[][] machinesMatrix, int bound, Heuristic heuristic,
             boolean maxrpc, boolean light) {
-        final List<Integer> nodes = new ArrayList<Integer>(NBINSTANCES);
+        final List<Long> nodes = new ArrayList<Long>(NBINSTANCES);
         final List<Double> cpu = new ArrayList<Double>(NBINSTANCES);
         final List<Integer> nbAwakes = new ArrayList<Integer>(NBINSTANCES);
         final List<Long> mem = new ArrayList<Long>(NBINSTANCES);
@@ -339,13 +339,13 @@ public class TaillardJobShopProblem {
                 // nodes[i] = Integer.MAX_VALUE;
                 cpu.add(Double.POSITIVE_INFINITY);
                 nbAwakes.add(Integer.MAX_VALUE);
-                nodes.add(Integer.MAX_VALUE);
+                nodes.add(Long.MAX_VALUE);
             } else {
                 st.append(s.getObjectiveValue());
                 try {
                     nodes.add(s.getNodeCount());
                 } catch (Exception e) {
-                    nodes.add(0);
+                    nodes.add((long)0);
                 }
                 cpu.add(time / 1e9d);
                 nbAwakes.add(MaxRPCrm.nbPropag);

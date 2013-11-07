@@ -196,9 +196,9 @@ public class OccurrenceTest {
     @Test
     public void testRandomProblems() {
         for (int bigseed = 0; bigseed < 5; bigseed++) {
-            int nbsol, nbsol2;
+            long nbsol, nbsol2;
             //nb solutions of the gac constraint
-            int realNbSol = randomOcc(-1, bigseed,true,1,true);
+            long realNbSol = randomOcc(-1, bigseed,true,1,true);
             //nb solutions of occurrence + enum
             nbsol = randomOcc(realNbSol, bigseed, true, 3, false);
             //b solutions of occurrences + bound
@@ -210,7 +210,7 @@ public class OccurrenceTest {
     }
 
 
-    public int randomOcc(int nbsol, int seed, boolean enumvar, int nbtest, boolean gac) {
+    public long randomOcc(long nbsol, int seed, boolean enumvar, int nbtest, boolean gac) {
         for (int interseed = 0; interseed < nbtest; interseed++) {
             int nbOcc = 2;
             int nbVar = 9;
@@ -327,16 +327,16 @@ public class OccurrenceTest {
         int tableVars = 5;
         int cubeVars = 7;
         for (int seed = 0; seed < nbrun; seed ++) {
-            int nba = version1(seed, tableVars, cubeVars);
-            int nbb = version2(seed, tableVars, cubeVars);
-            int nbc = version3(seed, tableVars, cubeVars);
+            long nba = version1(seed, tableVars, cubeVars);
+            long nbb = version2(seed, tableVars, cubeVars);
+            long nbc = version3(seed, tableVars, cubeVars);
             assertEquals(nba, nbb);
             assertEquals(nbb, nbc);
             LOGGER.info("---------");
         }
     }
 
-    public static int version1(int seed, int tableVars, int cubeVars) {
+    public static long version1(int seed, int tableVars, int cubeVars) {
         Model model = new CPModel();
         model.setDefaultExpressionDecomposition(true);
         IntegerVariable table[] = new IntegerVariable[tableVars];
@@ -368,11 +368,11 @@ public class OccurrenceTest {
         solver.setValIntSelector(new RandomIntValSelector(seed));
         solver.solveAll();
         LOGGER.info("Version1: " + seed + " number of solution : " + solver.getNbSolutions()+ " node: " + solver.getNodeCount() + " time: " + solver.getTimeCount());
-        return solver.getNbSolutions();
+        return solver.getSolutionCount();
         
     }
 
-    public static int version2(int seed, int tableVars, int cubeVars) {
+    public static long version2(int seed, int tableVars, int cubeVars) {
         Model model = new CPModel();
         model.setDefaultExpressionDecomposition(false);
         IntegerVariable table[] = new IntegerVariable[tableVars];
@@ -404,7 +404,7 @@ public class OccurrenceTest {
         
     }
 
-    public static int version3(int seed, int tableVars, int cubeVars) {
+    public static long version3(int seed, int tableVars, int cubeVars) {
         Model model = new CPModel();
         model.setDefaultExpressionDecomposition(false);
         IntegerVariable table[] = new IntegerVariable[tableVars];

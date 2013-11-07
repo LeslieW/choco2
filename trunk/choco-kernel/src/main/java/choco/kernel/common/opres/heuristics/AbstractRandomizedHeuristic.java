@@ -166,7 +166,7 @@ public abstract class AbstractRandomizedHeuristic implements IHeuristic {
 	}
 
 	@Override
-	public int getSolutionCount() {
+	public long getSolutionCount() {
 		return solutionLogs.size()/3;
 	}
 

@@ -83,6 +83,11 @@ public class ReportFormatter {
 		appendDiagnostic(name+ ' ' +DFORMAT.format(val));
 		appendDiagnostic(name+"/s "+DFORMAT.format(val/time));
 	}
+	
+	public void appendDiagnostics(String name, long val, double time) {
+		appendDiagnostic(name+ ' ' +DFORMAT.format(val));
+		appendDiagnostic(name+"/s "+DFORMAT.format(val/time));
+	}
 
 	public void appendConfiguration(String value) {
 		if(value != null && value.length() != 0) b.append("c ").append(value).append('\n');

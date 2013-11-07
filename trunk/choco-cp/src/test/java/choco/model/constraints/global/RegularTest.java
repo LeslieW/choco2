@@ -565,10 +565,8 @@ public class RegularTest {
         s.setVarIntSelector(new RandomIntVarSelector(s, 112));
         s.solveAll();
 
-        int nbsolution = s.getNbSolutions();
-        int nbNode = s.getNodeCount();
-        LOGGER.info("TestsAutomate test7(" + n + " reines) : " + nbsolution + " nodes " + nbNode + " tps " + (System.currentTimeMillis() - tps));
-        assertEquals(NBSols[n - 1], nbsolution);
+        LOGGER.info("TestsAutomate test7(" + n + " reines) : " + s.getSolutionCount()+ " nodes " + s.getNodeCount()+ " tps " + (System.currentTimeMillis() - tps));
+        assertEquals(NBSols[n - 1], s.getSolutionCount());
 
     }
 

@@ -69,7 +69,7 @@ public class ClausesTest {
 
     @Test
     public void test0() {
-        int nbsol = computeNbSol();
+        long nbsol = computeNbSol();
         for (int seed = 0; seed < 20; seed++) {
             CPModel mod = new CPModel();
             CPSolver s = new CPSolver();
@@ -92,7 +92,7 @@ public class ClausesTest {
 
     @Test
     public void test1() {
-        int nbsol = computeNbSol();
+        long nbsol = computeNbSol();
         for (int seed = 0; seed < 20; seed++) {
             CPModel mod = new CPModel();
             CPSolver s = new CPSolver();
@@ -133,7 +133,7 @@ public class ClausesTest {
 
     @Test
     public void test2() {
-        int nbsol = computeNbSol2();
+        long nbsol = computeNbSol2();
         for (int seed = 0; seed < 20; seed++) {
             CPModel mod = new CPModel();
             CPSolver s = new CPSolver();
@@ -154,7 +154,7 @@ public class ClausesTest {
         }
     }
 
-    private int computeNbSol2() {
+    private long computeNbSol2() {
         CPModel mod = new CPModel();
         CPSolver s = new CPSolver();
         IntegerVariable[] v = makeBooleanVarArray("b", 10);
@@ -169,7 +169,7 @@ public class ClausesTest {
         return s.getNbSolutions();
     }
 
-    private int computeNbSol() {
+    private long computeNbSol() {
         CPModel mod = new CPModel();
         CPSolver s = new CPSolver();
         IntegerVariable[] v = makeBooleanVarArray("b", 10);
@@ -194,16 +194,16 @@ public class ClausesTest {
 
             for (int seed2 = 0; seed2 < 5; seed2++) {
                 LOGGER.info("seed " + seed1);
-                int nbnode = solveNBSOL(seed2, nbvar, nbct, false, false);
-                int nbnode2 = solveNBSOL(seed2, nbvar, nbct, false, true);
-                int nbnode3 = solveNBSOL(seed2, nbvar, nbct, true, false);
+                long nbnode = solveNBSOL(seed2, nbvar, nbct, false, false);
+                long nbnode2 = solveNBSOL(seed2, nbvar, nbct, false, true);
+                long nbnode3 = solveNBSOL(seed2, nbvar, nbct, true, false);
                 assertEquals(nbnode, nbnode2);
                 assertEquals(nbnode, nbnode3);
             }
         }
     }
 
-    public int solveNBSOL(int seed, int nbvar, int nbc, boolean clause, boolean decomp) {
+    public long solveNBSOL(int seed, int nbvar, int nbc, boolean clause, boolean decomp) {
         CPModel mod = new CPModel();
         mod.setDefaultExpressionDecomposition(decomp);
         CPSolver s = new CPSolver();
@@ -266,7 +266,7 @@ public class ClausesTest {
 
     @Test
     public void test3() {
-        int nbsol = computeNbSol3();
+        long nbsol = computeNbSol3();
         for (int seed = 0; seed < 1; seed++) {
             CPModel mod = new CPModel();
             CPSolver s = new CPSolver(/*new EnvironmentRecomputation()*/);
@@ -285,7 +285,7 @@ public class ClausesTest {
         }
     }
 
-    private int computeNbSol3() {
+    private long computeNbSol3() {
         CPModel mod = new CPModel();
         CPSolver s = new CPSolver(new EnvironmentTrailing());
         IntegerVariable[] v = makeBooleanVarArray("b", 3);

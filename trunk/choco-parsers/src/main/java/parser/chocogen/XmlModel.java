@@ -93,8 +93,8 @@ public class XmlModel {
 	//temporary data
 	private Boolean isFeasible = null;
 	private int cheuri;
-	private int nbnode = 0;
-	private int nbback = 0;
+	private long nbnode = 0;
+	private long nbback = 0;
 	private static long[] time = new long[5];
 	private static String[] values;
 
@@ -462,7 +462,7 @@ public class XmlModel {
 		return (time[4] - time[0]);
 	}
 
-	public int getNbNodes() {
+	public long getNbNodes() {
 		return nbnode;
 	}
 

@@ -47,17 +47,17 @@ public class BoolSumTest {
     private final int nbTotSols = 1 << bvars.length;
 
 
-    private int solveWith(Constraint c) {
+    private long solveWith(Constraint c) {
         final Model m = new CPModel();
         m.addConstraint(c);
         final CPSolver s = new CPSolver();
         s.read(m);
         s.setRandomSelectors(0);
         s.solveAll();
-        return s.getNbSolutions();
+        return s.getSolutionCount();
     }
 
-    private final void testNbSols(int[] sols1, int[] sols2) {
+    private final void testNbSols(long[] sols1, long[] sols2) {
         //		LOGGER.info(nbTotSols);
         //		LOGGER.info(Arrays.toString(sols1));
         //		LOGGER.info(Arrays.toString(sols2));
@@ -69,8 +69,8 @@ public class BoolSumTest {
     @Test
     public void testEqNeq() {
         //ChocoLogging.setVerbosity(Verbosity.VERBOSE);
-        final int[] sols1 = new int[bvars.length + 3];
-        final int[] sols2 = new int[bvars.length + 3];
+        final long[] sols1 = new long[bvars.length + 3];
+        final long[] sols2 = new long[bvars.length + 3];
         for (int i = -1; i < bvars.length + 2; i++) {
             sols1[i + 1] = solveWith(Choco.eq(sum, i));
             sols2[i + 1] = solveWith(Choco.neq(sum, i));
@@ -85,8 +85,8 @@ public class BoolSumTest {
 
     @Test
     public void testLeqGeq() {
-        final int[] sols1 = new int[bvars.length + 2];
-        final int[] sols2 = new int[bvars.length + 2];
+        final long[] sols1 = new long[bvars.length + 2];
+        final long[] sols2 = new long[bvars.length + 2];
         for (int i = 0; i < bvars.length + 2; i++) {
             sols1[i] = solveWith(Choco.geq(sum, i));
             sols2[i] = solveWith(Choco.lt(sum, i));

@@ -206,6 +206,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 			solver.propagate();
 			//System.out.println(solver.pretty());
 			advancedInitialPropagation();
+			//System.out.println(solver.pretty());
 			newFeasibleRootState();
 		} catch (ContradictionException e) {
 			if (LOGGER.isLoggable(Level.FINE) && 
@@ -459,7 +460,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 * @return the time elapsed during the last search in milliseconds
 	 */
 	@Override
-	public int getTimeCount() {
+	public long getTimeCount() {
 		return limitManager.getTimeCount();
 	}
 
@@ -470,7 +471,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 * initial propagation has been performed and saved)
 	 */
 	@Override
-	public int getNodeCount() {
+	public long getNodeCount() {
 		return searchLoop.getNodeCount();
 	}
 
@@ -478,13 +479,13 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 * @return the number of backtracks of the tree search
 	 */
 	@Override
-	public int getBackTrackCount() {
+	public long getBackTrackCount() {
 		return searchLoop.getBacktrackCount();
 	}
 
 
 	@Override
-	public int getRestartCount() {
+	public long getRestartCount() {
 		return searchLoop.getRestartCount();
 	}
 
@@ -492,7 +493,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 * @return the number of fails of the tree search
 	 */
 	@Override
-	public int getFailCount() {
+	public long getFailCount() {
 		return solver.getPropagationEngine().getFailMeasure().getFailCount();
 	}
 

@@ -286,7 +286,7 @@ public final class ChocoDatasetFactory {
 		final List<Solution> sols = strat.getStoredSolutions();
 		for (int i = sols.size()-1; i >=0; i--) {
 			final Solution sol = sols.get(i);
-			dataset.addValue(sol.getObjectiveValue(), series, Integer.valueOf(limit.getValue(sol.getMeasures())));
+			dataset.addValue(sol.getObjectiveValue(), series, Long.valueOf(limit.getValue(sol.getMeasures())));
 		}
 		return dataset;
 	}

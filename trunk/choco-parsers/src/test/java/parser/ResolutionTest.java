@@ -210,7 +210,7 @@ public class ResolutionTest {
     public void bibdTest() {
         XmlModel xm = new XmlModel();
         args[1] = args[1] + "/bibd-8-14-7-4-3_glb.xml";
-        int nbNodes = -1;
+        long nbNodes = -1;
         for (int i = 0; i < 5; i++) {
             try {
                 xm.generate(args);

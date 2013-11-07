@@ -34,12 +34,12 @@ import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
  */
 public final class FailLimit extends AbstractGlobalSearchLimit {
 	
-	public FailLimit(AbstractGlobalSearchStrategy theStrategy, int theLimit) {
+	public FailLimit(AbstractGlobalSearchStrategy theStrategy, long theLimit) {
 		super(theStrategy, theLimit, Limit.FAIL);
 	}
 
 	@Override
-	public final int getNb() {
+	public final long getNb() {
 		return strategy.getFailCount();
 	}
 

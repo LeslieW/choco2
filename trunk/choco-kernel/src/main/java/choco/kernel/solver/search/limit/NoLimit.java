@@ -35,7 +35,7 @@ public final class NoLimit extends AbstractGlobalSearchLimit {
 	public final static NoLimit SINGLOTON = new NoLimit();
 	
 	private NoLimit() {
-		super(null, Integer.MAX_VALUE, NO_LIMIT_UNIT);
+		super(null, Long.MAX_VALUE, NO_LIMIT_UNIT);
 	}
 
 	@Override
@@ -44,12 +44,12 @@ public final class NoLimit extends AbstractGlobalSearchLimit {
 	}
 
 	@Override
-	public int getNb() {
+	public long getNb() {
 		return 0;
 	}
 
 	@Override
-	public void setNbMax(int nbMax) {}
+	public void setNbMax(long nbMax) {}
 
 	
 }

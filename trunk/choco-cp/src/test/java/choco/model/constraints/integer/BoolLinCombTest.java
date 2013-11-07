@@ -222,8 +222,8 @@ public class BoolLinCombTest {
 
     private void testBothLinCombVer(int n, int op, int seed) {
         testLinComb(n, op, false, seed);
-        int nbSol1 = nbSol;
-        int nbNodes1 = nbNodes;
+        long nbSol1 = nbSol;
+        long nbNodes1 = nbNodes;
         testLinComb(n, op, true, seed);
         assertEquals("n:"+n+" seed:"+seed,nbSol1, nbSol);
         assertEquals("n:"+n+" seed:"+seed,nbNodes1, nbNodes);
@@ -231,16 +231,16 @@ public class BoolLinCombTest {
 
 	private void testBothSumCombVer(int n, int op, int seed) {
 	    testSumComb(n, op, false, seed);
-	    int nbSol1 = nbSol;
-	    int nbNodes1 = nbNodes;
+	    long nbSol1 = nbSol;
+	    long nbNodes1 = nbNodes;
 	    testSumComb(n, op, true, seed);
 	    assertEquals("n:"+n+" seed:"+seed, nbSol1, nbSol);
 	    assertEquals("n:"+n+" seed:"+seed, nbNodes1, nbNodes);
 	}
 
 
-    public int nbSol;
-    public int nbNodes;
+    public long nbSol;
+    public long nbNodes;
 
     private void testLinComb(int n, int op, boolean optimized, int seed) {
 	    m = new CPModel();

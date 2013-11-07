@@ -119,9 +119,9 @@ public double lastLpValue;
 
 
 final static int U0 = 10;
-int lastWorld = -1;
-int lastNbOfBacktracks = -1;
-int lastNbOfRestarts =-1;
+long lastWorld = -1;
+long lastNbOfBacktracks = -1;
+long lastNbOfRestarts =-1;
 
 /**
  * Stack to store removed edges index, for delayed update
@@ -592,9 +592,9 @@ private void makeRedondantSumConstraint()
 
 public void checkWorld() throws ContradictionException
 {
-        int currentworld = solver.getEnvironment().getWorldIndex();
-        int currentbt = solver.getBackTrackCount();
-        int currentrestart = solver.getRestartCount();
+        long currentworld = solver.getEnvironment().getWorldIndex();
+        long currentbt = solver.getBackTrackCount();
+        long currentrestart = solver.getRestartCount();
         if (currentworld < lastWorld || currentbt != lastNbOfBacktracks || currentrestart > lastNbOfRestarts)
         {
                 for (int i = 0 ; i < y.length ; i++)
@@ -914,9 +914,9 @@ public boolean isSatisfied(int[] tuple)
 
 public final boolean needPropagation()
 {
-        int currentworld = solver.getEnvironment().getWorldIndex();
-        int currentbt = solver.getBackTrackCount();
-        int currentrestart = solver.getRestartCount();
+        long currentworld = solver.getEnvironment().getWorldIndex();
+        long currentbt = solver.getBackTrackCount();
+        long currentrestart = solver.getRestartCount();
 
         return (currentworld < lastWorld || currentbt != lastNbOfBacktracks || currentrestart > lastNbOfRestarts);
 

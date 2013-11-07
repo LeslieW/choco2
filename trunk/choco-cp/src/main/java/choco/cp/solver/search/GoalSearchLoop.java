@@ -48,7 +48,7 @@ import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.*;
 public class GoalSearchLoop extends AbstractSearchLoop {
 
     final protected Goal mainGoal;
-    private int previousNbSolutions;
+    private long previousNbSolutions;
     protected ChoicePoint currentChoice;
     protected List<Goal> currentGoalStack;
     protected int currentChoiceIndex;
@@ -103,7 +103,7 @@ public class GoalSearchLoop extends AbstractSearchLoop {
     }
 
     @Override
-    public final int getNodeCount() {
+    public final long getNodeCount() {
 		return node_count;
 	}
 

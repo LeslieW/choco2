@@ -34,11 +34,11 @@ public abstract class AbstractSearchLoop implements ISearchLoop {
 
 	public final AbstractGlobalSearchStrategy searchStrategy;
 
-	private int nodeCount;
+	private long nodeCount;
 
-	private int backtrackCount;
+	private long backtrackCount;
 
-	private int restartCount;
+	private long restartCount;
 
 	private int depthCount;
 
@@ -61,16 +61,16 @@ public abstract class AbstractSearchLoop implements ISearchLoop {
 		return stop;
 	}
 
-	public int getNodeCount() {
+	public long getNodeCount() {
 		return nodeCount;
 	}
 
-	public final int getBacktrackCount() {
+	public final long getBacktrackCount() {
 		return backtrackCount;
 	}
 
 
-	public final int getRestartCount() {
+	public final long getRestartCount() {
 		return restartCount;
 	}
 
@@ -95,7 +95,7 @@ public abstract class AbstractSearchLoop implements ISearchLoop {
 		initLoop();
 		while (!stop) {
 			switch (searchStrategy.nextMove) {
-			//The order of the condition is important. 
+			//The order of the conditions is important. 
 			//SEARCH TREE MOVES
 			case OPEN_NODE: {
 				nodeCount++;

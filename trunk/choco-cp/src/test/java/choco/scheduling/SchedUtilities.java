@@ -79,7 +79,7 @@ public final class SchedUtilities {
 
 	public static void compare(final int nbsol, final int nbNodes, final String label , final Solver... solvers) {
 		final TIntArrayList bests = new TIntArrayList(solvers.length);
-		int bestTime = Integer.MAX_VALUE;
+		long bestTime = Integer.MAX_VALUE;
 		for (int i = 0; i < solvers.length; i++) {
 			final Solver s=solvers[i];
 			//System.out.println(s.pretty());

@@ -277,8 +277,8 @@ public class SolveTest {
 		s.solve(false);
 		LOGGER.info(m.pretty());
 
-		int time = s.getSearchStrategy().getTimeCount();
-		int nds = s.getSearchStrategy().getNodeCount();
+		long time = s.getSearchStrategy().getTimeCount();
+		long nds = s.getSearchStrategy().getNodeCount();
 		assertEquals(2, nds);
 		LOGGER.info(" time: " + time + " nodes: " + nds);
 	}

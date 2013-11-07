@@ -324,9 +324,8 @@ public class ElementTest {
 			s.setVarIntSelector(new RandomIntVarSelector(s, i));
 			s.setValIntSelector(new RandomIntValSelector(i + 1));
 			s.solveAll();
-			int nbSol = s.getNbSolutions();
 			//LOGGER.info("nbsol " + nbSol);
-			assertEquals(nbSol, 360);
+			assertEquals(360,s.getSolutionCount());
 		}
 
 	}
@@ -345,9 +344,8 @@ public class ElementTest {
 			s.setVarIntSelector(new RandomIntVarSelector(s, i));
 			s.setValIntSelector(new RandomIntValSelector(i + 1));
 			s.solveAll();
-			int nbSol = s.getNbSolutions();
 			//LOGGER.info("nbsol " + nbSol);
-			assertEquals(nbSol,624);
+			assertEquals(624,s.getSolutionCount());
 		}
 	}
 
@@ -365,9 +363,8 @@ public class ElementTest {
 			s.setVarIntSelector(new RandomIntVarSelector(s, i));
 			s.setValIntSelector(new RandomIntValSelector(i + 1));
 			s.solveAll();
-			int nbSol = s.getNbSolutions();
 			//LOGGER.info("nbsol " + nbSol);
-			assertEquals(nbSol,72);
+			assertEquals(72, s.getSolutionCount());
 		}
 
 	}

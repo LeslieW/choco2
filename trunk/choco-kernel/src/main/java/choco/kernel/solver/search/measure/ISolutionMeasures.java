@@ -38,6 +38,6 @@ public interface ISolutionMeasures {
      * Get the solution count of the measure
      * @return solution count
      */
-    int getSolutionCount();
+    long getSolutionCount();
     
 }

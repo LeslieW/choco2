@@ -30,7 +30,7 @@ package choco.kernel.solver.search.measure;
 
 public class MeasuresBean implements IMeasures {
 
-	public int solutionCount;
+	public long solutionCount;
 	
 	public int objectiveIntValue = Integer.MAX_VALUE;
 
@@ -38,19 +38,19 @@ public class MeasuresBean implements IMeasures {
 	
 	public boolean objectiveOptimal; 
 
-    public int readingTime;
+    public long readingTime;
 
-    public int initialPropTime;
+    public long initialPropTime;
 
-	public int timeCount;
+	public long timeCount;
 	
-	public int nodeCount ;
+	public long nodeCount ;
 	
-	public int backtrackCount;
+	public long backtrackCount;
 	
-	public int restartCount;
+	public long restartCount;
 	
-	public int failCount;
+	public long failCount;
 	
 	public MeasuresBean() {
 		super();
@@ -82,7 +82,7 @@ public class MeasuresBean implements IMeasures {
 	}
 
 	@Override
-	public int getSolutionCount() {
+	public long getSolutionCount() {
 		return solutionCount;
 	}
 
@@ -104,42 +104,41 @@ public class MeasuresBean implements IMeasures {
 
 
 	@Override
-	public final int getBackTrackCount() {
+	public final long getBackTrackCount() {
 		return backtrackCount;
 	}
 
 	@Override
-	public final int getFailCount() {
+	public final long getFailCount() {
 		return failCount;
 	}
 
 	@Override
-	public final int getNodeCount() {
+	public final long getNodeCount() {
 		return nodeCount;
 	}
 
     @Override
-    public int getReadingTimeCount() {
+    public long getReadingTimeCount() {
         return readingTime;
     }
 
     @Override
-    public int getInitialPropagationTimeCount() {
+    public long getInitialPropagationTimeCount() {
         return initialPropTime;
     }
 
     @Override
-	public final int getTimeCount() {
+	public final long getTimeCount() {
 		return timeCount;
 	}
 
 	@Override
-	public final int getRestartCount() {
+	public final long getRestartCount() {
 		return restartCount;
 	}
 
-	
-	public final void setSolutionCount(int solutionCount) {
+	public final void setSolutionCount(long solutionCount) {
 		this.solutionCount = solutionCount;
 	}
 

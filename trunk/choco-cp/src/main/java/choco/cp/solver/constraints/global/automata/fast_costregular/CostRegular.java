@@ -66,9 +66,9 @@ public class CostRegular extends AbstractLargeIntSConstraint{
     StoredValuedDirectedMultiGraph graph;
     TIntStack toRemove;
     IStateBool boundChange;
-    int lastWorld = -1;
-    int lastNbOfBacktracks = -1;
-    int lastNbOfRestarts = -1;
+    long lastWorld = -1;
+    long lastNbOfBacktracks = -1;
+    long lastNbOfRestarts = -1;
     protected final IEnvironment environment;
 
 
@@ -494,9 +494,9 @@ public void prefilter() throws ContradictionException {
 
     protected void checkWorld()
     {
-        int currentworld = environment.getWorldIndex();
-        int currentbt = solver.getBackTrackCount();
-        int currentrestart = solver.getRestartCount();
+        long currentworld = environment.getWorldIndex();
+        long currentbt = solver.getBackTrackCount();
+        long currentrestart = solver.getRestartCount();
         //System.err.println("TIME STAMP : "+currentbt+"   BT COUNT : "+solver.getBackTrackCount());
        // assert (currentbt == solver.getBackTrackCount());
         if (currentworld < lastWorld || currentbt != lastNbOfBacktracks || currentrestart > lastNbOfRestarts)
