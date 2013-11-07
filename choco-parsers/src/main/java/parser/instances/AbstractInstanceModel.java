@@ -338,7 +338,10 @@ public abstract class AbstractInstanceModel {
 
 	protected final void checkIsSatisfied() throws SolutionCheckerException {
 		//check with isSatisfied(int[])
-		if(solver != null && solver.existsSolution()) Solver.DEFAULT_SOLUTION_CHECKER.checkSolution(solver);
+		if(solver != null && solver.existsSolution()) { 
+			System.out.println(solver.runtimeStatistics());
+			Solver.DEFAULT_SOLUTION_CHECKER.checkSolution(solver);
+		}
 	}
 
 	protected final void checkStatus() throws SolutionCheckerException {
@@ -407,7 +410,7 @@ public abstract class AbstractInstanceModel {
 			final double rtime = getFullSecTime();
 			logMsg.appendDiagnostics("NODES", solver.getNodeCount(), rtime);
 			logMsg.appendDiagnostics("BACKTRACKS", solver.getBackTrackCount(), rtime);
-			if(solver.getFailCount() != Integer.MIN_VALUE) {
+			if(solver.getFailCount() >= 0) {
 				logMsg.appendDiagnostics("FAILURES", solver.getFailCount(), rtime);
 			}
 			logMsg.appendDiagnostics("RESTARTS", solver.getRestartCount(), rtime);

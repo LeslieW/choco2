@@ -106,7 +106,7 @@ public class Solution {
 		return objectiveIntValue;
 	}
 
-	public final void recordSolutionCount(int solutionCount)
+	public final void recordSolutionCount(long solutionCount)
 	{
 		this.measures.setSolutionCount(solutionCount);
 	}

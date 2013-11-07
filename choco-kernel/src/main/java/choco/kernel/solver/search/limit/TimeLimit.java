@@ -34,13 +34,13 @@ import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
  */
 public final class TimeLimit extends AbstractGlobalSearchLimit {
 
-	public TimeLimit(AbstractGlobalSearchStrategy theStrategy, int theLimit) {
+	public TimeLimit(AbstractGlobalSearchStrategy theStrategy, long theLimit) {
 		super(theStrategy, theLimit, Limit.TIME);
 	}
 
 
 	@Override
-	public final int getNb() {
+	public final long getNb() {
 		return strategy.getTimeCount();
 	}
 	

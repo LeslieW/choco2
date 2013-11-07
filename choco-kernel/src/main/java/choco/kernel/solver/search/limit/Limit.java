@@ -60,7 +60,7 @@ public enum Limit {
     /**
      * get the value of the given measure
      */
-    public final int getValue(final ISearchMeasures measures) {
+    public final long getValue(final ISearchMeasures measures) {
         switch (this) {
             case TIME:
                 return measures.getTimeCount();

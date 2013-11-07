@@ -135,7 +135,7 @@ public interface Solver extends ISolutionDisplay, IMeasures, IPretty {
 	 * @return the number of solutions to the model that were encountered during the search
 	 */
 
-	public int getNbSolutions();
+	public long getNbSolutions();
 
 	/**
 	 * Monitor the time limit (default to true)

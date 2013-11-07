@@ -316,7 +316,7 @@ main = costRegular(z, shifts, auto,make3dim(csts,auto.getNbStates()));
 
     }
 
-    public int[] solve(final boolean varheur, final boolean valheur) throws Exception {
+    public long[] solve(final boolean varheur, final boolean valheur) throws Exception {
         if (m == null)
             throw new Exception("Thou shalt create a model first");
 
@@ -352,7 +352,7 @@ main = costRegular(z, shifts, auto,make3dim(csts,auto.getNbStates()));
 
 
         int bVal = Integer.MAX_VALUE;
-        int bTime = 0 ;
+        long bTime = 0 ;
         if (b != Boolean.FALSE)
         {
           ///  System.out.println("#########################\t"+modelType+"\t#########################");
@@ -378,7 +378,7 @@ main = costRegular(z, shifts, auto,make3dim(csts,auto.getNbStates()));
        // s.printRuntimeSatistics();
         //  System.out.println(s.getNbSolutions()+"[+0]"+" solution(s)");
         // System.out.println("#########################################################################");
-        return new int[]{b==Boolean.TRUE?1:0,s.isEncounteredLimit()?1:0, s.getTimeCount(),s.getFailCount(),bVal,bTime};
+        return new long[]{b==Boolean.TRUE?1:0,s.isEncounteredLimit()?1:0, s.getTimeCount(),s.getFailCount(),bVal,bTime};
 
 
     }
@@ -506,7 +506,7 @@ main = costRegular(z, shifts, auto,make3dim(csts,auto.getNbStates()));
                  //   pm3.filteredPercentage(seed,nbAct);
                  //   System.out.println("");
                     //   pm.solve();
-                    int [] mcr = pm3.solve(varheur,valheur);
+                    long [] mcr = pm3.solve(varheur,valheur);
 
                      if (mcr[0] == 1 )
                     {
@@ -516,7 +516,7 @@ main = costRegular(z, shifts, auto,make3dim(csts,auto.getNbStates()));
                     }
                    // System.out.println("PASCR");
 
-                    int[] cr = pm2.solve(varheur,valheur);
+                    long[] cr = pm2.solve(varheur,valheur);
 
 
                     if (cr[0] == 1)

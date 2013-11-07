@@ -62,7 +62,7 @@ public final class NoHeuristic implements IHeuristic {
 	}
 
 	@Override
-	public int getSolutionCount() {
+	public long getSolutionCount() {
 		return 0;
 	}
 	

@@ -34,13 +34,13 @@ import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
  */
 public final class BackTrackLimit extends AbstractGlobalSearchLimit {
 
-	public BackTrackLimit(AbstractGlobalSearchStrategy theStrategy, int theLimit) {
+	public BackTrackLimit(AbstractGlobalSearchStrategy theStrategy, long theLimit) {
 		super(theStrategy, theLimit, Limit.BACKTRACK);
 		
 	}
 
 	@Override
-	public final int getNb() {
+	public final long getNb() {
 		return strategy.getBackTrackCount();
 	}
 

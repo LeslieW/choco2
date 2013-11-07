@@ -54,14 +54,16 @@ public class TestAlternativeResources {
     protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
 	protected void testAltDisjunctive(int nbTests, int[] durations, int makespan, int type) {
-		int nbSols = solveDisjSubProblems(durations, makespan, type);
+		long nbSols = solveDisjSubProblems(durations, makespan, type);
 		AltDisjProblem pb = new AltDisjProblem(durations, type);
 		pb.setHorizon(makespan);
-		TestDisjunctive.launchAllRules(pb,nbTests, nbSols);
+		//FIXME Remove Cast
+		TestDisjunctive.launchAllRules(pb,nbTests, (int) nbSols);
 	}
 
 	protected void testAltCumulative(int nbTests, int[] durations, int[] heights, int capa, int makespan, int type) {
-		int nbSols = solveCumulSubProblems(durations, heights, capa, makespan, type);
+		//FIXME Remove Cast 
+		int nbSols = (int) solveCumulSubProblems(durations, heights, capa, makespan, type);
 		AltCumulProblem pb = new AltCumulProblem(durations, heights,type);
 		pb.setCapacity(capa);
 		pb.setHorizon(makespan);
@@ -161,12 +163,12 @@ public class TestAlternativeResources {
 		}
 	}
 
-	protected int solveDisjSubProblems(int[] durations, int makespan, int type) {
+	protected long solveDisjSubProblems(int[] durations, int makespan, int type) {
 		final TaskVariable[] tasks = makeTaskVarArray("T", 0, makespan,
 				durations);
 		TaskVariable[][] subsets = createTaskSubsets(tasks, type);
 		int[] factors = getNbSolutionFactors(durations, makespan, type);
-		int nbSols = 0;
+		long nbSols = 0;
 		for (int i = 0; i < factors.length; i++) {
 			Model m = new CPModel();
 			m.addConstraint(disjunctive(subsets[i]));
@@ -174,7 +176,7 @@ public class TestAlternativeResources {
 			solver.setHorizon(makespan);
 			solver.read(m);
 			solver.solveAll();
-			int subNbSols = solver.getNbSolutions() * factors[i];
+			long subNbSols = solver.getNbSolutions() * factors[i];
 			LOGGER.info("Nb sols reduced subproblem " + i + ": "
 					+ factors[i] + " x " + solver.getNbSolutions() + " = "
 					+ subNbSols);
@@ -184,13 +186,13 @@ public class TestAlternativeResources {
 		return nbSols;
 	}
 
-	protected int solveCumulSubProblems(int[] durations, int[] heights, int capa, int makespan, int type) {
+	protected long solveCumulSubProblems(int[] durations, int[] heights, int capa, int makespan, int type) {
 		final TaskVariable[] tasks = makeTaskVarArray("T", 0, makespan,
 				durations);
 		TaskVariable[][] subsets = createTaskSubsets(tasks, type);
 		int[][] hsubsets = createHeightSubsets(heights, type);
 		int[] factors = getNbSolutionFactors(durations, makespan, type);
-		int nbSols = 0;
+		long nbSols = 0;
 		for (int i = 0; i < factors.length; i++) {
 			Model m = new CPModel();
 			m.addConstraint(cumulativeMax(subsets[i], hsubsets[i], capa));
@@ -198,7 +200,7 @@ public class TestAlternativeResources {
 			solver.setHorizon(makespan);
 			solver.read(m);
 			solver.solveAll();
-			int subNbSols = solver.getNbSolutions() * factors[i];
+			long subNbSols = solver.getNbSolutions() * factors[i];
 			LOGGER.info("Nb sols reduced subproblem " + i + ": "
 					+ factors[i] + " x " + solver.getNbSolutions() + " = "
 					+ subNbSols);
@@ -318,7 +320,7 @@ public class TestAlternativeResources {
 		return solver.getObjectiveValue().intValue();
 	}
 	
-	protected int solveAll(CPModel model) {		CPSolver solver = new CPSolver();
+	protected long solveAll(CPModel model) {		CPSolver solver = new CPSolver();
 		solver.setHorizon(horizon);
 		solver.read(model);
 		solver.setRandomSelectors();
@@ -332,7 +334,7 @@ public class TestAlternativeResources {
 		//ChocoLogging.setVerbosity(Verbosity.DEFAULT);
 		CPModel model = createModelJobARes1();
 		int obj = minimizeMakespan(model);
-		int nbsols = solveAll(model);
+		long nbsols = solveAll(model);
 		model = createModelJobARes1Res2();
 		assertEquals("SymBreak vs Simple", obj, minimizeMakespan(model));
 		assertEquals("SymBreak vs Simple nbsols", 2 * nbsols, solveAll(model));

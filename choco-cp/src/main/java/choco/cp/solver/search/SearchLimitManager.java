@@ -62,7 +62,7 @@ public class SearchLimitManager implements GlobalSearchLimitManager {
 	//COUNTERS
 	private int restartFromStrategyCount = 0;
 
-	private int timeCount;
+	private long timeCount;
 
 	private long starth;
 
@@ -124,7 +124,7 @@ public class SearchLimitManager implements GlobalSearchLimitManager {
 	/**
 	 * Get the time in milliseconds elapsed since the beginning of the search.
 	 */
-	public final int getTimeCount() {
+	public final long getTimeCount() {
 		return timeCount;
 	}
 
@@ -139,7 +139,7 @@ public class SearchLimitManager implements GlobalSearchLimitManager {
 	//*******************  LIMIT MANAGEMENT **************************//
 	//***************************************************************//
 	protected final void updateTimeCount() {
-		timeCount = (int) (TimeCacheThread.currentTimeMillis - starth);
+		timeCount = TimeCacheThread.currentTimeMillis - starth;
 	}
 
 	@Override

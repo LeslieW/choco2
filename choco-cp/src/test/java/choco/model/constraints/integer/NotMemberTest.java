@@ -90,7 +90,7 @@ public class NotMemberTest {
             s.setValIntSelector(new RandomIntValSelector(i));
 
             s.solveAll();
-            int nbSol = s.getSolutionCount();
+            long nbSol = s.getSolutionCount();
             Assert.assertEquals("seed:"+i, n - values.length, nbSol);
             if(nbSol == 0){
                 Assert.assertEquals("seed:"+i, 0, s.getNodeCount());

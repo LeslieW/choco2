@@ -80,7 +80,7 @@ public interface GlobalSearchLimitManager extends IPretty {
 	/**
 	 * Get the time in milliseconds elapsed since the beginning of the search.
 	 */
-	int getTimeCount();
+	long getTimeCount();
 	
 	/**
 	 * get the restart strategy, if any.

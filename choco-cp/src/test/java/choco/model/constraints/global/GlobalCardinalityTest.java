@@ -486,8 +486,7 @@ public class GlobalCardinalityTest {
 
 
         tps = System.currentTimeMillis() - tps;
-        int nbNode = s.getNodeCount();
-        LOGGER.info("temps (en ms) : " + tps + " Noeud : " + nbNode + " Nombre de solutions : " + s.getNbSolutions());
+        LOGGER.info("temps (en ms) : " + tps + " Noeud : " + s.getNodeCount()+ " Nombre de solutions : " + s.getNbSolutions());
 
     }
 
@@ -669,8 +668,7 @@ public class GlobalCardinalityTest {
 
 
         tps = System.currentTimeMillis() - tps;
-        int nbNode = s.getNodeCount();
-        LOGGER.info("temps (en ms) : " + tps + " Noeud : " + nbNode + " Nombre de solutions : " + s.getNbSolutions());
+        LOGGER.info("temps (en ms) : " + tps + " Noeud : " + s.getNodeCount()+ " Nombre de solutions : " + s.getNbSolutions());
 
     }
 
@@ -701,16 +699,16 @@ public class GlobalCardinalityTest {
             s2.read(pb2);
             s2.solveAll();
             totnbsol += s2.getNbSolutions();
-            int aseertnbsol = assertNbSol(card, n, s);
-            if (s2.getNbSolutions() != aseertnbsol) {
-                LOGGER.info(s2.getNbSolutions() + " " + aseertnbsol);
+            long assertnbsol = assertNbSol(card, n, s);
+            if (s2.getNbSolutions() != assertnbsol) {
+                LOGGER.info(s2.getNbSolutions() + " " + assertnbsol);
                 StringBuffer st = new StringBuffer();
                 for (int i = 0; i < n; i++) {
                     st.append(MessageFormat.format(" {0}", s.getVar(card[i]).getVal()));
                 }
                 LOGGER.info(st.toString());
             }
-            assertEquals(s2.getNbSolutions(), aseertnbsol);
+            assertEquals(s2.getNbSolutions(), assertnbsol);
         } while (s.nextSolution() == Boolean.TRUE);
 
         assertEquals(totnbsol, 3125);
@@ -718,7 +716,7 @@ public class GlobalCardinalityTest {
         // throw new Error("stop " + seed);
     }
 
-    private int assertNbSol(IntegerVariable[] card, int n, CPSolver s) {
+    private long assertNbSol(IntegerVariable[] card, int n, CPSolver s) {
         CPModel pb2 = new CPModel();
         IntegerVariable[] vs = makeIntVarArray("c", n, 1, n);
         int[] min = new int[n];

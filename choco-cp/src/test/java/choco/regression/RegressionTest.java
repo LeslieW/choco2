@@ -75,8 +75,7 @@ public class RegressionTest {
     s.post(c1);
     assertEquals(1, s.getNbIntConstraints());
     s.solve(true);
-    int nbSol1 = s.getNbSolutions();
-    assertEquals(4, nbSol1);
+    assertEquals(4, s.getSolutionCount());
     // On supprime maintenant la contrainte...
     s.worldPopUntil(0);
     assertEquals(0, s.getNbIntConstraints());
@@ -87,8 +86,7 @@ public class RegressionTest {
     s.post(c2);
     assertEquals(1, s.getNbIntConstraints());
     s.solve(true);
-    int nbSol2 = s.getNbSolutions();
-    assertEquals(12, nbSol2);
+    assertEquals(s.getSolutionCount(), 12);
   }
 
     @Test

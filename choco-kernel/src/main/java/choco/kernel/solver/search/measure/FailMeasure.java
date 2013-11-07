@@ -39,7 +39,7 @@ public class FailMeasure implements PropagationEngineListener {
 
 	private final PropagationEngine propagationEngine;
 
-	private int failCount = Integer.MIN_VALUE;
+	private long failCount = Long.MIN_VALUE;
 
 	public FailMeasure(PropagationEngine propagationEngine) {
 		super();
@@ -62,14 +62,14 @@ public class FailMeasure implements PropagationEngineListener {
 	@Override
 	public final void safeDelete() {
 		propagationEngine.removePropagationEngineListener(this);
-		failCount = Integer.MIN_VALUE;
+		failCount = Long.MIN_VALUE;
 	}
 
 	public final void safeReset() {
-		failCount = propagationEngine.containsPropagationListener(this) ? 0 : Integer.MIN_VALUE;
+		failCount = propagationEngine.containsPropagationListener(this) ? 0 : Long.MIN_VALUE;
 	}
 
-	public final int getFailCount() {
+	public final long getFailCount() {
 		return failCount;
 	}
 

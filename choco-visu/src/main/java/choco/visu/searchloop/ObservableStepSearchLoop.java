@@ -42,7 +42,7 @@ public class ObservableStepSearchLoop extends AbstractSearchLoop implements IObs
 
 	private final AbstractSearchLoop internalSearchLoop;
 
-	private int previousNbSolutions;
+	private long previousNbSolutions;
 
 	private Step action = Step.PAUSE; // 0: pause; 1: next; 2: play
 

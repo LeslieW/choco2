@@ -145,7 +145,7 @@ public class ComposedRandomProblem {
 	private static void test(int nbVar1, int nbVal1, int e1, double tight1,
 			boolean force1, Filter filter1, int nbVar2, int nbVal2, int e2,
 			double tight2, boolean force2, Filter filter2, List<Long> seeds) {
-		final List<Integer> nodes = new ArrayList<Integer>(seeds.size());
+		final List<Long> nodes = new ArrayList<Long>(seeds.size());
 		final List<Double> cpu = new ArrayList<Double>(seeds.size());
 		final List<Integer> nbAwakes = new ArrayList<Integer>(seeds.size());
 		final List<Long> mem = new ArrayList<Long>(seeds.size());
@@ -244,7 +244,7 @@ public class ComposedRandomProblem {
 
 			if (result == null) {
 				st.append("-");
-				nodes.add(Integer.MAX_VALUE);
+				nodes.add(Long.MAX_VALUE);
 				cpu.add(Double.POSITIVE_INFINITY);
 				nbAwakes.add(Integer.MAX_VALUE);
 			} else {

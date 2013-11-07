@@ -60,7 +60,7 @@ public abstract class AbstractSearchStrategy implements ISolutionMeasures {
 	/**
 	 * count of the solutions found during search
 	 */
-	protected int nbSolutions = 0;
+	protected long nbSolutions = 0;
 
 
 	public AbstractSearchStrategy(Solver solver) {
@@ -82,7 +82,7 @@ public abstract class AbstractSearchStrategy implements ISolutionMeasures {
 	}
 
 	@Override
-	public final int getSolutionCount() {
+	public final long getSolutionCount() {
 		return nbSolutions;
 	}
 

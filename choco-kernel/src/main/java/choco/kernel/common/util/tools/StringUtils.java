@@ -212,8 +212,8 @@ public class StringUtils {
 	public static String prettyOnePerLine(ISearchMeasures measures) {
 		StringBuilder b = new StringBuilder(32);
 		for (Limit type : Limit.values()) {
-			final int val = type.getValue(measures);
-			if(val != Integer.MIN_VALUE) {
+			final long val = type.getValue(measures);
+			if(val >= 0) {
 				b.append("\n  ").append(type.getUnit()).append(": ").append(val);
 			}
 		}
@@ -224,8 +224,8 @@ public class StringUtils {
 	public static String pretty(ISearchMeasures measures) {
 		StringBuilder b = new StringBuilder(32);
 		for (Limit type : Limit.values()) {
-			final int val = type.getValue(measures);
-			if(val != Integer.MIN_VALUE) {
+			final long val = type.getValue(measures);
+			if(val >= 0) {
 				b.append(", ").append(val).append(' ').append(type.getUnit());
 			}
 		}

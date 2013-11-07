@@ -34,7 +34,7 @@ package choco.kernel.solver.search.measure;
  */
 public interface IPreSolveMeasures {
 
-    int getReadingTimeCount();
+    long getReadingTimeCount();
 
-    int getInitialPropagationTimeCount();
+    long getInitialPropagationTimeCount();
 }

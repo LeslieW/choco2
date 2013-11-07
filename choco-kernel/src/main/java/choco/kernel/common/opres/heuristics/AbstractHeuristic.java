@@ -56,7 +56,7 @@ public abstract class AbstractHeuristic implements IHeuristic {
 
 
 	@Override
-	public int getSolutionCount() {
+	public long getSolutionCount() {
 		return hasSearched() ? 1 : 0;
 	}
 

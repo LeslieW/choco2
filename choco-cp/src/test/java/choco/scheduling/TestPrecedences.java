@@ -312,8 +312,8 @@ public class TestPrecedences {
 
 	}
 
-	public int[] solveEx(TaskVariable[][] dtasks, TaskVariable[] vtasks, int type) {
-		int[] nbsols = new int[dtasks.length + 1];
+	public long[] solveEx(TaskVariable[][] dtasks, TaskVariable[] vtasks, int type) {
+		long[] nbsols = new long[dtasks.length + 1];
 		int nbtot = 0;
 		for (int i = 0; i < dtasks.length; i++) {
 			createModelEx(dtasks[i], type);
@@ -332,7 +332,7 @@ public class TestPrecedences {
 	}
 
 
-	private void sum(int[] tab1, int[] tab2)  {
+	private void sum(long[] tab1, long[] tab2)  {
 		for (int i = 0; i < tab1.length; i++) {
 			tab1[i] += tab2[i];
 		}
@@ -342,11 +342,11 @@ public class TestPrecedences {
 
 	@Test
 	public void testExImplied() {
-		int[] bsols = solveEx(dtasks, vtasks, 0);
+		long[] bsols = solveEx(dtasks, vtasks, 0);
 		//without setup times
-		int[] tab1 = solveEx(dtasks, vtasks, 1);
+		long[] tab1 = solveEx(dtasks, vtasks, 1);
 		sum(tab1, bsols);
-		int[]  tab2= solveEx(dtasks, vtasks, 5);
+		long[]  tab2= solveEx(dtasks, vtasks, 5);
 		assertArrayEquals("Implied - decomp vs Ex", tab1, tab2);
 		//
 		tab1 = solveEx(dtasks, vtasks, 3);
@@ -357,9 +357,9 @@ public class TestPrecedences {
 
 	@Test
 	public void testExReified() {
-		int[] tab1= solveEx(dtasks, vtasks, 0);
+		long[] tab1= solveEx(dtasks, vtasks, 0);
 		//without setup times
-		int[]  tab2= solveEx(dtasks, vtasks, 6);
+		long[]  tab2= solveEx(dtasks, vtasks, 6);
 		assertArrayEquals("Reified - decomp vs Ex", tab1, tab2);
 		//with setup times
 		tab2= solveEx(dtasks, vtasks, 9);
@@ -369,8 +369,8 @@ public class TestPrecedences {
 	@Test
 	public void testExDisjoint() {
 		//LOGGER.setLevel(Level.INFO);
-		int[] tab1= solveEx(dtasks, vtasks, 1);
-		int[] tab2= solveEx(dtasks, vtasks, 2);
+		long[] tab1= solveEx(dtasks, vtasks, 1);
+		long[] tab2= solveEx(dtasks, vtasks, 2);
 		sum(tab1, tab2);
 		//without setup times
 		tab2= solveEx(dtasks, vtasks, 7);

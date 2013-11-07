@@ -35,36 +35,36 @@ public interface ISearchMeasures {
      * Get the time count in milliseconds of the measure
      * @return time count
      */
-    int getTimeCount();
+    long getTimeCount();
 
     /**
      * Get the node count of the measure
      * @return node count
      */
-    int getNodeCount();
+    long getNodeCount();
 
     /**
      * Get the backtrack count of the measure
      * @return backtrack count
      */
-    int getBackTrackCount();
+    long getBackTrackCount();
 
     /**
      * Get the fail count of the measure
      * @return fail count
      */
-    int getFailCount();
+    long getFailCount();
     
     /**
      * Get the restart count of the measure
      * @return restart count
      */
-    int getRestartCount();
+    long getRestartCount();
 
     /**
      * Get the solution count of the measure
      * @return restart count
      */
-    int getSolutionCount();
+    long getSolutionCount();
         
 }

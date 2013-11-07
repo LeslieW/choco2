@@ -65,7 +65,7 @@ public class HeuristicTest {
 //    assertTrue(nb1 >= nb2);
   }
 
-  public int testHeuristic(int domWdeg) {
+  public long testHeuristic(int domWdeg) {
     long start = System.currentTimeMillis();
     Model m = new CPModel();
     IntegerVariable[] vars = makeIntVarArray("vtabA", 6, 0, 1);
@@ -111,7 +111,7 @@ public class HeuristicTest {
     s.generateSearchStrategy();
     s.launch();
     assertTrue(!s.isFeasible());
-    int nb = s.getNodeCount();
+    long nb = s.getNodeCount();
     long delta = System.currentTimeMillis() - start;
     LOGGER.info(nb + " nodes in " + delta + " ms");
     s.printRuntimeStatistics();

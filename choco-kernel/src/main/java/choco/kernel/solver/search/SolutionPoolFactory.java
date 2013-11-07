@@ -144,7 +144,8 @@ abstract class AbstractSolutionPool implements ISolutionPool {
 
 	@Override
 	public int size() {
-		return Math.min(capacity, strategy.getSolutionCount());
+		final long capacity=this.capacity;
+		return (int) (capacity < strategy.getSolutionCount() ? capacity : strategy.getSolutionCount());
 	}
 
 

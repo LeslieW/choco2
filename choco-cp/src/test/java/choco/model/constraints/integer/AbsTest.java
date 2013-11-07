@@ -96,8 +96,7 @@ public class AbsTest {
 		s.read(m);
 		LOGGER.info(s.pretty());
 		s.solveAll();
-		int nbNode = s.getNodeCount();
-		LOGGER.info("solutions : " + s.getNbSolutions() + " nbNode : " + nbNode);
+		LOGGER.info("solutions : " + s.getNbSolutions() + " nbNode : " + s.getNodeCount());
 		assertEquals(110,s.getNbSolutions());
 
 	}

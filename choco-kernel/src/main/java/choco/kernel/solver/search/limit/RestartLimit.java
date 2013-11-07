@@ -32,14 +32,14 @@ import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 public final class RestartLimit extends AbstractGlobalSearchLimit {
 
 	
-	public RestartLimit(AbstractGlobalSearchStrategy theStrategy, int theLimit) {
+	public RestartLimit(AbstractGlobalSearchStrategy theStrategy, long theLimit) {
 		super(theStrategy, theLimit, Limit.RESTART);
 	}
 
 	
 
 	@Override
-	public final int getNb() {
+	public final long getNb() {
 		return strategy.getRestartCount();
 	}
 

@@ -145,7 +145,7 @@ public class RandomProblemLauncher {
 
     private static void test(int nbVar, int nbVal, int nbCons,
             double tightness, long seed, boolean force, Heuristic heuristic) {
-        final Map<Filter, List<Integer>> nodes = new HashMap<Filter, List<Integer>>(
+        final Map<Filter, List<Long>> nodes = new HashMap<Filter, List<Long>>(
                 Filter.values().length);
         final Map<Filter, List<Double>> cpu = new HashMap<Filter, List<Double>>(
                 Filter.values().length);
@@ -157,7 +157,7 @@ public class RandomProblemLauncher {
         // final double[] nps = new double[NBINSTANCES - 1];
 
         for (Filter f : Filter.values()) {
-            nodes.put(f, new ArrayList<Integer>(NBINSTANCES));
+            nodes.put(f, new ArrayList<Long>(NBINSTANCES));
             cpu.put(f, new ArrayList<Double>(NBINSTANCES));
             nbAwakes.put(f, new ArrayList<Integer>(NBINSTANCES));
             mem.put(f, new ArrayList<Long>(NBINSTANCES));
@@ -296,13 +296,13 @@ public class RandomProblemLauncher {
                     // nodes[i] = Integer.MAX_VALUE;
                     cpu.get(filter).add(Double.POSITIVE_INFINITY);
                     nbAwakes.get(filter).add(Integer.MAX_VALUE);
-                    nodes.get(filter).add(Integer.MAX_VALUE);
+                    nodes.get(filter).add(Long.MAX_VALUE);
                 } else {
                     out.print(result ? 1 : 0);
                     try {
                         nodes.get(filter).add(s.getNodeCount());
                     } catch (Exception e) {
-                        nodes.get(filter).add(0);
+                        nodes.get(filter).add( (long) 0);
                     }
                     cpu.get(filter).add(time / 1e9d);
                     nbAwakes.get(filter).add(MaxRPCrm.nbPropag);

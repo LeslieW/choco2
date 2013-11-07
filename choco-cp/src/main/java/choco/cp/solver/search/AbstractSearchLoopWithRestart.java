@@ -44,7 +44,7 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 
 	protected int moveAfterSolution = UP_BRANCH;
 
-	protected int previousNbSolutions;
+	protected long previousNbSolutions;
 
 	protected IKickRestart kickRestart;
 

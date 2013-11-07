@@ -41,7 +41,7 @@ public class BranchingWithLoggingStatements extends AbstractIntBranchingStrategy
 
 	public final AbstractIntBranchingStrategy internalBranching;
 
-	private int nextInformationNode;
+	private long nextInformationNode;
 
 	public BranchingWithLoggingStatements(AbstractIntBranchingStrategy internalBranching) {
 		super();
