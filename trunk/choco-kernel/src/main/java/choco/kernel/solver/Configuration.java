@@ -204,7 +204,7 @@ public class Configuration extends Properties {
 	 * <br/><b>Type</b>: int
 	 * <br/><b>Default value</b>: 2147483647 ({@link Integer.MAX_VALUE})
 	 */
-	@Default(value = " 9223372036854775807")
+	@Default(value = "9223372036854775807")
 	public static final String RESTART_LIMIT_BOUND = "cp.restart.limit.value";
 
 	/**
