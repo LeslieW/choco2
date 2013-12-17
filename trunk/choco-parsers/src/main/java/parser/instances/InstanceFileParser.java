@@ -41,6 +41,7 @@ public interface InstanceFileParser {
 	
 	void loadInstance(File file);
 
+	//TODO Remove bool. argument
 	void parse(boolean displayInstance) throws UnsupportedConstraintException;
 
 	void cleanup();
