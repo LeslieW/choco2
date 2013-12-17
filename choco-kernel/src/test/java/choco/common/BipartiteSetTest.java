@@ -63,7 +63,7 @@ public class BipartiteSetTest {
 		Object obj1 = new Object();
 		Object obj2 = new Object();
 		Object obj3 = new Object();
-
+		
 		set.addLeft(obj1);
 		set.addLeft(obj2);
 		set.addRight(obj3);

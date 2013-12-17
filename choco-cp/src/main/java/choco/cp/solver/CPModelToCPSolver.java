@@ -255,6 +255,7 @@ public class CPModelToCPSolver {
 		 cpsolver.intDecisionVars.addAll(cpsolver.intVars.toList());
 		 if (!intNoDecisionVar.isEmpty()) {
 			 cpsolver.intDecisionVars.removeAll(intNoDecisionVar);
+			 //FIXME move outside the 'if' ?
 			 cpsolver.intDecisionVars.removeAll(cpsolver.getIntConstantSet());
 		 }
 		 // Set decision variables

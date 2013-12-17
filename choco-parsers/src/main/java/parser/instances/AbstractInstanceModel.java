@@ -226,7 +226,7 @@ public abstract class AbstractInstanceModel {
 		}
 	}
 
-	private void logOnError(ResolutionStatus error, Throwable e) {
+	protected void logOnError(ResolutionStatus error, Throwable e) {
 		LOGGER.log(Level.INFO, "s {0}", error);
 		LOGGER.log(Level.SEVERE, getInstanceName()+" [FAIL]", e);
 		status = error;
@@ -339,7 +339,6 @@ public abstract class AbstractInstanceModel {
 	protected final void checkIsSatisfied() throws SolutionCheckerException {
 		//check with isSatisfied(int[])
 		if(solver != null && solver.existsSolution()) { 
-			System.out.println(solver.runtimeStatistics());
 			Solver.DEFAULT_SOLUTION_CHECKER.checkSolution(solver);
 		}
 	}

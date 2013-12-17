@@ -47,6 +47,7 @@ public interface ISearchMeasures {
      * Get the backtrack count of the measure
      * @return backtrack count
      */
+    //TODO rename getBackTrackCount() -> getBacktrackCount()
     long getBackTrackCount();
 
     /**
