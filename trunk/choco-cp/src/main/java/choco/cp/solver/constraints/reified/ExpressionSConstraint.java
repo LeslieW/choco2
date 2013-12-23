@@ -55,7 +55,9 @@ import java.util.*;
  */
 public final class ExpressionSConstraint extends TuplesTest implements SConstraint, BinRelation {
 
-    /**
+    private static final long serialVersionUID = -4295389403788160421L;
+
+	/**
      * The scope of the predicat
      */
     protected IntDomainVar[] vars;

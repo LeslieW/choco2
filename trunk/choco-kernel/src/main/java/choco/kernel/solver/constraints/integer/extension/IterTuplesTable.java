@@ -37,6 +37,8 @@ import java.util.List;
  **/
 public class IterTuplesTable extends TuplesList implements IterLargeRelation, LargeRelation {
 
+	private static final long serialVersionUID = 4829654420648654942L;
+
 	/**
 	 * table[i][j] gives the table of supports as an int[] for value j of variable i
 	 */

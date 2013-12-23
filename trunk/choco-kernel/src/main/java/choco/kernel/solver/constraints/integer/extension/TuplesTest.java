@@ -28,31 +28,33 @@
 package choco.kernel.solver.constraints.integer.extension;
 
 public abstract class TuplesTest extends ConsistencyRelation implements LargeRelation {
+	
+	private static final long serialVersionUID = 806960990352836247L;
 
-  /**
-   * the default constructor build a relation in feasability
-   */
-  public TuplesTest() {
-    this.feasible = true;
-  }
+	/**
+	 * the default constructor build a relation in feasability
+	 */
+	public TuplesTest() {
+		this.feasible = true;
+	}
 
-  public TuplesTest(boolean feasible) {
-    this.feasible = feasible;
-  }
+	public TuplesTest(boolean feasible) {
+		this.feasible = feasible;
+	}
 
-  public boolean isConsistent(int[] tuple) {
-    return checkTuple(tuple) == feasible;
-  }
+	public boolean isConsistent(int[] tuple) {
+		return checkTuple(tuple) == feasible;
+	}
 
-  public ConsistencyRelation getOpposite() {
-    TuplesTest ct = null;
-    try {
-      ct = (TuplesTest) this.clone();
-      ct.feasible = !feasible;
-    } catch (CloneNotSupportedException e) {
-      e.printStackTrace();
-    }
-    return (ConsistencyRelation) ct;
-  }
+	public ConsistencyRelation getOpposite() {
+		TuplesTest ct = null;
+		try {
+			ct = (TuplesTest) this.clone();
+			ct.feasible = !feasible;
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
+		return (ConsistencyRelation) ct;
+	}
 
 }

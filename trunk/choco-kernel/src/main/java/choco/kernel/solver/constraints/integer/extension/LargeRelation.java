@@ -27,7 +27,9 @@
 
 package choco.kernel.solver.constraints.integer.extension;
 
-public interface LargeRelation {
+import java.io.Serializable;
+
+public interface LargeRelation extends Serializable {
 
   /**
    * return true if tuple is feasible according
