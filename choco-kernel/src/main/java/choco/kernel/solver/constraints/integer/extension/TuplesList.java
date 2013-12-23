@@ -41,6 +41,8 @@ import java.util.List;
  */
 public class TuplesList implements LargeRelation {
 
+    private static final long serialVersionUID = 6760525703512562353L;
+	
     /**
      * each tuple (a int[]) has its own index
      *

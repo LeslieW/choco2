@@ -39,6 +39,8 @@ import choco.kernel.solver.variables.integer.IBitSetIntDomain;
  */
 public class CouplesBitSetTable extends ConsistencyRelation implements BinRelation, ExtensionalBinRelation {
 
+	private static final long serialVersionUID = 4194683595677914204L;
+
 	/**
 	 * table[0][i] gives the supports of value i of variable 0
 	 * table[1][i] gives the supports of value i of variable 1
@@ -69,7 +71,6 @@ public class CouplesBitSetTable extends ConsistencyRelation implements BinRelati
 			table[1][i] = new OpenBitSet(n1);
 			if (!feas) table[1][i].set(0,n1);
 		}
-
 		this.feasible = feas;
 	}
 

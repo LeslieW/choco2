@@ -29,7 +29,9 @@ package choco.kernel.solver.constraints.integer.extension;
 
 public abstract class CouplesTest extends ConsistencyRelation implements BinRelation {
 
-  /**
+	private static final long serialVersionUID = -2818304358770206285L;
+
+/**
    * the default constructor build a relation in feasability
    */
   protected CouplesTest() {

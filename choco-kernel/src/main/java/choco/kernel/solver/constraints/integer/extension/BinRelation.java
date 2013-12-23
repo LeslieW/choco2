@@ -27,7 +27,9 @@
 
 package choco.kernel.solver.constraints.integer.extension;
 
-public interface BinRelation {
+import java.io.Serializable;
+
+public interface BinRelation extends Serializable {
 
 	/**
 	 * return true if couple (x,y) is feasible according
@@ -48,5 +50,5 @@ public interface BinRelation {
 	 * @return true if (x,y) is a consistent couple
 	 */
 	public boolean isConsistent(int x, int y);
-
+	
 }
