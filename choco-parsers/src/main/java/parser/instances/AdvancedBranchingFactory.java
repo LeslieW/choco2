@@ -53,6 +53,11 @@ public final class AdvancedBranchingFactory {
 		private Branching(String name) {
 			this.name = name;
 		}
+
+		public final String getName() {
+			return name;
+		}
+
 	}
 
 	private static boolean isNaryExtensional(Solver solver) {
@@ -80,16 +85,6 @@ public final class AdvancedBranchingFactory {
 				mod.getNbConstraints();
 	}
 
-	private static IntDomainVar[] getOtherVars(CPSolver s) {
-		List<IntDomainVar> ldvs = new ArrayList<IntDomainVar>(s.getNbIntVars());
-		for (int i = 0; i < s.getNbIntVars(); i++) {
-			IntDomainVar v = s.getIntVar(i);
-			if (!v.hasBooleanDomain()) {
-				ldvs.add(v);
-			}
-		}
-		return ldvs.toArray(new IntDomainVar[ldvs.size()]);
-	}
 
 
 	private static boolean useRandomValue(Solver s) {
@@ -99,7 +94,7 @@ public final class AdvancedBranchingFactory {
 			return false;
 		}
 	}
-	
+
 	private static boolean useMinValue(Solver s) {
 		try {
 			return s.getConfiguration().readBoolean(BasicSettings.MIN_VALUE);
@@ -108,6 +103,38 @@ public final class AdvancedBranchingFactory {
 		}
 	}
 
+	private static class VarSplit{
+
+		private final List<IntDomainVar> bvs;
+		private final List<IntDomainVar> ivs;
+
+		public VarSplit(Solver s) {
+			super();
+			bvs = new ArrayList<IntDomainVar>(s.getNbIntVars());
+			ivs = new ArrayList<IntDomainVar>(s.getNbIntVars());
+			for (int i = 0; i < s.getNbIntVars(); i++) {
+				IntDomainVar v = s.getIntVar(i);
+				if (!v.hasBooleanDomain()) {
+					bvs.add(v);
+				} else {
+					ivs.add(v);
+				}
+			}
+		}	
+
+		public IntDomainVar[] getBoolVariables() {
+			return bvs.toArray(new IntDomainVar[bvs.size()]);
+		}
+
+		public IntDomainVar[] getIntVariables() {
+			return ivs.toArray(new IntDomainVar[ivs.size()]);
+		}
+
+		public IntDomainVar[] getAllVariables() {
+			return ArrayUtils.append(getBoolVariables(),getIntVariables());
+		}
+	}
+	
 	private static ValSelector<IntDomainVar> createValSelector(Solver s) {
 		//s.getConfiguration().list(System.out);
 		if(useRandomValue(s)) {
@@ -146,13 +173,14 @@ public final class AdvancedBranchingFactory {
 		} else {
 			ValSelector<IntDomainVar> valSel = createValSelector(s);
 			if (isScheduling(s)) {
+				final VarSplit vs= new VarSplit(s);
 				if (isMixedScheduling(s)) { 
 					//side constraints added
-					s.addGoal(BranchingFactory.incDomWDegBin(s, ArrayUtils.append(s.getBooleanVariables(), getOtherVars(s)),valSel));
+					s.addGoal(BranchingFactory.incDomWDegBin(s, vs.getAllVariables(),valSel));
 				} else {
 					//pure scheduling
-					s.addGoal(BranchingFactory.incDomWDegBin(s,s.getBooleanVariables(), valSel));
-					AssignVar dwd2 = BranchingFactory.minDomMinVal(s, getOtherVars(s));
+					s.addGoal(BranchingFactory.incDomWDegBin(s,vs.getBoolVariables(), valSel));
+					AssignVar dwd2 = BranchingFactory.minDomMinVal(s, vs.getIntVariables());
 					s.addGoal(dwd2);
 				}
 			} else {                        
@@ -168,25 +196,28 @@ public final class AdvancedBranchingFactory {
 			return Branching.AUTO;
 		} else {
 			if(useRandomValue(s)) {
+				//Beware when using Choco2 //
+				//The n-ary branching can not be randomized (no randomized Domain Iterator.
 				return domWDegBin(s);
 			} else {
 				final ValIterator<IntDomainVar> valSel = useMinValue(s) ? new IncreasingDomain() : new DecreasingDomain();
 				if (isScheduling(s)) {
+					final VarSplit vs= new VarSplit(s);
 					if (isMixedScheduling(s)) { 
 						//side constraints added
-						s.addGoal(BranchingFactory.incDomWDeg(s, ArrayUtils.append(s.getBooleanVariables(), getOtherVars(s)),valSel));
+						s.addGoal(BranchingFactory.incDomWDeg(s, vs.getAllVariables(),valSel));
 					} else {
 						//pure scheduling
 						s.addGoal(BranchingFactory.incDomWDeg(s,s.getBooleanVariables(), valSel));
-						AssignVar dwd2 = BranchingFactory.minDomMinVal(s, getOtherVars(s));
+						AssignVar dwd2 = BranchingFactory.minDomMinVal(s, vs.getIntVariables());
 						s.addGoal(dwd2);
 					}
 				} else {                        
 					//general case
 					s.addGoal(BranchingFactory.incDomWDeg(s, valSel));
 				}
-				return Branching.WDEG;
 			}
+			return Branching.WDEG;
 		}
 	}
 
@@ -194,18 +225,18 @@ public final class AdvancedBranchingFactory {
 		ImpactBasedBranching ibb;
 		AssignVar dwd2 = null;
 		if (isScheduling(s)) {
-			final IntDomainVar[] bvs = s.getBooleanVariables();
-			final IntDomainVar[] ovs = getOtherVars(s);
+			final VarSplit vs= new VarSplit(s);
 			if (!isMixedScheduling(s)) { 
 				//pure scheduling
-				ibb = new ImpactBasedBranching(s, bvs);
-				dwd2 = BranchingFactory.minDomIncDom(s, ovs);
+				ibb = new ImpactBasedBranching(s, vs.getBoolVariables());
+				dwd2 = BranchingFactory.minDomIncDom(s, vs.getIntVariables());
 			} else {                    
 				//side constraints added
-				ibb = new ImpactBasedBranching(s, ArrayUtils.append(s.getBooleanVariables(), getOtherVars(s)));
+				ibb = new ImpactBasedBranching(s, vs.getAllVariables());
 			}
 		} else {                       
 			//general case
+			//FIXME Use decision variables
 			ibb = new ImpactBasedBranching(s);
 		}
 
@@ -223,6 +254,7 @@ public final class AdvancedBranchingFactory {
 		Branching addGoals(Solver s);
 	}
 
+	
 	public interface IVersatileMode{
 
 		Branching determineSearchHeuristics(Solver s);
@@ -237,7 +269,7 @@ public final class AdvancedBranchingFactory {
 		case WDEG: return domWDeg(s);
 		case BWDEG: return domWDegBin(s);
 		case IMPACT: return impact(s);
-		case AUTO: return Branching.AUTO; //Beware : potential loop
+		case AUTO: throw new SolverException("Infinite loop - Branching "+branching);
 		case USER: return userGoals.addGoals(s);
 		default :
 			throw new SolverException("Unknown Search Heuristics: "+branching);
@@ -248,26 +280,26 @@ public final class AdvancedBranchingFactory {
 	public static Branching addGoals(CPSolver s, Branching branching, IVersatileMode versatile, IGoalManager userGoals) {
 		Branching chosen = branching == Branching.AUTO ? 
 				versatile.determineSearchHeuristics(s) : branching;
-		Branching applied = _addGoals(s, chosen, userGoals);
-		if(applied == Branching.AUTO) {
-			if(branching == Branching.AUTO) {
-				//We have determined a branching which is not relevant : switch to minDom
-				applied = _addGoals(s, Branching.DOM, userGoals);
-			}
-			else {
-				//the specified branching : switch to versatile
-				chosen = versatile.determineSearchHeuristics(s);
-				applied = _addGoals(s, chosen, userGoals);
+				Branching applied = _addGoals(s, chosen, userGoals);
 				if(applied == Branching.AUTO) {
-					//We have determined a branching which is not relevant : switch to minDom
-					applied = _addGoals(s, Branching.DOM, userGoals);
+					if(branching == Branching.AUTO) {
+						//We have determined a branching which is not relevant : switch to minDom
+						applied = _addGoals(s, Branching.DOM, userGoals);
+					}
+					else {
+						//the specified branching : switch to versatile
+						chosen = versatile.determineSearchHeuristics(s);
+						applied = _addGoals(s, chosen, userGoals);
+						if(applied == Branching.AUTO) {
+							//We have determined a branching which is not relevant : switch to minDom
+							applied = _addGoals(s, Branching.DOM, userGoals);
+						}
+					}
 				}
-			}
-		}
-		if(applied == Branching.AUTO) {
-			throw new SolverException("Failed to set a search heuristics");
-		}
-		return applied;
+				if(applied == Branching.AUTO) {
+					throw new SolverException("Failed to set a search heuristics");
+				}
+				return applied;
 	}
 
 	public static Branching addGoals(CPSolver s, Branching branching, IGoalManager userGoals) {
@@ -313,33 +345,34 @@ public final class AdvancedBranchingFactory {
 		 */
 		@Override
 		public Branching determineSearchHeuristics(Solver s) {
-			DisposableIterator<SConstraint> it = s.getConstraintIterator();
+			final DisposableIterator<SConstraint> it = s.getConstraintIterator();
 			Branching heuristic = Branching.BWDEG;
-			if (isSat(s)) return Branching.IMPACT; //degree is unrelevant using the clause propagator
-			if (isNaryExtensional(s)) {
-				return Branching.BWDEG;
-			}
-			while(it.hasNext()) {
-				SConstraint constraint = it.next();
-				if (constraint instanceof Cumulative) return Branching.IMPACT;
-				if (constraint instanceof AllDifferent) return Branching.IMPACT;
-				if (constraint instanceof BoundAllDiff) {
-					if (constraint.getNbVars() > 10) {
-						heuristic = Branching.IMPACT;
-					}
+			try {
+				if (isSat(s)) return Branching.IMPACT; //degree is unrelevant using the clause propagator
+				if (isNaryExtensional(s)) {
+					return Branching.BWDEG;
 				}
-				if (constraint instanceof ReifiedIntSConstraint) return Branching.IMPACT;
-				if (constraint instanceof IntLinComb ||
-						constraint instanceof BoolIntLinComb) {
-					int arity = constraint.getNbVars();
-					if (arity >= 6) {
-						return Branching.IMPACT;
+				while(it.hasNext()) {
+					SConstraint constraint = it.next();
+					if (constraint instanceof Cumulative) return Branching.IMPACT;
+					if (constraint instanceof AllDifferent) return Branching.IMPACT;
+					if (constraint instanceof BoundAllDiff) {
+						if (constraint.getNbVars() > 10) {
+							heuristic = Branching.IMPACT;
+						}
 					}
+					if (constraint instanceof ReifiedIntSConstraint) return Branching.IMPACT;
+					if (constraint instanceof IntLinComb ||
+							constraint instanceof BoolIntLinComb) {
+						int arity = constraint.getNbVars();
+						if (arity >= 6) {
+							return Branching.IMPACT;
+						}
+					}
+					if (constraint instanceof DistanceXYZ) return Branching.BWDEG;
+					if (constraint instanceof DistanceXYC) return Branching.BWDEG;
 				}
-				if (constraint instanceof DistanceXYZ) return Branching.BWDEG;
-				if (constraint instanceof DistanceXYC) return Branching.BWDEG;
-			}
-			it.dispose();
+			}finally{it.dispose();}
 			if (getSumOfDomains(s) > 500000) {
 				return Branching.BWDEG;
 			}
@@ -350,12 +383,11 @@ public final class AdvancedBranchingFactory {
 			int sum = 0;
 			for (int i = 0; i < s.getNbIntVars(); i++) {
 				sum += s.getIntVar(i).getDomainSize();
-
 			}
 			return sum;
 		}
 	}
-		
+
 }
 
 
