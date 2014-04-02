@@ -31,7 +31,7 @@ import choco.kernel.solver.SolverException;
 
  /**
  * fast time limit computation inspired from: http://dow.ngra.de/2008/10/27/when-systemcurrenttimemillis-is-too-slow/.
- * cant use the heartbeat counter because it lascks of precision.
+ * Beware that the heartbeat counter lacks precision.
  * @author Arnaud Malapert</br> 
  * @since 23 juil. 2009 version 2.1.1</br>
  * @version 2.1.1</br>
