@@ -112,8 +112,7 @@ public final class AdvancedBranchingFactory {
 			super();
 			bvs = new ArrayList<IntDomainVar>(s.getNbIntVars());
 			ivs = new ArrayList<IntDomainVar>(s.getNbIntVars());
-			for (int i = 0; i < s.getNbIntVars(); i++) {
-				IntDomainVar v = s.getIntVar(i);
+			for (IntDomainVar v : s.getIntDecisionVars()) {
 				if (!v.hasBooleanDomain()) {
 					bvs.add(v);
 				} else {
@@ -130,7 +129,7 @@ public final class AdvancedBranchingFactory {
 			return ivs.toArray(new IntDomainVar[ivs.size()]);
 		}
 
-		public IntDomainVar[] getAllVariables() {
+		public IntDomainVar[] getBoolIntVariables() {
 			return ArrayUtils.append(getBoolVariables(),getIntVariables());
 		}
 	}
@@ -176,7 +175,7 @@ public final class AdvancedBranchingFactory {
 				final VarSplit vs= new VarSplit(s);
 				if (isMixedScheduling(s)) { 
 					//side constraints added
-					s.addGoal(BranchingFactory.incDomWDegBin(s, vs.getAllVariables(),valSel));
+					s.addGoal(BranchingFactory.incDomWDegBin(s, vs.getBoolIntVariables(),valSel));
 				} else {
 					//pure scheduling
 					s.addGoal(BranchingFactory.incDomWDegBin(s,vs.getBoolVariables(), valSel));
@@ -205,7 +204,7 @@ public final class AdvancedBranchingFactory {
 					final VarSplit vs= new VarSplit(s);
 					if (isMixedScheduling(s)) { 
 						//side constraints added
-						s.addGoal(BranchingFactory.incDomWDeg(s, vs.getAllVariables(),valSel));
+						s.addGoal(BranchingFactory.incDomWDeg(s, vs.getBoolIntVariables(),valSel));
 					} else {
 						//pure scheduling
 						s.addGoal(BranchingFactory.incDomWDeg(s,s.getBooleanVariables(), valSel));
@@ -232,12 +231,11 @@ public final class AdvancedBranchingFactory {
 				dwd2 = BranchingFactory.minDomIncDom(s, vs.getIntVariables());
 			} else {                    
 				//side constraints added
-				ibb = new ImpactBasedBranching(s, vs.getAllVariables());
+				ibb = new ImpactBasedBranching(s, vs.getBoolIntVariables());
 			}
 		} else {                       
 			//general case
-			//FIXME Use decision variables
-			ibb = new ImpactBasedBranching(s);
+			ibb = new ImpactBasedBranching(s, s.getIntDecisionVars());
 		}
 
 		if(useRandomValue(s)) {
