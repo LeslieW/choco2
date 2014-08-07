@@ -53,9 +53,11 @@ import choco.cp.solver.constraints.integer.bool.sat.ClauseStore;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.solver.Configuration;
+import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.checker.SolutionCheckerException;
 import choco.kernel.solver.search.measure.IMeasures;
+import choco.kernel.solver.search.measure.ISearchMeasures;
 
 /**
  * A class to provide facilities for loading and solving instance described by a file (txt, xml, ...). </br>
@@ -295,7 +297,7 @@ public abstract class AbstractInstanceModel {
 			logOnError(ERROR, e);
 			throw e;
 		} 
-		
+
 	}
 
 
@@ -405,23 +407,11 @@ public abstract class AbstractInstanceModel {
 		if(initialObjective != null) logMsg.appendDiagnostic("INITIAL_OBJECTIVE", initialObjective);
 		//measures
 		if(solver != null) {
-			logMsg.appendDiagnostic("NBSOLS ", solver.getSolutionCount());
-			final double rtime = getFullSecTime();
-			logMsg.appendDiagnostics("NODES", solver.getNodeCount(), rtime);
-			logMsg.appendDiagnostics("BACKTRACKS", solver.getBackTrackCount(), rtime);
-			if(solver.getFailCount() >= 0) {
-				logMsg.appendDiagnostics("FAILURES", solver.getFailCount(), rtime);
-			}
-			logMsg.appendDiagnostics("RESTARTS", solver.getRestartCount(), rtime);
+			logOnMeasures();
 			if(solver.isOptimizationSolver()) {
 				//best lower bound on the objective
 				logMsg.appendDiagnostic("LOWER_BOUND", solver.getSearchStrategy().getObjectiveManager().getObjectiveFloor());
-				//best solution
-				if(solver.existsSolution()) {
-					final IMeasures mes = solver.getSearchStrategy().getSolutionPool().getBestSolution().getMeasures();
-					logMsg.appendDiagnostic("BESTSOLTIME", mes.getTimeCount());
-					logMsg.appendDiagnostic("BESTSOLBACKTRACKS", mes.getBackTrackCount());
-				}
+				logOnBestSol();
 			}
 			//nogood
 			if (solver instanceof CPSolver) {
@@ -430,6 +420,27 @@ public abstract class AbstractInstanceModel {
 			}
 		}
 	}
+
+
+	private void logOnMeasures() {
+		logMsg.appendDiagnostic("NBSOLS ", solver.getSolutionCount());
+		//logMsg.appendDiagnostic("TIME", solver.getTimeCount());
+		logMsg.appendDiagnostic("NODES", solver.getNodeCount());
+		logMsg.appendDiagnostic("BACKTRACKS", solver.getBackTrackCount());
+		if(solver.getFailCount() >= 0) logMsg.appendDiagnostic("FAILURES", solver.getFailCount());
+		logMsg.appendDiagnostic("RESTARTS", solver.getRestartCount());
+	}
+
+	private void logOnBestSol() {
+		if(solver.existsSolution()) {
+			final Solution best = solver.getSearchStrategy().getSolutionPool().getBestSolution();
+			if(best != null) {
+				logMsg.appendDiagnostic("BESTSOLTIME", best.getMeasures().getTimeCount());
+				logMsg.appendDiagnostic("BESTSOLBACKTRACKS", best.getMeasures().getBackTrackCount());
+			}
+		}
+	}
+
 
 	// TODO - improve formatting of numbers - created 16 mai 2012 by A. Malapert
 	protected void logOnConfiguration() {
