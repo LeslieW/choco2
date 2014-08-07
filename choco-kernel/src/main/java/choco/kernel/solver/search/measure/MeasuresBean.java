@@ -30,17 +30,11 @@ package choco.kernel.solver.search.measure;
 
 public class MeasuresBean implements IMeasures {
 
-	public long solutionCount;
-	
 	public int objectiveIntValue = Integer.MAX_VALUE;
 
 	public double objectiveRealValue = Double.POSITIVE_INFINITY;
 	
 	public boolean objectiveOptimal; 
-
-    public long readingTime;
-
-    public long initialPropTime;
 
 	public long timeCount;
 	
@@ -52,19 +46,23 @@ public class MeasuresBean implements IMeasures {
 	
 	public long failCount;
 	
+	public long solutionCount;
+	
 	public MeasuresBean() {
 		super();
 	}
 	
 	public final void reset() {
-        readingTime = 0;
-        initialPropTime = 0;
+		objectiveIntValue = Integer.MAX_VALUE;
+		objectiveRealValue = Double.POSITIVE_INFINITY;
 		timeCount = 0;
 		nodeCount = 0;
 		backtrackCount = 0; 
 		restartCount = 0;
 		failCount = 0;
+		solutionCount=0;
 	}
+		
 	
 	public final void setSearchMeasures(ISearchMeasures toCopy) {
 		timeCount = toCopy.getTimeCount();
@@ -72,9 +70,17 @@ public class MeasuresBean implements IMeasures {
 		backtrackCount = toCopy.getBackTrackCount();
 		restartCount = toCopy.getRestartCount();
 		failCount = toCopy.getFailCount();
+		solutionCount = toCopy.getSolutionCount();
 	}
 	
-
+	public final void addSearchMeasures(ISearchMeasures toAdd) {
+		timeCount += toAdd.getTimeCount();
+		nodeCount += toAdd.getNodeCount();
+		backtrackCount += toAdd.getBackTrackCount();
+		restartCount += toAdd.getRestartCount();
+		failCount += toAdd.getFailCount();
+		solutionCount += toAdd.getSolutionCount();
+	}
 	
 	@Override
 	public boolean existsSolution() {
@@ -86,7 +92,6 @@ public class MeasuresBean implements IMeasures {
 		return solutionCount;
 	}
 
-	
 	@Override
 	public Number getObjectiveValue() {
 		return ( 
@@ -119,16 +124,6 @@ public class MeasuresBean implements IMeasures {
 	}
 
     @Override
-    public long getReadingTimeCount() {
-        return readingTime;
-    }
-
-    @Override
-    public long getInitialPropagationTimeCount() {
-        return initialPropTime;
-    }
-
-    @Override
 	public final long getTimeCount() {
 		return timeCount;
 	}
@@ -154,40 +149,24 @@ public class MeasuresBean implements IMeasures {
 		this.objectiveOptimal = objectiveOptimal;
 	}
 
-	public final void setRestartCount(int restartCount) {
+	public final void setRestartCount(long restartCount) {
 		this.restartCount = restartCount;
 	}
 
-
-    public void setReadingTimeCount(int readingTimeCount) {
-        this.readingTime = readingTimeCount;
-    }
-
-
-    public void setInitialPropagationTimeCount(int initialPropagationTimeCount) {
-        this.initialPropTime = initialPropagationTimeCount;
-    }
-
-    public final void setTimeCount(int timeCount) {
+    public final void setTimeCount(long timeCount) {
 		this.timeCount = timeCount;
 	}
 
-	public final void setNodeCount(int nodeCount) {
+	public final void setNodeCount(long nodeCount) {
 		this.nodeCount = nodeCount;
 	}
 
-	public final void setBacktrackCount(int backtrackCount) {
+	public final void setBacktrackCount(long backtrackCount) {
 		this.backtrackCount = backtrackCount;
 	}
 
-	public final void setIterationCount(int iterationCount) {
-		this.restartCount = iterationCount;
-	}
-
-	public final void setFailCount(int failCount) {
+	public final void setFailCount(long failCount) {
 		this.failCount = failCount;
 	}
-	
-	
 
 }

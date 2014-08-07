@@ -27,7 +27,6 @@
 
 package choco.kernel.solver;
 
-import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.measure.IMeasures;
 import choco.kernel.solver.search.measure.ISearchMeasures;
 import choco.kernel.solver.search.measure.MeasuresBean;
@@ -36,13 +35,11 @@ import choco.kernel.solver.variables.real.RealInterval;
 import choco.kernel.solver.variables.real.RealVar;
 import choco.kernel.solver.variables.set.SetVar;
 
-import java.util.LinkedList;
-import java.util.List;
-
 /** A class storing a state of the model */
 public class Solution {
 
 	public final static int NULL = Integer.MAX_VALUE;
+	
 	/** the solver owning the solution */
 	protected Solver solver;
 
@@ -53,13 +50,7 @@ public class Solution {
 
 	protected int[][] setVarValues;
 
-	protected int objectiveIntValue = Integer.MAX_VALUE;
-
-	protected double objectiveRealValue = Double.POSITIVE_INFINITY;
-
 	protected final MeasuresBean measures;
-
-	private List<AbstractGlobalSearchLimit> solutionLimits;
 
 	/**
 	 * Constructor
@@ -71,14 +62,12 @@ public class Solution {
 		intVarValues = new int[solver.getNbIntVars()];
 		setVarValues = new int[solver.getNbSetVars()][];
 		realVarValues = new RealInterval[solver.getNbRealVars()];
-		solutionLimits = new LinkedList<AbstractGlobalSearchLimit>();
 		measures = new MeasuresBean();
 	}
 
 	public void setSolver(Solver s)
 	{
 		this.solver = s;
-		solutionLimits.clear();
 		if (solver.getNbIntVars() > intVarValues.length) {
 			intVarValues = new int[solver.getNbIntVars()];
 		}
@@ -103,7 +92,7 @@ public class Solution {
 
 	public final int getObjectiveValue()
 	{
-		return objectiveIntValue;
+		return this.measures.objectiveIntValue;
 	}
 
 	public final void recordSolutionCount(long solutionCount)

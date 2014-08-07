@@ -29,7 +29,7 @@ package choco.kernel.solver.search.measure;
 
 
 
-public interface ISearchMeasures {
+public interface ISearchMeasures extends ISolutionMeasures {
 	   
 	/**
      * Get the time count in milliseconds of the measure
@@ -61,11 +61,5 @@ public interface ISearchMeasures {
      * @return restart count
      */
     long getRestartCount();
-
-    /**
-     * Get the solution count of the measure
-     * @return restart count
-     */
-    long getSolutionCount();
         
 }

@@ -55,6 +55,7 @@ import choco.kernel.solver.search.ValSelector;
 import choco.kernel.solver.search.checker.SolutionCheckerEngine;
 import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.measure.IMeasures;
+import choco.kernel.solver.search.measure.IPreSolveMeasures;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.integer.IntVar;
@@ -75,7 +76,7 @@ import java.util.logging.Logger;
  * Time: 16:43:08
  * Interface for Solver class, declare main expected methods.
  */
-public interface Solver extends ISolutionDisplay, IMeasures, IPretty {
+public interface Solver extends ISolutionDisplay, IMeasures, IPreSolveMeasures, IPretty {
 
 	public static final SolutionCheckerEngine DEFAULT_SOLUTION_CHECKER = new SolutionCheckerEngine();
 
